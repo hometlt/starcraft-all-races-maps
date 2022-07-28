@@ -1,0 +1,3653 @@
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   PSI chaos
+// 
+//==================================================================================================
+include "TriggerLibs/NativeLib"
+include "LibCOMI"
+include "aiDD6BB376"
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+void InitLibs () {
+    libNtve_InitLib();
+    libCOMI_InitLib();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Constants
+//--------------------------------------------------------------------------------------------------
+const int gv_pLAYER_01_USER = 1;
+const int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 3;
+const int gv_pLAYER_04_ENEMY = 4;
+const int gv_pLAYER_05_ENEMY = 5;
+
+//--------------------------------------------------------------------------------------------------
+// Global Variables
+//--------------------------------------------------------------------------------------------------
+playergroup gv_enemyGroup1;
+playergroup gv_enemyGroup2;
+unitgroup gv_bUILDINGGROUP;
+point gv_victoryCompletePan;
+unitgroup gv_overlordGroup;
+timer gv_timerDuration;
+int gv_timerWindow;
+int gv_firstClassEmitter1Ping;
+int gv_firstClassEmitter2Ping;
+int gv_firstClassEmitter3Ping;
+int gv_secondClassEmitter1Ping;
+int gv_secondClassEmitter2Ping;
+int gv_flyingEmitter1Ping;
+unit gv_firstClassEmitter1;
+point gv_firstClassEmitter1Point;
+unit gv_firstClassEmitter2;
+point gv_firstClassEmitter2Point;
+unit gv_firstClassEmitter3;
+point gv_firstClassEmitter3Point;
+unit gv_secondClassEmitter1;
+point gv_secondClassEmitter1Point;
+unit gv_secondClassEmitter2;
+point gv_secondClassEmitter2Point;
+unit gv_flyingEmitter1;
+point gv_flyingEmitter1Point;
+unitgroup gv_dropShip_UnitGroup;
+unitgroup gv_dropShip_UnitGroup2;
+unitgroup gv_dropShip_UnitGroup3;
+point gv_attackWaveA_Wave05Path;
+region[3][11] gv_attackSpawn;
+unitgroup gv_pSIunitgroup;
+int gv_orbitalPing;
+int gv_pSIemitterwave;
+int gv_objectiveDontLetTheEnemyDestroyBuildings;
+int gv_objectiveEmitterWave;
+int gv_objectiveDestroyDefendersOrbital;
+int gv_structureDestroyedCount;
+int gv_structureAlive;
+
+void InitGlobals () {
+    gv_enemyGroup1 = PlayerGroupEmpty();
+    gv_enemyGroup2 = PlayerGroupEmpty();
+    gv_bUILDINGGROUP = UnitGroupEmpty();
+    gv_overlordGroup = UnitGroupEmpty();
+    gv_timerDuration = TimerCreate();
+    gv_timerWindow = c_timerWindowNone;
+    gv_firstClassEmitter1Ping = c_invalidPingId;
+    gv_firstClassEmitter2Ping = c_invalidPingId;
+    gv_firstClassEmitter3Ping = c_invalidPingId;
+    gv_secondClassEmitter1Ping = c_invalidPingId;
+    gv_secondClassEmitter2Ping = c_invalidPingId;
+    gv_flyingEmitter1Ping = c_invalidPingId;
+    gv_dropShip_UnitGroup = UnitGroupEmpty();
+    gv_dropShip_UnitGroup2 = UnitGroupEmpty();
+    gv_dropShip_UnitGroup3 = UnitGroupEmpty();
+    gv_pSIunitgroup = UnitGroupEmpty();
+    gv_orbitalPing = c_invalidPingId;
+    gv_objectiveDontLetTheEnemyDestroyBuildings = c_invalidObjectiveId;
+    gv_objectiveEmitterWave = c_invalidObjectiveId;
+    gv_objectiveDestroyDefendersOrbital = c_invalidObjectiveId;
+    gv_structureAlive = 65;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Function Declarations
+//--------------------------------------------------------------------------------------------------
+void gf_RunMissionEvent (trigger lp_missionEventTrigger, fixed lp_missionEventTime);
+void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time);
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Variables
+//--------------------------------------------------------------------------------------------------
+trigger gt_Init01LoadData;
+trigger gt_Init02Players;
+trigger gt_Init03LoadingComplete;
+trigger gt_Init04Technology;
+trigger gt_Init05Units;
+trigger gt_Init06MusicSound;
+trigger gt_Init07Environment;
+trigger gt_Init08Difficulties;
+trigger gt_DebugCantFail;
+trigger gt_StartGameQ;
+trigger gt_CivilianScream;
+trigger gt_UpdateCounterDestroyed;
+trigger gt_UpdateCounterAlive;
+trigger gt_FinalAttack;
+trigger gt_HalfHealth;
+trigger gt_HalfHealth2;
+trigger gt_HalfHealth3;
+trigger gt_HalfHealthBig;
+trigger gt_HalfHealthBig2;
+trigger gt_Defendsmall;
+trigger gt_Defendsmall2;
+trigger gt_Defendsmall3;
+trigger gt_Defendbig;
+trigger gt_Defendbig2;
+trigger gt_TurnOnVictory;
+trigger gt_EnemyAttackingQ;
+trigger gt_DefeatPrimaryObjectiveFailed;
+trigger gt_VictoryPrimaryObjectiveComplete;
+trigger gt_VictorySequence;
+trigger gt_VictoryFanfareQ;
+trigger gt_Victory;
+trigger gt_Defeat;
+trigger gt_StartAI;
+trigger gt_AIzerg;
+trigger gt_DestroyPingsIfDead;
+trigger gt_CheckIfUnitsInUnitGroup;
+trigger gt_CheckIfUnitsInUnitGroup2;
+trigger gt_CheckIfUnitsInUnitGroup3;
+trigger gt_CheckIfUnitsInUnitGroup4;
+trigger gt_CheckIfUnitsInUnitGroup5;
+trigger gt_Reveal;
+trigger gt_TurnSpawnOverlordsStructures;
+trigger gt_SpawnSporeSpine;
+trigger gt_SpawnOverlords;
+trigger gt_SpawnOverlords2;
+trigger gt_FirstClassInitialWave;
+trigger gt_FirstClassEmitterSpawn1;
+trigger gt_FirstClassEmitterSpawn12;
+trigger gt_FirstClassEmitterSpawn2;
+trigger gt_FirstClassEmitterSpawn22;
+trigger gt_FirstClassEmitterSpawn3;
+trigger gt_FirstClassEmitterSpawn32;
+trigger gt_SecondClassEmitterSpawn1;
+trigger gt_SecondClassEmitterSpawn12;
+trigger gt_SecondClassEmitterSpawn2;
+trigger gt_SecondClassEmitterSpawn22;
+trigger gt_FlyingEmitterSpawn1;
+trigger gt_FlyingEmitterSpawn12;
+trigger gt_PsiEmitterwave1;
+trigger gt_PsiEmitterwave2gamma;
+trigger gt_PsiEmitterwave3gamma;
+trigger gt_PsiEmitterwave3gamma2;
+trigger gt_PsiEmitterwave3gamma3;
+trigger gt_PsiEmitterwave1big;
+trigger gt_PsiEmitterwave1Flyer;
+trigger gt_PsiEmitterwave2big;
+trigger gt_DefendersWave;
+trigger gt_DefendersWave2;
+trigger gt_DefendersWave3;
+trigger gt_SetupAttackWaveSpawn;
+trigger gt_AIAttackWaves;
+trigger gt_UpdateBothObjectives;
+trigger gt_ObjectiveDestroyallpsiemitterwavesCreate;
+trigger gt_ObjectiveDontLetTheEnemyDestroyBuildingsCreate;
+trigger gt_ObjectiveDontLetTheEnemyDestroyBuildingsFailed;
+trigger gt_BothObjectivesCompleted;
+trigger gt_ObjectiveDestroyOrbitalCommandCreate;
+trigger gt_ObjectiveDestroyOrbitalCommandCompleted;
+
+//--------------------------------------------------------------------------------------------------
+// Custom AI Functions
+//--------------------------------------------------------------------------------------------------
+string[17] cai_playerAI;
+
+//--------------------------------------------------------------------------------------------------
+void InitCustomAI () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        cai_playerAI[init_i] = null;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_start (string ai, int p) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    cai_playerAI[p] = ai;
+
+    if (cai_playerAI[p] == "aiDD6BB376") { aiDD6BB376_start(p); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_setDefGather (int p, point val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiDD6BB376") { aiDD6BB376_setDefGather(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+string cai_getCustomData (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiDD6BB376") { return aiDD6BB376_getCustomData(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave cai_getLastWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiDD6BB376") { return aiDD6BB376_getLastWave(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_run (int p, playergroup target) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiDD6BB376") { aiDD6BB376_waves_run(p, target); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiDD6BB376") { aiDD6BB376_waves_enable(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_stop (string ai) {
+    if (ai == "aiDD6BB376") { aiDD6BB376_waves_stop(); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_wave_run (int w, int p, playergroup target, bool wait) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiDD6BB376") { aiDD6BB376_wave_run(w, p, target, wait); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_wave_enable (int w, int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiDD6BB376") { aiDD6BB376_wave_enable(w, p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+bool cai_wave_isEnabled (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    if (cai_playerAI[p] == "aiDD6BB376") { return aiDD6BB376_wave_isEnabled(w, p); }
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+unitgroup cai_wave_createdUnits (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiDD6BB376") { return aiDD6BB376_wave_createdUnits(w, p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave cai_wave_createdWave (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiDD6BB376") { return aiDD6BB376_wave_createdWave(w, p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_startall () {
+    cai_start("aiDD6BB376", 3);
+    AICampaignStart(4);
+    AICampaignStart(5);
+    AICampaignStart(14);
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_runall () {
+    playergroup target = PlayerGroupEmpty();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Functions
+//--------------------------------------------------------------------------------------------------
+trigger auto_gf_RunMissionEvent_Trigger = null;
+trigger auto_gf_RunMissionEvent_lp_missionEventTrigger;
+fixed auto_gf_RunMissionEvent_lp_missionEventTime;
+
+void gf_RunMissionEvent (trigger lp_missionEventTrigger, fixed lp_missionEventTime) {
+    auto_gf_RunMissionEvent_lp_missionEventTrigger = lp_missionEventTrigger;
+    auto_gf_RunMissionEvent_lp_missionEventTime = lp_missionEventTime;
+
+    if (auto_gf_RunMissionEvent_Trigger == null) {
+        auto_gf_RunMissionEvent_Trigger = TriggerCreate("auto_gf_RunMissionEvent_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_RunMissionEvent_Trigger, false, false);
+}
+
+bool auto_gf_RunMissionEvent_TriggerFunc (bool testConds, bool runActions) {
+    trigger lp_missionEventTrigger = auto_gf_RunMissionEvent_lp_missionEventTrigger;
+    fixed lp_missionEventTime = auto_gf_RunMissionEvent_lp_missionEventTime;
+
+    // Implementation
+    while (!((GameGetMissionTime() >= lp_missionEventTime))) {
+        Wait(0.5, c_timeAI);
+    }
+    if ((libCOMI_gf_GameIsOver() == false)) {
+        TriggerExecute(lp_missionEventTrigger, true, false);
+    }
+
+    return true;
+}
+
+trigger auto_gf_RunAttackWaveatMissionTime_Trigger = null;
+trigger auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
+fixed auto_gf_RunAttackWaveatMissionTime_lp_time;
+
+void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time) {
+    auto_gf_RunAttackWaveatMissionTime_lp_attackWave = lp_attackWave;
+    auto_gf_RunAttackWaveatMissionTime_lp_time = lp_time;
+
+    if (auto_gf_RunAttackWaveatMissionTime_Trigger == null) {
+        auto_gf_RunAttackWaveatMissionTime_Trigger = TriggerCreate("auto_gf_RunAttackWaveatMissionTime_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_RunAttackWaveatMissionTime_Trigger, false, false);
+}
+
+bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runActions) {
+    trigger lp_attackWave = auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
+    fixed lp_time = auto_gf_RunAttackWaveatMissionTime_lp_time;
+
+    // Implementation
+    while (!((lp_time <= GameGetMissionTime()))) {
+        Wait(0.3, c_timeAI);
+    }
+    if ((libCOMI_gf_GameIsOver() == false)) {
+        TriggerExecute(lp_attackWave, true, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 01 Load Data
+//--------------------------------------------------------------------------------------------------
+bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
+    playergroup auto49DE823F_g;
+    int auto49DE823F_p;
+    string autoF21407A6_val;
+
+    // Variable Declarations
+    int lv_indexPlayer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto49DE823F_g = libCOMI_gf_HumanPlayers();
+    auto49DE823F_p = 1;
+    for ( ; auto49DE823F_p <= PlayerGroupCount(auto49DE823F_g) ; auto49DE823F_p += BoolToInt(lv_indexPlayer == PlayerGroupPlayer(auto49DE823F_g, auto49DE823F_p)) ) {
+        lv_indexPlayer = PlayerGroupPlayer(auto49DE823F_g, auto49DE823F_p);
+        autoF21407A6_val = GameAttributePlayerValue("[bnet:local/0.0/254459]1", lv_indexPlayer);
+        if (autoF21407A6_val == "0003") {
+            PlayerSetCommander(lv_indexPlayer, "Artanis");
+        }
+        else if (autoF21407A6_val == "0002") {
+            PlayerSetCommander(lv_indexPlayer, "Kerrigan");
+        }
+        else if (autoF21407A6_val == "0001") {
+            PlayerSetCommander(lv_indexPlayer, "Raynor");
+        }
+        else {
+            if ((lv_indexPlayer == 1)) {
+                PlayerSetCommander(lv_indexPlayer, "Raynor");
+            }
+            else {
+                PlayerSetCommander(lv_indexPlayer, "Artanis");
+            }
+        }
+    }
+    libCOMI_gf_EnableArcadeContestMode();
+    TriggerExecute(gt_Init02Players, true, false);
+    libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init01LoadData_Init () {
+    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
+    TriggerAddEventMapInit(gt_Init01LoadData);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 02 Players
+//--------------------------------------------------------------------------------------------------
+bool gt_Init02Players_Func (bool testConds, bool runActions) {
+    playergroup autoA70DAD80_g;
+    int autoA70DAD80_p;
+    playergroup autoD14218CF_g;
+    int autoD14218CF_p;
+    playergroup auto27EBB7AC_g;
+    int auto27EBB7AC_p;
+    playergroup autoB87FB4F2_g;
+    int autoB87FB4F2_p;
+
+    // Variable Declarations
+    int lv_playerIterEnemy;
+    int lv_playerIterAlly;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+    libCOMI_gf_SetAllianceCoop(1, 14, libNtve_ge_AllianceSetting_NeutralWithSharedVision);
+    libCOMI_gf_SetAllianceCoop(2, 14, libNtve_ge_AllianceSetting_NeutralWithSharedVision);
+    libCOMI_gf_SetAllianceCoop(3, 14, libNtve_ge_AllianceSetting_Neutral);
+    PlayerGroupAdd(gv_enemyGroup1, gv_pLAYER_03_ENEMY);
+    PlayerGroupAdd(gv_enemyGroup2, gv_pLAYER_04_ENEMY);
+    PlayerGroupAdd(gv_enemyGroup2, gv_pLAYER_05_ENEMY);
+    libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup2, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+    autoA70DAD80_g = gv_enemyGroup1; 
+    autoA70DAD80_p = 1;
+    for ( ; autoA70DAD80_p <= PlayerGroupCount(autoA70DAD80_g) ; autoA70DAD80_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(autoA70DAD80_g, autoA70DAD80_p)) ) {
+        lv_playerIterEnemy = PlayerGroupPlayer(autoA70DAD80_g, autoA70DAD80_p);
+        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
+        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
+        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
+        PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
+        autoD14218CF_g = libCOMI_gf_HumanPlayers();
+        autoD14218CF_p = 1;
+        for ( ; autoD14218CF_p <= PlayerGroupCount(autoD14218CF_g) ; autoD14218CF_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoD14218CF_g, autoD14218CF_p)) ) {
+            lv_playerIterAlly = PlayerGroupPlayer(autoD14218CF_g, autoD14218CF_p);
+            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
+        }
+    }
+    auto27EBB7AC_g = gv_enemyGroup2; 
+    auto27EBB7AC_p = 1;
+    for ( ; auto27EBB7AC_p <= PlayerGroupCount(auto27EBB7AC_g) ; auto27EBB7AC_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(auto27EBB7AC_g, auto27EBB7AC_p)) ) {
+        lv_playerIterEnemy = PlayerGroupPlayer(auto27EBB7AC_g, auto27EBB7AC_p);
+        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
+        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
+        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
+        PlayerSetColorIndex(lv_playerIterEnemy, 4, true);
+        autoB87FB4F2_g = libCOMI_gf_HumanPlayers();
+        autoB87FB4F2_p = 1;
+        for ( ; autoB87FB4F2_p <= PlayerGroupCount(autoB87FB4F2_g) ; autoB87FB4F2_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoB87FB4F2_g, autoB87FB4F2_p)) ) {
+            lv_playerIterAlly = PlayerGroupPlayer(autoB87FB4F2_g, autoB87FB4F2_p);
+            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
+        }
+    }
+    PlayerSetAlliance(gv_pLAYER_05_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
+    PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_05_ENEMY, true);
+    libCOMI_gf_SetAlliedCommandersstartingResources();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init02Players_Init () {
+    gt_Init02Players = TriggerCreate("gt_Init02Players_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 03 Loading Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_Init04Technology, true, false);
+    libCOMI_gf_PurchaseStorymodeTech();
+    TriggerExecute(gt_Init05Units, true, false);
+    TriggerExecute(gt_Init06MusicSound, true, false);
+    TriggerExecute(gt_Init07Environment, true, false);
+    TriggerExecute(gt_Init08Difficulties, true, false);
+    libCOMI_gf_PlayMapIntroZoom(true);
+    TriggerExecute(gt_StartAI, true, false);
+    TriggerExecute(gt_StartGameQ, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init03LoadingComplete_Init () {
+    gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 04 Technology
+//--------------------------------------------------------------------------------------------------
+bool gt_Init04Technology_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init04Technology_Init () {
+    gt_Init04Technology = TriggerCreate("gt_Init04Technology_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 05 Units
+//--------------------------------------------------------------------------------------------------
+bool gt_Init05Units_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_01_USER);
+    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_02_USER);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init05Units_Init () {
+    gt_Init05Units = TriggerCreate("gt_Init05Units_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 06 Music/Sound
+//--------------------------------------------------------------------------------------------------
+bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init06MusicSound_Init () {
+    gt_Init06MusicSound = TriggerCreate("gt_Init06MusicSound_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 07 Environment
+//--------------------------------------------------------------------------------------------------
+bool gt_Init07Environment_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    GameTimeOfDaySet("08:00:00");
+    VisExploreArea(gv_pLAYER_01_USER, RegionFromId(1), true, false);
+    VisExploreArea(gv_pLAYER_02_USER, RegionFromId(1), true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init07Environment_Init () {
+    gt_Init07Environment = TriggerCreate("gt_Init07Environment_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 08 Difficulties
+//--------------------------------------------------------------------------------------------------
+bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    fixed lv_bonusObjectiveLife;
+    fixed lv_mainObjectiveLife;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_01_USER) == 4)) {
+    }
+
+    if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_02_USER) == 4)) {
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init08Difficulties_Init () {
+    gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Debug - Can't Fail
+//--------------------------------------------------------------------------------------------------
+bool gt_DebugCantFail_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((GameCheatsEnabled(c_gameCheatCategoryPublic) == true))) {
+            return false;
+        }
+
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    PlayerModifyPropertyFixed(gv_pLAYER_01_USER, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 0.0);
+    PlayerModifyPropertyFixed(gv_pLAYER_02_USER, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 0.0);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DebugCantFail_Init () {
+    gt_DebugCantFail = TriggerCreate("gt_DebugCantFail_Func");
+    TriggerAddEventChatMessage(gt_DebugCantFail, c_playerAny, "cantfail", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start Game Q
+//--------------------------------------------------------------------------------------------------
+bool gt_StartGameQ_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_enemyBase;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/A8FFA3D9"), null, PlayerStartLocation(gv_pLAYER_01_USER));
+    UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/C919B152"), null, PlayerStartLocation(gv_pLAYER_02_USER));
+    Wait(7.0, c_timeReal);
+    TriggerQueueEnter();
+    TriggerExecute(gt_ObjectiveDestroyallpsiemitterwavesCreate, true, true);
+    Wait(2.0, c_timeGame);
+    TriggerExecute(gt_ObjectiveDontLetTheEnemyDestroyBuildingsCreate, true, false);
+    Wait(2.0, c_timeGame);
+    TriggerEnable(gt_UpdateBothObjectives, true);
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/DF582713"), StringExternal("Param/Value/8515D0F3"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    Wait(10.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/6F7B2E70"), StringExternal("Param/Value/05F057DD"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    Wait(10.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/E0A4CA79"), StringExternal("Param/Value/793184E2"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+    TriggerQueueExit();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartGameQ_Init () {
+    gt_StartGameQ = TriggerCreate("gt_StartGameQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: CivilianScream
+//--------------------------------------------------------------------------------------------------
+bool gt_CivilianScream_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "AbandonedBuilding"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_integer = RandomInt(1, 2);
+    if ((lv_integer == 1)) {
+        SoundPlayAtPointForPlayer(SoundLink("Emitter_CrowdPanic", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(EventUnit()), 0.0, 500.0, 0.0);
+        SoundPlayAtPointForPlayer(SoundLink("Emitter_CrowdPanic", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(EventUnit()), 15.0, 500.0, 0.0);
+        SoundPlayAtPointForPlayer(SoundLink("Emitter_CrowdPanic", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(EventUnit()), 30.0, 500.0, 0.0);
+        SoundPlayAtPointForPlayer(SoundLink("Emitter_CrowdPanic", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(EventUnit()), 50.0, 500.0, 0.0);
+        UnitCreate(1, "Civilian", 0, 14, UnitGetPosition(EventUnit()), 270.0);
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(745905051)), c_orderQueueReplace);
+        UnitCreate(1, "Civilian", 0, 14, UnitGetPosition(EventUnit()), 270.0);
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(745905051)), c_orderQueueReplace);
+        UnitCreate(1, "Civilian", 0, 14, UnitGetPosition(EventUnit()), 270.0);
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(745905051)), c_orderQueueReplace);
+        UnitCreate(1, "CivilianFemale", 0, 14, UnitGetPosition(EventUnit()), 270.0);
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(745905051)), c_orderQueueReplace);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CivilianScream_Init () {
+    gt_CivilianScream = TriggerCreate("gt_CivilianScream_Func");
+    TriggerAddEventUnitDied(gt_CivilianScream, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: UpdateCounterDestroyed
+//--------------------------------------------------------------------------------------------------
+bool gt_UpdateCounterDestroyed_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "AbandonedBuilding"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_structureDestroyedCount = (gv_structureDestroyedCount+1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_UpdateCounterDestroyed_Init () {
+    gt_UpdateCounterDestroyed = TriggerCreate("gt_UpdateCounterDestroyed_Func");
+    TriggerAddEventUnitDied(gt_UpdateCounterDestroyed, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: UpdateCounterAlive
+//--------------------------------------------------------------------------------------------------
+bool gt_UpdateCounterAlive_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "AbandonedBuilding"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_structureAlive = (gv_structureAlive-1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_UpdateCounterAlive_Init () {
+    gt_UpdateCounterAlive = TriggerCreate("gt_UpdateCounterAlive_Func");
+    TriggerAddEventUnitDied(gt_UpdateCounterAlive, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FinalAttack
+//--------------------------------------------------------------------------------------------------
+bool gt_FinalAttack_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((gv_pSIemitterwave == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/22293ADB"), StringExternal("Param/Value/3A476F32"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    UnitGroupLoopBegin(UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+        if (true) {
+            UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingPoint(AbilityCommand("attack", 1), UnitGetPosition(UnitGroupClosestToPoint(UnitGroup(null, 14, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), UnitGetPosition(UnitGroupLoopCurrent())))), c_orderQueueReplace);
+        }
+
+    }
+    UnitGroupLoopEnd();
+    TriggerEnable(gt_TurnOnVictory, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FinalAttack_Init () {
+    gt_FinalAttack = TriggerCreate("gt_FinalAttack_Func");
+    TriggerAddEventTimePeriodic(gt_FinalAttack, 1.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HalfHealth
+//--------------------------------------------------------------------------------------------------
+bool gt_HalfHealth_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 80.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    UnitCreate(5, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)), RandomInt(0, 360));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_HalfHealth_Init () {
+    gt_HalfHealth = TriggerCreate("gt_HalfHealth_Func");
+    TriggerEnable(gt_HalfHealth, false);
+    TriggerAddEventUnitProperty(gt_HalfHealth, UnitRefFromVariable("gv_firstClassEmitter1"), c_unitPropLife);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HalfHealth 2
+//--------------------------------------------------------------------------------------------------
+bool gt_HalfHealth2_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 80.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    UnitCreate(2, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(5)), RandomInt(0, 360));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(5)));
+    UnitCreate(5, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(5)), RandomInt(0, 360));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(5)));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_HalfHealth2_Init () {
+    gt_HalfHealth2 = TriggerCreate("gt_HalfHealth2_Func");
+    TriggerEnable(gt_HalfHealth2, false);
+    TriggerAddEventUnitProperty(gt_HalfHealth2, UnitRefFromVariable("gv_firstClassEmitter2"), c_unitPropLife);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HalfHealth 3
+//--------------------------------------------------------------------------------------------------
+bool gt_HalfHealth3_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 80.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    UnitCreate(2, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(13)), RandomInt(0, 360));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(13)));
+    UnitCreate(5, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(13)), RandomInt(0, 360));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(13)));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_HalfHealth3_Init () {
+    gt_HalfHealth3 = TriggerCreate("gt_HalfHealth3_Func");
+    TriggerEnable(gt_HalfHealth3, false);
+    TriggerAddEventUnitProperty(gt_HalfHealth3, UnitRefFromVariable("gv_firstClassEmitter2"), c_unitPropLife);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HalfHealthBig
+//--------------------------------------------------------------------------------------------------
+bool gt_HalfHealthBig_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 80.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    UnitCreate(8, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(6)), RandomInt(0, 360));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(6)));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_HalfHealthBig_Init () {
+    gt_HalfHealthBig = TriggerCreate("gt_HalfHealthBig_Func");
+    TriggerEnable(gt_HalfHealthBig, false);
+    TriggerAddEventUnitProperty(gt_HalfHealthBig, UnitRefFromVariable("gv_firstClassEmitter2"), c_unitPropLife);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HalfHealthBig 2
+//--------------------------------------------------------------------------------------------------
+bool gt_HalfHealthBig2_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 80.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    UnitCreate(1, "Brutalisk", 0, 4, RegionRandomPoint(RegionFromId(7)), RandomInt(0, 360));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(7)));
+    UnitCreate(2, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(7)), RandomInt(0, 360));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(6)));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_HalfHealthBig2_Init () {
+    gt_HalfHealthBig2 = TriggerCreate("gt_HalfHealthBig2_Func");
+    TriggerEnable(gt_HalfHealthBig2, false);
+    TriggerAddEventUnitProperty(gt_HalfHealthBig2, UnitRefFromVariable("gv_firstClassEmitter2"), c_unitPropLife);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defendsmall
+//--------------------------------------------------------------------------------------------------
+bool gt_Defendsmall_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unitgroup lv_defenderGroup;
+    region lv_regVar;
+
+    // Variable Initialization
+    lv_defenderGroup = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_regVar = RegionFromId(4);
+    libNtve_gf_CreateUnitsAtPoint2(2, "Hydralisk", 0, 5, RegionRandomPoint(lv_regVar));
+    UnitGroupAddUnitGroup(lv_defenderGroup, UnitLastCreatedGroup());
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_regVar));
+    libNtve_gf_CreateUnitsAtPoint2(7, "Zergling", 0, 5, RegionRandomPoint(lv_regVar));
+    UnitGroupAddUnitGroup(lv_defenderGroup, UnitLastCreatedGroup());
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_regVar));
+    UnitGroupIssueOrder(lv_defenderGroup, OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(lv_regVar)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Defendsmall_Init () {
+    gt_Defendsmall = TriggerCreate("gt_Defendsmall_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defendsmall 2
+//--------------------------------------------------------------------------------------------------
+bool gt_Defendsmall2_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unitgroup lv_defenderGroup;
+    region lv_regVar;
+
+    // Variable Initialization
+    lv_defenderGroup = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_regVar = RegionFromId(5);
+    libNtve_gf_CreateUnitsAtPoint2(4, "Hydralisk", 0, 5, RegionRandomPoint(lv_regVar));
+    UnitGroupAddUnitGroup(lv_defenderGroup, UnitLastCreatedGroup());
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_regVar));
+    UnitGroupIssueOrder(lv_defenderGroup, OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(lv_regVar)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Defendsmall2_Init () {
+    gt_Defendsmall2 = TriggerCreate("gt_Defendsmall2_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defendsmall 3
+//--------------------------------------------------------------------------------------------------
+bool gt_Defendsmall3_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unitgroup lv_defenderGroup;
+    region lv_regVar;
+
+    // Variable Initialization
+    lv_defenderGroup = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_regVar = RegionFromId(13);
+    libNtve_gf_CreateUnitsAtPoint2(20, "Zergling", 0, 5, RegionRandomPoint(lv_regVar));
+    UnitGroupAddUnitGroup(lv_defenderGroup, UnitLastCreatedGroup());
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_regVar));
+    UnitGroupIssueOrder(lv_defenderGroup, OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(lv_regVar)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Defendsmall3_Init () {
+    gt_Defendsmall3 = TriggerCreate("gt_Defendsmall3_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defendbig
+//--------------------------------------------------------------------------------------------------
+bool gt_Defendbig_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unitgroup lv_defenderGroup;
+    region lv_regVar;
+
+    // Variable Initialization
+    lv_defenderGroup = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_regVar = RegionFromId(6);
+    libNtve_gf_CreateUnitsAtPoint2(10, "Hydralisk", 0, 5, RegionRandomPoint(lv_regVar));
+    UnitGroupAddUnitGroup(lv_defenderGroup, UnitLastCreatedGroup());
+    UnitGroupIssueOrder(lv_defenderGroup, OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(lv_regVar)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Defendbig_Init () {
+    gt_Defendbig = TriggerCreate("gt_Defendbig_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defendbig 2
+//--------------------------------------------------------------------------------------------------
+bool gt_Defendbig2_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unitgroup lv_defenderGroup;
+    region lv_regVar;
+
+    // Variable Initialization
+    lv_defenderGroup = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_regVar = RegionFromId(7);
+    libNtve_gf_CreateUnitsAtPoint2(6, "Hydralisk", 0, 5, RegionRandomPoint(lv_regVar));
+    UnitGroupAddUnitGroup(lv_defenderGroup, UnitLastCreatedGroup());
+    UnitGroupIssueOrder(lv_defenderGroup, OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(lv_regVar)), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsAtPoint2(3, "LurkerBurrowed", 0, 5, RegionRandomPoint(lv_regVar));
+    UnitGroupAddUnitGroup(lv_defenderGroup, UnitLastCreatedGroup());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Defendbig2_Init () {
+    gt_Defendbig2 = TriggerCreate("gt_Defendbig2_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: TurnOnVictory
+//--------------------------------------------------------------------------------------------------
+bool gt_TurnOnVictory_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_04_ENEMY, null, UnitFilter(0, 0, (1 << c_targetFilterStructure) | (1 << c_targetFilterMissile) | (1 << c_targetFilterBuried), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(gt_VictoryPrimaryObjectiveComplete, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TurnOnVictory_Init () {
+    gt_TurnOnVictory = TriggerCreate("gt_TurnOnVictory_Func");
+    TriggerEnable(gt_TurnOnVictory, false);
+    TriggerAddEventTimePeriodic(gt_TurnOnVictory, 0.5, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Enemy Attacking Q
+//--------------------------------------------------------------------------------------------------
+bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerQueueEnter();
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+    libCOMI_gf_SendMissionTransmission("AttackWave", true, RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER));
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+    TriggerQueueExit();
+    Wait(20.0, c_timeAI);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_EnemyAttackingQ_Init () {
+    gt_EnemyAttackingQ = TriggerCreate("gt_EnemyAttackingQ_Func");
+    TriggerAddEventPlayerAIWave(gt_EnemyAttackingQ, gv_pLAYER_03_ENEMY);
+    TriggerAddEventPlayerAIWave(gt_EnemyAttackingQ, gv_pLAYER_04_ENEMY);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat Primary Objective Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((gv_structureAlive == 0))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
+    TransmissionClearAll();
+    TriggerQueuePause(true);
+    TriggerQueueClear(c_triggerQueueRemove);
+    libCOMI_gf_SendMissionTransmission("DestroyedReminder", false, -1);
+    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
+    TriggerExecute(gt_ObjectiveDontLetTheEnemyDestroyBuildingsFailed, true, false);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/3186712A"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    CameraLockInput(gv_pLAYER_01_USER, true);
+    CameraLockInput(gv_pLAYER_02_USER, true);
+    UnitClearSelection(gv_pLAYER_01_USER);
+    UnitClearSelection(gv_pLAYER_02_USER);
+    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    CameraPan(gv_pLAYER_01_USER, RegionGetCenter(RegionEntireMap()), 1.5, -1, 10.0, false);
+    CameraPan(gv_pLAYER_02_USER, RegionGetCenter(RegionEntireMap()), 1.5, -1, 10.0, false);
+    libCOMI_gf_WaitForMissionTransmission();
+    UISetCursorVisible(PlayerGroupAll(), true);
+    TriggerExecute(gt_Defeat, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DefeatPrimaryObjectiveFailed_Init () {
+    gt_DefeatPrimaryObjectiveFailed = TriggerCreate("gt_DefeatPrimaryObjectiveFailed_Func");
+    TriggerAddEventTimePeriodic(gt_DefeatPrimaryObjectiveFailed, 1.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Primary Objective Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_VictorySequence, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictoryPrimaryObjectiveComplete_Init () {
+    gt_VictoryPrimaryObjectiveComplete = TriggerCreate("gt_VictoryPrimaryObjectiveComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Sequence
+//--------------------------------------------------------------------------------------------------
+bool gt_VictorySequence_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
+    Wait(2.0, c_timeReal);
+    TriggerExecute(gt_BothObjectivesCompleted, true, false);
+    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictorySequence_Init () {
+    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Fanfare Q
+//--------------------------------------------------------------------------------------------------
+bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TransmissionClearAll();
+    TriggerQueueEnter();
+    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    libCOMI_gf_SendMissionTransmission("PrimaryObjectiveVictory", false, -1);
+    UnitPauseAll(true);
+    CameraLockInput(gv_pLAYER_01_USER, true);
+    CameraLockInput(gv_pLAYER_02_USER, true);
+    UnitClearSelection(gv_pLAYER_01_USER);
+    UnitClearSelection(gv_pLAYER_02_USER);
+    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
+    CameraPan(gv_pLAYER_01_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
+    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
+    CameraPan(gv_pLAYER_02_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
+    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/12770517"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/54F958FB"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_WaitForMissionTransmission();
+    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
+    UISetCursorVisible(PlayerGroupAll(), true);
+    TriggerExecute(gt_Victory, true, false);
+    TriggerQueueExit();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictoryFanfareQ_Init () {
+    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory
+//--------------------------------------------------------------------------------------------------
+bool gt_Victory_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Victory_Init () {
+    gt_Victory = TriggerCreate("gt_Victory_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat
+//--------------------------------------------------------------------------------------------------
+bool gt_Defeat_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Defeat_Init () {
+    gt_Defeat = TriggerCreate("gt_Defeat_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start AI
+//--------------------------------------------------------------------------------------------------
+bool gt_StartAI_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_StartCoopAI(gv_pLAYER_03_ENEMY, gv_pLAYER_01_USER);
+    libCOMI_gf_StartCoopAI(gv_pLAYER_04_ENEMY, gv_pLAYER_02_USER);
+    TriggerExecute(gt_SetupAttackWaveSpawn, true, false);
+    TriggerExecute(gt_AIAttackWaves, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartAI_Init () {
+    gt_StartAI = TriggerCreate("gt_StartAI_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: AIzerg
+//--------------------------------------------------------------------------------------------------
+bool gt_AIzerg_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitGroupLoopBegin(UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+        if (true) {
+            UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingPoint(AbilityCommand("attack", 1), UnitGetPosition(UnitGroupClosestToPoint(UnitGroup(null, 14, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), UnitGetPosition(UnitGroupLoopCurrent())))), c_orderQueueReplace);
+        }
+
+    }
+    UnitGroupLoopEnd();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AIzerg_Init () {
+    gt_AIzerg = TriggerCreate("gt_AIzerg_Func");
+    TriggerAddEventTimePeriodic(gt_AIzerg, 5.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DestroyPingsIfDead
+//--------------------------------------------------------------------------------------------------
+bool gt_DestroyPingsIfDead_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((EventUnit() == gv_firstClassEmitter1)) {
+        libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter1Ping);
+        UnitGroupRemove(gv_pSIunitgroup, gv_firstClassEmitter1);
+        TriggerEnable(gt_FirstClassEmitterSpawn12, false);
+    }
+
+    if ((EventUnit() == gv_firstClassEmitter2)) {
+        libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter2Ping);
+        UnitGroupRemove(gv_pSIunitgroup, gv_firstClassEmitter2);
+        TriggerEnable(gt_FirstClassEmitterSpawn22, false);
+    }
+
+    if ((EventUnit() == gv_firstClassEmitter3)) {
+        libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter3Ping);
+        UnitGroupRemove(gv_pSIunitgroup, gv_firstClassEmitter3);
+        TriggerEnable(gt_FirstClassEmitterSpawn32, false);
+    }
+
+    if ((EventUnit() == gv_secondClassEmitter1)) {
+        libCOMI_gf_DestroyPingCoop(gv_secondClassEmitter1Ping);
+        UnitGroupRemove(gv_pSIunitgroup, gv_secondClassEmitter1);
+        TriggerEnable(gt_SecondClassEmitterSpawn12, false);
+    }
+
+    if ((EventUnit() == gv_secondClassEmitter2)) {
+        libCOMI_gf_DestroyPingCoop(gv_secondClassEmitter2Ping);
+        UnitGroupRemove(gv_pSIunitgroup, gv_secondClassEmitter2);
+        TriggerEnable(gt_SecondClassEmitterSpawn22, false);
+    }
+
+    if ((EventUnit() == gv_flyingEmitter1)) {
+        libCOMI_gf_DestroyPingCoop(gv_flyingEmitter1Ping);
+        UnitGroupRemove(gv_pSIunitgroup, gv_flyingEmitter1);
+        TriggerEnable(gt_FlyingEmitterSpawn12, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DestroyPingsIfDead_Init () {
+    gt_DestroyPingsIfDead = TriggerCreate("gt_DestroyPingsIfDead_Func");
+    TriggerAddEventUnitDied(gt_DestroyPingsIfDead, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: CheckIfUnitsInUnitGroup
+//--------------------------------------------------------------------------------------------------
+bool gt_CheckIfUnitsInUnitGroup_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter3) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_flyingEmitter1) == false)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_pSIemitterwave = 1;
+    TimerWindowDestroy(gv_timerWindow);
+    libNtve_gf_StopTimer(gv_timerDuration);
+    if (true) {
+        Wait(65.0, c_timeGame);
+        TriggerExecute(gt_PsiEmitterwave2gamma, true, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CheckIfUnitsInUnitGroup_Init () {
+    gt_CheckIfUnitsInUnitGroup = TriggerCreate("gt_CheckIfUnitsInUnitGroup_Func");
+    TriggerEnable(gt_CheckIfUnitsInUnitGroup, false);
+    TriggerAddEventTimePeriodic(gt_CheckIfUnitsInUnitGroup, 1.5, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: CheckIfUnitsInUnitGroup 2
+//--------------------------------------------------------------------------------------------------
+bool gt_CheckIfUnitsInUnitGroup2_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter3) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_flyingEmitter1) == false)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TimerWindowDestroy(gv_timerWindow);
+    libNtve_gf_StopTimer(gv_timerDuration);
+    if ((gv_pSIemitterwave == 1)) {
+        gv_pSIemitterwave = 2;
+        Wait(65.0, c_timeGame);
+        TriggerExecute(gt_PsiEmitterwave3gamma, true, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CheckIfUnitsInUnitGroup2_Init () {
+    gt_CheckIfUnitsInUnitGroup2 = TriggerCreate("gt_CheckIfUnitsInUnitGroup2_Func");
+    TriggerEnable(gt_CheckIfUnitsInUnitGroup2, false);
+    TriggerAddEventTimePeriodic(gt_CheckIfUnitsInUnitGroup2, 1.5, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: CheckIfUnitsInUnitGroup 3
+//--------------------------------------------------------------------------------------------------
+bool gt_CheckIfUnitsInUnitGroup3_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter3) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_flyingEmitter1) == false)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TimerWindowDestroy(gv_timerWindow);
+    libNtve_gf_StopTimer(gv_timerDuration);
+    if ((gv_pSIemitterwave == 2)) {
+        gv_pSIemitterwave = 3;
+        Wait(65.0, c_timeGame);
+        TriggerExecute(gt_PsiEmitterwave3gamma2, true, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CheckIfUnitsInUnitGroup3_Init () {
+    gt_CheckIfUnitsInUnitGroup3 = TriggerCreate("gt_CheckIfUnitsInUnitGroup3_Func");
+    TriggerEnable(gt_CheckIfUnitsInUnitGroup3, false);
+    TriggerAddEventTimePeriodic(gt_CheckIfUnitsInUnitGroup3, 1.5, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: CheckIfUnitsInUnitGroup 4
+//--------------------------------------------------------------------------------------------------
+bool gt_CheckIfUnitsInUnitGroup4_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter3) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_flyingEmitter1) == false)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TimerWindowDestroy(gv_timerWindow);
+    libNtve_gf_StopTimer(gv_timerDuration);
+    if ((gv_pSIemitterwave == 3)) {
+        gv_pSIemitterwave = 4;
+        Wait(65.0, c_timeGame);
+        TriggerExecute(gt_PsiEmitterwave3gamma3, true, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CheckIfUnitsInUnitGroup4_Init () {
+    gt_CheckIfUnitsInUnitGroup4 = TriggerCreate("gt_CheckIfUnitsInUnitGroup4_Func");
+    TriggerEnable(gt_CheckIfUnitsInUnitGroup4, false);
+    TriggerAddEventTimePeriodic(gt_CheckIfUnitsInUnitGroup4, 1.5, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: CheckIfUnitsInUnitGroup 5
+//--------------------------------------------------------------------------------------------------
+bool gt_CheckIfUnitsInUnitGroup5_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter3) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_flyingEmitter1) == false)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TimerWindowDestroy(gv_timerWindow);
+    libNtve_gf_StopTimer(gv_timerDuration);
+    if ((gv_pSIemitterwave == 4)) {
+        gv_pSIemitterwave = 5;
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CheckIfUnitsInUnitGroup5_Init () {
+    gt_CheckIfUnitsInUnitGroup5 = TriggerCreate("gt_CheckIfUnitsInUnitGroup5_Func");
+    TriggerEnable(gt_CheckIfUnitsInUnitGroup5, false);
+    TriggerAddEventTimePeriodic(gt_CheckIfUnitsInUnitGroup5, 1.5, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Reveal
+//--------------------------------------------------------------------------------------------------
+bool gt_Reveal_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    VisRevealArea(1, RegionFromId(20), 0.0, false);
+    VisRevealArea(1, RegionFromId(21), 0.0, false);
+    VisRevealArea(1, RegionFromId(22), 0.0, false);
+    VisRevealArea(1, RegionFromId(23), 0.0, false);
+    VisRevealArea(1, RegionFromId(24), 0.0, false);
+    VisRevealArea(1, RegionFromId(25), 0.0, false);
+    VisRevealArea(1, RegionFromId(26), 0.0, false);
+    VisRevealArea(1, RegionFromId(27), 0.0, false);
+    VisRevealArea(1, RegionFromId(28), 0.0, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Reveal_Init () {
+    gt_Reveal = TriggerCreate("gt_Reveal_Func");
+    TriggerAddEventMapInit(gt_Reveal);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: TurnSpawnOverlordsStructures
+//--------------------------------------------------------------------------------------------------
+bool gt_TurnSpawnOverlordsStructures_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(gt_SpawnOverlords, true);
+    TriggerEnable(gt_SpawnOverlords2, true);
+    libNtve_gf_CreateUnitsAtPoint2(1, "Hive", 0, 5, PointFromId(312959014));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), gv_flyingEmitter1Point);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TurnSpawnOverlordsStructures_Init () {
+    gt_TurnSpawnOverlordsStructures = TriggerCreate("gt_TurnSpawnOverlordsStructures_Func");
+    TriggerAddEventTimeElapsed(gt_TurnSpawnOverlordsStructures, 320.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SpawnSporeSpine
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnSporeSpine_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsAtPoint2(1, "SporeCrawler", 0, 5, RegionRandomPoint(RegionFromId(15)));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(15)));
+    libNtve_gf_CreateUnitsAtPoint2(1, "SpineCrawler", 0, 5, RegionRandomPoint(RegionFromId(15)));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(15)));
+    libNtve_gf_CreateUnitsAtPoint2(1, "SporeCrawler", 0, 5, RegionRandomPoint(RegionFromId(15)));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(15)));
+    libNtve_gf_CreateUnitsAtPoint2(1, "SporeCrawler", 0, 5, RegionRandomPoint(RegionFromId(18)));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(18)));
+    libNtve_gf_CreateUnitsAtPoint2(1, "SporeCrawler", 0, 5, RegionRandomPoint(RegionFromId(19)));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(19)));
+    libNtve_gf_CreateUnitsAtPoint2(1, "CreepTumor", 0, 5, RegionRandomPoint(RegionFromId(19)));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(15)));
+    libNtve_gf_CreateUnitsAtPoint2(1, "CreepTumor", 0, 5, RegionRandomPoint(RegionFromId(19)));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(18)));
+    libNtve_gf_CreateUnitsAtPoint2(1, "CreepTumor", 0, 5, RegionRandomPoint(RegionFromId(19)));
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(19)));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnSporeSpine_Init () {
+    gt_SpawnSporeSpine = TriggerCreate("gt_SpawnSporeSpine_Func");
+    TriggerAddEventTimeElapsed(gt_SpawnSporeSpine, 500.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SpawnOverlords
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnOverlords_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitCreate(1, "Overlord", 0, 5, RegionRandomPoint(RegionFromId(9)), libNtve_gf_RandomAngle());
+    UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("GenerateCreep", 0)), c_orderQueueReplace);
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(9)));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnOverlords_Init () {
+    gt_SpawnOverlords = TriggerCreate("gt_SpawnOverlords_Func");
+    TriggerEnable(gt_SpawnOverlords, false);
+    TriggerAddEventTimePeriodic(gt_SpawnOverlords, 10.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SpawnOverlords 2
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnOverlords2_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitCreate(1, "CreepTumor", 0, 5, RegionRandomPoint(RegionFromId(9)), libNtve_gf_RandomAngle());
+    UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("GenerateCreep", 0)), c_orderQueueReplace);
+    libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(9)));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnOverlords2_Init () {
+    gt_SpawnOverlords2 = TriggerCreate("gt_SpawnOverlords2_Func");
+    TriggerEnable(gt_SpawnOverlords2, false);
+    TriggerAddEventTimePeriodic(gt_SpawnOverlords2, 30.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FirstClassInitialWave
+//--------------------------------------------------------------------------------------------------
+bool gt_FirstClassInitialWave_Func (bool testConds, bool runActions) {
+    int autoE0E606DB_ae;
+    int autoE0E606DB_ai;
+    int auto0B6A0519_ae;
+    int auto0B6A0519_ai;
+    int auto4CEBE6B1_ae;
+    int auto4CEBE6B1_ai;
+    int autoE5688AB5_ae;
+    int autoE5688AB5_ai;
+    int autoEEE17FCF_ae;
+    int autoEEE17FCF_ai;
+    int auto6A88DF2D_ae;
+    int auto6A88DF2D_ai;
+
+    // Variable Declarations
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        autoE0E606DB_ae = 2;
+        autoE0E606DB_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoE0E606DB_ai >= 0 && lv_integer <= autoE0E606DB_ae) || (autoE0E606DB_ai <= 0 && lv_integer >= autoE0E606DB_ae) ) ; lv_integer += autoE0E606DB_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        auto0B6A0519_ae = 2;
+        auto0B6A0519_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto0B6A0519_ai >= 0 && lv_integer <= auto0B6A0519_ae) || (auto0B6A0519_ai <= 0 && lv_integer >= auto0B6A0519_ae) ) ; lv_integer += auto0B6A0519_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        auto4CEBE6B1_ae = 2;
+        auto4CEBE6B1_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto4CEBE6B1_ai >= 0 && lv_integer <= auto4CEBE6B1_ae) || (auto4CEBE6B1_ai <= 0 && lv_integer >= auto4CEBE6B1_ae) ) ; lv_integer += auto4CEBE6B1_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        autoE5688AB5_ae = 2;
+        autoE5688AB5_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoE5688AB5_ai >= 0 && lv_integer <= autoE5688AB5_ae) || (autoE5688AB5_ai <= 0 && lv_integer >= autoE5688AB5_ae) ) ; lv_integer += autoE5688AB5_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        autoEEE17FCF_ae = 2;
+        autoEEE17FCF_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoEEE17FCF_ai >= 0 && lv_integer <= autoEEE17FCF_ae) || (autoEEE17FCF_ai <= 0 && lv_integer >= autoEEE17FCF_ae) ) ; lv_integer += autoEEE17FCF_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        UnitKill(gv_firstClassEmitter1);
+        libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_firstClassEmitter1Point);
+        libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter1Ping);
+        auto6A88DF2D_ae = 3;
+        auto6A88DF2D_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto6A88DF2D_ai >= 0 && lv_integer <= auto6A88DF2D_ae) || (auto6A88DF2D_ai <= 0 && lv_integer >= auto6A88DF2D_ae) ) ; lv_integer += auto6A88DF2D_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+            libNtve_gf_CreateUnitsAtPoint2(2, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+            libNtve_gf_CreateUnitsAtPoint2(2, "Roach", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FirstClassInitialWave_Init () {
+    gt_FirstClassInitialWave = TriggerCreate("gt_FirstClassInitialWave_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FirstClassEmitterSpawn1
+//--------------------------------------------------------------------------------------------------
+bool gt_FirstClassEmitterSpawn1_Func (bool testConds, bool runActions) {
+    int auto3F47ADB2_ae;
+    int auto3F47ADB2_ai;
+    int auto8BC33F5E_ae;
+    int auto8BC33F5E_ai;
+    int auto4BEA4BF8_ae;
+    int auto4BEA4BF8_ai;
+    int autoD15BF037_ae;
+    int autoD15BF037_ai;
+    int auto2E40B5A1_ae;
+    int auto2E40B5A1_ai;
+    int auto84807768_ae;
+    int auto84807768_ai;
+
+    // Variable Declarations
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(2.0, c_timeGame);
+    TriggerEnable(gt_FirstClassEmitterSpawn12, true);
+    libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        auto3F47ADB2_ae = 2;
+        auto3F47ADB2_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto3F47ADB2_ai >= 0 && lv_integer <= auto3F47ADB2_ae) || (auto3F47ADB2_ai <= 0 && lv_integer >= auto3F47ADB2_ae) ) ; lv_integer += auto3F47ADB2_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        auto8BC33F5E_ae = 2;
+        auto8BC33F5E_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto8BC33F5E_ai >= 0 && lv_integer <= auto8BC33F5E_ae) || (auto8BC33F5E_ai <= 0 && lv_integer >= auto8BC33F5E_ae) ) ; lv_integer += auto8BC33F5E_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        auto4BEA4BF8_ae = 2;
+        auto4BEA4BF8_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto4BEA4BF8_ai >= 0 && lv_integer <= auto4BEA4BF8_ae) || (auto4BEA4BF8_ai <= 0 && lv_integer >= auto4BEA4BF8_ae) ) ; lv_integer += auto4BEA4BF8_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        autoD15BF037_ae = 2;
+        autoD15BF037_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoD15BF037_ai >= 0 && lv_integer <= autoD15BF037_ae) || (autoD15BF037_ai <= 0 && lv_integer >= autoD15BF037_ae) ) ; lv_integer += autoD15BF037_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        auto2E40B5A1_ae = 2;
+        auto2E40B5A1_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto2E40B5A1_ai >= 0 && lv_integer <= auto2E40B5A1_ae) || (auto2E40B5A1_ai <= 0 && lv_integer >= auto2E40B5A1_ae) ) ; lv_integer += auto2E40B5A1_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        UnitKill(gv_firstClassEmitter1);
+        libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_firstClassEmitter1Point);
+        libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter1Ping);
+        auto84807768_ae = 3;
+        auto84807768_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto84807768_ai >= 0 && lv_integer <= auto84807768_ae) || (auto84807768_ai <= 0 && lv_integer >= auto84807768_ae) ) ; lv_integer += auto84807768_ai ) {
+            TriggerEnable(gt_FirstClassEmitterSpawn12, false);
+            libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+            libNtve_gf_CreateUnitsAtPoint2(2, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+            libNtve_gf_CreateUnitsAtPoint2(1, "Infestor", 0, 4, RegionRandomPoint(RegionFromId(4)));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+        }
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FirstClassEmitterSpawn1_Init () {
+    gt_FirstClassEmitterSpawn1 = TriggerCreate("gt_FirstClassEmitterSpawn1_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FirstClassEmitterSpawn12
+//--------------------------------------------------------------------------------------------------
+bool gt_FirstClassEmitterSpawn12_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
+        libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
+        libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FirstClassEmitterSpawn12_Init () {
+    gt_FirstClassEmitterSpawn12 = TriggerCreate("gt_FirstClassEmitterSpawn12_Func");
+    TriggerAddEventTimePeriodic(gt_FirstClassEmitterSpawn12, 20.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FirstClassEmitterSpawn2
+//--------------------------------------------------------------------------------------------------
+bool gt_FirstClassEmitterSpawn2_Func (bool testConds, bool runActions) {
+    int auto61B1C2CE_ae;
+    int auto61B1C2CE_ai;
+    int auto7DBF60C8_ae;
+    int auto7DBF60C8_ai;
+    int autoFB1F0966_ae;
+    int autoFB1F0966_ai;
+    int autoF2201B1E_ae;
+    int autoF2201B1E_ai;
+    int auto572A53D2_ae;
+    int auto572A53D2_ai;
+    int auto9E6ADF75_ae;
+    int auto9E6ADF75_ai;
+
+    // Variable Declarations
+    int lv_integer;
+    region lv_emitterVariable;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(2.0, c_timeGame);
+    TriggerEnable(gt_FirstClassEmitterSpawn22, true);
+    lv_emitterVariable = RegionFromId(5);
+    libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
+        auto61B1C2CE_ae = 2;
+        auto61B1C2CE_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto61B1C2CE_ai >= 0 && lv_integer <= auto61B1C2CE_ae) || (auto61B1C2CE_ai <= 0 && lv_integer >= auto61B1C2CE_ae) ) ; lv_integer += auto61B1C2CE_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
+        auto7DBF60C8_ae = 2;
+        auto7DBF60C8_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto7DBF60C8_ai >= 0 && lv_integer <= auto7DBF60C8_ae) || (auto7DBF60C8_ai <= 0 && lv_integer >= auto7DBF60C8_ae) ) ; lv_integer += auto7DBF60C8_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
+        autoFB1F0966_ae = 2;
+        autoFB1F0966_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoFB1F0966_ai >= 0 && lv_integer <= autoFB1F0966_ae) || (autoFB1F0966_ai <= 0 && lv_integer >= autoFB1F0966_ae) ) ; lv_integer += autoFB1F0966_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
+        autoF2201B1E_ae = 2;
+        autoF2201B1E_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoF2201B1E_ai >= 0 && lv_integer <= autoF2201B1E_ae) || (autoF2201B1E_ai <= 0 && lv_integer >= autoF2201B1E_ae) ) ; lv_integer += autoF2201B1E_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
+        auto572A53D2_ae = 2;
+        auto572A53D2_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto572A53D2_ai >= 0 && lv_integer <= auto572A53D2_ae) || (auto572A53D2_ai <= 0 && lv_integer >= auto572A53D2_ae) ) ; lv_integer += auto572A53D2_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
+        TriggerEnable(gt_FirstClassEmitterSpawn22, false);
+        UnitKill(gv_firstClassEmitter2);
+        libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_firstClassEmitter2Point);
+        libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter2Ping);
+        auto9E6ADF75_ae = 3;
+        auto9E6ADF75_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto9E6ADF75_ai >= 0 && lv_integer <= auto9E6ADF75_ae) || (auto9E6ADF75_ai <= 0 && lv_integer >= auto9E6ADF75_ae) ) ; lv_integer += auto9E6ADF75_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(7, "Zergling", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+            libNtve_gf_CreateUnitsAtPoint2(2, "Baneling", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FirstClassEmitterSpawn2_Init () {
+    gt_FirstClassEmitterSpawn2 = TriggerCreate("gt_FirstClassEmitterSpawn2_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FirstClassEmitterSpawn22
+//--------------------------------------------------------------------------------------------------
+bool gt_FirstClassEmitterSpawn22_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+    region lv_emitterVariable;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_emitterVariable = RegionFromId(5);
+    if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
+        libNtve_gf_CreateUnitsAtPoint2(1, "Roach", 0, 4, RegionRandomPoint(lv_emitterVariable));
+        libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FirstClassEmitterSpawn22_Init () {
+    gt_FirstClassEmitterSpawn22 = TriggerCreate("gt_FirstClassEmitterSpawn22_Func");
+    TriggerAddEventTimePeriodic(gt_FirstClassEmitterSpawn22, 20.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FirstClassEmitterSpawn3
+//--------------------------------------------------------------------------------------------------
+bool gt_FirstClassEmitterSpawn3_Func (bool testConds, bool runActions) {
+    int auto81FC9D46_ae;
+    int auto81FC9D46_ai;
+    int auto27D386C3_ae;
+    int auto27D386C3_ai;
+    int autoAA64E4DA_ae;
+    int autoAA64E4DA_ai;
+    int auto3FF30238_ae;
+    int auto3FF30238_ai;
+    int auto27C0DABD_ae;
+    int auto27C0DABD_ai;
+    int auto5C99476E_ae;
+    int auto5C99476E_ai;
+
+    // Variable Declarations
+    region lv_emitterVariable;
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(2.0, c_timeGame);
+    TriggerEnable(gt_FirstClassEmitterSpawn32, true);
+    lv_emitterVariable = RegionFromId(13);
+    libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
+        auto81FC9D46_ae = 2;
+        auto81FC9D46_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto81FC9D46_ai >= 0 && lv_integer <= auto81FC9D46_ae) || (auto81FC9D46_ai <= 0 && lv_integer >= auto81FC9D46_ae) ) ; lv_integer += auto81FC9D46_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
+        UnitKill(gv_firstClassEmitter2);
+        PlayerCreateEffectPoint(4, "EnergyNovaPersistent", gv_firstClassEmitter2Point);
+        libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter2Ping);
+        auto27D386C3_ae = 2;
+        auto27D386C3_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto27D386C3_ai >= 0 && lv_integer <= auto27D386C3_ae) || (auto27D386C3_ai <= 0 && lv_integer >= auto27D386C3_ae) ) ; lv_integer += auto27D386C3_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
+        autoAA64E4DA_ae = 2;
+        autoAA64E4DA_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoAA64E4DA_ai >= 0 && lv_integer <= autoAA64E4DA_ae) || (autoAA64E4DA_ai <= 0 && lv_integer >= autoAA64E4DA_ae) ) ; lv_integer += autoAA64E4DA_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
+        auto3FF30238_ae = 2;
+        auto3FF30238_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto3FF30238_ai >= 0 && lv_integer <= auto3FF30238_ae) || (auto3FF30238_ai <= 0 && lv_integer >= auto3FF30238_ae) ) ; lv_integer += auto3FF30238_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
+        auto27C0DABD_ae = 2;
+        auto27C0DABD_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto27C0DABD_ai >= 0 && lv_integer <= auto27C0DABD_ae) || (auto27C0DABD_ai <= 0 && lv_integer >= auto27C0DABD_ae) ) ; lv_integer += auto27C0DABD_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
+        TriggerEnable(gt_FirstClassEmitterSpawn32, false);
+        UnitKill(gv_firstClassEmitter3);
+        libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_firstClassEmitter3Point);
+        libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter3Ping);
+        auto5C99476E_ae = 3;
+        auto5C99476E_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto5C99476E_ai >= 0 && lv_integer <= auto5C99476E_ae) || (auto5C99476E_ai <= 0 && lv_integer >= auto5C99476E_ae) ) ; lv_integer += auto5C99476E_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(4, "Roach", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+            libNtve_gf_CreateUnitsAtPoint2(2, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+            libNtve_gf_CreateUnitsAtPoint2(1, "DefilerMP", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FirstClassEmitterSpawn3_Init () {
+    gt_FirstClassEmitterSpawn3 = TriggerCreate("gt_FirstClassEmitterSpawn3_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FirstClassEmitterSpawn32
+//--------------------------------------------------------------------------------------------------
+bool gt_FirstClassEmitterSpawn32_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_emitterVariable;
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_emitterVariable = RegionFromId(13);
+    if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
+        libNtve_gf_CreateUnitsAtPoint2(1, "Roach", 0, 4, RegionRandomPoint(lv_emitterVariable));
+        libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FirstClassEmitterSpawn32_Init () {
+    gt_FirstClassEmitterSpawn32 = TriggerCreate("gt_FirstClassEmitterSpawn32_Func");
+    TriggerAddEventTimePeriodic(gt_FirstClassEmitterSpawn32, 20.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SecondClassEmitterSpawn1
+//--------------------------------------------------------------------------------------------------
+bool gt_SecondClassEmitterSpawn1_Func (bool testConds, bool runActions) {
+    int autoC675CD79_ae;
+    int autoC675CD79_ai;
+    int autoEB80C66B_ae;
+    int autoEB80C66B_ai;
+    int auto96C84619_ae;
+    int auto96C84619_ai;
+    int auto0D0C8AA5_ae;
+    int auto0D0C8AA5_ai;
+    int auto8780BFF0_ae;
+    int auto8780BFF0_ai;
+    int autoCB99191C_ae;
+    int autoCB99191C_ai;
+
+    // Variable Declarations
+    region lv_emitterVariable;
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(2.0, c_timeGame);
+    TriggerEnable(gt_SecondClassEmitterSpawn12, true);
+    lv_emitterVariable = RegionFromId(6);
+    libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
+        autoC675CD79_ae = 1;
+        autoC675CD79_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoC675CD79_ai >= 0 && lv_integer <= autoC675CD79_ae) || (autoC675CD79_ai <= 0 && lv_integer >= autoC675CD79_ae) ) ; lv_integer += autoC675CD79_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Ultralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
+        autoEB80C66B_ae = 2;
+        autoEB80C66B_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoEB80C66B_ai >= 0 && lv_integer <= autoEB80C66B_ae) || (autoEB80C66B_ai <= 0 && lv_integer >= autoEB80C66B_ae) ) ; lv_integer += autoEB80C66B_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
+        auto96C84619_ae = 1;
+        auto96C84619_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto96C84619_ai >= 0 && lv_integer <= auto96C84619_ae) || (auto96C84619_ai <= 0 && lv_integer >= auto96C84619_ae) ) ; lv_integer += auto96C84619_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Ultralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
+        auto0D0C8AA5_ae = 2;
+        auto0D0C8AA5_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto0D0C8AA5_ai >= 0 && lv_integer <= auto0D0C8AA5_ae) || (auto0D0C8AA5_ai <= 0 && lv_integer >= auto0D0C8AA5_ae) ) ; lv_integer += auto0D0C8AA5_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
+        auto8780BFF0_ae = 2;
+        auto8780BFF0_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto8780BFF0_ai >= 0 && lv_integer <= auto8780BFF0_ae) || (auto8780BFF0_ai <= 0 && lv_integer >= auto8780BFF0_ae) ) ; lv_integer += auto8780BFF0_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
+        autoCB99191C_ae = 3;
+        autoCB99191C_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoCB99191C_ai >= 0 && lv_integer <= autoCB99191C_ae) || (autoCB99191C_ai <= 0 && lv_integer >= autoCB99191C_ae) ) ; lv_integer += autoCB99191C_ai ) {
+            TriggerEnable(gt_SecondClassEmitterSpawn12, false);
+            UnitKill(gv_secondClassEmitter1);
+            libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_secondClassEmitter1Point);
+            libCOMI_gf_DestroyPingCoop(gv_secondClassEmitter1Ping);
+            libNtve_gf_CreateUnitsAtPoint2(4, "Ultralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+            libNtve_gf_CreateUnitsAtPoint2(2, "Brutalisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+            libNtve_gf_CreateUnitsAtPoint2(3, "Ravager", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SecondClassEmitterSpawn1_Init () {
+    gt_SecondClassEmitterSpawn1 = TriggerCreate("gt_SecondClassEmitterSpawn1_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SecondClassEmitterSpawn12
+//--------------------------------------------------------------------------------------------------
+bool gt_SecondClassEmitterSpawn12_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_emitterVariable;
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_emitterVariable = RegionFromId(6);
+    if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
+        libNtve_gf_CreateUnitsAtPoint2(2, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+        libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SecondClassEmitterSpawn12_Init () {
+    gt_SecondClassEmitterSpawn12 = TriggerCreate("gt_SecondClassEmitterSpawn12_Func");
+    TriggerEnable(gt_SecondClassEmitterSpawn12, false);
+    TriggerAddEventTimePeriodic(gt_SecondClassEmitterSpawn12, 20.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SecondClassEmitterSpawn2
+//--------------------------------------------------------------------------------------------------
+bool gt_SecondClassEmitterSpawn2_Func (bool testConds, bool runActions) {
+    int auto285771F8_ae;
+    int auto285771F8_ai;
+    int autoAE0073E8_ae;
+    int autoAE0073E8_ai;
+    int autoFDCB9D99_ae;
+    int autoFDCB9D99_ai;
+    int autoE9539153_ae;
+    int autoE9539153_ai;
+    int auto36C228FC_ae;
+    int auto36C228FC_ai;
+    int autoB7044D85_ae;
+    int autoB7044D85_ai;
+
+    // Variable Declarations
+    region lv_emitterVariable;
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(2.0, c_timeGame);
+    TriggerEnable(gt_SecondClassEmitterSpawn22, true);
+    lv_emitterVariable = RegionFromId(7);
+    libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
+        auto285771F8_ae = 1;
+        auto285771F8_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto285771F8_ai >= 0 && lv_integer <= auto285771F8_ae) || (auto285771F8_ai <= 0 && lv_integer >= auto285771F8_ae) ) ; lv_integer += auto285771F8_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Ultralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
+        autoAE0073E8_ae = 2;
+        autoAE0073E8_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoAE0073E8_ai >= 0 && lv_integer <= autoAE0073E8_ae) || (autoAE0073E8_ai <= 0 && lv_integer >= autoAE0073E8_ae) ) ; lv_integer += autoAE0073E8_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
+        autoFDCB9D99_ae = 1;
+        autoFDCB9D99_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoFDCB9D99_ai >= 0 && lv_integer <= autoFDCB9D99_ae) || (autoFDCB9D99_ai <= 0 && lv_integer >= autoFDCB9D99_ae) ) ; lv_integer += autoFDCB9D99_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Ultralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
+        autoE9539153_ae = 2;
+        autoE9539153_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoE9539153_ai >= 0 && lv_integer <= autoE9539153_ae) || (autoE9539153_ai <= 0 && lv_integer >= autoE9539153_ae) ) ; lv_integer += autoE9539153_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
+        auto36C228FC_ae = 2;
+        auto36C228FC_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto36C228FC_ai >= 0 && lv_integer <= auto36C228FC_ae) || (auto36C228FC_ai <= 0 && lv_integer >= auto36C228FC_ae) ) ; lv_integer += auto36C228FC_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
+        autoB7044D85_ae = 3;
+        autoB7044D85_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoB7044D85_ai >= 0 && lv_integer <= autoB7044D85_ae) || (autoB7044D85_ai <= 0 && lv_integer >= autoB7044D85_ae) ) ; lv_integer += autoB7044D85_ai ) {
+            TriggerEnable(gt_SecondClassEmitterSpawn22, false);
+            UnitKill(gv_secondClassEmitter1);
+            libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_secondClassEmitter1Point);
+            libCOMI_gf_DestroyPingCoop(gv_secondClassEmitter1Ping);
+            libNtve_gf_CreateUnitsAtPoint2(4, "Ultralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+            libNtve_gf_CreateUnitsAtPoint2(2, "Brutalisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+            libNtve_gf_CreateUnitsAtPoint2(3, "Ravager", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SecondClassEmitterSpawn2_Init () {
+    gt_SecondClassEmitterSpawn2 = TriggerCreate("gt_SecondClassEmitterSpawn2_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SecondClassEmitterSpawn22
+//--------------------------------------------------------------------------------------------------
+bool gt_SecondClassEmitterSpawn22_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_emitterVariable;
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_emitterVariable = RegionFromId(7);
+    if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
+        libNtve_gf_CreateUnitsAtPoint2(2, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+        libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SecondClassEmitterSpawn22_Init () {
+    gt_SecondClassEmitterSpawn22 = TriggerCreate("gt_SecondClassEmitterSpawn22_Func");
+    TriggerEnable(gt_SecondClassEmitterSpawn22, false);
+    TriggerAddEventTimePeriodic(gt_SecondClassEmitterSpawn22, 20.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FlyingEmitterSpawn1
+//--------------------------------------------------------------------------------------------------
+bool gt_FlyingEmitterSpawn1_Func (bool testConds, bool runActions) {
+    int auto4CB8F351_ae;
+    int auto4CB8F351_ai;
+    int autoEE103BB2_ae;
+    int autoEE103BB2_ai;
+    int autoD6B3913A_ae;
+    int autoD6B3913A_ai;
+    int auto77F59C7B_ae;
+    int auto77F59C7B_ai;
+    int autoBD0FDCD7_ae;
+    int autoBD0FDCD7_ai;
+    int auto170AF99C_ae;
+    int auto170AF99C_ai;
+    int autoAB080AFE_ae;
+    int autoAB080AFE_ai;
+    int auto8653C2B7_ae;
+    int auto8653C2B7_ai;
+    int auto10D3E311_ae;
+    int auto10D3E311_ai;
+
+    // Variable Declarations
+    region lv_emitterVariable;
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(2.0, c_timeGame);
+    TriggerEnable(gt_FlyingEmitterSpawn12, true);
+    lv_emitterVariable = RegionFromId(8);
+    libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
+    if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
+        auto4CB8F351_ae = 2;
+        auto4CB8F351_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto4CB8F351_ai >= 0 && lv_integer <= auto4CB8F351_ae) || (auto4CB8F351_ai <= 0 && lv_integer >= auto4CB8F351_ae) ) ; lv_integer += auto4CB8F351_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Mutalisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
+    if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
+        autoEE103BB2_ae = 1;
+        autoEE103BB2_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoEE103BB2_ai >= 0 && lv_integer <= autoEE103BB2_ae) || (autoEE103BB2_ai <= 0 && lv_integer >= autoEE103BB2_ae) ) ; lv_integer += autoEE103BB2_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Corruptor", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
+    if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
+        autoD6B3913A_ae = 3;
+        autoD6B3913A_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (autoD6B3913A_ai >= 0 && lv_integer <= autoD6B3913A_ae) || (autoD6B3913A_ai <= 0 && lv_integer >= autoD6B3913A_ae) ) ; lv_integer += autoD6B3913A_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Scourge", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
+    if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
+        auto77F59C7B_ae = 2;
+        auto77F59C7B_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto77F59C7B_ai >= 0 && lv_integer <= auto77F59C7B_ae) || (auto77F59C7B_ai <= 0 && lv_integer >= auto77F59C7B_ae) ) ; lv_integer += auto77F59C7B_ai ) {
+            autoBD0FDCD7_ae = 2;
+            autoBD0FDCD7_ai = 1;
+            lv_integer = 1;
+            for ( ; ( (autoBD0FDCD7_ai >= 0 && lv_integer <= autoBD0FDCD7_ae) || (autoBD0FDCD7_ai <= 0 && lv_integer >= autoBD0FDCD7_ae) ) ; lv_integer += autoBD0FDCD7_ai ) {
+                libNtve_gf_CreateUnitsAtPoint2(1, "Mutalisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+                libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+            }
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
+    if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
+        auto170AF99C_ae = 2;
+        auto170AF99C_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto170AF99C_ai >= 0 && lv_integer <= auto170AF99C_ae) || (auto170AF99C_ai <= 0 && lv_integer >= auto170AF99C_ae) ) ; lv_integer += auto170AF99C_ai ) {
+            autoAB080AFE_ae = 2;
+            autoAB080AFE_ai = 1;
+            lv_integer = 1;
+            for ( ; ( (autoAB080AFE_ai >= 0 && lv_integer <= autoAB080AFE_ae) || (autoAB080AFE_ai <= 0 && lv_integer >= autoAB080AFE_ae) ) ; lv_integer += autoAB080AFE_ai ) {
+                libNtve_gf_CreateUnitsAtPoint2(1, "BroodLord", 0, 4, RegionRandomPoint(lv_emitterVariable));
+                libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+            }
+        }
+    }
+
+    libNtve_gf_WaitForTimer(gv_timerDuration, 1.0, false);
+    if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
+        auto8653C2B7_ae = 2;
+        auto8653C2B7_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto8653C2B7_ai >= 0 && lv_integer <= auto8653C2B7_ae) || (auto8653C2B7_ai <= 0 && lv_integer >= auto8653C2B7_ae) ) ; lv_integer += auto8653C2B7_ai ) {
+            auto10D3E311_ae = 2;
+            auto10D3E311_ai = 1;
+            lv_integer = 1;
+            for ( ; ( (auto10D3E311_ai >= 0 && lv_integer <= auto10D3E311_ae) || (auto10D3E311_ai <= 0 && lv_integer >= auto10D3E311_ae) ) ; lv_integer += auto10D3E311_ai ) {
+                TriggerEnable(gt_FlyingEmitterSpawn12, false);
+                UnitKill(gv_flyingEmitter1);
+                libNtve_gf_CreateModelAtPoint("AncientXelNagaArtifactBlastModel", gv_flyingEmitter1Point);
+                libCOMI_gf_DestroyPingCoop(gv_flyingEmitter1Ping);
+                libNtve_gf_CreateUnitsAtPoint2(4, "Mutalisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+                libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+                libNtve_gf_CreateUnitsAtPoint2(1, "Leviathan", 0, 4, RegionRandomPoint(lv_emitterVariable));
+                libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+            }
+        }
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FlyingEmitterSpawn1_Init () {
+    gt_FlyingEmitterSpawn1 = TriggerCreate("gt_FlyingEmitterSpawn1_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FlyingEmitterSpawn12
+//--------------------------------------------------------------------------------------------------
+bool gt_FlyingEmitterSpawn12_Func (bool testConds, bool runActions) {
+    int auto3C5925C9_ae;
+    int auto3C5925C9_ai;
+
+    // Variable Declarations
+    region lv_emitterVariable;
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(2.0, c_timeGame);
+    lv_emitterVariable = RegionFromId(8);
+    if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
+        auto3C5925C9_ae = 2;
+        auto3C5925C9_ai = 1;
+        lv_integer = 1;
+        for ( ; ( (auto3C5925C9_ai >= 0 && lv_integer <= auto3C5925C9_ae) || (auto3C5925C9_ai <= 0 && lv_integer >= auto3C5925C9_ae) ) ; lv_integer += auto3C5925C9_ai ) {
+            libNtve_gf_CreateUnitsAtPoint2(1, "Mutalisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
+            libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
+        }
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FlyingEmitterSpawn12_Init () {
+    gt_FlyingEmitterSpawn12 = TriggerCreate("gt_FlyingEmitterSpawn12_Func");
+    TriggerEnable(gt_FlyingEmitterSpawn12, false);
+    TriggerAddEventTimePeriodic(gt_FlyingEmitterSpawn12, 20.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PsiEmitterwave1
+//--------------------------------------------------------------------------------------------------
+bool gt_PsiEmitterwave1_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/CDB8FEAB"), StringExternal("Param/Value/823D97C7"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", PointFromId(1192276157), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter1Ping = PingLastCreated();
+    Wait(30.0, c_timeGame);
+    gv_firstClassEmitter1Point = PointFromId(1192276157);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter1Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter1 = UnitLastCreated();
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter1Point, UnitLastCreatedGroup(), true, 4);
+    RegionAttachToUnit(RegionFromId(4), UnitLastCreated(), Point(0.0, 0.0));
+    Wait(0.1, c_timeGame);
+    TriggerExecute(gt_FirstClassInitialWave, true, false);
+    TriggerExecute(gt_Defendsmall, true, false);
+    TriggerEnable(gt_CheckIfUnitsInUnitGroup, true);
+    TimerStart(gv_timerDuration, 120.0, false, c_timeGame);
+    TimerWindowCreate(TimerLastStarted(), StringExternal("Param/Value/70E04173"), true, false);
+    gv_timerWindow = TimerWindowLastCreated();
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    TimerWindowDestroy(gv_timerWindow);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PsiEmitterwave1_Init () {
+    gt_PsiEmitterwave1 = TriggerCreate("gt_PsiEmitterwave1_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PsiEmitterwave2gamma
+//--------------------------------------------------------------------------------------------------
+bool gt_PsiEmitterwave2gamma_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/E9981892"), StringExternal("Param/Value/2D02DE75"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    gv_firstClassEmitter1Point = PointFromId(2007171213);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_firstClassEmitter1Point, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter1Ping = PingLastCreated();
+    gv_firstClassEmitter2Point = PointFromId(1602143823);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_firstClassEmitter2Point, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter2Ping = PingLastCreated();
+    Wait(30.0, c_timeGame);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter1Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter1 = UnitLastCreated();
+    RegionAttachToUnit(RegionFromId(4), UnitLastCreated(), Point(0.0, 0.0));
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter1Point, UnitLastCreatedGroup(), true, 4);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter2Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter2 = UnitLastCreated();
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter2Point, UnitLastCreatedGroup(), true, 4);
+    RegionAttachToUnit(RegionFromId(5), UnitLastCreated(), Point(0.0, 0.0));
+    Wait(0.1, c_timeGame);
+    TriggerExecute(gt_FirstClassEmitterSpawn1, true, false);
+    TriggerExecute(gt_FirstClassEmitterSpawn2, true, false);
+    TriggerExecute(gt_Defendsmall, true, false);
+    TriggerExecute(gt_Defendsmall2, true, false);
+    TriggerEnable(gt_CheckIfUnitsInUnitGroup2, true);
+    TimerStart(gv_timerDuration, 150.0, false, c_timeGame);
+    TimerWindowCreate(TimerLastStarted(), StringExternal("Param/Value/1ACD5214"), true, false);
+    gv_timerWindow = TimerWindowLastCreated();
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    TimerWindowDestroy(gv_timerWindow);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PsiEmitterwave2gamma_Init () {
+    gt_PsiEmitterwave2gamma = TriggerCreate("gt_PsiEmitterwave2gamma_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PsiEmitterwave3gamma
+//--------------------------------------------------------------------------------------------------
+bool gt_PsiEmitterwave3gamma_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+    int lv_integer2;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_PsiEmitterwave1big, true, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/34EBCFCF"), StringExternal("Param/Value/56166781"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    gv_firstClassEmitter1Point = PointFromId(1192276157);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_firstClassEmitter1Point, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter1Ping = PingLastCreated();
+    gv_firstClassEmitter2Point = PointFromId(1602143823);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_firstClassEmitter2Point, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter2Ping = PingLastCreated();
+    Wait(30.0, c_timeGame);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter1Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter1 = UnitLastCreated();
+    RegionAttachToUnit(RegionFromId(4), UnitLastCreated(), Point(0.0, 0.0));
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter1Point, UnitLastCreatedGroup(), true, 4);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter2Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter2 = UnitLastCreated();
+    RegionAttachToUnit(RegionFromId(5), UnitLastCreated(), Point(0.0, 0.0));
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter2Point, UnitLastCreatedGroup(), true, 4);
+    Wait(0.1, c_timeGame);
+    TriggerExecute(gt_FirstClassEmitterSpawn1, true, false);
+    TriggerExecute(gt_FirstClassEmitterSpawn2, true, false);
+    TriggerExecute(gt_Defendsmall, true, false);
+    TriggerExecute(gt_Defendsmall2, true, false);
+    TriggerEnable(gt_HalfHealth, true);
+    TriggerEnable(gt_HalfHealth2, true);
+    TriggerEnable(gt_CheckIfUnitsInUnitGroup3, true);
+    TimerStart(gv_timerDuration, 180.0, false, c_timeGame);
+    TimerWindowCreate(TimerLastStarted(), StringExternal("Param/Value/725006F4"), true, false);
+    gv_timerWindow = TimerWindowLastCreated();
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    TimerWindowDestroy(gv_timerWindow);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PsiEmitterwave3gamma_Init () {
+    gt_PsiEmitterwave3gamma = TriggerCreate("gt_PsiEmitterwave3gamma_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PsiEmitterwave3gamma 2
+//--------------------------------------------------------------------------------------------------
+bool gt_PsiEmitterwave3gamma2_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+    int lv_integer2;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_PsiEmitterwave1big, true, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/FAA46AFF"), StringExternal("Param/Value/73CAF76D"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    gv_firstClassEmitter1Point = PointFromId(2007171213);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_firstClassEmitter1Point, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter1Ping = PingLastCreated();
+    gv_firstClassEmitter2Point = PointFromId(1602143823);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_firstClassEmitter2Point, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter2Ping = PingLastCreated();
+    gv_firstClassEmitter3Point = PointFromId(1192276157);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_firstClassEmitter3Point, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter3Ping = PingLastCreated();
+    Wait(30.0, c_timeGame);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter1Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter1 = UnitLastCreated();
+    RegionAttachToUnit(RegionFromId(4), UnitLastCreated(), Point(0.0, 0.0));
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter1Point, UnitLastCreatedGroup(), true, 4);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter2Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter2 = UnitLastCreated();
+    RegionAttachToUnit(RegionFromId(5), UnitLastCreated(), Point(0.0, 0.0));
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter2Point, UnitLastCreatedGroup(), true, 4);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter3Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter3 = UnitLastCreated();
+    RegionAttachToUnit(RegionFromId(13), UnitLastCreated(), Point(0.0, 0.0));
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter3Point, UnitLastCreatedGroup(), true, 4);
+    Wait(0.1, c_timeGame);
+    TriggerExecute(gt_PsiEmitterwave1Flyer, true, false);
+    TriggerExecute(gt_FirstClassEmitterSpawn1, true, false);
+    TriggerExecute(gt_FirstClassEmitterSpawn2, true, false);
+    TriggerExecute(gt_FirstClassEmitterSpawn3, true, false);
+    TriggerExecute(gt_Defendsmall, true, false);
+    TriggerExecute(gt_Defendsmall2, true, false);
+    TriggerExecute(gt_Defendsmall3, true, false);
+    TriggerEnable(gt_HalfHealth, true);
+    TriggerEnable(gt_HalfHealth2, true);
+    TriggerEnable(gt_HalfHealth3, true);
+    TriggerEnable(gt_CheckIfUnitsInUnitGroup4, true);
+    TimerStart(gv_timerDuration, 240.0, false, c_timeGame);
+    TimerWindowCreate(TimerLastStarted(), StringExternal("Param/Value/72B7D623"), true, false);
+    gv_timerWindow = TimerWindowLastCreated();
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    TimerWindowDestroy(gv_timerWindow);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PsiEmitterwave3gamma2_Init () {
+    gt_PsiEmitterwave3gamma2 = TriggerCreate("gt_PsiEmitterwave3gamma2_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PsiEmitterwave3gamma 3
+//--------------------------------------------------------------------------------------------------
+bool gt_PsiEmitterwave3gamma3_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+    int lv_integer2;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_PsiEmitterwave2big, true, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/F29C3BF3"), StringExternal("Param/Value/01BDB739"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    gv_firstClassEmitter1Point = PointFromId(2007171213);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_firstClassEmitter1Point, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter1Ping = PingLastCreated();
+    gv_firstClassEmitter2Point = PointFromId(1602143823);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_firstClassEmitter2Point, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter2Ping = PingLastCreated();
+    gv_firstClassEmitter3Point = PointFromId(1192276157);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_firstClassEmitter3Point, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+    gv_firstClassEmitter3Ping = PingLastCreated();
+    Wait(30.0, c_timeGame);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter1Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter1 = UnitLastCreated();
+    RegionAttachToUnit(RegionFromId(4), UnitLastCreated(), Point(0.0, 0.0));
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter1Point, UnitLastCreatedGroup(), true, 4);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter2Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter2 = UnitLastCreated();
+    RegionAttachToUnit(RegionFromId(5), UnitLastCreated(), Point(0.0, 0.0));
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter2Point, UnitLastCreatedGroup(), true, 4);
+    libNtve_gf_CreateUnitsAtPoint2(1, "PsiEmitterUnit", 0, 4, gv_firstClassEmitter3Point);
+    UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+    gv_firstClassEmitter3 = UnitLastCreated();
+    RegionAttachToUnit(RegionFromId(13), UnitLastCreated(), Point(0.0, 0.0));
+    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_firstClassEmitter3Point, UnitLastCreatedGroup(), true, 4);
+    Wait(0.1, c_timeGame);
+    TriggerExecute(gt_PsiEmitterwave1Flyer, true, false);
+    TriggerExecute(gt_FirstClassEmitterSpawn1, true, false);
+    TriggerExecute(gt_FirstClassEmitterSpawn2, true, false);
+    TriggerExecute(gt_FirstClassEmitterSpawn3, true, false);
+    TriggerExecute(gt_Defendsmall, true, false);
+    TriggerExecute(gt_Defendsmall2, true, false);
+    TriggerExecute(gt_Defendsmall3, true, false);
+    TriggerEnable(gt_HalfHealth, true);
+    TriggerEnable(gt_HalfHealth2, true);
+    TriggerEnable(gt_HalfHealth3, true);
+    TriggerEnable(gt_CheckIfUnitsInUnitGroup5, true);
+    TimerStart(gv_timerDuration, 300.0, false, c_timeGame);
+    TimerWindowCreate(TimerLastStarted(), StringExternal("Param/Value/E7C13BC9"), true, false);
+    gv_timerWindow = TimerWindowLastCreated();
+    libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
+    TimerWindowDestroy(gv_timerWindow);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PsiEmitterwave3gamma3_Init () {
+    gt_PsiEmitterwave3gamma3 = TriggerCreate("gt_PsiEmitterwave3gamma3_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PsiEmitterwave1big
+//--------------------------------------------------------------------------------------------------
+bool gt_PsiEmitterwave1big_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+    int lv_integer2;
+    int lv_integer3;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_integer3 = RandomInt(1, 2);
+    if ((lv_integer3 == 1)) {
+        gv_secondClassEmitter1Point = PointFromId(1753926427);
+        libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_secondClassEmitter1Point, ColorWithAlpha(25.10, 0.00, 0.00, 0.00), 0.0);
+        gv_secondClassEmitter1Ping = PingLastCreated();
+        Wait(30.0, c_timeGame);
+        libNtve_gf_CreateUnitsAtPoint2(1, "PowerfuPsiEmitterUnit", 0, 4, gv_secondClassEmitter1Point);
+        UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+        gv_secondClassEmitter1 = UnitLastCreated();
+        libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_secondClassEmitter1Point, UnitLastCreatedGroup(), true, 4);
+        RegionAttachToUnit(RegionFromId(6), UnitLastCreated(), Point(0.0, 0.0));
+    }
+    else {
+        gv_secondClassEmitter1Point = PointFromId(792407553);
+        libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_secondClassEmitter1Point, ColorWithAlpha(25.10, 0.00, 0.00, 0.00), 0.0);
+        PingSetScale(PingLastCreated(), 1.2);
+        gv_secondClassEmitter1Ping = PingLastCreated();
+        Wait(30.0, c_timeGame);
+        libNtve_gf_CreateUnitsAtPoint2(1, "PowerfuPsiEmitterUnit", 0, 4, gv_secondClassEmitter1Point);
+        UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+        gv_secondClassEmitter1 = UnitLastCreated();
+        libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_secondClassEmitter1Point, UnitLastCreatedGroup(), true, 4);
+        RegionAttachToUnit(RegionFromId(6), UnitLastCreated(), Point(0.0, 0.0));
+    }
+    Wait(0.1, c_timeGame);
+    TriggerExecute(gt_SecondClassEmitterSpawn1, true, false);
+    TriggerExecute(gt_Defendbig, true, false);
+    TriggerEnable(gt_HalfHealthBig, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PsiEmitterwave1big_Init () {
+    gt_PsiEmitterwave1big = TriggerCreate("gt_PsiEmitterwave1big_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PsiEmitterwave1Flyer
+//--------------------------------------------------------------------------------------------------
+bool gt_PsiEmitterwave1Flyer_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+    int lv_integer2;
+    int lv_integer3;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_integer3 = RandomInt(1, 2);
+    if ((lv_integer3 == 1)) {
+        gv_flyingEmitter1Point = PointFromId(1004532086);
+        libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_flyingEmitter1Point, ColorWithAlpha(0.00, 50.20, 0.00, 0.00), 0.0);
+        gv_flyingEmitter1Ping = PingLastCreated();
+        libNtve_gf_CreateUnitsAtPoint2(1, "FlyingPsiEmitter", 0, 4, gv_flyingEmitter1Point);
+        UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+        libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), gv_flyingEmitter1Point);
+        gv_flyingEmitter1 = UnitLastCreated();
+        RegionAttachToUnit(RegionFromId(8), UnitLastCreated(), Point(0.0, 0.0));
+        PingSetUnit(PingLastCreated(), gv_flyingEmitter1);
+    }
+    else {
+        gv_flyingEmitter1Point = PointFromId(40413599);
+        libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_flyingEmitter1Point, ColorWithAlpha(0.00, 50.20, 0.00, 0.00), 0.0);
+        gv_flyingEmitter1Ping = PingLastCreated();
+        libNtve_gf_CreateUnitsAtPoint2(1, "FlyingPsiEmitter", 0, 4, gv_flyingEmitter1Point);
+        UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+        libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), gv_flyingEmitter1Point);
+        gv_flyingEmitter1 = UnitLastCreated();
+        RegionAttachToUnit(RegionFromId(8), UnitLastCreated(), Point(0.0, 0.0));
+        PingSetUnit(PingLastCreated(), gv_flyingEmitter1);
+    }
+    TriggerExecute(gt_FlyingEmitterSpawn1, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PsiEmitterwave1Flyer_Init () {
+    gt_PsiEmitterwave1Flyer = TriggerCreate("gt_PsiEmitterwave1Flyer_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PsiEmitterwave2big
+//--------------------------------------------------------------------------------------------------
+bool gt_PsiEmitterwave2big_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+    int lv_integer2;
+    int lv_integer3;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_integer3 = RandomInt(1, 2);
+    if ((lv_integer3 == 1)) {
+        gv_secondClassEmitter1Point = PointFromId(1753926427);
+        libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_secondClassEmitter1Point, ColorWithAlpha(25.10, 0.00, 0.00, 0.00), 0.0);
+        PingSetScale(PingLastCreated(), 1.2);
+        gv_secondClassEmitter1Ping = PingLastCreated();
+        gv_secondClassEmitter2Point = PointFromId(931157038);
+        libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_secondClassEmitter2Point, ColorWithAlpha(25.10, 0.00, 0.00, 0.00), 0.0);
+        PingSetScale(PingLastCreated(), 1.2);
+        gv_secondClassEmitter2Ping = PingLastCreated();
+        Wait(30.0, c_timeGame);
+        libNtve_gf_CreateUnitsAtPoint2(1, "PowerfuPsiEmitterUnit", 0, 4, gv_secondClassEmitter1Point);
+        UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+        gv_secondClassEmitter1 = UnitLastCreated();
+        libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_secondClassEmitter1Point, UnitLastCreatedGroup(), true, 4);
+        RegionAttachToUnit(RegionFromId(6), UnitLastCreated(), Point(0.0, 0.0));
+        libNtve_gf_CreateUnitsAtPoint2(1, "PowerfuPsiEmitterUnit", 0, 4, gv_secondClassEmitter2Point);
+        UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+        gv_secondClassEmitter2 = UnitLastCreated();
+        libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_secondClassEmitter2Point, UnitLastCreatedGroup(), true, 4);
+        RegionAttachToUnit(RegionFromId(7), UnitLastCreated(), Point(0.0, 0.0));
+    }
+    else {
+        gv_secondClassEmitter1Point = PointFromId(792407553);
+        libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_secondClassEmitter1Point, ColorWithAlpha(25.10, 0.00, 0.00, 0.00), 0.0);
+        PingSetScale(PingLastCreated(), 1.2);
+        gv_secondClassEmitter1Ping = PingLastCreated();
+        gv_secondClassEmitter2Point = PointFromId(931157038);
+        libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", gv_secondClassEmitter2Point, ColorWithAlpha(25.10, 0.00, 0.00, 0.00), 0.0);
+        PingSetScale(PingLastCreated(), 1.2);
+        gv_secondClassEmitter2Ping = PingLastCreated();
+        Wait(30.0, c_timeGame);
+        libNtve_gf_CreateUnitsAtPoint2(1, "PowerfuPsiEmitterUnit", 0, 4, gv_secondClassEmitter1Point);
+        UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+        gv_secondClassEmitter1 = UnitLastCreated();
+        libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_secondClassEmitter1Point, UnitLastCreatedGroup(), true, 4);
+        RegionAttachToUnit(RegionFromId(6), UnitLastCreated(), Point(0.0, 0.0));
+        libNtve_gf_CreateUnitsAtPoint2(1, "PowerfuPsiEmitterUnit", 0, 4, gv_secondClassEmitter2Point);
+        UnitGroupAdd(gv_pSIunitgroup, UnitLastCreated());
+        gv_secondClassEmitter2 = UnitLastCreated();
+        libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, gv_secondClassEmitter2Point, UnitLastCreatedGroup(), true, 4);
+        RegionAttachToUnit(RegionFromId(7), UnitLastCreated(), Point(0.0, 0.0));
+    }
+    Wait(0.1, c_timeGame);
+    TriggerExecute(gt_SecondClassEmitterSpawn1, true, false);
+    TriggerExecute(gt_Defendbig, true, false);
+    TriggerEnable(gt_HalfHealthBig, true);
+    TriggerExecute(gt_SecondClassEmitterSpawn2, true, false);
+    TriggerExecute(gt_Defendbig2, true, false);
+    TriggerEnable(gt_HalfHealthBig2, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PsiEmitterwave2big_Init () {
+    gt_PsiEmitterwave2big = TriggerCreate("gt_PsiEmitterwave2big_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DefendersWave
+//--------------------------------------------------------------------------------------------------
+bool gt_DefendersWave_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsAtPoint2(3, "Hellion", 0, 3, PointFromId(931157038));
+    UnitGroupAddUnitGroup(gv_dropShip_UnitGroup, UnitLastCreatedGroup());
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(114225311));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(114225311));
+    AIAttackWaveUseGroup(3, gv_dropShip_UnitGroup);
+    AIAttackWaveSend(3, 0, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DefendersWave_Init () {
+    gt_DefendersWave = TriggerCreate("gt_DefendersWave_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DefendersWave 2
+//--------------------------------------------------------------------------------------------------
+bool gt_DefendersWave2_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsAtPoint2(5, "VikingFighter", 0, 3, PointFromId(1421159500));
+    UnitGroupAddUnitGroup(gv_dropShip_UnitGroup, UnitLastCreatedGroup());
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(114225311));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(114225311));
+    AIAttackWaveUseGroup(3, gv_dropShip_UnitGroup);
+    AIAttackWaveSend(3, 0, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DefendersWave2_Init () {
+    gt_DefendersWave2 = TriggerCreate("gt_DefendersWave2_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DefendersWave 3
+//--------------------------------------------------------------------------------------------------
+bool gt_DefendersWave3_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_integer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsAtPoint2(5, "VikingFighter", 0, 3, PointFromId(1421159500));
+    UnitGroupAddUnitGroup(gv_dropShip_UnitGroup, UnitLastCreatedGroup());
+    libNtve_gf_CreateUnitsAtPoint2(5, "Banshee", 0, 3, PointFromId(1421159500));
+    UnitGroupAddUnitGroup(gv_dropShip_UnitGroup, UnitLastCreatedGroup());
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(114225311));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(114225311));
+    AIAttackWaveUseGroup(3, gv_dropShip_UnitGroup);
+    AIAttackWaveSend(3, 0, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DefendersWave3_Init () {
+    gt_DefendersWave3 = TriggerCreate("gt_DefendersWave3_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Setup Attack Wave Spawn
+//--------------------------------------------------------------------------------------------------
+bool gt_SetupAttackWaveSpawn_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_spawnLocationIter;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(17);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(14);
+    lv_spawnLocationIter += 1;
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(10);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(16);
+    lv_spawnLocationIter = 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(17);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(11);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(12);
+    lv_spawnLocationIter += 1;
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(16);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SetupAttackWaveSpawn_Init () {
+    gt_SetupAttackWaveSpawn = TriggerCreate("gt_SetupAttackWaveSpawn_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: AI Attack Waves
+//--------------------------------------------------------------------------------------------------
+bool gt_AIAttackWaves_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gf_RunAttackWaveatMissionTime(gt_DefendersWave, (0.0 + (60.0 * 4.0)));
+    gf_RunAttackWaveatMissionTime(gt_DefendersWave2, (30.0 + (60.0 * 10.0)));
+    gf_RunAttackWaveatMissionTime(gt_DefendersWave3, (30.0 + (60.0 * 18.0)));
+    gf_RunAttackWaveatMissionTime(gt_PsiEmitterwave1, (5.0 * 60.0));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AIAttackWaves_Init () {
+    gt_AIAttackWaves = TriggerCreate("gt_AIAttackWaves_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: UpdateBothObjectives
+//--------------------------------------------------------------------------------------------------
+bool gt_UpdateBothObjectives_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    ObjectiveSetName(gv_objectiveEmitterWave, (StringExternal("Param/Value/62B7BD4F") + IntToText(gv_pSIemitterwave) + StringExternal("Param/Value/430284A2")));
+    ObjectiveSetName(gv_objectiveDontLetTheEnemyDestroyBuildings, (StringExternal("Param/Value/DCC59BFB") + IntToText(gv_structureAlive) + StringExternal("Param/Value/B0DA91A0")));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_UpdateBothObjectives_Init () {
+    gt_UpdateBothObjectives = TriggerCreate("gt_UpdateBothObjectives_Func");
+    TriggerEnable(gt_UpdateBothObjectives, false);
+    TriggerAddEventTimePeriodic(gt_UpdateBothObjectives, 0.5, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - Destroy all psi emitter waves - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyallpsiemitterwavesCreate_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    ObjectiveCreate((StringExternal("Param/Value/26B955A2") + IntToText(gv_pSIemitterwave) + StringExternal("Param/Value/0A6736BC") + StringExternal("Param/Value/7262D3B0")), StringExternal("Param/Value/99A6EC75"), c_objectiveStateActive, true);
+    gv_objectiveEmitterWave = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 10);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyallpsiemitterwavesCreate_Init () {
+    gt_ObjectiveDestroyallpsiemitterwavesCreate = TriggerCreate("gt_ObjectiveDestroyallpsiemitterwavesCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DontLetTheEnemyDestroyBuildings - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDontLetTheEnemyDestroyBuildingsCreate_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    ObjectiveCreate((StringExternal("Param/Value/67F2523E") + IntToText(gv_structureAlive) + StringExternal("Param/Value/27788AA5")), StringExternal("Param/Value/47DF025C"), c_objectiveStateActive, true);
+    gv_objectiveDontLetTheEnemyDestroyBuildings = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 10);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDontLetTheEnemyDestroyBuildingsCreate_Init () {
+    gt_ObjectiveDontLetTheEnemyDestroyBuildingsCreate = TriggerCreate("gt_ObjectiveDontLetTheEnemyDestroyBuildingsCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DontLetTheEnemyDestroyBuildings - Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDontLetTheEnemyDestroyBuildingsFailed_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    ObjectiveSetState(gv_objectiveDontLetTheEnemyDestroyBuildings, c_objectiveStateFailed);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDontLetTheEnemyDestroyBuildingsFailed_Init () {
+    gt_ObjectiveDontLetTheEnemyDestroyBuildingsFailed = TriggerCreate("gt_ObjectiveDontLetTheEnemyDestroyBuildingsFailed_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: BothObjectivesCompleted
+//--------------------------------------------------------------------------------------------------
+bool gt_BothObjectivesCompleted_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    ObjectiveSetState(gv_objectiveDontLetTheEnemyDestroyBuildings, c_objectiveStateCompleted);
+    ObjectiveSetState(gv_objectiveEmitterWave, c_objectiveStateCompleted);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BothObjectivesCompleted_Init () {
+    gt_BothObjectivesCompleted = TriggerCreate("gt_BothObjectivesCompleted_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyOrbitalCommand - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyOrbitalCommandCreate_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    ObjectiveCreate((StringExternal("Param/Value/A244F2FD")), StringExternal("Param/Value/97D2E8B7"), c_objectiveStateActive, false);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingTriangle", UnitGetPosition(UnitFromId(911594484)), ColorWithAlpha(100.00, 100.00, 50.20, 0.00), 0.0);
+    PingSetScale(PingLastCreated(), 0.6);
+    gv_orbitalPing = PingLastCreated();
+    gv_objectiveDestroyDefendersOrbital = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 1);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyOrbitalCommandCreate_Init () {
+    gt_ObjectiveDestroyOrbitalCommandCreate = TriggerCreate("gt_ObjectiveDestroyOrbitalCommandCreate_Func");
+    TriggerAddEventTimeElapsed(gt_ObjectiveDestroyOrbitalCommandCreate, 300.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyOrbitalCommand - Completed
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyOrbitalCommandCompleted_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((EventUnit() == UnitFromId(911594484)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    ObjectiveSetState(gv_objectiveDestroyDefendersOrbital, c_objectiveStateCompleted);
+    libCOMI_gf_DestroyPingCoop(gv_orbitalPing);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyOrbitalCommandCompleted_Init () {
+    gt_ObjectiveDestroyOrbitalCommandCompleted = TriggerCreate("gt_ObjectiveDestroyOrbitalCommandCompleted_Func");
+    TriggerAddEventUnitDied(gt_ObjectiveDestroyOrbitalCommandCompleted, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Initialization
+//--------------------------------------------------------------------------------------------------
+void InitTriggers () {
+    gt_Init01LoadData_Init();
+    gt_Init02Players_Init();
+    gt_Init03LoadingComplete_Init();
+    gt_Init04Technology_Init();
+    gt_Init05Units_Init();
+    gt_Init06MusicSound_Init();
+    gt_Init07Environment_Init();
+    gt_Init08Difficulties_Init();
+    gt_DebugCantFail_Init();
+    gt_StartGameQ_Init();
+    gt_CivilianScream_Init();
+    gt_UpdateCounterDestroyed_Init();
+    gt_UpdateCounterAlive_Init();
+    gt_FinalAttack_Init();
+    gt_HalfHealth_Init();
+    gt_HalfHealth2_Init();
+    gt_HalfHealth3_Init();
+    gt_HalfHealthBig_Init();
+    gt_HalfHealthBig2_Init();
+    gt_Defendsmall_Init();
+    gt_Defendsmall2_Init();
+    gt_Defendsmall3_Init();
+    gt_Defendbig_Init();
+    gt_Defendbig2_Init();
+    gt_TurnOnVictory_Init();
+    gt_EnemyAttackingQ_Init();
+    gt_DefeatPrimaryObjectiveFailed_Init();
+    gt_VictoryPrimaryObjectiveComplete_Init();
+    gt_VictorySequence_Init();
+    gt_VictoryFanfareQ_Init();
+    gt_Victory_Init();
+    gt_Defeat_Init();
+    gt_StartAI_Init();
+    gt_AIzerg_Init();
+    gt_DestroyPingsIfDead_Init();
+    gt_CheckIfUnitsInUnitGroup_Init();
+    gt_CheckIfUnitsInUnitGroup2_Init();
+    gt_CheckIfUnitsInUnitGroup3_Init();
+    gt_CheckIfUnitsInUnitGroup4_Init();
+    gt_CheckIfUnitsInUnitGroup5_Init();
+    gt_Reveal_Init();
+    gt_TurnSpawnOverlordsStructures_Init();
+    gt_SpawnSporeSpine_Init();
+    gt_SpawnOverlords_Init();
+    gt_SpawnOverlords2_Init();
+    gt_FirstClassInitialWave_Init();
+    gt_FirstClassEmitterSpawn1_Init();
+    gt_FirstClassEmitterSpawn12_Init();
+    gt_FirstClassEmitterSpawn2_Init();
+    gt_FirstClassEmitterSpawn22_Init();
+    gt_FirstClassEmitterSpawn3_Init();
+    gt_FirstClassEmitterSpawn32_Init();
+    gt_SecondClassEmitterSpawn1_Init();
+    gt_SecondClassEmitterSpawn12_Init();
+    gt_SecondClassEmitterSpawn2_Init();
+    gt_SecondClassEmitterSpawn22_Init();
+    gt_FlyingEmitterSpawn1_Init();
+    gt_FlyingEmitterSpawn12_Init();
+    gt_PsiEmitterwave1_Init();
+    gt_PsiEmitterwave2gamma_Init();
+    gt_PsiEmitterwave3gamma_Init();
+    gt_PsiEmitterwave3gamma2_Init();
+    gt_PsiEmitterwave3gamma3_Init();
+    gt_PsiEmitterwave1big_Init();
+    gt_PsiEmitterwave1Flyer_Init();
+    gt_PsiEmitterwave2big_Init();
+    gt_DefendersWave_Init();
+    gt_DefendersWave2_Init();
+    gt_DefendersWave3_Init();
+    gt_SetupAttackWaveSpawn_Init();
+    gt_AIAttackWaves_Init();
+    gt_UpdateBothObjectives_Init();
+    gt_ObjectiveDestroyallpsiemitterwavesCreate_Init();
+    gt_ObjectiveDontLetTheEnemyDestroyBuildingsCreate_Init();
+    gt_ObjectiveDontLetTheEnemyDestroyBuildingsFailed_Init();
+    gt_BothObjectivesCompleted_Init();
+    gt_ObjectiveDestroyOrbitalCommandCreate_Init();
+    gt_ObjectiveDestroyOrbitalCommandCompleted_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitLibs();
+    InitGlobals();
+    InitCustomAI();
+    InitTriggers();
+}

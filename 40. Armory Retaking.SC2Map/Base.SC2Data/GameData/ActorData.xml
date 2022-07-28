@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!--                                                                                         -->
+    <!-- Flatbed Truck.......................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="FlatbedTruck">
+        <On Terms="ActorCreation" Send="AttachSetPosition"/>
+        <Scale value="1.350000"/>
+        <PortraitModel value="CrazedDriverPortrait"/>
+        <BarWidth value="140"/>
+    </CActorUnit>
+    <CActorUnit id="HybridDoorsWideLeft">
+        <Scale value="1.600000,1.400000,1.320000"/>
+    </CActorUnit>
+    <CActorUnit id="HybridHoldingCellSmallUnitVoid">
+        <MinimapTooltip value="Unit/Name/HybridHoldingCellSmallUnitVoid"/>
+    </CActorUnit>
+    <CActorUnit id="InstallationRoofUnit" parent="GenericUnitStandard" unitName="InstallationRoofUnit">
+        <EditorCategories value=""/>
+        <Model value="InstallationRoof01"/>
+        <DeathArray index="Remove">
+            <AnimProps value="Death"/>
+            <ModelLink value="InstallationRoofUnit"/>
+            <SoundLink value="InstallationRoofUnitDeath"/>
+            <VoiceLink value="InstallationRoofUnitDeathVoice"/>
+        </DeathArray>
+        <DeathArray index="Blast">
+            <AnimProps value="Death"/>
+            <ModelLink value="InstallationRoofUnit"/>
+            <SoundLink value="InstallationRoofUnitDeath"/>
+            <VoiceLink value="InstallationRoofUnitDeathVoice"/>
+        </DeathArray>
+        <HighlightTooltip value=""/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Progress" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+        <StatusBarFlags index="Magazine" value="0"/>
+        <StatusBarFlags index="Workers" value="0"/>
+        <StatusBarFlags index="Custom" value="0"/>
+    </CActorUnit>
+    <CActorUnit id="MULE2" parent="MULE" unitName="MULE2">
+        <On index="0" Terms="UnitBirth.MULE2"/>
+        <On index="1" Terms="UnitBirth.MULE2"/>
+        <On index="2" Terms="UnitRevive.MULE2"/>
+        <On index="3" Terms="UnitRevive.MULE2"/>
+        <On index="4" Terms="UnitConstruction.MULE2.Start"/>
+        <On index="5" Terms="UnitConstruction.MULE2.Finish"/>
+        <On index="67" Terms="Abil.MULERepair2.SourceChannelStart"/>
+        <On index="68" Terms="Abil.MULERepair2.SourceChannelStop"/>
+        <On index="69" Terms="Abil.MULERepair2.SourceChannelStart"/>
+        <On index="70" Terms="Abil.MULERepair2.SourceChannelStop"/>
+        <On index="71" Terms="Abil.MULERepair2.SourceChannelStop"/>
+        <HighlightTooltip value="Unit/Name/MULE2"/>
+    </CActorUnit>
+    <CActorModel id="MercDropModel2" parent="MercDropModel">
+        <On index="2" Terms="Effect.CalldownMULECreatePersistent2.Start" Send="Create"/>
+        <On index="3" Terms="Effect.CalldownMULETimedLife2.Start" Send="AnimBracketStop BSD"/>
+        <On index="5" removed="1"/>
+        <On index="6" removed="1"/>
+        <Model value="DropPodFalling2"/>
+    </CActorModel>
+    <CActorModel id="OdinHealModel" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="$Birth PlayForever"/>
+        <On Terms="ActorCreation" Send="Create"/>
+        <On Terms="ActorDestruction" Send="Destroy"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOverhead"/>
+    </CActorModel>
+    <CActorAction id="MengskSiegeTankSiegedAttack2" parent="GenericAttack" effectAttack="MengskSiegeTankSiegedBlast2">
+        <On Terms="Effect.MengskSiegeTankSiegedFriendlyDamage2.Start; At Caster" Send="Create"/>
+        <On Terms="Effect.MengskSiegeTankSiegedEnemyDamage2.Start; At Caster" Send="Create"/>
+        <LaunchAssets Model="MengskSiegeTankSiegedAttackLaunch" Sound="SiegeTank_SiegedAttackLaunch"/>
+        <ImpactSiteOps Ops="SOpActionCenter SOpTargetUnitZ" HoldPosition="1"/>
+        <ImpactMap index="None" Model="MengskSiegeTankSiegedAttackImpact" Sound="SiegeTank_SiegedAttackImpact"/>
+        <ImpactPhysics Name="Explosion" MatchKeys="Basic" Physics="SiegeTankSiegedForce"/>
+        <DamageSiteOps Ops="SOpAttachHarness"/>
+        <DamageMap index="None" Model="MengskSiegeTankSiegedAttackDamage"/>
+        <ShieldFlashType value="Full"/>
+        <LaunchSite value="OdinWeaponSiegedSite"/>
+        <LaunchSiteFallback value="OdinWeaponSiegedSite"/>
+        <LaunchAttachQuery Methods="Weapon 0" Fallback="IGNORE"/>
+    </CActorAction>
+    <CActorAction id="MengskSiegeTankSiegedAttackDirected2" parent="GenericAttack" effectAttack="MengskSiegeTankSiegedDirected2">
+        <LaunchSite value="OdinWeaponSiegedSite"/>
+        <LaunchSiteFallback value="OdinWeaponSiegedSite"/>
+        <LaunchAttachQuery Methods="Weapon 0" Fallback="IGNORE"/>
+        <LaunchAssets Model="MengskSiegeTankSiegedAttackDirectedLaunch" Sound="SiegeTank_SiegedAttackLaunch"/>
+        <ImpactSiteOps Ops="SOpAttachHarness SOpAttachVolumeStandard SOpForwardLaunchGuide"/>
+        <ImpactMap index="None" Model="MengskSiegeTankSiegedAttackDirectedImpact" Sound="SiegeTank_SiegedAttackImpact"/>
+        <ImpactPhysics Name="Explosion" MatchKeys="Basic" Physics="SiegeTankSiegedForce"/>
+        <DamageMap index="None" Model="MengskSiegeTankSiegedAttackDirectedDamage"/>
+        <ShieldFlashType value="Header"/>
+    </CActorAction>
+    <CActorAction id="MercHellionAttack2" parent="MercHellionAttackBase">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerCP2.Start; At Caster; !ValidatePlayer HasHighCapacityBarrels" Send="Create"/>
+        <LaunchSite value="OdinWeaponInfernalFlameSiteRight"/>
+        <LaunchSiteFallback value="OdinWeaponInfernalFlameSiteRight"/>
+        <LaunchAttachQuery Methods="Weapon 0" Fallback="Weapon"/>
+        <Beam value="MercHellionAttackBeam2"/>
+        <ImpactMap index="None" Model="MercHellionAttackDamageReaction" Sound="Hellion_AttackImpact"/>
+    </CActorAction>
+    <CActorAction id="MercHellionAttack3" parent="MercHellionAttackBase">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerCP3.Start; At Caster; !ValidatePlayer HasHighCapacityBarrels" Send="Create"/>
+        <LaunchSite value="OdinWeaponInfernalFlameSiteLeft"/>
+        <LaunchSiteFallback value="OdinWeaponInfernalFlameSiteLeft"/>
+        <LaunchAttachQuery Methods="Weapon 0" Fallback="Weapon"/>
+        <Beam value="MercHellionAttackBeam3"/>
+        <ImpactMap index="None" Model="MercHellionAttackDamageReaction" Sound="Hellion_AttackImpact"/>
+    </CActorAction>
+    <CActorBeamSimple id="MercHellionAttackBeam2" parent="GenericAttackBeam">
+        <On Terms="ActorCreation; ValidateUnit HasHighCapacityBarrels" Send="ModelSwap HellionUpgradeAttackBeam"/>
+        <On Terms="Effect.MercHellionInfernalFlameThrowerE.Start; EffectExecuteIndex 24" Send="RefSet ::HostImpact MercHellionAttackBeamImpactSite"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <Model value="MercHellionAttackBeam"/>
+    </CActorBeamSimple>
+    <CActorBeamSimple id="MercHellionAttackBeam3" parent="GenericAttackBeam">
+        <On Terms="ActorCreation; ValidateUnit HasHighCapacityBarrels" Send="ModelSwap HellionUpgradeAttackBeam"/>
+        <On Terms="Effect.MercHellionInfernalFlameThrowerE.Start; EffectExecuteIndex 24" Send="RefSet ::HostImpact MercHellionAttackBeamImpactSite"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <Model value="MercHellionAttackBeam"/>
+    </CActorBeamSimple>
+    <CActorSite id="MercHellionAttackBeamImpactSite2">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerE2.Start; EffectExecuteIndex 24; At Caster" Send="Create"/>
+        <On Terms="Effect.MercHellionInfernalFlameThrowerE2.Start; EffectExecuteIndex 24; At Caster" Send="Create"/>
+        <HostSiteOps Ops="SOpTargetPoint SOpShadow SOpHeightLaunch"/>
+    </CActorSite>
+    <CActorSite id="MercHellionAttackBeamImpactSite3">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerE3.Start; EffectExecuteIndex 24; At Caster" Send="Create"/>
+        <On Terms="Effect.MercHellionInfernalFlameThrowerE3.Start; EffectExecuteIndex 24; At Caster" Send="Create"/>
+        <HostSiteOps Ops="SOpTargetPoint SOpShadow SOpHeightLaunch"/>
+    </CActorSite>
+    <CActorAction id="MercHellionAttackSecondary2" parent="MercHellionAttackSecondaryBase">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerDummyPersistent2.Start; At Caster; !ValidatePlayer HasHighCapacityBarrels" Send="Create"/>
+        <LaunchSite value="OdinWeaponInfernalFlameSiteRight"/>
+        <LaunchSiteFallback value="OdinWeaponInfernalFlameSiteRight"/>
+        <LaunchAttachQuery Methods="Weapon 0" Fallback="Weapon"/>
+        <Beam value="MercHellionAttackSecondaryBeam2"/>
+        <ImpactMap index="None" Model="MercHellionAttackDamageReaction" Sound="Hellion_AttackImpact"/>
+    </CActorAction>
+    <CActorAction id="MercHellionAttackSecondary3" parent="MercHellionAttackSecondaryBase">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerDummyPersistent3.Start; At Caster; !ValidatePlayer HasHighCapacityBarrels" Send="Create"/>
+        <LaunchSite value="OdinWeaponInfernalFlameSiteLeft"/>
+        <LaunchSiteFallback value="OdinWeaponInfernalFlameSiteLeft"/>
+        <LaunchAttachQuery Methods="Weapon 0" Fallback="Weapon"/>
+        <Beam value="MercHellionAttackSecondaryBeam3"/>
+        <ImpactMap index="None" Model="MercHellionAttackDamageReaction" Sound="Hellion_AttackImpact"/>
+    </CActorAction>
+    <CActorBeamSimple id="MercHellionAttackSecondaryBeam2" parent="GenericAttackBeam">
+        <On Terms="ActorCreation; ValidateUnit HasHighCapacityBarrels" Send="ModelSwap HellionUpgradeAttackBeam"/>
+        <On Terms="Effect.MercHellionInfernalFlameThrowerDummyDamage.Start" Send="RefSet ::HostImpact MercHellionAttackSecondaryBeamImpactSite"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <Model value="MercHellionAttackBeam"/>
+    </CActorBeamSimple>
+    <CActorBeamSimple id="MercHellionAttackSecondaryBeam3" parent="GenericAttackBeam">
+        <On Terms="ActorCreation; ValidateUnit HasHighCapacityBarrels" Send="ModelSwap HellionUpgradeAttackBeam"/>
+        <On Terms="Effect.MercHellionInfernalFlameThrowerDummyDamage.Start" Send="RefSet ::HostImpact MercHellionAttackSecondaryBeamImpactSite"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <Model value="MercHellionAttackBeam"/>
+    </CActorBeamSimple>
+    <CActorSite id="MercHellionAttackSecondaryBeamImpactSite2">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerDummyDamage2.Start; At Caster" Send="Create"/>
+        <HostSiteOps Ops="SOpTargetPoint SOpShadow SOpHeightLaunch"/>
+    </CActorSite>
+    <CActorSite id="MercHellionAttackSecondaryBeamImpactSite3">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerDummyDamage3.Start; At Caster" Send="Create"/>
+        <HostSiteOps Ops="SOpTargetPoint SOpShadow SOpHeightLaunch"/>
+    </CActorSite>
+    <CActorAction id="MercHellionUpgradedAttack2" parent="MercHellionAttackBase">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerCP2.Start; At Caster; ValidatePlayer HasHighCapacityBarrels" Send="Create"/>
+        <LaunchSite value="OdinWeaponInfernalFlameSiteRight"/>
+        <LaunchSiteFallback value="OdinWeaponInfernalFlameSiteRight"/>
+        <Beam value="MercHellionAttackBeam2"/>
+        <ImpactMap index="None" Model="MercHellionUpgradedAttackDamageReaction" Sound="Hellion_AttackImpact"/>
+    </CActorAction>
+    <CActorAction id="MercHellionUpgradedAttack3" parent="MercHellionAttackBase">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerCP3.Start; At Caster; ValidatePlayer HasHighCapacityBarrels" Send="Create"/>
+        <Beam value="MercHellionAttackBeam3"/>
+        <ImpactMap index="None" Model="MercHellionUpgradedAttackDamageReaction" Sound="Hellion_AttackImpact"/>
+    </CActorAction>
+    <CActorAction id="MercHellionUpgradedAttackSecondary2" parent="MercHellionAttackSecondaryBase">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerDummyPersistent2.Start; At Caster; ValidatePlayer HasHighCapacityBarrels" Send="Create"/>
+        <LaunchSite value="OdinWeaponInfernalFlameSiteRight"/>
+        <LaunchSiteFallback value="OdinWeaponInfernalFlameSiteRight"/>
+        <Beam value="MercHellionAttackSecondaryBeam2"/>
+        <ImpactMap index="None" Model="MercHellionUpgradedAttackDamageReaction" Sound="Hellion_AttackImpact"/>
+    </CActorAction>
+    <CActorAction id="MercHellionUpgradedAttackSecondary3" parent="MercHellionAttackSecondaryBase">
+        <On Terms="Effect.MercHellionInfernalFlameThrowerDummyPersistent3.Start; At Caster; ValidatePlayer HasHighCapacityBarrels" Send="Create"/>
+        <Beam value="MercHellionAttackSecondaryBeam3"/>
+        <ImpactMap index="None" Model="MercHellionUpgradedAttackDamageReaction" Sound="Hellion_AttackImpact"/>
+    </CActorAction>
+    <CActorRange id="OdinDetectorRadar">
+        <Inherits index="Visibility" value="0"/>
+        <FogVisibility value="Visible"/>
+        <On Terms="Behavior.OdinDetector.On" Send="Create"/>
+        <On Terms="Behavior.OdinDetector.Off" Send="Destroy"/>
+        <Behavior value="NovaHelmetGhostVisorDetector"/>
+        <RangeFlags index="Minimap" value="1"/>
+    </CActorRange>
+    <!--                                                                                         -->
+    <!-- Odin Build ............................................................................ -->
+    <!--                                                                                         -->
+    <CActorUnit id="OdinBuild">
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-odinbuild.dds"/>
+        </Wireframe>
+        <Aliases value="_CreepEngulfable"/>
+        <CreepHeightClass value="Small"/>
+    </CActorUnit>
+    <CActorUnit id="OdinMKII">
+        <On Terms="Upgrade.OdinSiegedUpgradeForBox.Add" Send="Create OdinWeaponSiegedForBox"/>
+        <On Terms="Upgrade.OdinSiegedUpgrade.Add" Send="Create OdinWeaponSieged"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgradeForBox.Add" Send="Create OdinWeaponInfernalFlameLeftForBox"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgradeForBox.Add" Send="Create OdinWeaponInfernalFlameRightForBox"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgrade.Add" Send="Create OdinWeaponInfernalFlameLeft"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgrade.Add" Send="Create OdinWeaponInfernalFlameRight"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgrade.Add" Send="Create OdinWeaponShoulderLeft"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgrade.Add" Send="Create OdinWeaponShoulderRight"/>
+        <On Terms="Upgrade.OdinDetectorUpgradeForBox.Add" Send="Create OdinWeaponDetectorForBox"/>
+        <On Terms="Upgrade.OdinDetectorUpgrade.Add" Send="Create OdinWeaponDetector"/>
+        <On Terms="Upgrade.OdinDetectorUpgrade.Add" Send="Create OdinWeaponDetectorRadar"/>
+        <ModelFlags index="OutlineEmitter" value="1"/>
+        <MinimapRenderPriority value="Hero"/>
+        <MinimapTooltip value="Unit/Name/OdinMKII"/>
+        <MinimapUseSelfColor value="0"/>
+        <MinimapUseSelectionColor value="0"/>
+        <MinimapIconScale value="1.250000"/>
+    </CActorUnit>
+    <CActorUnit id="OdinMKIIWreckage">
+        <On Terms="AbilMorph.OdinReborn.Start" Send="Destroy"/>
+        <On Terms="Upgrade.OdinSiegedUpgradeForBox.Add" Send="Create OdinWeaponSiegedForBox"/>
+        <On Terms="Upgrade.OdinSiegedUpgrade.Add" Send="Create OdinWeaponSieged"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgradeForBox.Add" Send="Create OdinWeaponInfernalFlameLeftForBox"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgradeForBox.Add" Send="Create OdinWeaponInfernalFlameRightForBox"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgrade.Add" Send="Create OdinWeaponInfernalFlameLeft"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgrade.Add" Send="Create OdinWeaponInfernalFlameRight"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgrade.Add" Send="Create OdinWeaponShoulderLeft"/>
+        <On Terms="Upgrade.OdinInfernalFlameUpgrade.Add" Send="Create OdinWeaponShoulderRight"/>
+        <On Terms="Upgrade.OdinDetectorUpgradeForBox.Add" Send="Create OdinWeaponDetectorForBox"/>
+        <On Terms="Upgrade.OdinDetectorUpgrade.Add" Send="Create OdinWeaponDetector"/>
+        <On Terms="Upgrade.OdinDetectorUpgrade.Add" Send="Create OdinWeaponDetectorRadar"/>
+        <MinimapIcon value="Assets\Textures\ac_pingodinwreckage.dds"/>
+        <ModelFlags index="OutlineEmitter" value="1"/>
+        <MinimapRenderPriority value="Hero"/>
+        <MinimapTooltip value="Unit/Name/OdinMKIIWreckage"/>
+        <MinimapUseSelfColor value="0"/>
+        <MinimapUseSelectionColor value="0"/>
+        <UnitIcon value="Assets\Textures\btn-unit-terran-odin.dds"/>
+        <UnitKillRank Text="UnitKillRank/Odin"/>
+        <MinimapIconScale value="1.250000"/>
+    </CActorUnit>
+    <CActorUnit id="NukePack">
+        <CustomUnitStatusFrame value="HotS_UnitStatus/UnitStatusProgressFrameTemplate"/>
+    </CActorUnit>
+    <CActorUnit id="OdinRebornMorphModel" parent="GenericUnitBase" unitName="ThorRebornMorphModel">
+        <On Terms="AbilMorph.*.Start; MorphTo OdinMKII; MorphFrom OdinMKIIWreckage" Send="Create"/>
+        <On Terms="ActorCreation" Send="AnimPlay MorphStart Morph,Start"/>
+        <On Terms="AnimDone; AnimName MorphStart" Send="AnimPlay Morph Morph 0 -1.000000 -1.000000 56.233002 AsDuration"/>
+        <On Terms="AnimDone; AnimName Morph" Send="AnimPlay MorphEnd Morph,End"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo OdinMKII" Send="Destroy"/>
+        <Model value="OdinWreckage"/>
+        <Baselines index="Stand" AnimProps=""/>
+        <DeathArray index="Normal" ModelLink="OdinDeath" SoundLink="Thor_Explode"/>
+        <PortraitModel value="MPOdinPortrait"/>
+        <HeroIcon value="Assets\Textures\btn-unit-terran-odin.dds"/>
+        <HighlightTooltip value="Unit/Name/OdinRebornMorphModel"/>
+        <UnitIcon value="Assets\Textures\btn-unit-terran-odin.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-terran-odinwreckage.dds"/>
+        </Wireframe>
+        <MinimapIcon value="Assets\Textures\ac_pingodinwreckage.dds"/>
+        <MinimapIconScale value="1.250000"/>
+        <MinimapRenderPriority value="Hero"/>
+        <MinimapTooltip value="Unit/Name/OdinRebornMorphModel"/>
+        <MinimapUseSelfColor value="0"/>
+        <MinimapUseSelectionColor value="0"/>
+    </CActorUnit>
+    <CActorUnit id="OdinRebuildTool" parent="GenericUnitStandard" unitName="OdinRebuildTool">
+        <Aliases value="_CreepEngulfable"/>
+        <Flags index="RespondsToUnitPlayerChange" value="0"/>
+        <On Terms="UnitBirth" Send="AnimPlay Birth Stand,Morph,Start NonLooping"/>
+        <On Terms="UnitDeath" Send="AnimPlay Death Stand,Morph,End"/>
+        <EventDataSound Name="Clunk" Actor="UnitSound" Sound="OdinBuild_Clunk"/>
+        <EventDataSound Name="Weld" Actor="UnitSound" Sound="OdinBuild_Weld"/>
+        <EventDataSound Name="Whirr" Actor="UnitSound" Sound="OdinBuild_Whirr"/>
+        <CreepHeightClass value="Small"/>
+        <DeathArray index="Normal" ModelLink=""/>
+        <HighlightTooltip value=""/>
+    </CActorUnit>
+    <CActorModel id="OdinWeaponDetector" parent="ModelAnimationStyleContinuous">
+        <EditorCategories value=""/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachTarget0 SOpAdjustDetector SOpSpinDetector"/>
+    </CActorModel>
+    <CActorModel id="OdinWeaponDetectorRadar" parent="ModelAnimationStyleContinuous">
+        <EditorCategories value=""/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachTarget0 SOpAdjustDetectorRadar SOpSpinDetectorRadar"/>
+    </CActorModel>
+    <CActorModel id="OdinWeaponInfernalFlameLeft" parent="ModelAnimationStyleContinuous">
+        <EditorCategories value=""/>
+        <On Terms="WeaponStart.MercHellionInfernalFlameThrower2" Send="AnimPlay Attack Attack"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachWeapon7 SOpAdjustInfernalFlameLeft SOpSpinInfernalFlameLeft"/>
+        <Model value="OdinWeaponInfernalFlame"/>
+    </CActorModel>
+    <CActorModel id="OdinWeaponInfernalFlameRight" parent="ModelAnimationStyleContinuous">
+        <On Terms="WeaponStart.MercHellionInfernalFlameThrower2" Send="AnimPlay Attack Attack"/>
+        <EditorCategories value=""/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachWeapon5 SOpAdjustInfernalFlameRight SOpSpinInfernalFlameRight"/>
+        <Model value="OdinWeaponInfernalFlame"/>
+    </CActorModel>
+    <CActorModel id="OdinWeaponInfernalFlameRightForBox" parent="ModelAnimationStyleContinuous">
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachWeapon5 SOpAdjustInfernalFlameRightForBox SOpSpinInfernalFlameRight"/>
+        <Model value="OdinUpgradeBoxFalling"/>
+        <Scale value="1.800000,1.800000,1.750000"/>
+        <Inherits index="CastShadows" value="1"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <Inherits index="CreepEngulfment" value="1"/>
+        <Inherits index="Decal" value="1"/>
+        <Inherits index="LocalTintColor" value="1"/>
+        <Inherits index="ModelMaterials" value="1"/>
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <Inherits index="TeamColor" value="1"/>
+        <Inherits index="TimeScale" value="1"/>
+        <Inherits index="TintColor" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <Inherits index="WarpGroup" value="1"/>
+        <On Terms="ActorCreation" Send="TimerSet 1.000000 DelayDropSound"/>
+        <On Terms="ActorCreation" Send="TimerSet 4.670000 ChangeDeathModel"/>
+        <On Terms="ActorCreation" Send="TimerSet 5.340000 Destroy"/>
+        <On Terms="ActorCreation" Send="$Birth"/>
+        <On Terms="ActorCreation" Send="Create OrbitalCommand_CalldownExtraSuppliesDrop"/>
+        <On Terms="TimerExpired; TimerName DelayDropSound" Send="Create OrbitalCommand_CalldownExtraSuppliesImpact"/>
+        <On Terms="TimerExpired; TimerName DelayDropSound" Target="OrbitalCommand_CalldownExtraSuppliesDrop" Send="Destroy"/>
+        <On Terms="TimerExpired; TimerName ChangeDeathModel" Send="ModelSwap OdinUpgradeBoxFallingDeath"/>
+        <On Terms="ModelSwap" Send="$Death NonLooping"/>
+        <On Terms="TimerExpired; TimerName Destroy" Send="Destroy"/>
+    </CActorModel>
+    <CActorSite id="OdinWeaponInfernalFlameSiteRight">
+        <EditorCategories value=""/>
+        <On Terms="ActorCreation.OdinWeaponInfernalFlameRight" Send="Create"/>
+        <On Terms="ActorDestruction.OdinWeaponInfernalFlameRight" Send="Destroy"/>
+        <Host Subject="OdinWeaponInfernalFlameRight"/>
+        <HostSiteOps Ops="SOpAttachWeapon"/>
+    </CActorSite>
+    <CActorSite id="OdinWeaponInfernalFlameSiteLeft">
+        <EditorCategories value=""/>
+        <On Terms="ActorCreation.OdinWeaponInfernalFlameLeft" Send="Create"/>
+        <On Terms="ActorDestruction.OdinWeaponInfernalFlameLeft" Send="Destroy"/>
+        <Host Subject="OdinWeaponInfernalFlameLeft"/>
+        <HostSiteOps Ops="SOpAttachWeapon"/>
+    </CActorSite>
+    <CActorModel id="OdinWeaponShoulderRight" parent="ModelAnimationStyleContinuous">
+        <EditorCategories value=""/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachWeapon15 SOpAdjustShoulderRight SOpSpinShoulderRight"/>
+        <Model value="OdinWeaponShoulder"/>
+    </CActorModel>
+    <CActorModel id="OdinWeaponShoulderLeft" parent="ModelAnimationStyleContinuous">
+        <EditorCategories value=""/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachWeapon18 SOpAdjustShoulderLeft SOpSpinShoulderLeft"/>
+        <Model value="OdinWeaponShoulder"/>
+    </CActorModel>
+    <CActorModel id="OdinWeaponSieged" parent="ModelAnimationStyleContinuous">
+        <EditorCategories value=""/>
+        <On Terms="WeaponStart.MengskSiegeTankSieged2" Send="AnimPlay Attack Attack"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachTarget0 SOpAdjustSiege"/>
+    </CActorModel>
+    <CActorModel id="OdinWeaponInfernalFlameLeftForBox">
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachWeapon7 SOpAdjustInfernalFlameLeftForBox SOpSpinInfernalFlameLeft"/>
+        <Model value="OdinUpgradeBoxFalling"/>
+        <Scale value="1.800000,1.800000,1.750000"/>
+        <Inherits index="CastShadows" value="1"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <Inherits index="CreepEngulfment" value="1"/>
+        <Inherits index="Decal" value="1"/>
+        <Inherits index="LocalTintColor" value="1"/>
+        <Inherits index="ModelMaterials" value="1"/>
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <Inherits index="TeamColor" value="1"/>
+        <Inherits index="TimeScale" value="1"/>
+        <Inherits index="TintColor" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <Inherits index="WarpGroup" value="1"/>
+        <On Terms="ActorCreation" Send="TimerSet 1.000000 DelayDropSound"/>
+        <On Terms="ActorCreation" Send="TimerSet 4.670000 ChangeDeathModel"/>
+        <On Terms="ActorCreation" Send="TimerSet 5.340000 Destroy"/>
+        <On Terms="ActorCreation" Send="$Birth"/>
+        <On Terms="ActorCreation" Send="Create OrbitalCommand_CalldownExtraSuppliesDrop"/>
+        <On Terms="TimerExpired; TimerName DelayDropSound" Send="Create OrbitalCommand_CalldownExtraSuppliesImpact"/>
+        <On Terms="TimerExpired; TimerName DelayDropSound" Target="OrbitalCommand_CalldownExtraSuppliesDrop" Send="Destroy"/>
+        <On Terms="TimerExpired; TimerName ChangeDeathModel" Send="ModelSwap OdinUpgradeBoxFallingDeath"/>
+        <On Terms="ModelSwap" Send="$Death NonLooping"/>
+        <On Terms="TimerExpired; TimerName Destroy" Send="Destroy"/>
+    </CActorModel>
+    <CActorModel id="OdinWeaponDetectorForBox">
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachTarget0 SOpAdjustDetectorForBox SOpSpinDetectorForBox"/>
+        <Model value="OdinUpgradeBoxFalling"/>
+        <Scale value="1.900000,1.900000,1.600000"/>
+        <Inherits index="CastShadows" value="1"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <Inherits index="CreepEngulfment" value="1"/>
+        <Inherits index="Decal" value="1"/>
+        <Inherits index="LocalTintColor" value="1"/>
+        <Inherits index="ModelMaterials" value="1"/>
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <Inherits index="TeamColor" value="1"/>
+        <Inherits index="TimeScale" value="1"/>
+        <Inherits index="TintColor" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <Inherits index="WarpGroup" value="1"/>
+        <On Terms="ActorCreation" Send="TimerSet 1.000000 DelayDropSound"/>
+        <On Terms="ActorCreation" Send="TimerSet 4.670000 ChangeDeathModel"/>
+        <On Terms="ActorCreation" Send="TimerSet 5.340000 Destroy"/>
+        <On Terms="ActorCreation" Send="$Birth"/>
+        <On Terms="ActorCreation" Send="Create OrbitalCommand_CalldownExtraSuppliesDrop"/>
+        <On Terms="TimerExpired; TimerName DelayDropSound" Send="Create OrbitalCommand_CalldownExtraSuppliesImpact"/>
+        <On Terms="TimerExpired; TimerName DelayDropSound" Target="OrbitalCommand_CalldownExtraSuppliesDrop" Send="Destroy"/>
+        <On Terms="TimerExpired; TimerName ChangeDeathModel" Send="ModelSwap OdinUpgradeBoxFallingDeath"/>
+        <On Terms="ModelSwap" Send="$Death NonLooping"/>
+        <On Terms="TimerExpired; TimerName Destroy" Send="Destroy"/>
+    </CActorModel>
+    <CActorSound id="OrbitalCommand_CalldownMuleDrop2" parent="OrbitalCommand_CalldownMuleDrop">
+        <On index="1" Terms="Effect.CalldownMULECreatePersistent2.Start; At Target" Send="Create"/>
+        <On index="5" removed="1"/>
+    </CActorSound>
+    <CActorSiteOpLocalOffset id="SOpAdjustDetector">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.000000,1.300000,-0.800000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="SOpAdjustDetectorForBox">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.000000,-0.130000,0.500000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="SOpAdjustDetectorRadar">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.000000,1.150000,0.950000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="SOpAdjustInfernalFlameLeftForBox">
+        <EditorCategories value=""/>
+        <LocalOffset value="1.250000,1.250000,0.300000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="SOpAdjustInfernalFlameRight">
+        <EditorCategories value=""/>
+        <LocalOffset value="-0.100000,1.000000,-0.270000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="SOpAdjustInfernalFlameLeft">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.100000,1.000000,-0.200000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="SOpAdjustInfernalFlameRightForBox">
+        <EditorCategories value=""/>
+        <LocalOffset value="-1.250000,1.250000,0.230000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="SOpAdjustShoulderLeft">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.350000,0.200000,0.400000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="SOpAdjustShoulderRight">
+        <EditorCategories value=""/>
+        <LocalOffset value="-0.400000,0.200000,0.320000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="SOpAdjustSiege">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.000000,0.400000,-0.300000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="SOpAdjustSiegedForBox">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.000000,0.200000,-0.800000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpAttach id="SOpAttachTarget0">
+        <EditorCategories value=""/>
+        <AttachQuery Methods="Target 0"/>
+    </CActorSiteOpAttach>
+    <CActorSiteOpAttach id="SOpAttachWeapon15">
+        <EditorCategories value=""/>
+        <AttachQuery Methods="Weapon 15"/>
+    </CActorSiteOpAttach>
+    <CActorSiteOpAttach id="SOpAttachWeapon7">
+        <EditorCategories value=""/>
+        <AttachQuery Methods="Weapon 7"/>
+    </CActorSiteOpAttach>
+    <CActorSiteOpAttach id="SOpAttachWeapon5">
+        <EditorCategories value=""/>
+        <AttachQuery Methods="Weapon 5"/>
+    </CActorSiteOpAttach>
+    <CActorSiteOpAttach id="SOpAttachWeapon18">
+        <EditorCategories value=""/>
+        <AttachQuery Methods="Weapon 18"/>
+    </CActorSiteOpAttach>
+    <CActorSite id="OdinWeaponSiegedSite">
+        <EditorCategories value=""/>
+        <On Terms="ActorCreation.OdinWeaponSieged" Send="Create"/>
+        <On Terms="ActorDestruction.OdinWeaponSieged" Send="Destroy"/>
+        <Host Subject="OdinWeaponSieged"/>
+        <HostSiteOps Ops="SOpAttachWeapon"/>
+    </CActorSite>
+    <CActorSiteOpRotator id="SOpSpinDetector">
+        <EditorCategories value=""/>
+        <LocalAxis value="0.000000,0.000000,1.000000"/>
+        <InitialAngle value="180.000000"/>
+    </CActorSiteOpRotator>
+    <CActorSiteOpRotator id="SOpSpinDetectorForBox">
+        <EditorCategories value=""/>
+        <LocalAxis value="0.000000,1.000000,1.000000"/>
+        <InitialAngle value="180.000000"/>
+    </CActorSiteOpRotator>
+    <CActorSiteOpRotator id="SOpSpinDetectorRadar">
+        <EditorCategories value=""/>
+        <LocalAxis value="0.000000,0.000000,1.000000"/>
+        <Rate value="50.000000"/>
+    </CActorSiteOpRotator>
+    <CActorSiteOpRotator id="SOpSpinInfernalFlameLeft">
+        <LocalAxis value="0.000000,-1.000000,0.000000"/>
+        <InitialAngle value="90.000000"/>
+    </CActorSiteOpRotator>
+    <CActorSiteOpRotator id="SOpSpinInfernalFlameRight">
+        <LocalAxis value="0.000000,1.000000,0.000000"/>
+        <InitialAngle value="91.000000"/>
+    </CActorSiteOpRotator>
+    <CActorSiteOpRotator id="SOpSpinShoulderLeft">
+        <EditorCategories value=""/>
+        <LocalAxis value="0.000000,0.100000,0.040000"/>
+        <InitialAngle value="270.000000"/>
+    </CActorSiteOpRotator>
+    <CActorSiteOpRotator id="SOpSpinShoulderRight">
+        <EditorCategories value=""/>
+        <LocalAxis value="0.039000,-0.050000,0.028000"/>
+        <InitialAngle value="90.000000"/>
+    </CActorSiteOpRotator>
+    <CActorUnit id="Scientist">
+        <PortraitModel value="Scientist2Portrait"/>
+    </CActorUnit>
+    <CActorModel id="SiegeTankSiegedTargetImpactFire2" parent="SiegeTankSiegedTargetImpactFire">
+        <On index="5" Terms="Effect.MengskSiegeTankSiegedSet2.Start; At Target" Send="Create"/>
+    </CActorModel>
+    <CActorModel id="OdinWeaponSiegedForBox">
+        <Inherits index="CastShadows" value="1"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <Inherits index="CreepEngulfment" value="1"/>
+        <Inherits index="Decal" value="1"/>
+        <Inherits index="LocalTintColor" value="1"/>
+        <Inherits index="ModelMaterials" value="1"/>
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <Inherits index="TeamColor" value="1"/>
+        <Inherits index="TimeScale" value="1"/>
+        <Inherits index="TintColor" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <Inherits index="WarpGroup" value="1"/>
+        <On Terms="ActorCreation" Send="TimerSet 1.000000 DelayDropSound"/>
+        <On Terms="ActorCreation" Send="TimerSet 4.670000 ChangeDeathModel"/>
+        <On Terms="ActorCreation" Send="TimerSet 5.340000 Destroy"/>
+        <On Terms="ActorCreation" Send="$Birth"/>
+        <On Terms="ActorCreation" Send="Create OrbitalCommand_CalldownExtraSuppliesDrop"/>
+        <On Terms="TimerExpired; TimerName DelayDropSound" Send="Create OrbitalCommand_CalldownExtraSuppliesImpact"/>
+        <On Terms="TimerExpired; TimerName DelayDropSound" Target="OrbitalCommand_CalldownExtraSuppliesDrop" Send="Destroy"/>
+        <On Terms="TimerExpired; TimerName ChangeDeathModel" Send="ModelSwap OdinUpgradeBoxFallingDeath"/>
+        <On Terms="ModelSwap" Send="$Death NonLooping"/>
+        <On Terms="TimerExpired; TimerName Destroy" Send="Destroy"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachTarget0 SOpAdjustSiegedForBox"/>
+        <Model value="OdinUpgradeBoxFalling"/>
+        <Scale value="1.700000,1.700000,1.800000"/>
+    </CActorModel>
+</Catalog>

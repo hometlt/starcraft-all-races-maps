@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!--                                                                                         -->
+    <!-- Brood Mother                                                                                -->
+    <!--                                                                                         -->
+    <CActorUnit id="BroodMother">
+        <PortraitActor value="ZagaraPortrait"/>
+        <PortraitModel value="ZagaraPortrait"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- Brutalisk ............................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="Brutalisk">
+        <On Terms="UnitBirth.BrutaliskEnemy" Send="Create"/>
+        <On Terms="UnitBirth.BrutaliskEnemy" Send="Create SoundEmitter Brutalisk_Ambience"/>
+        <On Terms="UnitRevive.BrutaliskEnemy" Send="Create"/>
+        <On Terms="UnitRevive.BrutaliskEnemy" Send="RefSet ::HostTurretBody _Selectable"/>
+        <On Terms="UnitConstruction.BrutaliskEnemy" Send="Create"/>
+        <On Terms="UnitConstruction.BrutaliskEnemy" Send="AnimPlay ConstructionDeath Stand,Birth,Death FullMatch"/>
+        <On Terms="WeaponStart.BrutalizeEnemy.AttackStart" Send="AnimBracketStart Attack Attack"/>
+        <On Terms="WeaponStop.BrutalizeEnemy.AttackStop" Send="AnimBracketStop Attack"/>
+        <On Terms="Abil.BurrowBrutaliskDownEnemy" Target="::actor.Symbiote" Send="AnimPlay Burrow Burrow PlayForever,NonLooping -1.000000 -1.000000 1.000000 AsTimeScale"/>
+        <On Terms="Abil.BurrowBrutaliskUpEnemy" Target="::actor.Symbiote" Send="AnimClear Burrow"/>
+        <On Terms="Abil.BurrowBrutaliskUpEnemy" Target="::actor.Symbiote" Send="$Birth"/>
+        <On Terms="UnitBirth.BrutaliskBurrowedEnemy" Send="Create"/>
+        <On Terms="UnitBirth.BrutaliskBurrowedEnemy" Send="AnimBracketStart Burrow Burrow IGNORE Unburrow ClosingFull,OpeningPlayForever,Instant"/>
+    </CActorUnit>
+    <CActorAction id="BrutaliskAttackEnemy" parent="GenericAttack" effectAttack="BrutalizeDamageEnemy">
+        <LaunchAssets Model="BrutaliskAttackLaunch" Sound="Nova_SniperRifleTail_Dummy"/>
+        <Beam value="BrutaliskAttackBeam"/>
+        <Missile value="BrutaliskAttackMissile"/>
+        <ImpactMap index="None" Model="BrutaliskAttackImpact" Sound="Nova_SniperRifleTail_Dummy" ModelReaction="BrutaliskAttackImpactReaction"/>
+        <ImpactMap index="Shield" Sound="BrutaliskAttackImpactShield" ModelReaction="BrutaliskAttackImpactReactionShield"/>
+        <DamageMap index="None" Model="BrutaliskAttackDamage" Sound="BrutaliskAttackDamage" ModelReaction="BrutaliskAttackDamageReaction"/>
+        <DamageMap index="Shield" Sound="BrutaliskAttackDamageShield" ModelReaction="BrutaliskAttackDamageReactionShield"/>
+    </CActorAction>
+    <CActorUnit id="Cerebrate" parent="ZergBuilding" unitName="Cerebrate">
+        <FogVisibility value="Dimmed"/>
+        <EditorCategories value=""/>
+        <On index="0" Send="Create"/>
+        <On index="1" Terms="UnitRevive.Cerebrate"/>
+        <On index="2" Send="RefSet ::HostTurretBody _Selectable"/>
+        <On index="3" Terms="UnitConstruction.Cerebrate" Send="Create"/>
+        <On index="4" Terms="UnitConstruction.Cerebrate" Send="AnimPlay ConstructionDeath Stand,Birth,Death FullMatch"/>
+        <On index="5" Terms="AnimDone.*.Missing; AnimName ConstructionDeath" Send="Destroy"/>
+        <On index="6" Terms="ActorCreation; ValidateUnit IsFlying; Option Shadow Low; $AllowBlobShadow" Send="Create FlyerShadow"/>
+        <On index="7" Terms="ActorCreation; ValidateUnit IsNotFlying; Option Shadow Low; $AllowBlobShadow" Send="Create GroundShadow"/>
+        <On index="8" Terms="StatusOn.*.PreTargetingModel" Send="Create ModelPretargetGround"/>
+        <On index="9" Terms="StatusOff.*.PreTargetingModel" Target="ModelPretargetGround" Send="Destroy"/>
+        <On index="10" Terms="StatusOn.*.PreTargetingModel; ValidateUnit IsFlying" Target="" Send="Create GroundPreSelection"/>
+        <On index="11" Terms="StatusOff.*.PreTargetingModel" Target="GroundPreSelection" Send="Destroy"/>
+        <On index="12" Terms="StatusIncrement.*.PreTargetingModel; IsStatus PreTargetingModel 2" Target="" Send="StatusSet PreTargetingModel 1"/>
+        <On index="13" Terms="PreTargetingUpdate.*.Start" Send="SetTintColorBlendPair 255,192,192 255,128,128 0.150000 Bounce Pretarget"/>
+        <On index="14" Terms="PreTargetingUpdate.*.Stop" Send="ClearTintColor 0.100000 Pretarget"/>
+        <On index="15" Terms="StatusOn.*.PreTargetingTint" Send="PreTargetingUpdate Start"/>
+        <On index="16" Terms="StatusOff.*.PreTargetingTint" Send="PreTargetingUpdate Stop"/>
+        <On index="17" Terms="StatusIncrement.*.PreTargetingTint; IsStatus PreTargetingTint 2" Send="StatusSet PreTargetingTint 1"/>
+        <On index="18" Terms="ActorCreation; ScopeContains GroundLocalSelection" Send="StatusSet Selected 1"/>
+        <On index="19" Terms="SelectionLocalUpdate.*.Start" Send="StatusSet Selected 1"/>
+        <On index="20" Terms="SelectionLocalUpdate.*.Stop" Send="StatusSet Selected 0"/>
+        <On index="21" Terms="StatusOn.*.Selected; ValidateUnit IsFlying" Send="StatusIncrement FlyerHelper"/>
+        <On index="22" Terms="StatusOff.*.Selected; ValidateUnit IsFlying; HasStatus FlyerHelper" Send="StatusDecrement FlyerHelper"/>
+        <On index="23" Terms="UnitBirth.*.Normal" Send="$Birth,Stand 0 0.000000"/>
+        <On index="24" Terms="UnitFidget" Send="AnimPlay Fidget Stand"/>
+        <On index="25" Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Fidget"/>
+        <On index="26" Terms="UnitDetectedByViewer.*.On; ValidateUnit IsHallucination" Target="_HallucinationTinter" Send="Signal HallucinationTintOn"/>
+        <On index="27" Terms="UnitDetectedByViewer.*.Off; ValidateUnit IsHallucination" Target="_HallucinationTinter" Send="Signal HallucinationTintOff"/>
+        <On index="28" Terms="UnitDeathCustomize; ValidateUnit NotStructure; IsStatus InAir 1" Target="" Send="DeathCustomize AntiGravGeneric"/>
+        <On index="29" Terms="UnitDeathCustomize; ValidateUnit IsProtossUnit; IsStatus InAir 1" Send="DeathCustomize AntiGravProtoss"/>
+        <On index="30" Terms="UnitDeathCustomize; ValidateUnit IsTerranUnit; IsStatus InAir 1" Target="" Send="DeathCustomize AntiGravTerran"/>
+        <On index="31" Terms="UnitDeathCustomize; ValidateUnit IsZergUnit; IsStatus InAir 1" Target="" Send="DeathCustomize AntiGravZerg"/>
+        <On index="32" Terms="UnitDeathCustomize; ValidateUnit IsVortexed" Send="DeathCustomize Vortex"/>
+        <On index="33" Terms="UnitDeathCustomize; ValidateUnit HasForceLowDeathProtoss" Target="" Send="DeathCustomize AntiGravProtoss"/>
+        <On index="34" Terms="UnitDeathCustomize; ValidateUnit HasForceLowDeathZerg" Send="DeathCustomize AntiGravZerg"/>
+        <On index="35" Terms="UnitDeathCustomize; ValidateUnit HasForceLowDeathTerran" Send="DeathCustomize AntiGravTerran"/>
+        <On index="36" Terms="Behavior.PhoenixAntiGrav.On" Send="ModelSuddenMotionStart"/>
+        <On index="37" Terms="Behavior.PhoenixAntiGrav.Off" Send="ModelSuddenMotionStop"/>
+        <On index="38" Terms="Behavior.ForceLowDeath.On" Target="" Send="DeathCustomsEnablePhysics 0"/>
+        <On index="39" Terms="UnitTaunt.*.Start; Taunt" Target="" Send="AnimPlay Cheer Stand,Victory"/>
+        <On index="40" Terms="UnitTaunt.*.Stop; Taunt" Send="AnimClear Cheer"/>
+        <On index="41" Terms="UnitTaunt.*.Start; Taunt Dance" Send="AnimPlay Dance Stand,Dance"/>
+        <On index="42" Terms="UnitTaunt.*.Stop; Taunt Dance" Send="AnimClear Dance"/>
+        <On index="43" Terms="UnitTaunt.*.Start; Taunt Tease" Send="AnimPlay Taunt Taunt"/>
+        <On index="44" Terms="UnitTaunt.*.Stop; Taunt Tease" Send="AnimClear Taunt"/>
+        <On index="45" Terms="ActorCreation" Send="StatusSet InAir 0"/>
+        <On index="46" Terms="UnitHeightUpdate.*.Lift" Send="StatusSet InAir 1"/>
+        <On index="47" Terms="UnitHeightUpdate.*.Land" Send="StatusSet InAir 0"/>
+        <On index="48" Terms="Abil.attack.ReadyStart" Send="AnimGroupApply Stand"/>
+        <On index="49" Terms="WeaponStart.*.AttackStart" Send="AnimBracketStart Attack Attack"/>
+        <On index="50" Terms="WeaponStart.*.AttackStart; AnimPlaying Birth" Send="AnimClear Birth"/>
+        <On index="51" Terms="WeaponStop.*.AttackStop" Send="AnimBracketStop Attack"/>
+        <On index="52" Terms="Abil.attack.ReadyStop" Send="AnimGroupRemove Ready"/>
+        <On index="53" Terms="UnitConstruction.Cerebrate" Send="Create BuildingTerrainFlatten"/>
+        <On index="54" Terms="UnitConstruction.Cerebrate" Target="_BuildingTerrainFlatten" Send="Destroy"/>
+        <On index="55" Terms="UnitBirth.Cerebrate" Send="Create BuildingTerrainFlatten"/>
+        <On index="56" Terms="UnitBirth.Cerebrate" Send="Create BuildingTerrainFlattenInstant"/>
+        <On index="57" Terms="UnitBirth.Cerebrate" Send="Create BuildingTerrainFlattenEditor"/>
+        <On index="58" Terms="UnitDeath.Cerebrate" Target="_BuildingTerrainFlatten" Send="Destroy"/>
+        <On index="59" Terms="UnitBirth.Cerebrate" Send="Create CerebrateBase"/>
+        <On index="60" Terms="UnitDeath.Cerebrate" Target="CerebrateBase" Send="Destroy Immediate"/>
+        <On index="61" Terms="UnitDeath.Cerebrate" Send="Create CerebrateBaseDeath"/>
+        <On index="62" removed="1"/>
+        <On index="63" removed="1"/>
+        <On index="64" removed="1"/>
+        <On index="65" removed="1"/>
+        <On index="66" removed="1"/>
+        <On index="67" removed="1"/>
+        <On index="68" removed="1"/>
+        <On index="69" removed="1"/>
+        <On index="70" removed="1"/>
+        <On index="71" removed="1"/>
+        <On index="72" removed="1"/>
+        <EventDataFootprint index="0" Model="Cerebrate"/>
+        <PortraitModel value="ZergBuildingEx2_Portrait"/>
+        <HeroIcon value="Assets\Textures\wireframe-zerg-larvalqueen.dds"/>
+        <UnitFlags index="SuppressWalkIntro" value="1"/>
+        <UnitFlags index="SuppressWalkOutro" value="1"/>
+        <UnitIcon value="Assets\Textures\wireframe-zerg-larva.dds"/>
+        <DeathArray index="Normal" ModelLink="CerebrateDeath" SoundLink="Zerg_ExplosionMedium"/>
+        <GroupSoundArray index="What" value="Spell_Mend_Launch"/>
+        <SoundArray index="What" value="Spell_Mend_Launch"/>
+        <LifeArmorIcon value="Assets\Textures\btn-armor-zerg-building.dds"/>
+        <BarOffset value="95"/>
+        <BarWidth value="160"/>
+        <NameOffset value="100"/>
+    </CActorUnit>
+    <CActorModel id="CerebrateBase" parent="ModelAddition" unitName="Cerebrate">
+        <Flags index="RespondsToUnitPlayerChange" value="1"/>
+        <FogVisibility value="Dimmed"/>
+        <EditorCategories value=""/>
+        <On index="0" Terms="ActorCreation" Send="SetHeight 0.600000"/>
+        <On index="1" Terms="ActorCreation" Send="AnimPlay Idle Stand PlayForever"/>
+        <On index="2" removed="1"/>
+        <AddToProximitySystem value="0"/>
+        <AnimBlendTime value="0.000000"/>
+        <ModelFlags index="AllowHitTest" value="0"/>
+        <ModelFlags index="UseSyncSeed" value="0"/>
+        <ProximityPosition value="CenterActor"/>
+        <LocalOffsetFor2ndVisibilityTest value="0.000000,0.000000,-0.500000"/>
+    </CActorModel>
+    <CActorModel id="CerebrateBaseDeath" parent="ModelAddition" unitName="Cerebrate">
+        <Flags index="RespondsToUnitPlayerChange" value="1"/>
+        <EditorCategories value=""/>
+        <Supporter Subject="::Creator"/>
+        <On index="0" Terms="ActorCreation" Send="$Death NonLooping"/>
+        <On index="1" Terms="ActorCreation" Send="SetHeight 0.600000"/>
+        <On index="2" Terms="AnimDone" Send="Destroy"/>
+        <AddToProximitySystem value="0"/>
+        <AnimBlendTime value="0.000000"/>
+        <ModelFlags index="AllowHitTest" value="0"/>
+        <ModelFlags index="UpdateVisibility" value="0"/>
+        <ModelFlags index="UseSyncSeed" value="0"/>
+        <ProximityPosition value="CenterActor"/>
+    </CActorModel>
+    <CActorModel id="DarkArchonMindControlState">
+        <On Terms="Behavior.OvermindMindControl.On" Send="Create"/>
+        <On Terms="Behavior.OvermindMindControl.On" Target="::Main" Send="SetSoundSuffix _MC"/>
+        <On Terms="Behavior.OvermindMindControl.On" Target="::Main" Send="PlayUnitSound Ready"/>
+        <On Terms="Behavior.OvermindMindControl.Off" Target="::Main" Send="SetSoundSuffix"/>
+        <On Terms="Behavior.OvermindMindControl.Off" Send="Destroy"/>
+    </CActorModel>
+    <CActorStateMonitor id="ProtossFlamesLargeBuilding">
+        <On Terms="UnitCreation.Overmind" Send="Create"/>
+    </CActorStateMonitor>
+    <CActorAction id="PsionicCoherenceAttack2" parent="GenericAttack" effectAttack="PsionicCoherenceDamage" effectImpact="" effectLaunch="">
+        <LaunchAssets Model="" Sound="HighTemplar_MindBlastCastSound"/>
+        <Beam value="PsionicCoherenceAttackBeam"/>
+        <BeamScope value="Caster"/>
+        <Missile value=""/>
+        <ImpactMap index="None" Model="PsionicCoherenceAttackImpact" Sound="HighTemplar_PsionicStormImpact" ModelReaction=""/>
+        <ImpactMap index="Shield" Sound="" ModelReaction=""/>
+        <On index="1" Terms="Effect.Start; FromEffectTreeDescendant" Send="ActionImpact"/>
+        <On index="2" Terms="Effect.Stop; FromEffectTreeDescendant" Send="ActionImpactPhysics"/>
+        <On index="6" Terms="Effect.Start; At Caster" Send="Create"/>
+    </CActorAction>
+    <CActorBeamSimple id="PsionicCoherenceAttackBeam" parent="BeamSimpleAnimationStyleOneShot">
+        <Model value="PsionicCoherenceBeamAttack"/>
+    </CActorBeamSimple>
+    <CActorUnit id="Overmind">
+        <BarWidth value="405"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-buildingarmor.dds"/>
+        <PortraitModel value="OvermindPortrait"/>
+        <DeathArray index="Normal" SoundLink="Zerus02_OpenCS_ZergDropPod_Impact"/>
+        <BarOffset value="130"/>
+        <NameOffset value="145"/>
+        <GroupIcon>
+            <Image value="Assets\OvermindWireframe.tga"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\OvermindMonochrome.tga"/>
+        <UnitIcon value="Assets\OvermindMonochrome.tga"/>
+        <Wireframe>
+            <Image value="Assets\OvermindWireframe.tga"/>
+        </Wireframe>
+        <WireframeShield>
+            <Image value="Assets\OvermindShield1.tga"/>
+            <Image value="Assets\OvermindShield2.tga"/>
+            <Image value="Assets\OvermindShield3.tga"/>
+        </WireframeShield>
+        <StatusBarFlags index="Energy" value="0"/>
+        <ShieldArmorIcon value="Assets\Textures\btn-upgrade-protoss-shieldslevel2.dds"/>
+    </CActorUnit>
+    <CActorStateMonitor id="ZergBloodLargeBuilding">
+        <On Terms="UnitCreation.Overmind" Send="Create"/>
+    </CActorStateMonitor>
+    <CActorStateMonitor id="ZergBloodMediumBuilding">
+        <On Terms="UnitCreation.Cerebrate" Send="Create"/>
+    </CActorStateMonitor>
+</Catalog>

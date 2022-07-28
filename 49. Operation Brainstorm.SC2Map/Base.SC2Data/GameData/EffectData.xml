@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CEffectCreatePersistent id="BrutalizeCreatePersistentEnemy">
+        <EditorCategories value="Race:Zerg"/>
+        <WhichLocation Value="TargetUnit"/>
+        <PeriodCount value="2"/>
+        <PeriodicEffectArray value="BrutalizeDamageEnemy"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicPeriodArray value="0.5"/>
+        <HeightMap value="Ground"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="BrutalizeDamageEnemy">
+        <EditorCategories value="Race:Zerg"/>
+        <Marker Link="Effect/BrutalizeDamage"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Flags index="Notification" value="1"/>
+        <Kind value="Melee"/>
+        <Amount value="25"/>
+        <Death value="Eviscerate"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+        <AreaArray Arc="270" Radius="2" Fraction="1"/>
+    </CEffectDamage>
+    <CEffectSet id="OvermindMindControlSet">
+        <ValidatorArray value="noMarkers"/>
+        <ValidatorArray value="NotWarpingIn"/>
+        <ValidatorArray value="NotFrenzied"/>
+        <ValidatorArray value="HasNoCargo"/>
+        <ValidatorArray value="NotPointDefenseDrone"/>
+        <ValidatorArray value="IsNotEgg"/>
+        <ValidatorArray value="NotLarva"/>
+        <ValidatorArray value="NotInfestedSpire"/>
+        <ValidatorArray value="NoDarkArchonMindControlPrevention"/>
+        <ValidatorArray value="NoVoidShade"/>
+        <ValidatorArray value="NoTerrazineShadow"/>
+        <EditorCategories value=""/>
+        <Marker Link="Effect/DarkArchonMindControlSet"/>
+        <EffectArray value="SOAHeroicShieldWeaknessApply"/>
+        <EffectArray value="OvermindMindControlApply"/>
+        <EffectArray value="DarkArchonMindControlRemoveTargetLock"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="OvermindMindControlApply">
+        <ValidatorArray index="0" removed="1"/>
+        <EditorCategories value="Race:Zerg"/>
+        <Behavior value="OvermindMindControl"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="PsionicCoherenceRetarget">
+        <ValidatorArray index="0" removed="1"/>
+        <WhichUnit Value="Caster"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="PsionicCoherenceHighDamageSet">
+        <ValidatorArray value="PsionicCoherenceDamageHighCheck"/>
+        <EditorCategories value="Race:Protoss"/>
+        <EffectArray value="PsionicCoherenceDamage"/>
+        <EffectArray value="PsionicCoherenceRetarget"/>
+    </CEffectSet>
+    <CEffectSet id="PsionicCoherenceDamageSet">
+        <ValidatorArray value="PsionicCoherenceDamageLowCheck"/>
+        <EditorCategories value="Race:Protoss"/>
+        <EffectArray value="PsionicCoherenceDamage"/>
+        <EffectArray value="PsionicCoherenceRetarget"/>
+    </CEffectSet>
+    <CEffectDamage id="PsionicCoherenceDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Protoss"/>
+        <AttributeBonus index="Biological" value="35"/>
+        <Kind value="Ranged"/>
+        <KindSplash value="Ranged"/>
+        <Amount value="70"/>
+        <ExcludeArray Value="Outer"/>
+        <ExcludeArray Value="Target"/>
+        <SearchFilters value="-;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <SearchFlags index="OffsetByUnitRadius" value="0"/>
+        <SearchFlags index="SameCliff" value="0"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="PsionicCoherenceSearch">
+        <ValidatorArray value="PsionicCoherenceEnemyInRange"/>
+        <EditorCategories value=""/>
+        <LaunchLocation Value="CasterPoint"/>
+        <SearchFilters value="Visible;Self,Player,Ally,Neutral,Missile,Item,Stasis,Dead,Hidden,Invulnerable"/>
+        <TargetSorts RequestCount="1" RequestPercentage="1">
+            <SortArray value="TSLifeLargestFirst"/>
+        </TargetSorts>
+        <AreaArray MaxCount="1" Radius="13" Effect="PsionicCoherenceDamage"/>
+    </CEffectEnumArea>
+</Catalog>

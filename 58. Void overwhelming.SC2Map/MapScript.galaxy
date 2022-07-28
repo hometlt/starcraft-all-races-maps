@@ -1,0 +1,3747 @@
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   Void Overwhelming Test
+// 
+//==================================================================================================
+include "TriggerLibs/NativeLib"
+include "TriggerLibs/VoidLib"
+include "LibCOMI"
+include "aiF917F4D7"
+include "ai222C9282"
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+void InitLibs () {
+    libNtve_InitLib();
+    libLotv_InitLib();
+    libCOMI_InitLib();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Constants
+//--------------------------------------------------------------------------------------------------
+const int gv_pLAYER_01_USER = 1;
+const int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 3;
+const int gv_pLAYER_04_ENEMY = 4;
+
+//--------------------------------------------------------------------------------------------------
+// Global Variables
+//--------------------------------------------------------------------------------------------------
+int gv_powerMeter;
+unit gv_voidWalker;
+int gv_voidWalkerNumber;
+playergroup gv_enemyGroup;
+unitfilter gv_vICTORY_REQUIREMENT;
+int gv_remainingVoidShards;
+timer gv_voidshardtimerwin;
+timer gv_bonusObjectivetimer;
+point gv_victoryCompletePan;
+point gv_attackWaveA_Wave05Path;
+region[3][11] gv_attackSpawn;
+int gv_objectiveDestroyTheEnemyBase;
+int gv_objectiveDontOverload;
+int gv_objectiveDontOverload2;
+int gv_objectiveKillVoidWalker;
+int gv_objectiveDamageTheWalker;
+
+void InitGlobals () {
+    gv_voidWalker = UnitFromId(1114210134);
+    gv_enemyGroup = PlayerGroupEmpty();
+    gv_vICTORY_REQUIREMENT = UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)));
+    gv_remainingVoidShards = 5;
+    gv_voidshardtimerwin = TimerCreate();
+    gv_bonusObjectivetimer = TimerCreate();
+    gv_victoryCompletePan = PointFromId(1896995942);
+    gv_objectiveDestroyTheEnemyBase = c_invalidObjectiveId;
+    gv_objectiveDontOverload = c_invalidObjectiveId;
+    gv_objectiveDontOverload2 = c_invalidObjectiveId;
+    gv_objectiveKillVoidWalker = c_invalidObjectiveId;
+    gv_objectiveDamageTheWalker = c_invalidObjectiveId;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Function Declarations
+//--------------------------------------------------------------------------------------------------
+void gf_ThrasherAttackEnemies (int lp_index, int lp_count);
+void gf_VoidThrasherAI (int lp_index);
+point gf_AttackWaveSpawn ();
+void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time);
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Variables
+//--------------------------------------------------------------------------------------------------
+trigger gt_Init01LoadData;
+trigger gt_Init03LoadingComplete;
+trigger gt_Init02Players;
+trigger gt_Init04Technology;
+trigger gt_Init05Units;
+trigger gt_Init06MusicSound;
+trigger gt_Init07Environment;
+trigger gt_Init08Difficulties;
+trigger gt_StartAI;
+trigger gt_StartGameQ;
+trigger gt_UpdateVoidCountandPowerMeterandVoidPings;
+trigger gt_ObjectivePings;
+trigger gt_ObjectiveTimerWindow;
+trigger gt_BonusObjTimerWindow;
+trigger gt_ThrasherBonusObjSetup;
+trigger gt_PowerMeterSetup;
+trigger gt_PowerMeterSetupBrutal;
+trigger gt_PowerMeterupdate;
+trigger gt_PowerCheckPointsNormal;
+trigger gt_PowerCheckPointsBrutal;
+trigger gt_ThrasherSetup;
+trigger gt_UnleashThrasher;
+trigger gt_ThrasherHybridSpawn;
+trigger gt_HybridAttack3shards;
+trigger gt_HybridAttack1shard;
+trigger gt_ThrasherPower20event;
+trigger gt_ThrasherPower40events;
+trigger gt_ThrasherPower60event;
+trigger gt_VoidRiftSpawn;
+trigger gt_VoidRiftSpawn2;
+trigger gt_ThrasherPower80event;
+trigger gt_ThrasherPower80eventcheckersap;
+trigger gt_ThrasherPower80eventcheckerpower;
+trigger gt_EnemyAttackingQ;
+trigger gt_StartingDialog;
+trigger gt__3ShardsleftDialog;
+trigger gt__1ShardleftDialog;
+trigger gt_ThrasherPower20Dialog;
+trigger gt_ThrasherPower40Dialog;
+trigger gt_ThrasherPower60Dialog;
+trigger gt_ThrasherPower80Dialog;
+trigger gt_Thrasherpower100Dialog;
+trigger gt_ThrasherUnleasheddialog;
+trigger gt_BonusObjDialog;
+trigger gt_BonusObjCompleteFailedDialog;
+trigger gt_DefeatPrimaryObjectiveFailed;
+trigger gt_VictoryPrimaryObjectiveComplete;
+trigger gt_VictorySequence;
+trigger gt_VictoryFanfareQ;
+trigger gt_Victory;
+trigger gt_Defeat;
+trigger gt_SetupAttackWaveSpawn;
+trigger gt_AIAttackWaves;
+trigger gt_AIAttackWavesBrutal;
+trigger gt_AttackWave01;
+trigger gt_AttackWave02;
+trigger gt_AttackWave03;
+trigger gt_AttackWave04;
+trigger gt_AttackWave05;
+trigger gt_AttackWave06;
+trigger gt_AttackWave07;
+trigger gt_ObjectiveDestroyTheVoidShardsCreate;
+trigger gt_ObjectiveDestroyTheVoidShardsComplete;
+trigger gt_ObjectiveDestroyTheVoidShardsUpdate;
+trigger gt_ObjectiveDestroyTheVoidShardsFailed;
+trigger gt_ObjectiveDontOverloadCreate;
+trigger gt_ObjectiveDontOverloadComplete;
+trigger gt_ObjectiveDontOverloadUpdate;
+trigger gt_ObjectiveDontOverloadFailed;
+trigger gt_ObjectiveDestroyVoidWalkerCreate;
+trigger gt_ObjectiveDestroyVoidWalkerComplete;
+trigger gt_ObjectiveDestroyVoidWalkerUpdate;
+trigger gt_ObjectiveDamageTheWalkerCreate;
+trigger gt_ObjectiveDamageTheWalkerComplete;
+trigger gt_ObjectiveDamageTheWalkerUpdate;
+trigger gt_ObjectiveDamageTheWalkerFailed;
+
+//--------------------------------------------------------------------------------------------------
+// Custom AI Functions
+//--------------------------------------------------------------------------------------------------
+string[17] cai_playerAI;
+
+//--------------------------------------------------------------------------------------------------
+void InitCustomAI () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        cai_playerAI[init_i] = null;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_start (string ai, int p) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    cai_playerAI[p] = ai;
+
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_start(p); }
+    if (cai_playerAI[p] == "ai222C9282") { ai222C9282_start(p); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_setDefGather (int p, point val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_setDefGather(p, val); }
+    if (cai_playerAI[p] == "ai222C9282") { ai222C9282_setDefGather(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+string cai_getCustomData (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getCustomData(p); }
+    if (cai_playerAI[p] == "ai222C9282") { return ai222C9282_getCustomData(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave cai_getLastWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getLastWave(p); }
+    if (cai_playerAI[p] == "ai222C9282") { return ai222C9282_getLastWave(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_run (int p, playergroup target) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_run(p, target); }
+    if (cai_playerAI[p] == "ai222C9282") { ai222C9282_waves_run(p, target); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_enable(p, val); }
+    if (cai_playerAI[p] == "ai222C9282") { ai222C9282_waves_enable(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_stop (string ai) {
+    if (ai == "aiF917F4D7") { aiF917F4D7_waves_stop(); }
+    if (ai == "ai222C9282") { ai222C9282_waves_stop(); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_wave_run (int w, int p, playergroup target, bool wait) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_run(w, p, target, wait); }
+    if (cai_playerAI[p] == "ai222C9282") { ai222C9282_wave_run(w, p, target, wait); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_wave_enable (int w, int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_enable(w, p, val); }
+    if (cai_playerAI[p] == "ai222C9282") { ai222C9282_wave_enable(w, p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+bool cai_wave_isEnabled (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_isEnabled(w, p); }
+    if (cai_playerAI[p] == "ai222C9282") { return ai222C9282_wave_isEnabled(w, p); }
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+unitgroup cai_wave_createdUnits (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdUnits(w, p); }
+    if (cai_playerAI[p] == "ai222C9282") { return ai222C9282_wave_createdUnits(w, p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave cai_wave_createdWave (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdWave(w, p); }
+    if (cai_playerAI[p] == "ai222C9282") { return ai222C9282_wave_createdWave(w, p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_startall () {
+    AICampaignStart(3);
+    AICampaignStart(4);
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_runall () {
+    playergroup target = PlayerGroupEmpty();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Functions
+//--------------------------------------------------------------------------------------------------
+trigger auto_gf_ThrasherAttackEnemies_Trigger = null;
+int auto_gf_ThrasherAttackEnemies_lp_index;
+int auto_gf_ThrasherAttackEnemies_lp_count;
+
+void gf_ThrasherAttackEnemies (int lp_index, int lp_count) {
+    auto_gf_ThrasherAttackEnemies_lp_index = lp_index;
+    auto_gf_ThrasherAttackEnemies_lp_count = lp_count;
+
+    if (auto_gf_ThrasherAttackEnemies_Trigger == null) {
+        auto_gf_ThrasherAttackEnemies_Trigger = TriggerCreate("auto_gf_ThrasherAttackEnemies_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_ThrasherAttackEnemies_Trigger, false, false);
+}
+
+bool auto_gf_ThrasherAttackEnemies_TriggerFunc (bool testConds, bool runActions) {
+    int lp_index = auto_gf_ThrasherAttackEnemies_lp_index;
+    int lp_count = auto_gf_ThrasherAttackEnemies_lp_count;
+
+    // Variable Declarations
+    unitgroup lv_enemyGroup;
+    unit lv_targetUnit;
+    point lv_primaryTarget;
+    point lv_extraTarget;
+
+    // Automatic Variable Declarations
+    unitgroup auto6FD79340_g;
+    int auto6FD79340_u;
+    unit auto6FD79340_var;
+    unitgroup auto58E2916A_g;
+    int auto58E2916A_u;
+    unit auto58E2916A_var;
+    unitgroup auto014AB170_g;
+    int auto014AB170_u;
+    unit auto014AB170_var;
+    unitgroup autoBF0191B0_g;
+    int autoBF0191B0_u;
+    unit autoBF0191B0_var;
+    unitgroup auto8992AAE4_g;
+    int auto8992AAE4_u;
+    unit auto8992AAE4_var;
+    unitgroup auto996A642E_g;
+    int auto996A642E_u;
+    unit auto996A642E_var;
+    unitgroup auto13D49B66_g;
+    int auto13D49B66_u;
+    unit auto13D49B66_var;
+    unitgroup auto57991A90_g;
+    int auto57991A90_u;
+    unit auto57991A90_var;
+
+    // Variable Initialization
+    lv_enemyGroup = UnitGroupEmpty();
+
+    // Implementation
+    if (((UnitIsAlive(gv_voidWalker) == false))) {
+        return true;
+    }
+
+    lv_enemyGroup = UnitGroupAlliance(gv_pLAYER_02_USER, c_unitAllianceAlly, RegionCircle(UnitGetPosition(gv_voidWalker), 10.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    UnitGroupAdd(lv_enemyGroup, EventUnit());
+    auto6FD79340_g = lv_enemyGroup;
+    auto6FD79340_u = UnitGroupCount(auto6FD79340_g, c_unitCountAll);
+    for (;; auto6FD79340_u -= 1) {
+        auto6FD79340_var = UnitGroupUnitFromEnd(auto6FD79340_g, auto6FD79340_u);
+        if (auto6FD79340_var == null) { break; }
+        if ((UnitGetType(auto6FD79340_var) == "SOAThermalLanceTargeter")) {
+            UnitGroupRemove(lv_enemyGroup, auto6FD79340_var);
+        }
+
+    }
+    if ((UnitGroupCount(lv_enemyGroup, c_unitCountAlive) == 0)) {
+        return true;
+    }
+
+    lv_targetUnit = UnitGroupRandomUnit(UnitGroupFilterRegion(lv_enemyGroup, RegionCircle(UnitGroupCenterOfGroup(lv_enemyGroup), 4.0), 0), c_unitCountAlive);
+    if ((lv_targetUnit == null)) {
+        lv_targetUnit = UnitGroupRandomUnit(lv_enemyGroup, c_unitCountAlive);
+    }
+
+    if ((DistanceBetweenPoints(UnitGetPosition(gv_voidWalker), UnitGetPosition(lv_targetUnit)) < 5.0)) {
+        lv_primaryTarget = PointWithOffsetPolar(UnitGetPosition(gv_voidWalker), 5.0, AngleBetweenPoints(UnitGetPosition(gv_voidWalker), UnitGetPosition(lv_targetUnit)));
+        auto58E2916A_g = UnitGroupFilterRegion(lv_enemyGroup, RegionCircle(UnitGetPosition(lv_targetUnit), 3.0), 0);
+        auto58E2916A_u = UnitGroupCount(auto58E2916A_g, c_unitCountAll);
+        for (;; auto58E2916A_u -= 1) {
+            auto58E2916A_var = UnitGroupUnitFromEnd(auto58E2916A_g, auto58E2916A_u);
+            if (auto58E2916A_var == null) { break; }
+            UnitGroupRemove(lv_enemyGroup, auto58E2916A_var);
+        }
+    }
+    else {
+        lv_primaryTarget = UnitGetPosition(lv_targetUnit);
+    }
+    UnitIssueOrder(gv_voidWalker, OrderTargetingPoint(AbilityCommand("VoidThrasherLightningAoE", 0), lv_primaryTarget), c_orderQueueReplace);
+    auto014AB170_g = UnitGroupFilterRegion(lv_enemyGroup, RegionCircle(lv_primaryTarget, 3.0), 0);
+    auto014AB170_u = UnitGroupCount(auto014AB170_g, c_unitCountAll);
+    for (;; auto014AB170_u -= 1) {
+        auto014AB170_var = UnitGroupUnitFromEnd(auto014AB170_g, auto014AB170_u);
+        if (auto014AB170_var == null) { break; }
+        UnitGroupRemove(lv_enemyGroup, auto014AB170_var);
+    }
+    Wait(0.0625, c_timeAI);
+    if ((UnitGroupCount(lv_enemyGroup, c_unitCountAlive) > 0) && (UnitIsAlive(gv_voidWalker) == true)) {
+        lv_targetUnit = UnitGroupRandomUnit(UnitGroupFilterRegion(lv_enemyGroup, RegionCircle(PointWithOffsetPolar(UnitGetPosition(gv_voidWalker), 7.0, (AngleBetweenPoints(UnitGetPosition(gv_voidWalker), lv_primaryTarget) + 60.0)), 8.0), 0), c_unitCountAlive);
+        if ((lv_targetUnit == null)) {
+            lv_targetUnit = UnitGroupRandomUnit(lv_enemyGroup, c_unitCountAlive);
+        }
+
+        if ((DistanceBetweenPoints(UnitGetPosition(gv_voidWalker), UnitGetPosition(lv_targetUnit)) < 5.0)) {
+            lv_extraTarget = PointWithOffsetPolar(UnitGetPosition(gv_voidWalker), 5.0, AngleBetweenPoints(UnitGetPosition(gv_voidWalker), UnitGetPosition(lv_targetUnit)));
+            auto13D49B66_g = UnitGroupFilterRegion(lv_enemyGroup, RegionCircle(UnitGetPosition(lv_targetUnit), 3.0), 0);
+            auto13D49B66_u = UnitGroupCount(auto13D49B66_g, c_unitCountAll);
+            for (;; auto13D49B66_u -= 1) {
+                auto13D49B66_var = UnitGroupUnitFromEnd(auto13D49B66_g, auto13D49B66_u);
+                if (auto13D49B66_var == null) { break; }
+                UnitGroupRemove(lv_enemyGroup, auto13D49B66_var);
+            }
+        }
+        else {
+            lv_extraTarget = UnitGetPosition(lv_targetUnit);
+        }
+        UnitIssueOrder(gv_voidWalker, OrderTargetingPoint(AbilityCommand("VoidThrasherLightningAoEExtra", 0), lv_extraTarget), c_orderQueueAddToFront);
+        auto57991A90_g = UnitGroupFilterRegion(lv_enemyGroup, RegionCircle(lv_extraTarget, 3.0), 0);
+        auto57991A90_u = UnitGroupCount(auto57991A90_g, c_unitCountAll);
+        for (;; auto57991A90_u -= 1) {
+            auto57991A90_var = UnitGroupUnitFromEnd(auto57991A90_g, auto57991A90_u);
+            if (auto57991A90_var == null) { break; }
+            UnitGroupRemove(lv_enemyGroup, auto57991A90_var);
+        }
+    }
+    else {
+        if (((UnitIsAlive(gv_voidWalker) == false))) {
+            return true;
+        }
+
+        lv_enemyGroup = UnitGroup(null, gv_pLAYER_02_USER, RegionCircle(UnitGetPosition(gv_voidWalker), 10.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+        autoBF0191B0_g = lv_enemyGroup;
+        autoBF0191B0_u = UnitGroupCount(autoBF0191B0_g, c_unitCountAll);
+        for (;; autoBF0191B0_u -= 1) {
+            autoBF0191B0_var = UnitGroupUnitFromEnd(autoBF0191B0_g, autoBF0191B0_u);
+            if (autoBF0191B0_var == null) { break; }
+            if ((UnitGetType(autoBF0191B0_var) == "SOAThermalLanceTargeter")) {
+                UnitGroupRemove(lv_enemyGroup, autoBF0191B0_var);
+            }
+
+        }
+        if ((UnitGroupCount(lv_enemyGroup, c_unitCountAlive) == 0)) {
+            return true;
+        }
+
+        lv_targetUnit = UnitGroupRandomUnit(UnitGroupFilterRegion(lv_enemyGroup, RegionCircle(UnitGroupCenterOfGroup(lv_enemyGroup), 4.0), 0), c_unitCountAlive);
+        if ((lv_targetUnit == null)) {
+            lv_targetUnit = UnitGroupRandomUnit(lv_enemyGroup, c_unitCountAlive);
+        }
+
+        if ((DistanceBetweenPoints(UnitGetPosition(gv_voidWalker), UnitGetPosition(lv_targetUnit)) < 5.0)) {
+            lv_primaryTarget = PointWithOffsetPolar(UnitGetPosition(gv_voidWalker), 5.0, AngleBetweenPoints(UnitGetPosition(gv_voidWalker), UnitGetPosition(lv_targetUnit)));
+            auto8992AAE4_g = UnitGroupFilterRegion(lv_enemyGroup, RegionCircle(UnitGetPosition(lv_targetUnit), 3.0), 0);
+            auto8992AAE4_u = UnitGroupCount(auto8992AAE4_g, c_unitCountAll);
+            for (;; auto8992AAE4_u -= 1) {
+                auto8992AAE4_var = UnitGroupUnitFromEnd(auto8992AAE4_g, auto8992AAE4_u);
+                if (auto8992AAE4_var == null) { break; }
+                UnitGroupRemove(lv_enemyGroup, auto8992AAE4_var);
+            }
+        }
+        else {
+            lv_primaryTarget = UnitGetPosition(lv_targetUnit);
+        }
+        UnitIssueOrder(gv_voidWalker, OrderTargetingPoint(AbilityCommand("VoidThrasherLightningAoE", 0), lv_primaryTarget), c_orderQueueReplace);
+        auto996A642E_g = UnitGroupFilterRegion(lv_enemyGroup, RegionCircle(lv_primaryTarget, 3.0), 0);
+        auto996A642E_u = UnitGroupCount(auto996A642E_g, c_unitCountAll);
+        for (;; auto996A642E_u -= 1) {
+            auto996A642E_var = UnitGroupUnitFromEnd(auto996A642E_g, auto996A642E_u);
+            if (auto996A642E_var == null) { break; }
+            UnitGroupRemove(lv_enemyGroup, auto996A642E_var);
+        }
+    }
+    return true;
+}
+
+trigger auto_gf_VoidThrasherAI_Trigger = null;
+int auto_gf_VoidThrasherAI_lp_index;
+
+void gf_VoidThrasherAI (int lp_index) {
+    auto_gf_VoidThrasherAI_lp_index = lp_index;
+
+    if (auto_gf_VoidThrasherAI_Trigger == null) {
+        auto_gf_VoidThrasherAI_Trigger = TriggerCreate("auto_gf_VoidThrasherAI_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_VoidThrasherAI_Trigger, false, false);
+}
+
+bool auto_gf_VoidThrasherAI_TriggerFunc (bool testConds, bool runActions) {
+    int lp_index = auto_gf_VoidThrasherAI_lp_index;
+
+    // Automatic Variable Declarations
+    int auto591D3649_val;
+
+    // Implementation
+    while ((UnitIsAlive(gv_voidWalker) == true)) {
+        if ((UnitIsAlive(gv_voidWalker) == true) && (UnitGroupCount(UnitGroup(null, gv_pLAYER_01_USER, RegionCircle(UnitGetPosition(gv_voidWalker), 10.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) > 0)) {
+            auto591D3649_val = lp_index;
+            if (auto591D3649_val == 1) {
+                gf_ThrasherAttackEnemies(lp_index, libLotv_gf_DifficultyValueInt2(1, 1, 1, 3));
+            }
+            else if (auto591D3649_val == 2) {
+                gf_ThrasherAttackEnemies(lp_index, libLotv_gf_DifficultyValueInt2(1, 1, 1, 3));
+            }
+            else if (auto591D3649_val == 3) {
+                gf_ThrasherAttackEnemies(lp_index, libLotv_gf_DifficultyValueInt2(1, 1, 3, 3));
+            }
+            else if (auto591D3649_val == 4) {
+                gf_ThrasherAttackEnemies(lp_index, libLotv_gf_DifficultyValueInt2(1, 1, 3, 3));
+            }
+            else if (auto591D3649_val == 5) {
+                gf_ThrasherAttackEnemies(lp_index, libLotv_gf_DifficultyValueInt2(3, 3, 3, 3));
+            }
+            else {
+                gf_ThrasherAttackEnemies(lp_index, libLotv_gf_DifficultyValueInt2(1, 1, 3, 3));
+            }
+            Wait(7.0, c_timeAI);
+        }
+        else {
+            Wait(3.5, c_timeAI);
+        }
+    }
+    return true;
+}
+
+point gf_AttackWaveSpawn () {
+    // Variable Declarations
+    int lv_mapSide;
+    int lv_spawnLocationIter;
+
+    // Automatic Variable Declarations
+    const int auto9A2E02E3_ae = 10;
+    const int auto9A2E02E3_ai = 1;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_mapSide = RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER);
+    lv_spawnLocationIter = 1;
+    for ( ; ( (auto9A2E02E3_ai >= 0 && lv_spawnLocationIter <= auto9A2E02E3_ae) || (auto9A2E02E3_ai < 0 && lv_spawnLocationIter >= auto9A2E02E3_ae) ) ; lv_spawnLocationIter += auto9A2E02E3_ai ) {
+        if ((UnitGroupCount(UnitGroupAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, gv_attackSpawn[lv_mapSide][lv_spawnLocationIter], UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) > RandomInt(2, 5))) {
+            return RegionGetCenter(gv_attackSpawn[lv_mapSide][lv_spawnLocationIter]);
+        }
+
+    }
+    return RegionGetCenter(RegionFromId(9));
+}
+
+trigger auto_gf_RunAttackWaveatMissionTime_Trigger = null;
+trigger auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
+fixed auto_gf_RunAttackWaveatMissionTime_lp_time;
+
+void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time) {
+    auto_gf_RunAttackWaveatMissionTime_lp_attackWave = lp_attackWave;
+    auto_gf_RunAttackWaveatMissionTime_lp_time = lp_time;
+
+    if (auto_gf_RunAttackWaveatMissionTime_Trigger == null) {
+        auto_gf_RunAttackWaveatMissionTime_Trigger = TriggerCreate("auto_gf_RunAttackWaveatMissionTime_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_RunAttackWaveatMissionTime_Trigger, false, false);
+}
+
+bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runActions) {
+    trigger lp_attackWave = auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
+    fixed lp_time = auto_gf_RunAttackWaveatMissionTime_lp_time;
+
+    // Automatic Variable Declarations
+    // Implementation
+    while (!((lp_time <= GameGetMissionTime()))) {
+        Wait(0.3, c_timeAI);
+    }
+    if ((libCOMI_gf_GameIsOver() == false)) {
+        TriggerExecute(lp_attackWave, true, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 01 Load Data
+//--------------------------------------------------------------------------------------------------
+bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_indexPlayer;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init01LoadData_Init () {
+    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
+    TriggerAddEventMapInit(gt_Init01LoadData);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 03 Loading Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_Init02Players, true, false);
+    TriggerExecute(gt_Init04Technology, true, false);
+    TriggerExecute(gt_Init05Units, true, false);
+    TriggerExecute(gt_Init06MusicSound, true, false);
+    TriggerExecute(gt_Init07Environment, true, false);
+    TriggerExecute(gt_Init08Difficulties, true, false);
+    TriggerExecute(gt_StartAI, true, false);
+    TriggerExecute(gt_StartGameQ, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init03LoadingComplete_Init () {
+    gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 02 Players
+//--------------------------------------------------------------------------------------------------
+bool gt_Init02Players_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init02Players_Init () {
+    gt_Init02Players = TriggerCreate("gt_Init02Players_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 04 Technology
+//--------------------------------------------------------------------------------------------------
+bool gt_Init04Technology_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init04Technology_Init () {
+    gt_Init04Technology = TriggerCreate("gt_Init04Technology_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 05 Units
+//--------------------------------------------------------------------------------------------------
+bool gt_Init05Units_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init05Units_Init () {
+    gt_Init05Units = TriggerCreate("gt_Init05Units_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 06 Music/Sound
+//--------------------------------------------------------------------------------------------------
+bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init06MusicSound_Init () {
+    gt_Init06MusicSound = TriggerCreate("gt_Init06MusicSound_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 07 Environment
+//--------------------------------------------------------------------------------------------------
+bool gt_Init07Environment_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init07Environment_Init () {
+    gt_Init07Environment = TriggerCreate("gt_Init07Environment_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 08 Difficulties
+//--------------------------------------------------------------------------------------------------
+bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init08Difficulties_Init () {
+    gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start AI
+//--------------------------------------------------------------------------------------------------
+bool gt_StartAI_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_SetupAttackWaveSpawn, true, false);
+    TriggerExecute(gt_AIAttackWaves, true, false);
+    TriggerExecute(gt_AIAttackWavesBrutal, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartAI_Init () {
+    gt_StartAI = TriggerCreate("gt_StartAI_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start Game Q
+//--------------------------------------------------------------------------------------------------
+bool gt_StartGameQ_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_enemyBase;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(7.0, c_timeReal);
+    TriggerExecute(gt_StartingDialog, true, true);
+    TriggerQueueEnter();
+    TriggerExecute(gt_ObjectiveDestroyTheVoidShardsCreate, true, true);
+    TriggerExecute(gt_ObjectiveDontOverloadCreate, true, true);
+    TriggerExecute(gt_ObjectivePings, true, false);
+    TriggerExecute(gt_PowerMeterSetupBrutal, true, false);
+    TriggerExecute(gt_PowerMeterSetup, true, false);
+    Wait(2.0, c_timeGame);
+    TriggerExecute(gt_ThrasherSetup, true, false);
+    Wait(2.0, c_timeGame);
+    TriggerEnable(gt_ThrasherPower80eventcheckerpower, false);
+    TriggerEnable(gt_ThrasherPower80eventcheckersap, false);
+    TriggerQueueExit();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartGameQ_Init () {
+    gt_StartGameQ = TriggerCreate("gt_StartGameQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Update Void Count and Power Meter and Void Pings
+//--------------------------------------------------------------------------------------------------
+bool gt_UpdateVoidCountandPowerMeterandVoidPings_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_runningVoidShards;
+    int lv_superShardNumber;
+    region lv_enemyBase;
+    unitgroup lv_enemyBaseTargets;
+
+    // Automatic Variable Declarations
+    playergroup autoA77A7D59_g;
+    int autoA77A7D59_var;
+    playergroup auto985B21A2_g;
+    int auto985B21A2_var;
+
+    // Variable Initialization
+    lv_enemyBaseTargets = UnitGroupEmpty();
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((GameGetMissionTime() >= 10.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    autoA77A7D59_g = gv_enemyGroup;
+    autoA77A7D59_var = -1;
+    while (true) {
+        autoA77A7D59_var = PlayerGroupNextPlayer(autoA77A7D59_g, autoA77A7D59_var);
+        if (autoA77A7D59_var < 0) { break; }
+        lv_superShardNumber += UnitGroupCount(UnitGroup("VoidShard", autoA77A7D59_var, null, UnitFilter(0, 0, 0, 0), 0), c_unitCountAlive);
+    }
+    if ((lv_superShardNumber == 1)) {
+        TriggerExecute(gt_ThrasherPower80eventcheckersap, true, false);
+        TriggerExecute(gt_ThrasherPower80eventcheckerpower, true, false);
+    }
+
+    auto985B21A2_g = gv_enemyGroup;
+    auto985B21A2_var = -1;
+    while (true) {
+        auto985B21A2_var = PlayerGroupNextPlayer(auto985B21A2_g, auto985B21A2_var);
+        if (auto985B21A2_var < 0) { break; }
+        lv_runningVoidShards += UnitGroupCount(UnitGroup("VoidShardAC", auto985B21A2_var, null, gv_vICTORY_REQUIREMENT, 0), c_unitCountAlive);
+        lv_runningVoidShards += UnitGroupCount(UnitGroup("VoidShard", auto985B21A2_var, null, gv_vICTORY_REQUIREMENT, 0), c_unitCountAlive);
+    }
+    if ((gv_remainingVoidShards != lv_runningVoidShards)) {
+        TriggerExecute(gt_ObjectivePings, true, false);
+        gv_remainingVoidShards = lv_runningVoidShards;
+    }
+
+    if ((gv_remainingVoidShards == 3)) {
+        TriggerExecute(gt_HybridAttack3shards, true, false);
+    }
+
+    if ((gv_remainingVoidShards == 1)) {
+        TriggerExecute(gt_HybridAttack1shard, true, false);
+    }
+
+    TriggerExecute(gt_PowerMeterupdate, true, false);
+    TriggerExecute(gt_PowerCheckPointsNormal, true, false);
+    TriggerExecute(gt_PowerCheckPointsBrutal, true, false);
+    if ((UnitIsAlive(gv_voidWalker) == false)) {
+        TriggerEnable(TriggerGetCurrent(), false);
+        TriggerExecute(gt_VictoryPrimaryObjectiveComplete, true, false);
+    }
+
+    TriggerExecute(gt_ObjectiveDestroyTheVoidShardsUpdate, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_UpdateVoidCountandPowerMeterandVoidPings_Init () {
+    gt_UpdateVoidCountandPowerMeterandVoidPings = TriggerCreate("gt_UpdateVoidCountandPowerMeterandVoidPings_Func");
+    TriggerAddEventTimePeriodic(gt_UpdateVoidCountandPowerMeterandVoidPings, 1.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective Pings
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectivePings_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unitgroup lv_enemyBaseTargets;
+
+    // Automatic Variable Declarations
+    unitgroup auto677FB1DE_g;
+    int auto677FB1DE_u;
+    unit auto677FB1DE_var;
+    unitgroup auto65589CAF_g;
+    int auto65589CAF_u;
+    unit auto65589CAF_var;
+    unitgroup autoFB5E52FE_g;
+    int autoFB5E52FE_u;
+    unit autoFB5E52FE_var;
+
+    // Variable Initialization
+    lv_enemyBaseTargets = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    PingDestroyAll();
+    auto677FB1DE_g = UnitGroup("VoidShardAC", c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto677FB1DE_u = UnitGroupCount(auto677FB1DE_g, c_unitCountAll);
+    for (;; auto677FB1DE_u -= 1) {
+        auto677FB1DE_var = UnitGroupUnitFromEnd(auto677FB1DE_g, auto677FB1DE_u);
+        if (auto677FB1DE_var == null) { break; }
+        UnitGroupAdd(lv_enemyBaseTargets, auto677FB1DE_var);
+        libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(auto677FB1DE_var), null);
+    }
+    auto65589CAF_g = UnitGroup("VoidShard", c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto65589CAF_u = UnitGroupCount(auto65589CAF_g, c_unitCountAll);
+    for (;; auto65589CAF_u -= 1) {
+        auto65589CAF_var = UnitGroupUnitFromEnd(auto65589CAF_g, auto65589CAF_u);
+        if (auto65589CAF_var == null) { break; }
+        UnitGroupAdd(lv_enemyBaseTargets, auto65589CAF_var);
+        libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(auto65589CAF_var), null);
+    }
+    autoFB5E52FE_g = UnitGroup("VoidThrasherWalker", c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoFB5E52FE_u = UnitGroupCount(autoFB5E52FE_g, c_unitCountAll);
+    for (;; autoFB5E52FE_u -= 1) {
+        autoFB5E52FE_var = UnitGroupUnitFromEnd(autoFB5E52FE_g, autoFB5E52FE_u);
+        if (autoFB5E52FE_var == null) { break; }
+        libCOMI_gf_CreatePingCoop(libCOMI_gf_HumanPlayers(), "PingBoss", PointFromId(1648930206), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
+        PingSetUnit(PingLastCreated(), autoFB5E52FE_var);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectivePings_Init () {
+    gt_ObjectivePings = TriggerCreate("gt_ObjectivePings_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective Timer Window
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveTimerWindow_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TimerStart(gv_voidshardtimerwin, (1.5 * 60.0), false, c_timeGame);
+    libCOMI_gf_TimerWindowCreate(gv_voidshardtimerwin, StringExternal("Param/Value/C4621B8C"), false, false);
+    Wait(4.0, c_timeGame);
+    ObjectiveDestroy(gv_objectiveDontOverload);
+    libCOMI_gf_CreateObjectiveCampaign("PlaceholderPrimary");
+    gv_objectiveDontOverload2 = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 8);
+    ObjectiveSetDescription(gv_objectiveDontOverload2, StringExternal("Param/Value/3A05FC1C"));
+    while ((libCOMI_gf_GameIsOver() == false)) {
+        TriggerExecute(gt_Thrasherpower100Dialog, true, false);
+        TextExpressionSetToken("Param/Expression/256F41C5", "timerRemaining", libCOMI_gf_FormatTimeCampaign(FixedToInt(TimerGetRemaining(gv_voidshardtimerwin))));
+        ObjectiveSetName(gv_objectiveDontOverload2, TextExpressionAssemble("Param/Expression/256F41C5"));
+        TriggerExecute(gt_ObjectiveDontOverloadUpdate, true, false);
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveTimerWindow_Init () {
+    gt_ObjectiveTimerWindow = TriggerCreate("gt_ObjectiveTimerWindow_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Bonus Obj Timer Window
+//--------------------------------------------------------------------------------------------------
+bool gt_BonusObjTimerWindow_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TimerStart(gv_bonusObjectivetimer, (4.0 * 60.0), false, c_timeGame);
+    libCOMI_gf_TimerWindowCreate(gv_bonusObjectivetimer, StringExternal("Param/Value/B76E71F5"), false, false);
+    Wait(4.0, c_timeGame);
+    while ((libCOMI_gf_GameIsOver() == false)) {
+        TriggerExecute(gt_ObjectiveDamageTheWalkerFailed, true, false);
+        TriggerExecute(gt_ObjectiveDamageTheWalkerUpdate, true, false);
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BonusObjTimerWindow_Init () {
+    gt_BonusObjTimerWindow = TriggerCreate("gt_BonusObjTimerWindow_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Bonus Obj Set up
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherBonusObjSetup_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libNtve_gf_MakeUnitInvulnerable(UnitFromId(1114210134), false);
+    UnitBehaviorRemove(gv_voidWalker, "ApocaliskBurrowChargeStun", 1);
+    UnitSetPropertyFixed(gv_voidWalker, c_unitPropBaseMovementSpeed, 0.0);
+    TechTreeAbilityAllow(3, AbilityCommand("TemporalField", 0), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherBonusObjSetup_Init () {
+    gt_ThrasherBonusObjSetup = TriggerCreate("gt_ThrasherBonusObjSetup_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Meter Setup
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerMeterSetup_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((GameAttributeGameValue("3") != "0002"))) {
+            return false;
+        }
+
+        if (!((GameAttributeGameValue("3") == "0001"))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_DisplayProgressBar(StringExternal("Param/Value/5808BAD2"), 0, 1800);
+    libCOMI_gf_SetProgressBarValueRange(0, 1800);
+    gv_powerMeter = 35;
+    libCOMI_gf_SetProgressBarProgress(gv_powerMeter);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerMeterSetup_Init () {
+    gt_PowerMeterSetup = TriggerCreate("gt_PowerMeterSetup_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Meter Setup Brutal
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerMeterSetupBrutal_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((GameAttributeGameValue("3") == "0002"))) {
+            return false;
+        }
+
+        if (!((GameAttributeGameValue("3") != "0001"))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_DisplayProgressBar(StringExternal("Param/Value/C499598A"), 0, 1500);
+    libCOMI_gf_SetProgressBarValueRange(0, 1500);
+    gv_powerMeter = 35;
+    libCOMI_gf_SetProgressBarProgress(gv_powerMeter);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerMeterSetupBrutal_Init () {
+    gt_PowerMeterSetupBrutal = TriggerCreate("gt_PowerMeterSetupBrutal_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Meter update
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerMeterupdate_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_powerLabelNumber;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_powerMeter != 6000))) {
+            return false;
+        }
+
+        if (!((gv_remainingVoidShards != 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((GameAttributeGameValue("3") == "0002") && (GameAttributeGameValue("3") != "0001")) {
+        lv_powerLabelNumber = (gv_powerMeter * 100);
+        lv_powerLabelNumber /= 1500;
+        libCOMI_gf_SetProgressBarLabel((FormatNumber(lv_powerLabelNumber) + StringExternal("Param/Value/7257A5A3")));
+    }
+    else {
+        lv_powerLabelNumber = (gv_powerMeter * 100);
+        lv_powerLabelNumber /= 1800;
+        libCOMI_gf_SetProgressBarLabel((FormatNumber(lv_powerLabelNumber) + StringExternal("Param/Value/56303BD0")));
+    }
+    if ((gv_remainingVoidShards != 0) && (gv_powerMeter != 6000)) {
+        gv_powerMeter += 1;
+        libCOMI_gf_SetProgressBarProgress(gv_powerMeter);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerMeterupdate_Init () {
+    gt_PowerMeterupdate = TriggerCreate("gt_PowerMeterupdate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Check Points (Normal)
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerCheckPointsNormal_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((GameAttributeGameValue("3") != "0002"))) {
+            return false;
+        }
+
+        if (!((GameAttributeGameValue("3") == "0001"))) {
+            return false;
+        }
+
+        if (!((gv_powerMeter != 6000))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((gv_powerMeter == 360)) {
+        TechTreeUpgradeAddLevel(3, "VoidThrasher20", 1);
+        TechTreeUpgradeAddLevel(1, "VoidThrasher20", 1);
+        TriggerExecute(gt_ThrasherPower20Dialog, true, false);
+        TriggerExecute(gt_ThrasherPower20event, true, false);
+    }
+    else {
+        if ((gv_powerMeter == 720)) {
+            TechTreeUpgradeAddLevel(1, "VoidThrasher2", 1);
+            TechTreeUpgradeAddLevel(3, "VoidThrasher2", 1);
+            UnitBehaviorAdd(UnitFromId(1114210134), "VoidShardACDamageField", UnitFromId(1114210134), 1);
+            TriggerExecute(gt_ThrasherPower40Dialog, true, false);
+            TriggerExecute(gt_ThrasherPower40events, true, false);
+            TriggerExecute(gt_ObjectiveDamageTheWalkerCreate, false, false);
+        }
+        else {
+            if ((gv_powerMeter == 1080)) {
+                TechTreeUpgradeAddLevel(3, "VoidThrasher22", 1);
+                TechTreeUpgradeAddLevel(1, "VoidThrasher22", 1);
+                TechTreeAbilityAllow(3, AbilityCommand("VoidThrasherThrasherWave", 0), true);
+                TriggerExecute(gt_ThrasherPower60Dialog, true, false);
+                TriggerExecute(gt_ThrasherPower60event, true, false);
+                CameraShakeStart(1, c_cameraPositionTarget, c_cameraDirectionZ, 1.2, 1.2, 100.0, 3.5);
+                CameraShakeStart(2, c_cameraPositionTarget, c_cameraDirectionZ, 1.2, 1.2, 100.0, 3.5);
+            }
+            else {
+                if ((gv_powerMeter == 1440)) {
+                    GameSetLighting("SMCharBattlefield", 4.0);
+                    TechTreeUpgradeAddLevel(3, "VoidThrasher222", 1);
+                    TechTreeUpgradeAddLevel(1, "VoidThrasher222", 1);
+                    UnitBehaviorAdd(UnitFromId(1114210134), "FlyerShield", UnitFromId(1114210134), 1);
+                    TriggerExecute(gt_ThrasherPower80Dialog, true, false);
+                    TriggerExecute(gt_ThrasherPower80event, true, false);
+                }
+                else {
+                    if ((gv_powerMeter >= 1799)) {
+                        TriggerEnable(TriggerGetCurrent(), false);
+                        WaterSetState("Char|Alternate Setting", 5.0, c_wtcLinear);
+                        TriggerExecute(gt_ObjectiveTimerWindow, false, false);
+                        TechTreeUpgradeAddLevel(3, "VoidThrasher2222", 1);
+                        TechTreeUpgradeAddLevel(1, "VoidThrasher2222", 1);
+                    }
+
+                }
+            }
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerCheckPointsNormal_Init () {
+    gt_PowerCheckPointsNormal = TriggerCreate("gt_PowerCheckPointsNormal_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Check Points (Brutal)
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerCheckPointsBrutal_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_powerMeter != 6000))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((GameAttributeGameValue("3") == "0002"))) {
+            return false;
+        }
+
+        if (!((GameAttributeGameValue("3") != "0001"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((gv_powerMeter == 300)) {
+        TechTreeUpgradeAddLevel(3, "VoidThrasher20", 1);
+        TechTreeUpgradeAddLevel(1, "VoidThrasher20", 1);
+        TriggerExecute(gt_ThrasherPower20Dialog, true, false);
+        TriggerExecute(gt_ThrasherPower20event, true, false);
+    }
+    else {
+        if ((gv_powerMeter == 600)) {
+            TechTreeUpgradeAddLevel(1, "VoidThrasher2", 1);
+            TechTreeUpgradeAddLevel(3, "VoidThrasher2", 1);
+            UnitBehaviorAdd(UnitFromId(1114210134), "VoidShardACDamageField", UnitFromId(1114210134), 1);
+            TriggerExecute(gt_ThrasherPower40Dialog, true, false);
+            TriggerExecute(gt_ThrasherPower40events, true, false);
+            TriggerExecute(gt_ObjectiveDamageTheWalkerCreate, false, false);
+        }
+        else {
+            if ((gv_powerMeter == 900)) {
+                TechTreeUpgradeAddLevel(3, "VoidThrasher22", 1);
+                TechTreeUpgradeAddLevel(1, "VoidThrasher22", 1);
+                TechTreeAbilityAllow(3, AbilityCommand("VoidThrasherThrasherWave", 0), true);
+                TriggerExecute(gt_ThrasherPower60Dialog, true, false);
+                TriggerExecute(gt_ThrasherPower60event, true, false);
+                CameraShakeStart(1, c_cameraPositionTarget, c_cameraDirectionZ, 1.2, 1.2, 100.0, 3.5);
+                CameraShakeStart(2, c_cameraPositionTarget, c_cameraDirectionZ, 1.2, 1.2, 100.0, 3.5);
+            }
+            else {
+                if ((gv_powerMeter == 1200)) {
+                    GameSetLighting("SMCharBattlefield", 4.0);
+                    TechTreeUpgradeAddLevel(3, "VoidThrasher222", 1);
+                    TechTreeUpgradeAddLevel(1, "VoidThrasher222", 1);
+                    UnitBehaviorAdd(UnitFromId(1114210134), "FlyerShield", UnitFromId(1114210134), 1);
+                    TriggerExecute(gt_ThrasherPower80Dialog, true, false);
+                    TriggerExecute(gt_ThrasherPower80event, true, false);
+                }
+                else {
+                    if ((gv_powerMeter >= 1500)) {
+                        TriggerEnable(TriggerGetCurrent(), false);
+                        WaterSetState("Char|Alternate Setting", 5.0, c_wtcLinear);
+                        TriggerExecute(gt_ObjectiveTimerWindow, false, false);
+                        TriggerExecute(gt_ObjectiveDontOverloadCreate, false, false);
+                        TechTreeUpgradeAddLevel(3, "VoidThrasher2222", 1);
+                        TechTreeUpgradeAddLevel(1, "VoidThrasher2222", 1);
+                    }
+
+                }
+            }
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerCheckPointsBrutal_Init () {
+    gt_PowerCheckPointsBrutal = TriggerCreate("gt_PowerCheckPointsBrutal_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Set up
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherSetup_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_MakeUnitInvulnerable(UnitFromId(1114210134), true);
+    UnitBehaviorAdd(gv_voidWalker, "ApocaliskBurrowChargeStun", gv_voidWalker, 1);
+    TechTreeAbilityAllow(3, AbilityCommand("TemporalField", 0), false);
+    TechTreeAbilityAllow(3, AbilityCommand("HybridDominatorVoidPsychicClones", 0), false);
+    TechTreeAbilityAllow(3, AbilityCommand("ZHybridPsychicClones", 0), false);
+    TechTreeAbilityAllow(3, AbilityCommand("EnergyNova", 0), false);
+    gv_voidWalkerNumber = 1;
+    gf_VoidThrasherAI(gv_voidWalkerNumber);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherSetup_Init () {
+    gt_ThrasherSetup = TriggerCreate("gt_ThrasherSetup_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Unleash Thrasher
+//--------------------------------------------------------------------------------------------------
+bool gt_UnleashThrasher_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_ThrasherUnleasheddialog, true, false);
+    UnitSetPropertyFixed(gv_voidWalker, c_unitPropBaseMovementSpeed, 3.0);
+    UnitBehaviorRemove(gv_voidWalker, "ApocaliskBurrowChargeStun", 1);
+    libNtve_gf_MakeUnitInvulnerable(UnitFromId(1114210134), false);
+    TechTreeAbilityAllow(3, AbilityCommand("TemporalField", 0), true);
+    Wait(10.0, c_timeReal);
+    TechTreeAbilityAllow(3, AbilityCommand("HybridDominatorVoidPsychicClones", 0), true);
+    while (true) {
+        UnitIssueOrder(gv_voidWalker, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(249)), c_orderQueueAddToEnd);
+        Wait(10.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_UnleashThrasher_Init () {
+    gt_UnleashThrasher = TriggerCreate("gt_UnleashThrasher_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Hybrid Spawn
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherHybridSpawn_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(10.0, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(2, "ThrasherHybrid", 0, 3, UnitGetPosition(gv_voidWalker));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridBehemoth", 0, 3, UnitGetPosition(gv_voidWalker));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(UnitGroup(null, 3, RegionEntireMap(), UnitFilter((1 << c_targetFilterMassive) | (1 << c_targetFilterHeroic), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherHybridSpawn_Init () {
+    gt_ThrasherHybridSpawn = TriggerCreate("gt_ThrasherHybridSpawn_Func");
+    TriggerAddEventUnitAbility(gt_ThrasherHybridSpawn, null, AbilityCommand("HybridDominatorVoidPsychicClones", 0), c_unitAbilStageExecute, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Hybrid Attack 3 shards
+//--------------------------------------------------------------------------------------------------
+bool gt_HybridAttack3shards_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_randomevent;
+
+    // Automatic Variable Declarations
+    unitgroup autoC89EC5B2_g;
+    int autoC89EC5B2_u;
+    unit autoC89EC5B2_var;
+    unitgroup auto054EDC71_g;
+    int auto054EDC71_u;
+    unit auto054EDC71_var;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    while (!((TriggerActiveCount(gt_AttackWave02) == 0) && (TriggerActiveCount(gt_AttackWave03) == 0) && (TriggerActiveCount(gt_AttackWave04) == 0) && (TriggerActiveCount(gt_AttackWave05) == 0) && (TriggerActiveCount(gt_AttackWave06) == 0) && (TriggerActiveCount(gt_AttackWave07) == 0) && (TriggerActiveCount(gt_ThrasherPower20Dialog) == 0) && (TriggerActiveCount(gt_ThrasherPower40Dialog) == 0) && (TriggerActiveCount(gt_ThrasherPower60Dialog) == 0) && (TriggerActiveCount(gt_ThrasherPower80Dialog) == 0) && (TriggerActiveCount(gt_BonusObjCompleteFailedDialog) == 0) && (TriggerActiveCount(gt_BonusObjDialog) == 0) && (TriggerActiveCount(gt_ThrasherUnleasheddialog) == 0))) {
+        Wait(1.0, c_timeGame);
+    }
+    TriggerExecute(gt__3ShardsleftDialog, true, false);
+    Wait(10.0, c_timeGame);
+    if ((GameAttributeGameValue("3") == "0001") && (GameAttributeGameValue("3") != "0002")) {
+        libNtve_gf_CreateUnitsWithDefaultFacing(3, "HybridDestroyer", 0, 3, PointFromId(1896995942));
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "HybridReaver", 0, 3, PointFromId(1896995942));
+        auto054EDC71_g = UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0);
+        auto054EDC71_u = UnitGroupCount(auto054EDC71_g, c_unitCountAll);
+        for (;; auto054EDC71_u -= 1) {
+            auto054EDC71_var = UnitGroupUnitFromEnd(auto054EDC71_g, auto054EDC71_u);
+            if (auto054EDC71_var == null) { break; }
+            UnitBehaviorAdd(auto054EDC71_var, "Slow2", gv_voidWalker, 1);
+        }
+        libCOMI_gf_SendAttackWaveusingCoopAttackForce(UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0), 0, true);
+    }
+    else {
+        libNtve_gf_CreateUnitsWithDefaultFacing(3, "HybridDestroyer", 0, 3, PointFromId(1896995942));
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "HybridReaver", 0, 3, PointFromId(1896995942));
+        autoC89EC5B2_g = UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0);
+        autoC89EC5B2_u = UnitGroupCount(autoC89EC5B2_g, c_unitCountAll);
+        for (;; autoC89EC5B2_u -= 1) {
+            autoC89EC5B2_var = UnitGroupUnitFromEnd(autoC89EC5B2_g, autoC89EC5B2_u);
+            if (autoC89EC5B2_var == null) { break; }
+            UnitBehaviorAdd(autoC89EC5B2_var, "VoidHybridPower", gv_voidWalker, 1);
+            UnitBehaviorAdd(autoC89EC5B2_var, "Slow2", gv_voidWalker, 1);
+        }
+        libCOMI_gf_SendAttackWaveusingCoopAttackForce(UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0), 0, true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_HybridAttack3shards_Init () {
+    gt_HybridAttack3shards = TriggerCreate("gt_HybridAttack3shards_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Hybrid Attack 1 shard
+//--------------------------------------------------------------------------------------------------
+bool gt_HybridAttack1shard_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_randomevent;
+
+    // Automatic Variable Declarations
+    unitgroup autoC449B2A6_g;
+    int autoC449B2A6_u;
+    unit autoC449B2A6_var;
+    unitgroup autoAC643C4F_g;
+    int autoAC643C4F_u;
+    unit autoAC643C4F_var;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    while (!((TriggerActiveCount(gt_AttackWave02) == 0) && (TriggerActiveCount(gt_AttackWave03) == 0) && (TriggerActiveCount(gt_AttackWave04) == 0) && (TriggerActiveCount(gt_AttackWave05) == 0) && (TriggerActiveCount(gt_AttackWave06) == 0) && (TriggerActiveCount(gt_AttackWave07) == 0) && (TriggerActiveCount(gt_ThrasherPower20Dialog) == 0) && (TriggerActiveCount(gt_ThrasherPower40Dialog) == 0) && (TriggerActiveCount(gt_ThrasherPower60Dialog) == 0) && (TriggerActiveCount(gt_ThrasherPower80Dialog) == 0) && (TriggerActiveCount(gt_BonusObjCompleteFailedDialog) == 0) && (TriggerActiveCount(gt_BonusObjDialog) == 0) && (TriggerActiveCount(gt_ThrasherUnleasheddialog) == 0))) {
+        Wait(1.0, c_timeGame);
+    }
+    TriggerExecute(gt__1ShardleftDialog, true, false);
+    Wait(10.0, c_timeGame);
+    if ((GameAttributeGameValue("3") == "0001") && (GameAttributeGameValue("3") != "0002")) {
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "HybridDominatorVoid", 0, 3, PointFromId(1896995942));
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridBehemoth", 0, 3, PointFromId(1896995942));
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "HybridNemesis", 0, 3, PointFromId(1896995942));
+        autoAC643C4F_g = UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0);
+        autoAC643C4F_u = UnitGroupCount(autoAC643C4F_g, c_unitCountAll);
+        for (;; autoAC643C4F_u -= 1) {
+            autoAC643C4F_var = UnitGroupUnitFromEnd(autoAC643C4F_g, autoAC643C4F_u);
+            if (autoAC643C4F_var == null) { break; }
+            UnitBehaviorAdd(autoAC643C4F_var, "Slow2", gv_voidWalker, 1);
+        }
+        libCOMI_gf_SendAttackWaveusingCoopAttackForce(UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0), 0, true);
+    }
+    else {
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "HybridDominatorVoid", 0, 3, PointFromId(1896995942));
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridBehemoth", 0, 3, PointFromId(1896995942));
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "HybridNemesis", 0, 3, PointFromId(1896995942));
+        autoC449B2A6_g = UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0);
+        autoC449B2A6_u = UnitGroupCount(autoC449B2A6_g, c_unitCountAll);
+        for (;; autoC449B2A6_u -= 1) {
+            autoC449B2A6_var = UnitGroupUnitFromEnd(autoC449B2A6_g, autoC449B2A6_u);
+            if (autoC449B2A6_var == null) { break; }
+            UnitBehaviorAdd(autoC449B2A6_var, "VoidHybridPower", gv_voidWalker, 1);
+            UnitBehaviorAdd(autoC449B2A6_var, "Slow2", gv_voidWalker, 1);
+        }
+        libCOMI_gf_SendAttackWaveusingCoopAttackForce(UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0), 0, true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_HybridAttack1shard_Init () {
+    gt_HybridAttack1shard = TriggerCreate("gt_HybridAttack1shard_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Power 20% event
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherPower20event_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_randomevent20;
+
+    // Automatic Variable Declarations
+    unitgroup autoF10CBBED_g;
+    int autoF10CBBED_u;
+    unit autoF10CBBED_var;
+    unitgroup auto72216A4B_g;
+    int auto72216A4B_u;
+    unit auto72216A4B_var;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(10.0, c_timeGame);
+    lv_randomevent20 = RandomInt(1, 2);
+    if ((lv_randomevent20 == 1)) {
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridBehemoth", 0, 3, PointFromId(1896995942));
+        UnitBehaviorAdd(UnitLastCreated(), "VoidHybridPowerBehemoth", gv_voidWalker, 1);
+        UnitBehaviorAdd(UnitLastCreated(), "VoidShardACDamageField", gv_voidWalker, 1);
+        AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+        AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+        libCOMI_gf_SendAttackWaveusingCoopAttackForce(UnitGroup("HybridBehemoth", 3, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 0, true);
+        auto72216A4B_g = UnitGroup("HybridBehemoth", c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+        auto72216A4B_u = UnitGroupCount(auto72216A4B_g, c_unitCountAll);
+        for (;; auto72216A4B_u -= 1) {
+            auto72216A4B_var = UnitGroupUnitFromEnd(auto72216A4B_g, auto72216A4B_u);
+            if (auto72216A4B_var == null) { break; }
+            AIWaveAddUnit(WaveLastCreated(), auto72216A4B_var);
+        }
+    }
+    else {
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDominatorVoid", 0, 3, PointFromId(1896995942));
+        UnitBehaviorAdd(UnitLastCreated(), "VoidHybridPower", gv_voidWalker, 1);
+        UnitBehaviorAdd(UnitLastCreated(), "VoidShardACDamageField", gv_voidWalker, 1);
+        AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+        AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+        libCOMI_gf_SendAttackWaveusingCoopAttackForce(UnitGroup("HybridDominatorVoid", 3, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 0, true);
+        autoF10CBBED_g = UnitGroup("HybridDominatorVoid", c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+        autoF10CBBED_u = UnitGroupCount(autoF10CBBED_g, c_unitCountAll);
+        for (;; autoF10CBBED_u -= 1) {
+            autoF10CBBED_var = UnitGroupUnitFromEnd(autoF10CBBED_g, autoF10CBBED_u);
+            if (autoF10CBBED_var == null) { break; }
+            AIWaveAddUnit(WaveLastCreated(), autoF10CBBED_var);
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherPower20event_Init () {
+    gt_ThrasherPower20event = TriggerCreate("gt_ThrasherPower20event_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Power 40% events
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherPower40events_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_randomevent40;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    lv_randomevent40 = RandomInt(1, 2);
+    if ((lv_randomevent40 == 1)) {
+        if ((UnitIsAlive(UnitFromId(619681572)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardA", 0, 3, PointFromId(790393513), UnitGetPosition(gv_voidWalker));
+        }
+
+        if ((UnitIsAlive(UnitFromId(1974763945)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardA", 0, 3, PointFromId(1617244661), UnitGetPosition(gv_voidWalker));
+        }
+
+        if ((UnitIsAlive(UnitFromId(321800773)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardB", 0, 3, PointFromId(1333679720), UnitGetPosition(gv_voidWalker));
+        }
+
+        if ((UnitIsAlive(UnitFromId(324968427)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardB", 0, 3, PointFromId(945495995), UnitGetPosition(gv_voidWalker));
+        }
+
+        if ((UnitIsAlive(UnitFromId(85105147)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardA", 0, 3, PointFromId(363773314), UnitGetPosition(gv_voidWalker));
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardB", 0, 3, PointFromId(337768544), UnitGetPosition(gv_voidWalker));
+        }
+
+    }
+    else {
+        if ((UnitIsAlive(UnitFromId(619681572)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardA", 0, 3, PointFromId(1928855122), UnitGetPosition(gv_voidWalker));
+        }
+
+        if ((UnitIsAlive(UnitFromId(1974763945)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardA", 0, 3, PointFromId(504493207), UnitGetPosition(gv_voidWalker));
+        }
+
+        if ((UnitIsAlive(UnitFromId(321800773)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardB", 0, 3, PointFromId(1598721824), UnitGetPosition(gv_voidWalker));
+        }
+
+        if ((UnitIsAlive(UnitFromId(324968427)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardB", 0, 3, PointFromId(65723371), UnitGetPosition(gv_voidWalker));
+        }
+
+        if ((UnitIsAlive(UnitFromId(619681572)) == true) && (UnitIsAlive(UnitFromId(1974763945)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardC", 0, 3, PointFromId(982332311), UnitGetPosition(gv_voidWalker));
+            libNtve_gf_UnitCreateFacingPoint(3, "HybridDestroyer", 0, 3, PointFromId(982332311), UnitGetPosition(gv_voidWalker));
+        }
+
+        if ((UnitIsAlive(UnitFromId(321800773)) == true) && (UnitIsAlive(UnitFromId(324968427)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardC", 0, 3, PointFromId(1179950863), UnitGetPosition(gv_voidWalker));
+            libNtve_gf_UnitCreateFacingPoint(2, "HybridReaver", 0, 3, PointFromId(1179950863), UnitGetPosition(gv_voidWalker));
+        }
+
+        if ((UnitIsAlive(UnitFromId(85105147)) == true)) {
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardC", 0, 3, PointFromId(454243240), UnitGetPosition(gv_voidWalker));
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardB", 0, 3, PointFromId(991731393), UnitGetPosition(gv_voidWalker));
+            libNtve_gf_UnitCreateFacingPoint(1, "AmonShardA", 0, 3, PointFromId(1874448642), UnitGetPosition(gv_voidWalker));
+        }
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherPower40events_Init () {
+    gt_ThrasherPower40events = TriggerCreate("gt_ThrasherPower40events_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Power 60% event
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherPower60event_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_randomevent60;
+
+    // Automatic Variable Declarations
+    unitgroup auto9DE79D60_g;
+    int auto9DE79D60_u;
+    unit auto9DE79D60_var;
+    unitgroup autoDE6D4815_g;
+    int autoDE6D4815_u;
+    unit autoDE6D4815_var;
+    unitgroup autoE3283F08_g;
+    int autoE3283F08_u;
+    unit autoE3283F08_var;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(10.0, c_timeGame);
+    lv_randomevent60 = RandomInt(1, 1);
+    if ((lv_randomevent60 == 1)) {
+        libNtve_gf_ShowHideUnit(UnitFromId(1982867660), true);
+        libNtve_gf_ShowHideUnit(UnitFromId(703370003), true);
+        UnitBehaviorAdd(UnitFromId(1982867660), "VoidRiftTimedLife", gv_voidWalker, 1);
+        UnitBehaviorAdd(UnitFromId(703370003), "VoidRiftTimedLife", gv_voidWalker, 1);
+        TechTreeAbilityAllow(3, AbilityCommand("ZHybridPsychicClones", 0), true);
+        Wait(1.0, c_timeGame);
+        autoE3283F08_g = UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0);
+        autoE3283F08_u = UnitGroupCount(autoE3283F08_g, c_unitCountAll);
+        for (;; autoE3283F08_u -= 1) {
+            autoE3283F08_var = UnitGroupUnitFromEnd(autoE3283F08_g, autoE3283F08_u);
+            if (autoE3283F08_var == null) { break; }
+            UnitBehaviorAdd(autoE3283F08_var, "Slow2", gv_voidWalker, 1);
+        }
+    }
+    else {
+        libNtve_gf_ShowHideUnit(UnitFromId(1982867660), true);
+        libNtve_gf_ShowHideUnit(UnitFromId(703370003), true);
+        UnitBehaviorAdd(UnitFromId(1982867660), "VoidRiftTimedLifeShorter", gv_voidWalker, 1);
+        UnitBehaviorAdd(UnitFromId(703370003), "VoidRiftTimedLifeShorter", gv_voidWalker, 1);
+        Wait(5.0, c_timeReal);
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "Goliath", 0, 3, PointFromId(1114482671));
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "Immortal", 0, 3, PointFromId(1114482671));
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "VikingFighter", 0, 3, PointFromId(1114482671));
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", 0, 3, PointFromId(1114482671));
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, 3, PointFromId(1114482671));
+        libNtve_gf_CreateUnitsWithDefaultFacing(6, "Zergling", 0, 3, PointFromId(1114482671));
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "Stalker", 0, 3, PointFromId(1114482671));
+        auto9DE79D60_g = UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0);
+        auto9DE79D60_u = UnitGroupCount(auto9DE79D60_g, c_unitCountAll);
+        for (;; auto9DE79D60_u -= 1) {
+            auto9DE79D60_var = UnitGroupUnitFromEnd(auto9DE79D60_g, auto9DE79D60_u);
+            if (auto9DE79D60_var == null) { break; }
+            UnitBehaviorAdd(auto9DE79D60_var, "VoidShade", gv_voidWalker, 1);
+        }
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "SiegeTank", 0, 3, PointFromId(1994771474));
+        libNtve_gf_CreateUnitsWithDefaultFacing(3, "Hydralisk", 0, 3, PointFromId(1994771474));
+        libNtve_gf_CreateUnitsWithDefaultFacing(3, "Mutalisk", 0, 3, PointFromId(1994771474));
+        libNtve_gf_CreateUnitsWithDefaultFacing(3, "Zealot", 0, 3, PointFromId(1994771474));
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Carrier", 0, 3, PointFromId(1994771474));
+        libNtve_gf_CreateUnitsWithDefaultFacing(2, "Ghost", 0, 3, PointFromId(1994771474));
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "BroodLord", 0, 3, PointFromId(1994771474));
+        autoDE6D4815_g = UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0);
+        autoDE6D4815_u = UnitGroupCount(autoDE6D4815_g, c_unitCountAll);
+        for (;; autoDE6D4815_u -= 1) {
+            autoDE6D4815_var = UnitGroupUnitFromEnd(autoDE6D4815_g, autoDE6D4815_u);
+            if (autoDE6D4815_var == null) { break; }
+            UnitBehaviorAdd(autoDE6D4815_var, "VoidShade", gv_voidWalker, 1);
+            UnitBehaviorAdd(autoDE6D4815_var, "Slow2", gv_voidWalker, 1);
+        }
+    }
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherPower60event_Init () {
+    gt_ThrasherPower60event = TriggerCreate("gt_ThrasherPower60event_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Void Rift Spawn
+//--------------------------------------------------------------------------------------------------
+bool gt_VoidRiftSpawn_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_randomunit1;
+
+    // Automatic Variable Declarations
+    unitgroup auto4834347E_g;
+    int auto4834347E_u;
+    unit auto4834347E_var;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitIsAlive(UnitFromId(1982867660)) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_randomunit1 = RandomInt(1, 4);
+    if ((lv_randomunit1 == 1)) {
+        libNtve_gf_UnitCreateFacingPoint(2, "Marauder", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Zealot", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Hydralisk", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+    }
+
+    if ((lv_randomunit1 == 2)) {
+        libNtve_gf_UnitCreateFacingPoint(2, "Stalker", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Sentry", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "SwarmHostMP", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+    }
+
+    if ((lv_randomunit1 == 3)) {
+        libNtve_gf_UnitCreateFacingPoint(6, "Zergling", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Dragoon", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Mutalisk", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+    }
+
+    if ((lv_randomunit1 == 4)) {
+        libNtve_gf_UnitCreateFacingPoint(6, "Zergling", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Dragoon", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Mutalisk", 0, 3, PointFromId(1114482671), UnitGetPosition(gv_voidWalker));
+    }
+
+    auto4834347E_g = UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterHeroic) | (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0);
+    auto4834347E_u = UnitGroupCount(auto4834347E_g, c_unitCountAll);
+    for (;; auto4834347E_u -= 1) {
+        auto4834347E_var = UnitGroupUnitFromEnd(auto4834347E_g, auto4834347E_u);
+        if (auto4834347E_var == null) { break; }
+        UnitBehaviorAdd(auto4834347E_var, "VoidShade", gv_voidWalker, 1);
+        UnitIssueOrder(auto4834347E_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(249)), c_orderQueueAddToEnd);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VoidRiftSpawn_Init () {
+    gt_VoidRiftSpawn = TriggerCreate("gt_VoidRiftSpawn_Func");
+    TriggerAddEventUnitAbility(gt_VoidRiftSpawn, null, AbilityCommand("ZHybridPsychicClones", 0), c_unitAbilStageComplete, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Void Rift Spawn 2
+//--------------------------------------------------------------------------------------------------
+bool gt_VoidRiftSpawn2_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_randomunit2;
+
+    // Automatic Variable Declarations
+    unitgroup auto027567A4_g;
+    int auto027567A4_u;
+    unit auto027567A4_var;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitIsAlive(UnitFromId(703370003)) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_randomunit2 = RandomInt(1, 4);
+    if ((lv_randomunit2 == 3)) {
+        libNtve_gf_UnitCreateFacingPoint(1, "Goliath", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Ultralisk", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(2, "Marine", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+    }
+
+    if ((lv_randomunit2 == 1)) {
+        libNtve_gf_UnitCreateFacingPoint(1, "VoidRay", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Carrier", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Cyclone", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Zealot", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+    }
+
+    if ((lv_randomunit2 == 2)) {
+        libNtve_gf_UnitCreateFacingPoint(1, "Immortal", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "SiegeTank", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(2, "Reaper", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+    }
+
+    if ((lv_randomunit2 == 4)) {
+        libNtve_gf_UnitCreateFacingPoint(1, "BroodLord", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Mutalisk", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(2, "LurkerMP", 0, 3, PointFromId(1994771474), UnitGetPosition(gv_voidWalker));
+    }
+
+    auto027567A4_g = UnitGroup(null, 3, RegionFromId(10), UnitFilter(0, 0, (1 << c_targetFilterHeroic) | (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0);
+    auto027567A4_u = UnitGroupCount(auto027567A4_g, c_unitCountAll);
+    for (;; auto027567A4_u -= 1) {
+        auto027567A4_var = UnitGroupUnitFromEnd(auto027567A4_g, auto027567A4_u);
+        if (auto027567A4_var == null) { break; }
+        UnitBehaviorAdd(auto027567A4_var, "VoidShade", gv_voidWalker, 1);
+        UnitIssueOrder(auto027567A4_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(249)), c_orderQueueAddToEnd);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VoidRiftSpawn2_Init () {
+    gt_VoidRiftSpawn2 = TriggerCreate("gt_VoidRiftSpawn2_Func");
+    TriggerAddEventUnitAbility(gt_VoidRiftSpawn2, null, AbilityCommand("ZHybridPsychicClones", 0), c_unitAbilStageComplete, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Power 80% event
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherPower80event_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_randomevent80;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(10.0, c_timeGame);
+    lv_randomevent80 = RandomInt(1, 2);
+    if ((lv_randomevent80 == 1)) {
+        TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/2A157D25"), StringExternal("Param/Value/4FC19EDC"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+        libNtve_gf_UnitCreateFacingPoint(1, "VoidShard", 0, 3, PointFromId(1055680207), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(6, "Marine", 0, 3, PointFromId(1018705039), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(2, "VikingFighter", 0, 3, PointFromId(1018705039), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(3, "Goliath", 0, 3, PointFromId(191931217), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(2, "Marauder", 0, 3, PointFromId(191931217), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Battlecruiser", 0, 3, PointFromId(2038690130), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Thor", 0, 3, PointFromId(2038690130), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(2, "HybridDestroyer", 0, 3, PointFromId(1517085622), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "HybridReaver", 0, 3, PointFromId(1517085622), UnitGetPosition(gv_voidWalker));
+        TriggerEnable(gt_ThrasherPower80eventcheckersap, true);
+        Wait(7.0, c_timeGame);
+        PortraitDestroy(PortraitLastCreated());
+    }
+    else {
+        TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/6E390E91"), StringExternal("Param/Value/D6312E53"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+        libNtve_gf_UnitCreateFacingPoint(1, "VoidShard", 0, 3, PointFromId(1055680207), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(6, "Marine", 0, 3, PointFromId(1018705039), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(2, "VikingFighter", 0, 3, PointFromId(1018705039), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(3, "Goliath", 0, 3, PointFromId(191931217), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(2, "Marauder", 0, 3, PointFromId(191931217), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Battlecruiser", 0, 3, PointFromId(2038690130), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "Thor", 0, 3, PointFromId(2038690130), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(2, "HybridDestroyer", 0, 3, PointFromId(1517085622), UnitGetPosition(gv_voidWalker));
+        libNtve_gf_UnitCreateFacingPoint(1, "HybridReaver", 0, 3, PointFromId(1517085622), UnitGetPosition(gv_voidWalker));
+        TriggerEnable(gt_ThrasherPower80eventcheckerpower, true);
+        Wait(7.0, c_timeGame);
+        PortraitDestroy(PortraitLastCreated());
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherPower80event_Init () {
+    gt_ThrasherPower80event = TriggerCreate("gt_ThrasherPower80event_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Power 80% event checker sap
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherPower80eventcheckersap_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto1F8EAD72_g;
+    int auto1F8EAD72_u;
+    unit auto1F8EAD72_var;
+    unitgroup auto3AF4A457_g;
+    int auto3AF4A457_u;
+    unit auto3AF4A457_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto1F8EAD72_g = UnitGroup(null, 1, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto1F8EAD72_u = UnitGroupCount(auto1F8EAD72_g, c_unitCountAll);
+    for (;; auto1F8EAD72_u -= 1) {
+        auto1F8EAD72_var = UnitGroupUnitFromEnd(auto1F8EAD72_g, auto1F8EAD72_u);
+        if (auto1F8EAD72_var == null) { break; }
+        UnitBehaviorAdd(auto1F8EAD72_var, "VoidSapping", UnitFromId(1114210134), 1);
+    }
+    auto3AF4A457_g = UnitGroup(null, 2, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto3AF4A457_u = UnitGroupCount(auto3AF4A457_g, c_unitCountAll);
+    for (;; auto3AF4A457_u -= 1) {
+        auto3AF4A457_var = UnitGroupUnitFromEnd(auto3AF4A457_g, auto3AF4A457_u);
+        if (auto3AF4A457_var == null) { break; }
+        UnitBehaviorAdd(auto3AF4A457_var, "VoidSapping", UnitFromId(1114210134), 1);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherPower80eventcheckersap_Init () {
+    gt_ThrasherPower80eventcheckersap = TriggerCreate("gt_ThrasherPower80eventcheckersap_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Power 80% event checker power
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherPower80eventcheckerpower_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto92046DC7_g;
+    int auto92046DC7_u;
+    unit auto92046DC7_var;
+    unitgroup autoF434C085_g;
+    int autoF434C085_u;
+    unit autoF434C085_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto92046DC7_g = UnitGroup(null, 3, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto92046DC7_u = UnitGroupCount(auto92046DC7_g, c_unitCountAll);
+    for (;; auto92046DC7_u -= 1) {
+        auto92046DC7_var = UnitGroupUnitFromEnd(auto92046DC7_g, auto92046DC7_u);
+        if (auto92046DC7_var == null) { break; }
+        UnitBehaviorAdd(auto92046DC7_var, "VoidPower", UnitFromId(1114210134), 1);
+    }
+    autoF434C085_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoF434C085_u = UnitGroupCount(autoF434C085_g, c_unitCountAll);
+    for (;; autoF434C085_u -= 1) {
+        autoF434C085_var = UnitGroupUnitFromEnd(autoF434C085_g, autoF434C085_u);
+        if (autoF434C085_var == null) { break; }
+        UnitBehaviorAdd(autoF434C085_var, "VoidPower", UnitFromId(1114210134), 1);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherPower80eventcheckerpower_Init () {
+    gt_ThrasherPower80eventcheckerpower = TriggerCreate("gt_ThrasherPower80eventcheckerpower_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Enemy Attacking Q
+//--------------------------------------------------------------------------------------------------
+bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerQueueEnter();
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+    libCOMI_gf_SendMissionTransmission("AttackWave", true, RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER));
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+    TriggerQueueExit();
+    Wait(20.0, c_timeAI);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_EnemyAttackingQ_Init () {
+    gt_EnemyAttackingQ = TriggerCreate("gt_EnemyAttackingQ_Func");
+    TriggerAddEventPlayerAIWave(gt_EnemyAttackingQ, gv_pLAYER_03_ENEMY);
+    TriggerAddEventPlayerAIWave(gt_EnemyAttackingQ, gv_pLAYER_04_ENEMY);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Starting Dialog
+//--------------------------------------------------------------------------------------------------
+bool gt_StartingDialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/221E7374"), StringExternal("Param/Value/DF006588"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(10.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/71B7C662"), StringExternal("Param/Value/C092D002"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartingDialog_Init () {
+    gt_StartingDialog = TriggerCreate("gt_StartingDialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: 3 Shards left Dialog
+//--------------------------------------------------------------------------------------------------
+bool gt__3ShardsleftDialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/54FC10B6"), StringExternal("Param/Value/51B9DA8D"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt__3ShardsleftDialog_Init () {
+    gt__3ShardsleftDialog = TriggerCreate("gt__3ShardsleftDialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: 1 Shard left Dialog
+//--------------------------------------------------------------------------------------------------
+bool gt__1ShardleftDialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/85F77704"), StringExternal("Param/Value/0E7EAA9D"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt__1ShardleftDialog_Init () {
+    gt__1ShardleftDialog = TriggerCreate("gt__1ShardleftDialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Power 20% Dialog
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherPower20Dialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/F5F43078"), StringExternal("Param/Value/D77EF337"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherPower20Dialog_Init () {
+    gt_ThrasherPower20Dialog = TriggerCreate("gt_ThrasherPower20Dialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Power 40% Dialog
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherPower40Dialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/1AB77AF8"), StringExternal("Param/Value/6A52D5F3"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherPower40Dialog_Init () {
+    gt_ThrasherPower40Dialog = TriggerCreate("gt_ThrasherPower40Dialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Power 60% Dialog
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherPower60Dialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/D87FBA65"), StringExternal("Param/Value/63ADE8A0"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherPower60Dialog_Init () {
+    gt_ThrasherPower60Dialog = TriggerCreate("gt_ThrasherPower60Dialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Power 80% Dialog
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherPower80Dialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/5EDD61E3"), StringExternal("Param/Value/5420DA18"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherPower80Dialog_Init () {
+    gt_ThrasherPower80Dialog = TriggerCreate("gt_ThrasherPower80Dialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher power 100% Dialog
+//--------------------------------------------------------------------------------------------------
+bool gt_Thrasherpower100Dialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/2EDC5A23"), StringExternal("Param/Value/D1525550"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Thrasherpower100Dialog_Init () {
+    gt_Thrasherpower100Dialog = TriggerCreate("gt_Thrasherpower100Dialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Unleashed dialog
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherUnleasheddialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/6D961DFF"), StringExternal("Param/Value/A9E9FA0C"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherUnleasheddialog_Init () {
+    gt_ThrasherUnleasheddialog = TriggerCreate("gt_ThrasherUnleasheddialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Bonus Obj Dialog
+//--------------------------------------------------------------------------------------------------
+bool gt_BonusObjDialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/995263A9"), StringExternal("Param/Value/35D8A7B0"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BonusObjDialog_Init () {
+    gt_BonusObjDialog = TriggerCreate("gt_BonusObjDialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Bonus Obj Complete/Failed Dialog
+//--------------------------------------------------------------------------------------------------
+bool gt_BonusObjCompleteFailedDialog_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/F44BD428"), StringExternal("Param/Value/469FFC0E"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BonusObjCompleteFailedDialog_Init () {
+    gt_BonusObjCompleteFailedDialog = TriggerCreate("gt_BonusObjCompleteFailedDialog_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat Primary Objective Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
+    TransmissionClearAll();
+    TriggerQueuePause(true);
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/88594123"), StringExternal("Param/Value/7DCEB5EC"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    TriggerQueueClear(c_triggerQueueRemove);
+    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/79462FB3"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    CameraLockInput(gv_pLAYER_01_USER, true);
+    CameraLockInput(gv_pLAYER_02_USER, true);
+    UnitClearSelection(gv_pLAYER_01_USER);
+    UnitClearSelection(gv_pLAYER_02_USER);
+    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    CameraPan(gv_pLAYER_01_USER, PointFromId(1896995942), 1.5, -1, 10.0, false);
+    CameraPan(gv_pLAYER_02_USER, PointFromId(1896995942), 1.5, -1, 10.0, false);
+    libCOMI_gf_WaitForMissionTransmission();
+    TechTreeAbilityAllow(3, AbilityCommand("EnergyNova", 0), true);
+    UnitBehaviorRemove(gv_voidWalker, "ApocaliskBurrowChargeStun", 1);
+    UnitIssueOrder(gv_voidWalker, Order(AbilityCommand("EnergyNova", 0)), c_orderQueueReplace);
+    UISetCursorVisible(PlayerGroupAll(), true);
+    Wait(5.0, c_timeGame);
+    TriggerExecute(gt_Defeat, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DefeatPrimaryObjectiveFailed_Init () {
+    gt_DefeatPrimaryObjectiveFailed = TriggerCreate("gt_DefeatPrimaryObjectiveFailed_Func");
+    TriggerAddEventTimer(gt_DefeatPrimaryObjectiveFailed, gv_voidshardtimerwin);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Primary Objective Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_VictorySequence, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictoryPrimaryObjectiveComplete_Init () {
+    gt_VictoryPrimaryObjectiveComplete = TriggerCreate("gt_VictoryPrimaryObjectiveComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Sequence
+//--------------------------------------------------------------------------------------------------
+bool gt_VictorySequence_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
+    Wait(2.0, c_timeReal);
+    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictorySequence_Init () {
+    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Fanfare Q
+//--------------------------------------------------------------------------------------------------
+bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TransmissionClearAll();
+    TriggerQueueEnter();
+    PortraitCreate(0, 0, c_anchorLeft, 237, 360, "DarkVoicePortrait", "", "Default", true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(gv_voidWalker, true, false, "Talk"), PortraitLastCreated(), "", "Talk", null, StringExternal("Param/Value/79BB824F"), StringExternal("Param/Value/B51DB15D"), 0.0, c_transmissionDurationSet, false, c_maxPlayers, false);
+    Wait(7.0, c_timeGame);
+    PortraitDestroy(PortraitLastCreated());
+    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    libCOMI_gf_SendMissionTransmission("PrimaryObjectiveVictory", false, -1);
+    UnitPauseAll(true);
+    CameraLockInput(gv_pLAYER_01_USER, true);
+    CameraLockInput(gv_pLAYER_02_USER, true);
+    UnitClearSelection(gv_pLAYER_01_USER);
+    UnitClearSelection(gv_pLAYER_02_USER);
+    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
+    CameraPan(gv_pLAYER_01_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
+    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
+    CameraPan(gv_pLAYER_02_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
+    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/684A78B4"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/E5C8709E"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_WaitForMissionTransmission();
+    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
+    UISetCursorVisible(PlayerGroupAll(), true);
+    TriggerExecute(gt_Victory, true, false);
+    TriggerQueueExit();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictoryFanfareQ_Init () {
+    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory
+//--------------------------------------------------------------------------------------------------
+bool gt_Victory_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Victory_Init () {
+    gt_Victory = TriggerCreate("gt_Victory_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat
+//--------------------------------------------------------------------------------------------------
+bool gt_Defeat_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Defeat_Init () {
+    gt_Defeat = TriggerCreate("gt_Defeat_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Setup Attack Wave Spawn
+//--------------------------------------------------------------------------------------------------
+bool gt_SetupAttackWaveSpawn_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_spawnLocationIter;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(7);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(8);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(57);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(2);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(14);
+    lv_spawnLocationIter = 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(7);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(5);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(6);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(13);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(14);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SetupAttackWaveSpawn_Init () {
+    gt_SetupAttackWaveSpawn = TriggerCreate("gt_SetupAttackWaveSpawn_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: AI Attack Waves
+//--------------------------------------------------------------------------------------------------
+bool gt_AIAttackWaves_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((GameAttributeGameValue("3") == "0001"))) {
+            return false;
+        }
+
+        if (!((GameAttributeGameValue("3") != "0002"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gf_RunAttackWaveatMissionTime(gt_AttackWave02, (3.2 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave03, (8.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave04, (12.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave05, (16.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave05, (20.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave06, (24.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave07, (28.0 * 60.0));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AIAttackWaves_Init () {
+    gt_AIAttackWaves = TriggerCreate("gt_AIAttackWaves_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: AI Attack Waves Brutal
+//--------------------------------------------------------------------------------------------------
+bool gt_AIAttackWavesBrutal_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((GameAttributeGameValue("3") != "0001"))) {
+            return false;
+        }
+
+        if (!((GameAttributeGameValue("3") == "0002"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gf_RunAttackWaveatMissionTime(gt_AttackWave01, (2.25 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave02, (3.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave03, (7.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave04, (11.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave05, (15.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave06, (19.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave07, (22.0 * 60.0));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AIAttackWavesBrutal_Init () {
+    gt_AIAttackWavesBrutal = TriggerCreate("gt_AIAttackWavesBrutal_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 01
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave01_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+
+    // Conditions
+    if (testConds) {
+        if (!((GameAttributeGameValue("3") != "0001"))) {
+            return false;
+        }
+
+        if (!((GameAttributeGameValue("3") == "0002"))) {
+            return false;
+        }
+
+        if (!((gv_remainingVoidShards != 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (!((TriggerActiveCount(gt_HybridAttack3shards) == 0) && (TriggerActiveCount(gt_HybridAttack1shard) == 0))) {
+        Wait(1.0, c_timeGame);
+    }
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(1442941248), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    Wait(10.0, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave01_Init () {
+    gt_AttackWave01 = TriggerCreate("gt_AttackWave01_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 02
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave02_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_remainingVoidShards != 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (!((TriggerActiveCount(gt_HybridAttack3shards) == 0) && (TriggerActiveCount(gt_HybridAttack1shard) == 0))) {
+        Wait(1.0, c_timeGame);
+    }
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(1442941248), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    Wait(10.0, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave02_Init () {
+    gt_AttackWave02 = TriggerCreate("gt_AttackWave02_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 03
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave03_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+    int lv_numberOfStructures_ExpLeft;
+    int lv_numberOfStructures_ExpRight;
+    point lv_attackPathWaypoint;
+
+    // Automatic Variable Declarations
+    playergroup auto200FB8AA_g;
+    int auto200FB8AA_var;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_remainingVoidShards != 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (!((TriggerActiveCount(gt_HybridAttack3shards) == 0) && (TriggerActiveCount(gt_HybridAttack1shard) == 0))) {
+        Wait(1.0, c_timeGame);
+    }
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
+    auto200FB8AA_g = libCOMI_gf_HumanPlayers();
+    auto200FB8AA_var = -1;
+    while (true) {
+        auto200FB8AA_var = PlayerGroupNextPlayer(auto200FB8AA_g, auto200FB8AA_var);
+        if (auto200FB8AA_var < 0) { break; }
+        lv_numberOfStructures_ExpLeft += UnitGroupCount(UnitGroup(null, auto200FB8AA_var, RegionFromId(3), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
+        lv_numberOfStructures_ExpRight += UnitGroupCount(UnitGroup(null, auto200FB8AA_var, RegionFromId(4), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
+    }
+    if ((((lv_numberOfStructures_ExpLeft == 0) && (lv_numberOfStructures_ExpRight == 0)) || ((lv_numberOfStructures_ExpLeft > 0) && (lv_numberOfStructures_ExpRight > 0)))) {
+        if ((RandomInt(0, 100) < 50)) {
+            lv_attackPathWaypoint = PointFromId(367);
+        }
+        else {
+            lv_attackPathWaypoint = PointFromId(358);
+        }
+    }
+    else {
+        if ((lv_numberOfStructures_ExpLeft > lv_numberOfStructures_ExpRight)) {
+            lv_attackPathWaypoint = PointFromId(367);
+        }
+        else {
+            lv_attackPathWaypoint = PointFromId(358);
+        }
+    }
+    if ((lv_attackPathWaypoint == PointFromId(367))) {
+        gv_attackWaveA_Wave05Path = PointFromId(358);
+    }
+    else {
+        gv_attackWaveA_Wave05Path = PointFromId(367);
+    }
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(301202775), true);
+    libCOMI_gf_AddAttackForceWaypoint(lv_attackPathWaypoint, false);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave03_Init () {
+    gt_AttackWave03 = TriggerCreate("gt_AttackWave03_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 04
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave04_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+    int lv_attackingAI;
+    int lv_defendingPlayer;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_remainingVoidShards != 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (!((TriggerActiveCount(gt_HybridAttack3shards) == 0) && (TriggerActiveCount(gt_HybridAttack1shard) == 0))) {
+        Wait(1.0, c_timeGame);
+    }
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(301202775), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave04_Init () {
+    gt_AttackWave04 = TriggerCreate("gt_AttackWave04_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 05
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave05_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+    int lv_numberOfStructures_ExpLeft;
+    int lv_numberOfStructures_ExpRight;
+    point lv_attackPathWaypoint;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_remainingVoidShards != 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (!((TriggerActiveCount(gt_HybridAttack3shards) == 0) && (TriggerActiveCount(gt_HybridAttack1shard) == 0))) {
+        Wait(1.0, c_timeGame);
+    }
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__5Late;
+    lv_attackPathWaypoint = gv_attackWaveA_Wave05Path;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(247450024), true);
+    libCOMI_gf_AddAttackForceWaypoint(lv_attackPathWaypoint, false);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave05_Init () {
+    gt_AttackWave05 = TriggerCreate("gt_AttackWave05_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 06
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave06_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__6Larger;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel06;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_remainingVoidShards != 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (!((TriggerActiveCount(gt_HybridAttack3shards) == 0) && (TriggerActiveCount(gt_HybridAttack1shard) == 0))) {
+        Wait(1.0, c_timeGame);
+    }
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__6Larger;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel06;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(2087309699), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave06_Init () {
+    gt_AttackWave06 = TriggerCreate("gt_AttackWave06_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 07
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave07_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__7Largest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel07;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_remainingVoidShards != 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (!((TriggerActiveCount(gt_HybridAttack3shards) == 0) && (TriggerActiveCount(gt_HybridAttack1shard) == 0))) {
+        Wait(1.0, c_timeGame);
+    }
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__7Largest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel07;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(2087309699), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave07_Init () {
+    gt_AttackWave07 = TriggerCreate("gt_AttackWave07_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyTheVoidShards - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyTheVoidShardsCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_CreateObjectiveCampaign("PlaceholderPrimary");
+    libCOMI_gf_SetObjectiveRequiredCountCampaign("PlaceholderPrimary", gv_remainingVoidShards);
+    gv_objectiveDestroyTheEnemyBase = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 10);
+    ObjectiveSetDescription(ObjectiveLastCreated(), StringExternal("Param/Value/549941CE"));
+    TriggerExecute(gt_ObjectiveDestroyTheVoidShardsUpdate, true, false);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyTheVoidShardsCreate_Init () {
+    gt_ObjectiveDestroyTheVoidShardsCreate = TriggerCreate("gt_ObjectiveDestroyTheVoidShardsCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyTheVoidShards - Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyTheVoidShardsComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((gv_remainingVoidShards == 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDestroyTheVoidShardsCreate, true, false);
+    ObjectiveSetState(gv_objectiveDestroyTheEnemyBase, c_objectiveStateCompleted);
+    ObjectiveSetState(gv_objectiveDestroyTheEnemyBase, c_objectiveStateCompleted);
+    TriggerExecute(gt_ObjectiveDestroyVoidWalkerCreate, true, false);
+    Wait(2.0, c_timeGame);
+    TriggerExecute(gt_UnleashThrasher, true, false);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyTheVoidShardsComplete_Init () {
+    gt_ObjectiveDestroyTheVoidShardsComplete = TriggerCreate("gt_ObjectiveDestroyTheVoidShardsComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyTheVoidShards - Update
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyTheVoidShardsUpdate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_ObjectiveDestroyTheVoidShardsCreate, true, false);
+    libCOMI_gf_SetMissionObjectiveProgress("PlaceholderPrimary", gv_remainingVoidShards);
+    TextExpressionSetToken("Param/Expression/EF9F2804", "StructureCount", IntToText(gv_remainingVoidShards));
+    ObjectiveSetName(gv_objectiveDestroyTheEnemyBase, TextExpressionAssemble("Param/Expression/EF9F2804"));
+    TriggerExecute(gt_ObjectiveDestroyTheVoidShardsComplete, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyTheVoidShardsUpdate_Init () {
+    gt_ObjectiveDestroyTheVoidShardsUpdate = TriggerCreate("gt_ObjectiveDestroyTheVoidShardsUpdate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyTheVoidShards - Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyTheVoidShardsFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDestroyTheVoidShardsCreate, true, false);
+    ObjectiveSetState(gv_objectiveDestroyTheEnemyBase, c_objectiveStateFailed);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyTheVoidShardsFailed_Init () {
+    gt_ObjectiveDestroyTheVoidShardsFailed = TriggerCreate("gt_ObjectiveDestroyTheVoidShardsFailed_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DontOverload - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDontOverloadCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_CreateObjectiveCampaign("PlaceholderPrimary");
+    gv_objectiveDontOverload = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 8);
+    ObjectiveSetDescription(ObjectiveLastCreated(), StringExternal("Param/Value/3587932D"));
+    TriggerExecute(gt_ObjectiveDontOverloadUpdate, true, false);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDontOverloadCreate_Init () {
+    gt_ObjectiveDontOverloadCreate = TriggerCreate("gt_ObjectiveDontOverloadCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DontOverload - Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDontOverloadComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((gv_remainingVoidShards == 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDontOverloadCreate, true, false);
+    ObjectiveSetState(gv_objectiveDontOverload2, c_objectiveStateCompleted);
+    TimerPause(gv_voidshardtimerwin, true);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDontOverloadComplete_Init () {
+    gt_ObjectiveDontOverloadComplete = TriggerCreate("gt_ObjectiveDontOverloadComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DontOverload - Update
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDontOverloadUpdate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_ObjectiveDontOverloadCreate, true, false);
+    ObjectiveSetName(gv_objectiveDontOverload, TextExpressionAssemble("Param/Expression/426E48EE"));
+    TriggerExecute(gt_ObjectiveDontOverloadComplete, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDontOverloadUpdate_Init () {
+    gt_ObjectiveDontOverloadUpdate = TriggerCreate("gt_ObjectiveDontOverloadUpdate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DontOverload- Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDontOverloadFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDontOverloadCreate, true, false);
+    ObjectiveSetState(gv_objectiveDontOverload, c_objectiveStateFailed);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDontOverloadFailed_Init () {
+    gt_ObjectiveDontOverloadFailed = TriggerCreate("gt_ObjectiveDontOverloadFailed_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyVoidWalker - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyVoidWalkerCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_CreateObjectiveCampaign("PlaceholderPrimary");
+    libCOMI_gf_SetObjectiveRequiredCountCampaign("PlaceholderPrimary", gv_voidWalkerNumber);
+    gv_objectiveKillVoidWalker = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 11);
+    ObjectiveSetDescription(ObjectiveLastCreated(), StringExternal("Param/Value/ABECF075"));
+    TriggerExecute(gt_ObjectiveDestroyVoidWalkerUpdate, true, false);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyVoidWalkerCreate_Init () {
+    gt_ObjectiveDestroyVoidWalkerCreate = TriggerCreate("gt_ObjectiveDestroyVoidWalkerCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyVoidWalker - Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyVoidWalkerComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((gv_remainingVoidShards == 0))) {
+            return false;
+        }
+
+        if (!((UnitIsAlive(gv_voidWalker) == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_voidWalkerNumber = 0;
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDestroyVoidWalkerCreate, true, false);
+    ObjectiveSetState(gv_objectiveKillVoidWalker, c_objectiveStateCompleted);
+    TriggerExecute(gt_VictoryPrimaryObjectiveComplete, true, false);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyVoidWalkerComplete_Init () {
+    gt_ObjectiveDestroyVoidWalkerComplete = TriggerCreate("gt_ObjectiveDestroyVoidWalkerComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyVoidWalker - Update
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyVoidWalkerUpdate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_ObjectiveDestroyVoidWalkerCreate, true, false);
+    libCOMI_gf_SetMissionObjectiveProgress("PlaceholderPrimary", gv_voidWalkerNumber);
+    ObjectiveSetName(gv_objectiveKillVoidWalker, TextExpressionAssemble("Param/Expression/7A0B8AF6"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyVoidWalkerUpdate_Init () {
+    gt_ObjectiveDestroyVoidWalkerUpdate = TriggerCreate("gt_ObjectiveDestroyVoidWalkerUpdate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DamageTheWalker - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDamageTheWalkerCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(20.0, c_timeGame);
+    libCOMI_gf_CreateObjectiveCampaign("PlaceholderSecondary");
+    gv_objectiveDamageTheWalker = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 7);
+    ObjectiveSetDescription(ObjectiveLastCreated(), StringExternal("Param/Value/6F2A26EB"));
+    TriggerExecute(gt_ObjectiveDamageTheWalkerUpdate, true, false);
+    TriggerExecute(gt_BonusObjDialog, true, false);
+    TriggerExecute(gt_BonusObjTimerWindow, false, false);
+    TriggerExecute(gt_ThrasherBonusObjSetup, true, false);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDamageTheWalkerCreate_Init () {
+    gt_ObjectiveDamageTheWalkerCreate = TriggerCreate("gt_ObjectiveDamageTheWalkerCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DamageTheWalker - Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDamageTheWalkerComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(gv_voidWalker, c_unitPropLifePercent, c_unitPropCurrent) < 75.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ThrasherSetup, true, false);
+    TriggerExecute(gt_ObjectiveDamageTheWalkerCreate, true, false);
+    TriggerExecute(gt_BonusObjCompleteFailedDialog, true, false);
+    ObjectiveSetState(gv_objectiveDamageTheWalker, c_objectiveStateCompleted);
+    TimerPause(gv_bonusObjectivetimer, true);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDamageTheWalkerComplete_Init () {
+    gt_ObjectiveDamageTheWalkerComplete = TriggerCreate("gt_ObjectiveDamageTheWalkerComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DamageTheWalker - Update
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDamageTheWalkerUpdate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_ObjectiveDamageTheWalkerCreate, true, false);
+    TextExpressionSetToken("Param/Expression/0155EC13", "timerRemaining", libCOMI_gf_FormatTimeCampaign(FixedToInt(TimerGetRemaining(gv_bonusObjectivetimer))));
+    ObjectiveSetName(gv_objectiveDamageTheWalker, TextExpressionAssemble("Param/Expression/0155EC13"));
+    TriggerExecute(gt_ObjectiveDamageTheWalkerComplete, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDamageTheWalkerUpdate_Init () {
+    gt_ObjectiveDamageTheWalkerUpdate = TriggerCreate("gt_ObjectiveDamageTheWalkerUpdate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DamageTheWalker - Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDamageTheWalkerFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((TimerGetRemaining(gv_bonusObjectivetimer) == 0.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerEnable(gt_ObjectiveDamageTheWalkerUpdate, false);
+    TriggerExecute(gt_ObjectiveDamageTheWalkerCreate, true, false);
+    TriggerExecute(gt_ThrasherSetup, true, false);
+    TriggerExecute(gt_BonusObjCompleteFailedDialog, true, false);
+    ObjectiveSetState(gv_objectiveDamageTheWalker, c_objectiveStateFailed);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDamageTheWalkerFailed_Init () {
+    gt_ObjectiveDamageTheWalkerFailed = TriggerCreate("gt_ObjectiveDamageTheWalkerFailed_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Initialization
+//--------------------------------------------------------------------------------------------------
+void InitTriggers () {
+    gt_Init01LoadData_Init();
+    gt_Init03LoadingComplete_Init();
+    gt_Init02Players_Init();
+    gt_Init04Technology_Init();
+    gt_Init05Units_Init();
+    gt_Init06MusicSound_Init();
+    gt_Init07Environment_Init();
+    gt_Init08Difficulties_Init();
+    gt_StartAI_Init();
+    gt_StartGameQ_Init();
+    gt_UpdateVoidCountandPowerMeterandVoidPings_Init();
+    gt_ObjectivePings_Init();
+    gt_ObjectiveTimerWindow_Init();
+    gt_BonusObjTimerWindow_Init();
+    gt_ThrasherBonusObjSetup_Init();
+    gt_PowerMeterSetup_Init();
+    gt_PowerMeterSetupBrutal_Init();
+    gt_PowerMeterupdate_Init();
+    gt_PowerCheckPointsNormal_Init();
+    gt_PowerCheckPointsBrutal_Init();
+    gt_ThrasherSetup_Init();
+    gt_UnleashThrasher_Init();
+    gt_ThrasherHybridSpawn_Init();
+    gt_HybridAttack3shards_Init();
+    gt_HybridAttack1shard_Init();
+    gt_ThrasherPower20event_Init();
+    gt_ThrasherPower40events_Init();
+    gt_ThrasherPower60event_Init();
+    gt_VoidRiftSpawn_Init();
+    gt_VoidRiftSpawn2_Init();
+    gt_ThrasherPower80event_Init();
+    gt_ThrasherPower80eventcheckersap_Init();
+    gt_ThrasherPower80eventcheckerpower_Init();
+    gt_EnemyAttackingQ_Init();
+    gt_StartingDialog_Init();
+    gt__3ShardsleftDialog_Init();
+    gt__1ShardleftDialog_Init();
+    gt_ThrasherPower20Dialog_Init();
+    gt_ThrasherPower40Dialog_Init();
+    gt_ThrasherPower60Dialog_Init();
+    gt_ThrasherPower80Dialog_Init();
+    gt_Thrasherpower100Dialog_Init();
+    gt_ThrasherUnleasheddialog_Init();
+    gt_BonusObjDialog_Init();
+    gt_BonusObjCompleteFailedDialog_Init();
+    gt_DefeatPrimaryObjectiveFailed_Init();
+    gt_VictoryPrimaryObjectiveComplete_Init();
+    gt_VictorySequence_Init();
+    gt_VictoryFanfareQ_Init();
+    gt_Victory_Init();
+    gt_Defeat_Init();
+    gt_SetupAttackWaveSpawn_Init();
+    gt_AIAttackWaves_Init();
+    gt_AIAttackWavesBrutal_Init();
+    gt_AttackWave01_Init();
+    gt_AttackWave02_Init();
+    gt_AttackWave03_Init();
+    gt_AttackWave04_Init();
+    gt_AttackWave05_Init();
+    gt_AttackWave06_Init();
+    gt_AttackWave07_Init();
+    gt_ObjectiveDestroyTheVoidShardsCreate_Init();
+    gt_ObjectiveDestroyTheVoidShardsComplete_Init();
+    gt_ObjectiveDestroyTheVoidShardsUpdate_Init();
+    gt_ObjectiveDestroyTheVoidShardsFailed_Init();
+    gt_ObjectiveDontOverloadCreate_Init();
+    gt_ObjectiveDontOverloadComplete_Init();
+    gt_ObjectiveDontOverloadUpdate_Init();
+    gt_ObjectiveDontOverloadFailed_Init();
+    gt_ObjectiveDestroyVoidWalkerCreate_Init();
+    gt_ObjectiveDestroyVoidWalkerComplete_Init();
+    gt_ObjectiveDestroyVoidWalkerUpdate_Init();
+    gt_ObjectiveDamageTheWalkerCreate_Init();
+    gt_ObjectiveDamageTheWalkerComplete_Init();
+    gt_ObjectiveDamageTheWalkerUpdate_Init();
+    gt_ObjectiveDamageTheWalkerFailed_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitLibs();
+    InitGlobals();
+    InitCustomAI();
+    InitTriggers();
+}

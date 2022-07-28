@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CValidatorUnitCompareVital id="CoreLifeLT1" parent="CasterLifePercent">
+        <Compare value="LE"/>
+        <Type value="Current"/>
+        <Value value="1"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareBehaviorCount id="CentralCoreRestabilizeBreakBehavior">
+        <Behavior value="CentralCoreDummyBehaviorBreakChain"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorLocationCompareRange id="CoreRestabilizeDistance">
+        <ResultFailed value="TargetIsOutOfRange"/>
+        <WhichLocation Value="SourceUnit"/>
+        <Compare value="GT"/>
+        <Range value="5.5"/>
+        <Pathing value="1"/>
+        <Value Value="TargetUnit"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorLocationCompareRange id="CentralCoreRestabilizeDistance">
+        <ResultFailed value="TargetIsOutOfRange"/>
+        <WhichLocation Value="SourceUnit"/>
+        <Compare value="GT"/>
+        <Range value="7.5"/>
+        <Pathing value="1"/>
+        <Value Value="TargetUnit"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorLocationCompareRange id="CoreRestabilizeDistanceBehavior">
+        <ResultFailed value="TargetIsOutOfRange"/>
+        <WhichLocation Effect="CoreRestabilizeApplyBehavior" Value="SourceUnit"/>
+        <Compare value="LE"/>
+        <Range value="5"/>
+        <Pathing value="1"/>
+        <Value Value="TargetUnit"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorUnitCompareBehaviorCount id="CoreRestabilizePrevention">
+        <Behavior value="DummyBehaviorPreventRestabilize"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CoreRestabilizeTargetBehavior">
+        <Value value="1"/>
+        <Behavior value="LivingConduit"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CoreRestabilizeBreakBehavior">
+        <Behavior value="DummyBehaviorBreakChain"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CentralCoreRestabilizeTargetBehavior">
+        <Value value="1"/>
+        <Behavior value="CentralCoreLivingConduit"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CoreRestabilizeTargetBehaviorFromSearcher">
+        <WhichUnit Effect="CoreRestabilizeSearch"/>
+        <Value value="1"/>
+        <Behavior value="LivingConduit"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="CentralCoreRestabilizeTargetBehaviorFromSearcher">
+        <WhichUnit Effect="CentralCoreRestabilizeSearch"/>
+        <Value value="1"/>
+        <Behavior value="CentralCoreLivingConduit"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorPlayerCompareType id="OwnerofUnitisPlayer">
+        <WhichPlayer Value="Target"/>
+        <Compare value="NE"/>
+        <Value value="Computer"/>
+    </CValidatorPlayerCompareType>
+    <CValidatorUnitType id="TargetisCentralCore">
+        <Value value="PurifierCoreMatrix"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="TargetisOutterCore">
+        <Value value="PurifierCore"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="TargetisCoreType">
+        <CombineArray value="TargetisOutterCore"/>
+        <CombineArray value="TargetisCentralCore"/>
+    </CValidatorCombine>
+</Catalog>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <!--                                                                                         -->
+    <!-- Dehaka                                                                              -->
+    <!--                                                                                         -->
+    <CActorMissile id="Dehaka">
+        <On Terms="ActorCreation" Send="AnimGroupApply Superior"/>
+    </CActorMissile>
+    <CActorUnit id="DrakkenLaserDrillCoop2" parent="TerranBuilding" unitName="DrakkenLaserDrillCoop2">
+        <On Terms="UnitBirth.UnfinishedDrakkenLaserDrillCoop" Send="Create"/>
+        <On Terms="Behavior.DrakkenLaserDrillBirth.On" Send="AnimBlendTimeApply 0.000000"/>
+        <On Terms="Behavior.DrakkenLaserDrillBirth.Off" Send="AnimBracketStart Birth Birth Build Stand,Work,Start"/>
+        <On Terms="Behavior.DrakkenLaserDrillBirth.Off" Send="AnimBlendTimeApply"/>
+        <On Terms="Behavior.DrakkenLaserDrillBirth.Off" Send="Create DrakkenLaserDrillAC_ConstructionLoopSound"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom UnfinishedDrakkenLaserDrillCoop" Send="AnimBracketStop Birth"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom UnfinishedDrakkenLaserDrillCoop" Target="DrakkenLaserDrillAC_ConstructionLoopSound" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Start; MorphTo DamagedDrakkenLaserDrillCoop; MorphFrom DrakkenLaserDrillCoop" Send="AnimBracketStart Work Stand,Work,End Build Stand,Work,Start"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom DamagedDrakkenLaserDrillCoop" Send="AnimBracketStop Work"/>
+        <On Terms="Effect.LaserDrillTripodCoopFinalPersistent.Start" Send="AnimPlay Attack Attack,00 PlayForever -1.000000 -1.000000 1.000000 AsTimeScale"/>
+        <On Terms="Effect.LaserDrillTripodCoopFinalPersistent.Start" Send="AnimPlay GLAttack GLstand PlayForever"/>
+        <On Terms="Effect.LaserDrillTripodCoopFinalPersistent.Stop" Send="AnimClear GLAttack 0.330000"/>
+        <On Terms="Effect.LaserDrillTripodCoopFinalPersistent.Stop" Send="AnimClear Attack 0.330000"/>
+        <On Terms="Effect.DrakkenLaserDrillBFGDummyCP.Start" Send="AnimPlay Attack Attack,A"/>
+        <On Terms="Effect.DrakkenLaserDrillBFGDummyCP.Stop" Send="AnimClear Attack"/>
+        <On Terms="Effect.DrakkenLaserDrillNukeDelayCP.Start" Send="AnimPlay Attack Attack,B 0 -1.000000 1.000000 1.350000 AsTimeScale"/>
+        <On Terms="Effect.DrakkenLaserDrillNukeDelayCP.Start" Send="Create DrakkenLaserDrillLaserChargeSound"/>
+        <On Terms="Effect.DrakkenLaserDrillNukeDelayCP.Start" Send="Create SwannAC_PulseCannon_LaunchSound"/>
+        <On Terms="Effect.DrakkenLaserDrillNukeDelayCP.Start" Send="Create SwannAC_PulseCannon_LaunchAlarmSound"/>
+        <AnimBlendTime value="1.000000"/>
+        <ModelFlags index="AutomateGlobalLoops" value="0"/>
+        <DeathArray index="Normal" ModelLink="LaserDrillTripodDeathCoop2" SoundLink="LaserDrill_Explode2"/>
+        <DeathCustoms index="0" ModelLink="ZergSmallUnitDeathLow2"/>
+        <DeathCustoms index="1" ModelLink="ProtossSmallUnitDeathLow2"/>
+        <DeathCustoms index="2" ModelLink="TerranSmallUnitDeathLow2"/>
+        <DeathCustoms index="3" ModelLink="ZergSmallUnitDeathLow2"/>
+        <DeathCustoms index="4" ModelLink="Invisible2"/>
+        <DeathActorModel value="LaserDrillTripodCoopUnitDeathModel"/>
+        <DeathActorModelLow value="LaserDrillTripodCoopUnitDeathModel"/>
+        <PortraitModel value="AdjutantPortrait2"/>
+        <BarOffset value="250"/>
+        <BarWidth value="300"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Terran-laserdrill.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\btn-tips-laserdrillcontrol.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-terran-buildingarmor.dds"/>
+        <NameOffset value="110"/>
+        <SoundArray index="What" value="DrakkenLaserDrillAC_What2"/>
+        <UnitIcon value="Assets\Textures\btn-upgrade-swann-laserdrillattack.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Terran-laserdrill.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorModel id="DrakkenLaserDrillNukeBeamImpact2" parent="ModelAnimationStyleOneShot">
+        <On Terms="Effect.DrakkenLaserDrillNukeCP2.Start" Send="Create"/>
+        <On Terms="ActorCreation" Send="Create SwannAC_PulseCannon_ImpactExplosionSound"/>
+        <On Terms="ActorCreation" Send="Create SwannAC_PulseCannon_ImpactExplosion2Sound"/>
+        <On Terms="ActorCreation" Send="Create SwannAC_PulseCannon_ImpactExplosion3Sound"/>
+    </CActorModel>
+    <CActorModel id="DrakkenLaserDrillNukeIndicator2">
+        <FogVisibility value="Visible"/>
+        <On Terms="ActorCreation" Send="AnimBracketStart BSD Birth Stand Death"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <On Terms="AnimBracketState.*.AfterClosing; !AnimBracketExitReason ModelSwap; AnimName BSD" Send="Destroy"/>
+        <On Terms="Effect.DrakkenLaserDrillNukeDelayCP2.Start" Send="Create"/>
+        <On Terms="Effect.DrakkenLaserDrillNukeDelayCP2.Start" Send="AnimPlay Fast Stand 0 0.000000 0.000000 3.000000 AsDuration"/>
+        <On Terms="Effect.DrakkenLaserDrillNukeDelayCP2.Stop" Send="Destroy"/>
+        <HostSiteOps Ops="SOpShadow"/>
+        <Model value="GhostNukeIndicator2"/>
+    </CActorModel>
+    <CActorModel id="FireSuppressionBots2" parent="ModelAnimationStyleContinuous">
+        <On Terms="Behavior.FireSuppressionSystem2.On" Send="Create"/>
+        <On Terms="Behavior.FireSuppressionSystem2.On" Send="Create FireSuppressionBots_Loop"/>
+        <On Terms="Behavior.FireSuppressionSystem2.Off" Send="AnimBracketStop BSD"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+    </CActorModel>
+    <CActorModel id="GenericAttackDamageModel2" parent="GenericAttackModel"/>
+    <CActorSound id="GenericAttackDamageSound2" parent="GenericAttackSound"/>
+    <CActorModel id="GenericAttackImpactModel2" parent="GenericAttackModel"/>
+    <CActorSound id="GenericAttackImpactSound2" parent="GenericAttackSound"/>
+    <CActorModel id="GenericAttackLaunchModel2" parent="GenericAttackModel"/>
+    <CActorSound id="GenericAttackLaunchSound2" parent="GenericAttackSound"/>
+    <CActorModel id="LaserDrillTargetingUICoop2" parent="ModelAnimationStyleOneShot">
+        <On Terms="Effect.LaserDrillTripodCreatePersistentCoop2.Start; At Target" Send="Create"/>
+    </CActorModel>
+    <CActorBeamSimple id="LaserDrillTripodBiggerAttackBeamCoop2" parent="BeamSimpleAnimationStyleContinuous">
+        <Supporter Subject="_Unit" Scope="Caster" Actor="Find"/>
+        <On Terms="ActorCreation" Send="RefSetFromRequest ::scope.BeamCaster _Unit Caster Find"/>
+        <On Terms="ActorCreation" Target="::scope.BeamCaster" Send="Signal LaserCreated"/>
+        <On Terms="Effect.LaserDrillTripodCoopFinalPersistent.Stop; At Effect" Send="Destroy"/>
+        <On Terms="ActorCreation; ValidatePlayer HaveLaserDrillBFGNotHaveLaserDrillNuke" Send="ModelSwap LaserDrillTripodBiggerAttackBeamCoopBFG"/>
+        <On Terms="ActorCreation; ValidatePlayer HaveLaserDrillNuke" Send="ModelSwap LaserDrillTripodBiggerAttackBeamCoopNuke"/>
+        <Host Subject="_Unit" Scope="Caster" Actor="Find"/>
+    </CActorBeamSimple>
+    <CActorAction id="LaserDrillTripodBiggerAttackCoop2" parent="GenericAttackBase">
+        <On Terms="Effect.LaserDrillTripodCoopFinalPersistent2.Start" Send="Create"/>
+        <On Terms="Effect.LaserDrillTripodCoopFinalPersistent2.Stop; At Effect" Send="Destroy"/>
+        <LaunchModel value="GenericAttackLaunchModel2"/>
+        <LaunchSound value="GenericAttackLaunchSound2"/>
+        <ContainerModel value="GenericAttackLaunchModel2"/>
+        <ContainerSound value="GenericAttackLaunchSound2"/>
+        <Beam value="LaserDrillTripodBiggerAttackBeamCoop2"/>
+        <ImpactSiteOps Ops="SOpAttachHarness SOpAttachVolumeNoVizEnhance SOpForwardLaunchGuide"/>
+        <ImpactModel value="GenericAttackImpactModel2"/>
+        <ImpactSound value="GenericAttackImpactSound2"/>
+        <DamageModel value="GenericAttackDamageModel2"/>
+        <DamageSound value="GenericAttackDamageSound2"/>
+        <ActionFlags index="AlignedImpactsAndDamages" value="1"/>
+        <ActionFlags index="LaunchForceSite" value="1"/>
+        <Lifetime value="-1.000000"/>
+    </CActorAction>
+    <CActorModel id="SOAPassiveChrono2" parent="ModelAnimationStyleContinuous">
+        <Inherits index="BaseModelScale" value="1"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <Remove Terms="ActorCreation" Send="AnimBracketStart BSD Birth Stand Death"/>
+        <On Terms="ActorCreation" Send="TimerSet 1.250000 Create"/>
+        <On Terms="ActorCreation; ValidateUnit IsLarva" Send="Destroy"/>
+        <On Terms="TimerExpired; TimerName Create" Send="$Stand"/>
+        <On Terms="Behavior.SOAMapWideChronoPassiveTarget2.On; !ValidateUnitType NotOverlordCocoon" Send="Create"/>
+        <On Terms="AnimDone; AnimName Stand" Send="Destroy"/>
+        <Host Subject="_Unit"/>
+        <AutoScaleFactor value="0.750000"/>
+    </CActorModel>
+    <!-- Space Cow Corpse............................................................................. -->
+    <CActorUnit id="SpaceCowCorpse">
+        <CustomUnitStatusFrame value="HotS_UnitStatus/UnitStatusProgressFrameTemplate"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Progress" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+        <StatusBarFlags index="Magazine" value="0"/>
+        <StatusBarFlags index="Workers" value="0"/>
+    </CActorUnit>
+    <CActorSound id="Swann_LaserDrill_BeamSizzleLoopSound2" parent="SoundContinuous">
+        <On Terms="Effect.LaserDrillTripodCoopFinalPersistent2.Start; At Target" Send="Create"/>
+        <On Terms="Effect.LaserDrillTripodCoopFinalPersistent2.Stop" Send="Destroy"/>
+        <Sound value="Swann_LaserDrill_BeamSizzleLoop2"/>
+    </CActorSound>
+    <CActorSound id="Swann_LaserDrill_TargetLockSound2" parent="SoundOneShot">
+        <On Terms="Effect.LaserDrillTripodCreatePersistentCoop2.Start; At Target" Send="Create"/>
+        <Sound value="Swann_LaserDrill_TargetLock4"/>
+        <Layers>
+            <Sound value="Swann_LaserDrill_TargetLock3"/>
+            <PitchSource value="Sound"/>
+            <PlayDelaySource value="Sound"/>
+            <VolumeSource value="Sound"/>
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+        <Layers>
+            <Sound value="Swann_LaserDrill_TargetLock2"/>
+            <PitchSource value="Sound"/>
+            <PlayDelaySource value="Sound"/>
+            <VolumeSource value="Sound"/>
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+    </CActorSound>
+    <CActorDoodad id="ZerusTallGrassCluster">
+        <EditorCategories value="DoodadType:Blocker"/>
+        <EditorFlags index="NoAutoRotate" value="1"/>
+        <TexSets value="Zerus"/>
+        <Footprint value="ShrubFootprint1x1"/>
+        <VisibleOpacity value="0.600000"/>
+        <VisibleOpacityBlendDuration value="0.250000"/>
+    </CActorDoodad>
+    <CActorUnit id="MatriarchDNAPickup">
+        <MinimapIcon value="Assets\Textures\ui_hots_icon_generic_infestation.dds"/>
+        <MinimapIconScale value="0.500000"/>
+    </CActorUnit>
+</Catalog>

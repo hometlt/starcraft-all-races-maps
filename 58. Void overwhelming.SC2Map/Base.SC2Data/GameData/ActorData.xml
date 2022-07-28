@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CActorUnit id="NukePack">
+        <CustomUnitStatusFrame value="HotS_UnitStatus/UnitStatusProgressFrameTemplate"/>
+    </CActorUnit>
+    <CActorModel id="TemporalFieldModel">
+        <Scale value="0.900000"/>
+    </CActorModel>
+    <CActorUnit id="ThrasherHybridActor" parent="GenericUnitStandard" unitName="ThrasherHybrid">
+        <Aliases value="_UnitHuge"/>
+        <EditorCategories value=""/>
+        <On index="60" Terms="WeaponStart.*.AttackStart" Send="AnimBracketStart Attack Spell"/>
+        <On index="61" Terms="WeaponStop.*.AttackStop" Send="AnimBracketStop Attack"/>
+        <On index="62" Terms="Abil.HybridDominatorVoidPlasmaBlast.SourcePrepStart" Send="AnimPlay Channel Stand,Channel"/>
+        <On index="63" Terms="Abil.HybridDominatorVoidPlasmaBlast.SourcePrepStop" Send="$Spell NonLooping"/>
+        <On index="64" Terms="Abil.HybridDominatorVoidPlasmaBlast.SourcePrepStop" Send="AnimClear Channel"/>
+        <On Terms="Abil.HybridDominatorVoidPsionicShockwave.SourceCastStart" Send="AnimPlay Spell Stand,Work NonLooping"/>
+        <On Terms="Abil.HybridDominatorVoidPsiStorm.SourceCastStart" Send="$Spell NonLooping"/>
+        <On Terms="Abil.HybridDominatorVoidGravitonPrison.SourceCastStart" Send="$Spell NonLooping"/>
+        <On Terms="Abil.HybridDominatorVoidPsychicClones.SourceCastStart" Send="AnimPlay Spell Stand,Work NonLooping"/>
+        <On Terms="ActorCreation" Send="TimerSet 0.200000 Shadow"/>
+        <On Terms="Behavior.HybridDominatorVoidPsychicClonesSpawn.On" Send="SetOpacity"/>
+        <On Terms="Behavior.HybridDominatorVoidPsychicClonesSpawn.On" Send="Create HybridDominatorVoidPsychicClonesImpact"/>
+        <On Terms="Behavior.HybridDominatorVoidPsychicClonesSpawn.On" Send="SetOpacity 1.000000 0.500000"/>
+        <On Terms="Behavior.HybridDominatorVoidPsychicClonesCaster.On" Send="Create HybridDominatorVoidPsychicClonesCast"/>
+        <On Terms="Behavior.HybridDominatorVoidPsychicClonesCaster.On" Send="SetOpacity 0.000000 1.000000"/>
+        <On Terms="Behavior.HybridDominatorVoidPsychicClonesCaster.Off" Send="SetOpacity 1.000000 0.250000"/>
+        <On Terms="Behavior.HybridDominatorVoidPsychicClonesCaster.Off" Send="Create HybridDominatorVoidPsychicClonesCast"/>
+        <On Terms="TimerExpired; TimerName Shadow; IsStatus ShadowCreate 1" Send="Create HybridDominatorVoidShadow"/>
+        <On Terms="TimerExpired; TimerName Shadow" Send="TimerSet 0.200000 Shadow"/>
+        <On Terms="UnitMovementUpdate.*.Stand" Send="StatusSet ShadowCreate 0"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="StatusSet ShadowCreate 1"/>
+        <On Terms="ActorCreation" Send="StatusSet ShadowCreate 0"/>
+        <On Terms="Signal.*.Smaller" Send="StatusSet HybridSize 1"/>
+        <On Terms="Signal.*.Bigger" Send="StatusSet HybridSize 3"/>
+        <On Terms="Signal.*.Birth" Send="$Birth 0 0.000000"/>
+        <Model value="HybridDominatorVoid"/>
+        <AnimBlendTime value="0.200000"/>
+        <BuildModel value="HybridWarpIn"/>
+        <DeathArray index="Normal" ModelLink="HybridDominatorVoidDeath" SoundLink="Hybrid_Protoss_Death" VoiceLink="HybridADeath"/>
+        <PlacementModel value="HybridDominatorVoid"/>
+        <PortraitModel value="HybridDominatorVoidPortrait"/>
+        <BarDistance value="42"/>
+        <BarOffset value="120"/>
+        <BarWidth value="90"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Hybrid-Destroyer.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\BTN-Unit-xelnaga-maar.dds"/>
+        <HighlightTooltip value="Unit/Name/ThrasherHybridActor"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-protoss-groundarmorlevel0.dds"/>
+        <SoundArray index="Birth" value="Hybrid_Birth"/>
+        <SoundArray index="Ready" value="Hybrid_Ready"/>
+        <SoundArray index="What" value="Hybrid_What"/>
+        <SoundArray index="Yes" value="Hybrid_Yes"/>
+        <SoundArray index="Attack" value="Hybrid_Attack"/>
+        <SoundArray index="Pissed" value="Hybrid_Pissed"/>
+        <UnitIcon value="Assets\Textures\BTN-Unit-xelnaga-maar.dds"/>
+        <UnitKillRank Text="UnitKillRank/H05SHybrid"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Hybrid-Destroyer.dds"/>
+        </Wireframe>
+        <WireframeShield>
+            <Image value="Assets\Textures\Wireframe-Hybrid-Destroyer-Shield01.dds"/>
+            <Image value="Assets\Textures\Wireframe-Hybrid-Destroyer-Shield02.dds"/>
+            <Image value="Assets\Textures\Wireframe-Hybrid-Destroyer-Shield03.dds"/>
+        </WireframeShield>
+    </CActorUnit>
+    <CActorUnit id="VoidRiftUnselectable">
+        <Scale value="1.300000"/>
+    </CActorUnit>
+    <CActorModel id="VoidThrasherThrasherWave">
+        <Scale value="1.250000"/>
+    </CActorModel>
+    <CActorUnit id="VoidThrasherWalker">
+        <On index="70" Terms="Weapon.VoidThrasherFakeWeapon.PreswingBetweenAttacksStart; !AnimPlaying Work" Send="AnimBracketStart Spell Stand,Work,Start Stand,Work Stand,Work,End ContentPlayOnce 1.500000 AsTimeScale"/>
+        <On index="71" Terms="Effect.KaiserWormScourgeMissileLaunch.Launch; !AnimPlaying Spell" Send="AnimPlay Throw Cover,Attack"/>
+        <PortraitModel value="DarkVoicePortrait"/>
+    </CActorUnit>
+    <CActorDoodad id="Void_Nebula_Storm">
+        <On index="1" Send="$Stand PlayForever"/>
+        <RandomScaleRange value="2.000000,2.000000"/>
+    </CActorDoodad>
+</Catalog>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CEffectDamage id="D8ChargeExplodeDamage">
+        <SearchFilters value="Ground;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectDamage id="D8ClusterBombExplodeDamage">
+        <SearchFilters value="Ground;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectDamage id="FireBallDamage">
+        <EditorCategories value=""/>
+        <Amount value="22.5"/>
+        <AreaArray Radius="1.5" Bonus="1" Fraction="1"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Item,Stasis,Dead,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="FireBallLaunch">
+        <EditorCategories value=""/>
+        <ImpactLocation Value="TargetPoint"/>
+        <ImpactOffset value="0,-10,0"/>
+        <ImpactEffect value="FireBallSet"/>
+        <AmmoUnit value="FireBallMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectEnumArea id="FireBallSearch">
+        <EditorCategories value=""/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Item,Stasis,Dead,Invulnerable"/>
+        <AreaArray Radius="0.9" Effect="FireBallSet"/>
+    </CEffectEnumArea>
+    <CEffectSet id="FireBallSet">
+        <EditorCategories value=""/>
+        <EffectArray value="KillSource"/>
+        <EffectArray value="FireBallDamage"/>
+        <EffectArray value="SpawnFireSpawn"/>
+    </CEffectSet>
+    <CEffectDamage id="FireSpawnDamage">
+        <EditorCategories value=""/>
+        <Amount value="7.5"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Item,Stasis,Dead,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="FireSpawnLaunch">
+        <EditorCategories value=""/>
+        <ImpactEffect value="FireSpawnDamage"/>
+        <AmmoUnit value="FireBall"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="GateDestroyer">
+        <EditorCategories value=""/>
+        <Amount value="300"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="GateDestroyerMissileLaunch">
+        <EditorCategories value=""/>
+        <ImpactEffect value="GateDestroyer"/>
+        <AmmoUnit value="GateDestroyerMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectCreatePersistent id="GateDestroyerPeriod">
+        <EditorCategories value=""/>
+        <WhichLocation Value="TargetUnit"/>
+        <OffsetVectorEndLocation Value="TargetUnit"/>
+        <PeriodCount value="4"/>
+        <PeriodicEffectArray value="GateDestroyerMissileLaunch"/>
+        <PeriodicPeriodArray value="0.75"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="MassFireBallPeriod">
+        <EditorCategories value=""/>
+        <InitialDelay value="1.5"/>
+        <PeriodCount value="8"/>
+        <PeriodicEffectArray value="FireBallLaunch"/>
+        <PeriodicOffsetArray value="0,-2,0"/>
+        <PeriodicOffsetArray value="2,0,0"/>
+        <PeriodicOffsetArray value="2,2,0"/>
+        <PeriodicOffsetArray value="0,2,0"/>
+        <PeriodicOffsetArray value="-2,2,0"/>
+        <PeriodicOffsetArray value="-2,0,0"/>
+        <PeriodicOffsetArray value="-2,-2,0"/>
+        <PeriodicOffsetArray value="2,-2,0"/>
+        <PeriodicPeriodArray value="0.01"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="MiningDrill">
+        <EditorCategories value=""/>
+        <Amount value="1"/>
+    </CEffectDamage>
+    <CEffectDamage id="OdinAADamage">
+        <Amount value="20"/>
+    </CEffectDamage>
+    <CEffectDamage id="OdinDamage">
+        <AttributeBonus index="Structure" value="30"/>
+        <Amount value="20"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="SJPirateCapitalShipLeftRandomLM">
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="SJPirateCapitalShipRightRandomLM">
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectCreateUnit id="SpawnFireSpawn">
+        <EditorCategories value=""/>
+        <SpawnUnit value="FireSpawn"/>
+    </CEffectCreateUnit>
+</Catalog>

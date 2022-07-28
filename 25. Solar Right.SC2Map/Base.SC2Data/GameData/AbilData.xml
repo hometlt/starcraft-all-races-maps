@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CAbilTransport id="ArchaeologistsTransportTransport">
+        <OrderArray index="0">
+            <DisplayType value="Legacy"/>
+            <Color value="255,0,255,0"/>
+            <Model value="Assets\UI\Feedback\WayPointConfirm\WayPointConfirm.m3"/>
+            <LineTexture value="Assets\Textures\WayPointLine.dds"/>
+        </OrderArray>
+        <AbilSetId value="ULdM"/>
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Units"/>
+        <CmdButtonArray index="Load" DefaultButtonFace="ColonistTransportLoad"/>
+        <CmdButtonArray index="UnloadAll" DefaultButtonFace="ColonistTransportUnloadAll">
+            <Flags index="ToSelection" value="1"/>
+        </CmdButtonArray>
+        <Flags index="IgnoreBlockers" value="1"/>
+        <Range value="2"/>
+        <MaxCargoCount value="20"/>
+        <MaxCargoSize value="1"/>
+        <TotalCargoSpace value="20"/>
+        <UnloadPeriod value="1"/>
+        <SearchRadius value="360"/>
+        <LoadValidatorArray value=""/>
+    </CAbilTransport>
+    <CAbilEffectInstant id="GotoCavesDummy">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="BurrowDown"/>
+    </CAbilEffectInstant>
+    <CAbilEffectTarget id="SlaynElementalGrab">
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <Flags index="RequireTargetVision" value="1"/>
+        <Cost index="0">
+            <Charge TimeUse="5"/>
+            <Cooldown TimeUse="5"/>
+        </Cost>
+        <AutoCastRange value="7"/>
+        <FollowRange value="7"/>
+        <AutoCastValidatorArray value="TargetHasCurrentHealthGTE125"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="StoneTemplarPsiOrb">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Effect index="0" value="StoneTemplarPsiOrbInitialPersistent"/>
+        <Range value="500"/>
+        <CastIntroTime value="0.4"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="VoidHighTemplarPsiOrb"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="GatherSolarite">
+        <EditorCategories value="AbilityorEffectType:Units,Race:Neutral"/>
+        <Effect index="0" value="GatherSolariteGatherPersistent"/>
+        <Flags index="Smart" value="1"/>
+        <Range value="0"/>
+        <Arc value="360"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="GatherSolarite"/>
+    </CAbilEffectTarget>
+    <CAbilEffectInstant id="ReturnSolarite">
+        <EditorCategories value="AbilityorEffectType:Units,Race:Neutral"/>
+        <Effect index="0" value="ReturnSolariteFindProcessorSearchArea"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="ReturnSolarite"/>
+    </CAbilEffectInstant>
+    <CAbilEffectTarget id="ReturnSolariteDummy">
+        <EditorCategories value="AbilityorEffectType:Units,Race:Neutral"/>
+        <Effect index="0" value="ReturnSolariteInitPersistent"/>
+        <Flags index="BestUnit" value="0"/>
+        <Flags index="Smart" value="1"/>
+        <InterruptCost>
+            <Charge Link="Abil/GatherSolarite"/>
+            <Cooldown Link="Abil/GatherSolarite"/>
+        </InterruptCost>
+        <Range value="0"/>
+        <Arc value="360"/>
+        <Marker Link="Abil/GatherSolarite"/>
+        <AINotifyEffect value="GatherSolarite"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="ReturnSolarite" Requirements="IsCarryingSolarite"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="DelayedPsionicStorm">
+        <Alignment value="Negative"/>
+        <OrderArray index="0" DisplayType="Legacy"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Effect index="0" value="DelayedPsionicStormDummyPersistent"/>
+        <Flags index="AllowMovement" value="1"/>
+        <Flags index="BestUnit" value="0"/>
+        <Flags index="NoDeceleration" value="1"/>
+        <Range value="500"/>
+        <CastIntroTime value="1.3"/>
+        <UninterruptibleArray index="Cast" value="1"/>
+        <AINotifyEffect value="DelayedPsionicStormPersistent"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="DelayedPsionicStorm"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="SpawnStoneInterceptor">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <CastIntroTime value="1.3"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Interceptor"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="StunningBlast">
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <Cost index="0">
+            <Charge TimeUse="15"/>
+        </Cost>
+        <AutoCastRange value="7"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="MapObjectInteract">
+        <TargetFilters index="0" value="Visible;Self,Missile,Stasis,Dead"/>
+    </CAbilEffectTarget>
+</Catalog>

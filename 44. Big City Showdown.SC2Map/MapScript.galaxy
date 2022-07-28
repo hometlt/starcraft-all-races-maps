@@ -1,0 +1,3463 @@
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   Big City Showdown
+// 
+//==================================================================================================
+include "TriggerLibs/NativeLib"
+include "LibCOMI"
+include "aiF917F4D7"
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+void InitLibs () {
+    libNtve_InitLib();
+    libCOMI_InitLib();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Constants
+//--------------------------------------------------------------------------------------------------
+const int gv_pLAYER_01_USER = 1;
+const int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 3;
+const int gv_pLAYER_04_ENEMY = 4;
+const int gv_pLAYER_07_ENEMY = 7;
+
+//--------------------------------------------------------------------------------------------------
+// Global Variables
+//--------------------------------------------------------------------------------------------------
+playergroup gv_enemyGroup;
+point gv_victoryCompletePan;
+point gv_attackWaveA_Wave05Path;
+region[3][11] gv_attackSpawn;
+int gv_bossPing;
+int gv_boomrockerPing;
+int gv_defendTheCity;
+int gv_defendTheCity2;
+int gv_cityHealth;
+unit gv_bommrockerBoss;
+int gv_delayArmageddon;
+unit gv_armageddonBoss;
+int gv_activateLink1;
+int gv_activateLink2;
+int gv_bonusPing1;
+int gv_bonusPing2;
+
+void InitGlobals () {
+    gv_enemyGroup = PlayerGroupEmpty();
+    gv_victoryCompletePan = PointFromId(97154963);
+    gv_bossPing = c_invalidPingId;
+    gv_boomrockerPing = c_invalidPingId;
+    gv_defendTheCity = c_invalidObjectiveId;
+    gv_defendTheCity2 = c_invalidObjectiveId;
+    gv_delayArmageddon = c_invalidObjectiveId;
+    gv_activateLink1 = c_invalidObjectiveId;
+    gv_activateLink2 = c_invalidObjectiveId;
+    gv_bonusPing1 = c_invalidPingId;
+    gv_bonusPing2 = c_invalidPingId;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Function Declarations
+//--------------------------------------------------------------------------------------------------
+void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time);
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Variables
+//--------------------------------------------------------------------------------------------------
+trigger gt_Init01LoadData;
+trigger gt_Init02Players;
+trigger gt_Init03LoadingComplete;
+trigger gt_StartAI;
+trigger gt_StartGameQ;
+trigger gt_EnemyAttackingQ;
+trigger gt_DefeatPrimaryObjectiveFailed;
+trigger gt_VictoryPrimaryObjectiveComplete;
+trigger gt_VictorySequence;
+trigger gt_VictoryFanfareQ;
+trigger gt_Victory;
+trigger gt_Defeat;
+trigger gt_SetupAttackWaveSpawn;
+trigger gt_AIAttackWaves;
+trigger gt_AttackWave01;
+trigger gt_AttackWave02;
+trigger gt_AttackWave03;
+trigger gt_AttackWave04;
+trigger gt_AttackWave05;
+trigger gt_AttackWave06;
+trigger gt_AttackWave07;
+trigger gt_ObjectiveDefendTheCityCreate;
+trigger gt_ObjectiveDefendTheCityComplete;
+trigger gt_ObjectiveDefendTheCityFailed;
+trigger gt_ObjectiveDelayArmageddonCreate;
+trigger gt_ObjectiveDelayArmageddonComplete;
+trigger gt_ArmageddionResetAI;
+trigger gt_ArmageddonAI;
+trigger gt_Armageddon90;
+trigger gt_ArmageddonAI90;
+trigger gt_Armageddon70;
+trigger gt_ArmageddonAI70;
+trigger gt_Armageddon40;
+trigger gt_ArmageddonAI40;
+trigger gt_ArmageddonAI402;
+trigger gt_BoomrockerAI;
+trigger gt_BoomrockerDies;
+trigger gt_ObjectiveActivateLinksCreate;
+trigger gt_ObjectiveActivateLinksComplete1;
+trigger gt_ObjectiveActivateLinksComplete2;
+trigger gt_ObjectiveActivateLinksCompleted;
+trigger gt_BuildingDestroy0;
+trigger gt_BuildingDestroy1;
+trigger gt_BuildingDestroy2;
+trigger gt_BuildingDestroy3;
+trigger gt_BuildingDestroy4;
+trigger gt_BuildingDestroy5;
+trigger gt_BuildingDestroy6;
+trigger gt_BuildingDestroyStadium;
+trigger gt_BuildingDestroyStoplightSE;
+trigger gt_BuildingDestroyStoplightSW;
+trigger gt_BuildingDestroyStoplightNE;
+trigger gt_BuildingDestroyStoplightNW;
+trigger gt_BuildingDestroyStreetAlarm;
+trigger gt_BuildingDestroyStreetAlarm2;
+trigger gt_BuildingDestroyStreetSigns;
+trigger gt_BuildingDestroyStreetSigns2;
+trigger gt_CitySpawns;
+trigger gt_CitySpawnsNydus;
+trigger gt_CitySpawnsCivillians;
+trigger gt_CitySpawnZergling;
+trigger gt_CitySpawnRoach;
+trigger gt_CitySpawnHydra;
+trigger gt_CitySpawnsAir;
+trigger gt_CitySpawnVoidRift;
+trigger gt_VikingDelete;
+trigger gt_VoidRiftAttack;
+trigger gt_CityRemoveCiv;
+trigger gt_MarauderSpawn;
+trigger gt_MarauderSpawnHitSquad;
+trigger gt_ZergHitTop;
+trigger gt_ZergHitBottom;
+trigger gt_SpawnMarauderPost1;
+trigger gt_SpawnMarauderPost2;
+trigger gt_SpawnMarauderPost3;
+trigger gt_SpawnMarauderPost4;
+trigger gt_SpawnMarauderPost5;
+trigger gt_SpawnMarauderPost6;
+trigger gt_SpawnMarauderPost7;
+trigger gt_SpawnNydus;
+trigger gt_NydusUnloadAttack;
+trigger gt_buildingjump;
+trigger gt_GorgonMove1;
+trigger gt_GorgonDelete;
+
+//--------------------------------------------------------------------------------------------------
+// Custom AI Functions
+//--------------------------------------------------------------------------------------------------
+string[17] cai_playerAI;
+
+//--------------------------------------------------------------------------------------------------
+void InitCustomAI () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        cai_playerAI[init_i] = null;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_start (string ai, int p) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    cai_playerAI[p] = ai;
+
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_start(p); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_setDefGather (int p, point val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_setDefGather(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+string cai_getCustomData (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getCustomData(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave cai_getLastWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getLastWave(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_run (int p, playergroup target) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_run(p, target); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_enable(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_stop (string ai) {
+    if (ai == "aiF917F4D7") { aiF917F4D7_waves_stop(); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_wave_run (int w, int p, playergroup target, bool wait) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_run(w, p, target, wait); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_wave_enable (int w, int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_enable(w, p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+bool cai_wave_isEnabled (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_isEnabled(w, p); }
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+unitgroup cai_wave_createdUnits (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdUnits(w, p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave cai_wave_createdWave (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdWave(w, p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_startall () {
+    cai_start("aiF917F4D7", 7);
+    AICampaignStart(3);
+    AICampaignStart(4);
+    AICampaignStart(5);
+    AICampaignStart(6);
+    AICampaignStart(8);
+    AICampaignStart(9);
+    AICampaignStart(10);
+    AICampaignStart(11);
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_runall () {
+    playergroup target = PlayerGroupEmpty();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Functions
+//--------------------------------------------------------------------------------------------------
+trigger auto_gf_RunAttackWaveatMissionTime_Trigger = null;
+trigger auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
+fixed auto_gf_RunAttackWaveatMissionTime_lp_time;
+
+void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time) {
+    auto_gf_RunAttackWaveatMissionTime_lp_attackWave = lp_attackWave;
+    auto_gf_RunAttackWaveatMissionTime_lp_time = lp_time;
+
+    if (auto_gf_RunAttackWaveatMissionTime_Trigger == null) {
+        auto_gf_RunAttackWaveatMissionTime_Trigger = TriggerCreate("auto_gf_RunAttackWaveatMissionTime_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_RunAttackWaveatMissionTime_Trigger, false, false);
+}
+
+bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runActions) {
+    trigger lp_attackWave = auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
+    fixed lp_time = auto_gf_RunAttackWaveatMissionTime_lp_time;
+
+    // Automatic Variable Declarations
+    // Implementation
+    while (!((lp_time <= GameGetMissionTime()))) {
+        Wait(0.3, c_timeAI);
+    }
+    if ((libCOMI_gf_GameIsOver() == false)) {
+        TriggerExecute(lp_attackWave, true, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 01 Load Data
+//--------------------------------------------------------------------------------------------------
+bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_indexPlayer;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init01LoadData_Init () {
+    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
+    TriggerAddEventMapInit(gt_Init01LoadData);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 02 Players
+//--------------------------------------------------------------------------------------------------
+bool gt_Init02Players_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_playerIterEnemy;
+    int lv_playerIterAlly;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    PlayerSetAlliance(7, c_allianceIdVision, 1, true);
+    PlayerSetAlliance(7, c_allianceIdVision, 2, true);
+    PlayerSetAlliance(7, c_allianceIdVision, 6, true);
+    libNtve_gf_SetAlliance(5, 6, libNtve_ge_AllianceSetting_Ally);
+    libNtve_gf_SetAlliance(3, 8, libNtve_ge_AllianceSetting_Ally);
+    libNtve_gf_SetAlliance(4, 8, libNtve_ge_AllianceSetting_Ally);
+    libNtve_gf_SetAlliance(7, 8, libNtve_ge_AllianceSetting_Ally);
+    libNtve_gf_SetAlliance(3, 5, libNtve_ge_AllianceSetting_Neutral);
+    libNtve_gf_SetAlliance(4, 5, libNtve_ge_AllianceSetting_Neutral);
+    libNtve_gf_SetAlliance(8, 5, libNtve_ge_AllianceSetting_Neutral);
+    libNtve_gf_SetAlliance(6, 9, libNtve_ge_AllianceSetting_Neutral);
+    libNtve_gf_SetUpgradeLevelForPlayer(8, "zerglingmovementspeed", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(8, "GlialReconstitution", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(8, "Burrow", 1);
+    PlayerModifyPropertyInt(6, c_playerPropMinerals, c_playerPropOperSetTo, 99999999);
+    PlayerModifyPropertyInt(6, c_playerPropVespene, c_playerPropOperSetTo, 99999999);
+    PlayerModifyPropertyInt(8, c_playerPropMinerals, c_playerPropOperSetTo, 99999999);
+    PlayerModifyPropertyInt(8, c_playerPropVespene, c_playerPropOperSetTo, 99999999);
+    VisRevealerCreate(8, RegionFromId(11));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init02Players_Init () {
+    gt_Init02Players = TriggerCreate("gt_Init02Players_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 03 Loading Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_Init02Players, true, false);
+    TriggerExecute(gt_StartAI, true, false);
+    TriggerExecute(gt_StartGameQ, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init03LoadingComplete_Init () {
+    gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start AI
+//--------------------------------------------------------------------------------------------------
+bool gt_StartAI_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_SetupAttackWaveSpawn, true, false);
+    TriggerExecute(gt_AIAttackWaves, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartAI_Init () {
+    gt_StartAI = TriggerCreate("gt_StartAI_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start Game Q
+//--------------------------------------------------------------------------------------------------
+bool gt_StartGameQ_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_enemyBase;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(7.0, c_timeReal);
+    TriggerQueueEnter();
+    TriggerExecute(gt_ObjectiveDefendTheCityCreate, true, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/7922868E"), StringExternal("Param/Value/AF02628F"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    PlayerSetAlliance(5, c_allianceIdVision, 2, true);
+    PlayerSetAlliance(5, c_allianceIdVision, 1, true);
+    PlayerSetAlliance(6, c_allianceIdVision, 1, true);
+    PlayerSetAlliance(6, c_allianceIdVision, 2, true);
+    PlayerSetAlliance(8, c_allianceIdVision, 7, true);
+    VisRevealerCreate(1, RegionFromId(29));
+    VisRevealerCreate(2, RegionFromId(29));
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/1536B8CC"), StringExternal("Param/Value/BBDCC195"), 10.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/55B68CCE"), StringExternal("Param/Value/77D8B378"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TriggerExecute(gt_ZergHitTop, true, false);
+    TriggerExecute(gt_ZergHitBottom, true, false);
+    Wait(30.0, c_timeGame);
+    TriggerExecute(gt_ObjectiveDelayArmageddonCreate, true, false);
+    Wait(5.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/D276F4BD"), StringExternal("Param/Value/58D64B1D"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(5.0, c_timeGame);
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+    libCOMI_gf_SendMissionTransmission("PrimaryObjectiveDefendReady", true, -1);
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+    Wait(3.0, c_timeGame);
+    TriggerQueueExit();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartGameQ_Init () {
+    gt_StartGameQ = TriggerCreate("gt_StartGameQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Enemy Attacking Q
+//--------------------------------------------------------------------------------------------------
+bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerQueueEnter();
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+    libCOMI_gf_SendMissionTransmission("AttackWave", true, RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER));
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+    TriggerQueueExit();
+    Wait(20.0, c_timeAI);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_EnemyAttackingQ_Init () {
+    gt_EnemyAttackingQ = TriggerCreate("gt_EnemyAttackingQ_Func");
+    TriggerAddEventPlayerAIWave(gt_EnemyAttackingQ, gv_pLAYER_03_ENEMY);
+    TriggerAddEventPlayerAIWave(gt_EnemyAttackingQ, gv_pLAYER_04_ENEMY);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat Primary Objective Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
+    TransmissionClearAll();
+    TriggerQueuePause(true);
+    TriggerQueueClear(c_triggerQueueRemove);
+    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/068E1300"), StringExternal("Param/Value/73572DB6"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    CameraLockInput(gv_pLAYER_01_USER, true);
+    CameraLockInput(gv_pLAYER_02_USER, true);
+    UnitClearSelection(gv_pLAYER_01_USER);
+    UnitClearSelection(gv_pLAYER_02_USER);
+    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    CameraPan(gv_pLAYER_01_USER, RegionGetCenter(RegionEntireMap()), 1.5, -1, 10.0, false);
+    CameraPan(gv_pLAYER_02_USER, RegionGetCenter(RegionEntireMap()), 1.5, -1, 10.0, false);
+    libCOMI_gf_WaitForMissionTransmission();
+    UISetCursorVisible(PlayerGroupAll(), true);
+    TriggerExecute(gt_Defeat, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DefeatPrimaryObjectiveFailed_Init () {
+    gt_DefeatPrimaryObjectiveFailed = TriggerCreate("gt_DefeatPrimaryObjectiveFailed_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Primary Objective Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_VictorySequence, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictoryPrimaryObjectiveComplete_Init () {
+    gt_VictoryPrimaryObjectiveComplete = TriggerCreate("gt_VictoryPrimaryObjectiveComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Sequence
+//--------------------------------------------------------------------------------------------------
+bool gt_VictorySequence_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
+    Wait(2.0, c_timeReal);
+    TriggerExecute(gt_ObjectiveDefendTheCityComplete, true, false);
+    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictorySequence_Init () {
+    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Fanfare Q
+//--------------------------------------------------------------------------------------------------
+bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TransmissionClearAll();
+    TriggerQueueEnter();
+    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/0EC7D41A"), StringExternal("Param/Value/83DB4745"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    libCOMI_gf_SendMissionTransmission("PrimaryObjectiveVictory", false, -1);
+    UnitPauseAll(true);
+    CameraLockInput(gv_pLAYER_01_USER, true);
+    CameraLockInput(gv_pLAYER_02_USER, true);
+    UnitClearSelection(gv_pLAYER_01_USER);
+    UnitClearSelection(gv_pLAYER_02_USER);
+    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
+    CameraPan(gv_pLAYER_01_USER, RegionRandomPoint(RegionFromId(12)), 2.0, -1, 10.0, false);
+    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
+    CameraPan(gv_pLAYER_02_USER, RegionRandomPoint(RegionFromId(12)), 2.0, -1, 10.0, false);
+    libCOMI_gf_WaitForMissionTransmission();
+    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
+    UISetCursorVisible(PlayerGroupAll(), true);
+    TriggerExecute(gt_Victory, true, false);
+    TriggerQueueExit();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictoryFanfareQ_Init () {
+    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory
+//--------------------------------------------------------------------------------------------------
+bool gt_Victory_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Victory_Init () {
+    gt_Victory = TriggerCreate("gt_Victory_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat
+//--------------------------------------------------------------------------------------------------
+bool gt_Defeat_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Defeat_Init () {
+    gt_Defeat = TriggerCreate("gt_Defeat_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Setup Attack Wave Spawn
+//--------------------------------------------------------------------------------------------------
+bool gt_SetupAttackWaveSpawn_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_spawnLocationIter;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(7);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(8);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(57);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(2);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(14);
+    lv_spawnLocationIter = 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(7);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(5);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(6);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(13);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(14);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SetupAttackWaveSpawn_Init () {
+    gt_SetupAttackWaveSpawn = TriggerCreate("gt_SetupAttackWaveSpawn_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: AI Attack Waves
+//--------------------------------------------------------------------------------------------------
+bool gt_AIAttackWaves_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gf_RunAttackWaveatMissionTime(gt_AttackWave01, (3.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave02, (6.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave03, (9.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave04, (12.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave05, (16.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave06, (20.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave07, (24.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave07, (28.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave07, (32.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave07, (36.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave07, (40.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave07, (44.0 * 60.0));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AIAttackWaves_Init () {
+    gt_AIAttackWaves = TriggerCreate("gt_AIAttackWaves_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 01
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave01_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(78698943), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave01_Init () {
+    gt_AttackWave01 = TriggerCreate("gt_AttackWave01_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 02
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave02_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(78698943), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave02_Init () {
+    gt_AttackWave02 = TriggerCreate("gt_AttackWave02_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 03
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave03_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+    int lv_numberOfStructures_ExpLeft;
+    int lv_numberOfStructures_ExpRight;
+    point lv_attackPathWaypoint;
+
+    // Automatic Variable Declarations
+    playergroup auto200FB8AA_g;
+    int auto200FB8AA_var;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
+    auto200FB8AA_g = libCOMI_gf_HumanPlayers();
+    auto200FB8AA_var = -1;
+    while (true) {
+        auto200FB8AA_var = PlayerGroupNextPlayer(auto200FB8AA_g, auto200FB8AA_var);
+        if (auto200FB8AA_var < 0) { break; }
+        lv_numberOfStructures_ExpLeft += UnitGroupCount(UnitGroup(null, auto200FB8AA_var, RegionFromId(1), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
+        lv_numberOfStructures_ExpRight += UnitGroupCount(UnitGroup(null, auto200FB8AA_var, RegionFromId(15), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
+    }
+    if ((((lv_numberOfStructures_ExpLeft == 0) && (lv_numberOfStructures_ExpRight == 0)) || ((lv_numberOfStructures_ExpLeft > 0) && (lv_numberOfStructures_ExpRight > 0)))) {
+        if ((RandomInt(0, 100) < 50)) {
+            lv_attackPathWaypoint = PointFromId(367);
+        }
+        else {
+            lv_attackPathWaypoint = PointFromId(358);
+        }
+    }
+    else {
+        if ((lv_numberOfStructures_ExpLeft > lv_numberOfStructures_ExpRight)) {
+            lv_attackPathWaypoint = PointFromId(367);
+        }
+        else {
+            lv_attackPathWaypoint = PointFromId(358);
+        }
+    }
+    if ((lv_attackPathWaypoint == PointFromId(367))) {
+        gv_attackWaveA_Wave05Path = PointFromId(358);
+    }
+    else {
+        gv_attackWaveA_Wave05Path = PointFromId(367);
+    }
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(78698943), true);
+    libCOMI_gf_AddAttackForceWaypoint(lv_attackPathWaypoint, false);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave03_Init () {
+    gt_AttackWave03 = TriggerCreate("gt_AttackWave03_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 04
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave04_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+    int lv_attackingAI;
+    int lv_defendingPlayer;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(78698943), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave04_Init () {
+    gt_AttackWave04 = TriggerCreate("gt_AttackWave04_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 05
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave05_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+    int lv_numberOfStructures_ExpLeft;
+    int lv_numberOfStructures_ExpRight;
+    point lv_attackPathWaypoint;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__5Late;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(78698943), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave05_Init () {
+    gt_AttackWave05 = TriggerCreate("gt_AttackWave05_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 06
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave06_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__6Larger;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel06;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__6Larger;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel06;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(78698943), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave06_Init () {
+    gt_AttackWave06 = TriggerCreate("gt_AttackWave06_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 07
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave07_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__7Largest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel07;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__7Largest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel07;
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, PointFromId(78698943), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave07_Init () {
+    gt_AttackWave07 = TriggerCreate("gt_AttackWave07_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DefendTheCity - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDefendTheCityCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto53FB6007_g;
+    int auto53FB6007_u;
+    unit auto53FB6007_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_GorgonMove1, true, false);
+    TriggerEnable(TriggerGetCurrent(), false);
+    ObjectiveCreate(StringExternal("Param/Value/8691CB7C"), StringToText(""), c_objectiveStateActive, true);
+    gv_defendTheCity = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 10);
+    ObjectiveCreate(StringExternal("Param/Value/D22FE649"), StringToText(""), c_objectiveStateActive, true);
+    gv_defendTheCity2 = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 7);
+    auto53FB6007_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto53FB6007_u = UnitGroupCount(auto53FB6007_g, c_unitCountAll);
+    for (;; auto53FB6007_u -= 1) {
+        auto53FB6007_var = UnitGroupUnitFromEnd(auto53FB6007_g, auto53FB6007_u);
+        if (auto53FB6007_var == null) { break; }
+        gv_cityHealth = (gv_cityHealth + 1);
+    }
+    libNtve_gf_DisplayBossBar(1, "Assets\\Textures\\btn-upgrade-terran-neosteelframe.dds", StringExternal("Param/Value/858182FF"), gv_cityHealth, PlayerGroupAll());
+    libNtve_gf_MoveBossBar(1, c_anchorTopRight, 0, 50);
+    TriggerEnable(gt_ObjectiveDefendTheCityFailed, true);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDefendTheCityCreate_Init () {
+    gt_ObjectiveDefendTheCityCreate = TriggerCreate("gt_ObjectiveDefendTheCityCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DefendTheCity - Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDefendTheCityComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDefendTheCityCreate, true, false);
+    ObjectiveSetState(gv_defendTheCity, c_objectiveStateCompleted);
+    ObjectiveSetState(gv_defendTheCity2, c_objectiveStateCompleted);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDefendTheCityComplete_Init () {
+    gt_ObjectiveDefendTheCityComplete = TriggerCreate("gt_ObjectiveDefendTheCityComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DefendTheCity - Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDefendTheCityFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((AbsI(gv_cityHealth) == 0))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDefendTheCityCreate, true, false);
+    ObjectiveSetState(gv_defendTheCity, c_objectiveStateFailed);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    TriggerExecute(gt_DefeatPrimaryObjectiveFailed, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDefendTheCityFailed_Init () {
+    gt_ObjectiveDefendTheCityFailed = TriggerCreate("gt_ObjectiveDefendTheCityFailed_Func");
+    TriggerEnable(gt_ObjectiveDefendTheCityFailed, false);
+    TriggerAddEventUnitDied(gt_ObjectiveDefendTheCityFailed, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DelayArmageddon - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDelayArmageddonCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, "epicost", c_soundtrackCueAny, c_soundtrackIndexAny, true);
+    TriggerEnable(TriggerGetCurrent(), false);
+    ObjectiveCreate(StringExternal("Param/Value/9B7BB8F3"), StringToText(""), c_objectiveStateActive, true);
+    gv_delayArmageddon = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 9);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridBehemoth2", 0, 7, PointFromId(1898775662));
+    gv_armageddonBoss = UnitLastCreated();
+    libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(gv_armageddonBoss), null);
+    gv_bossPing = PingLastCreated();
+    PingSetUnit(PingLastCreated(), gv_armageddonBoss);
+    RegionAttachToUnit(RegionFromId(12), gv_armageddonBoss, Point(0.0, 0.0));
+    UnitIssueOrder(gv_armageddonBoss, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1936832187)), c_orderQueueReplace);
+    Wait(20.0, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(gv_armageddonBoss), "AnimPlay Dance Stand,Victory");
+    Wait(4.0, c_timeGame);
+    UnitIssueOrder(gv_armageddonBoss, OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+    Wait(4.0, c_timeGame);
+    TriggerExecute(gt_ArmageddonAI, true, false);
+    TriggerExecute(gt_CitySpawns, true, false);
+    TriggerExecute(gt_CitySpawnsAir, true, false);
+    TriggerExecute(gt_MarauderSpawn, true, false);
+    TriggerExecute(gt_SpawnMarauderPost2, true, false);
+    TriggerEnable(gt_ObjectiveDelayArmageddonComplete, true);
+    TriggerEnable(gt_Armageddon90, true);
+    Wait(200.0, c_timeGame);
+    TriggerExecute(gt_SpawnMarauderPost3, true, false);
+    Wait(200.0, c_timeGame);
+    TriggerExecute(gt_SpawnMarauderPost4, true, false);
+    Wait(200.0, c_timeGame);
+    TriggerExecute(gt_SpawnMarauderPost5, true, false);
+    Wait(200.0, c_timeGame);
+    TriggerExecute(gt_SpawnMarauderPost6, true, false);
+    Wait(200.0, c_timeGame);
+    TriggerExecute(gt_SpawnMarauderPost7, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDelayArmageddonCreate_Init () {
+    gt_ObjectiveDelayArmageddonCreate = TriggerCreate("gt_ObjectiveDelayArmageddonCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DelayArmageddon - Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDelayArmageddonComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    ObjectiveSetState(gv_delayArmageddon, c_objectiveStateCompleted);
+    PingDestroy(gv_bossPing);
+    Wait(4.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/D6168C30"), StringExternal("Param/Value/81D80FA3"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(4.0, c_timeGame);
+    TriggerExecute(gt_VictoryPrimaryObjectiveComplete, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDelayArmageddonComplete_Init () {
+    gt_ObjectiveDelayArmageddonComplete = TriggerCreate("gt_ObjectiveDelayArmageddonComplete_Func");
+    TriggerEnable(gt_ObjectiveDelayArmageddonComplete, false);
+    TriggerAddEventUnitDied(gt_ObjectiveDelayArmageddonComplete, UnitRefFromVariable("gv_armageddonBoss"));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Armageddion Reset AI
+//--------------------------------------------------------------------------------------------------
+bool gt_ArmageddionResetAI_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(4.0, c_timeGame);
+    UnitIssueOrder(gv_armageddonBoss, OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitGroupRandomUnit(UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive))), c_orderQueueAddToEnd);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ArmageddionResetAI_Init () {
+    gt_ArmageddionResetAI = TriggerCreate("gt_ArmageddionResetAI_Func");
+    TriggerAddEventUnitAbility(gt_ArmageddionResetAI, null, AbilityCommand("HybridFAoEStun2", 0), c_unitAbilStageAll, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Armageddon AI
+//--------------------------------------------------------------------------------------------------
+bool gt_ArmageddonAI_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(7.0, c_timeGame);
+    while (true) {
+        UnitIssueOrder(gv_armageddonBoss, OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitGroupRandomUnit(UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive))), c_orderQueueAddToEnd);
+        Wait(19.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ArmageddonAI_Init () {
+    gt_ArmageddonAI = TriggerCreate("gt_ArmageddonAI_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Armageddon 90%
+//--------------------------------------------------------------------------------------------------
+bool gt_Armageddon90_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(gv_armageddonBoss, c_unitPropLifePercent, c_unitPropCurrent) <= 90.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerEnable(gt_ArmageddonAI90, true);
+    SoundPlayForPlayer(SoundLink("HybridZerg_Roar", 1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/690111E3"), StringExternal("Param/Value/C60B2399"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(15.0, c_timeGame);
+    TriggerExecute(gt_ObjectiveActivateLinksCreate, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Armageddon90_Init () {
+    gt_Armageddon90 = TriggerCreate("gt_Armageddon90_Func");
+    TriggerAddEventUnitDamaged(gt_Armageddon90, UnitRefFromVariable("gv_armageddonBoss"), c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Armageddon AI 90%
+//--------------------------------------------------------------------------------------------------
+bool gt_ArmageddonAI90_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGetOwner(EventUnitTarget()) == 1) || (UnitGetOwner(EventUnitTarget()) == 2)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(4.0, c_timeGame);
+    UnitIssueOrder(gv_armageddonBoss, Order(AbilityCommand("HybridFAoEStun2", 0)), c_orderQueueReplace);
+    Wait(20.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ArmageddonAI90_Init () {
+    gt_ArmageddonAI90 = TriggerCreate("gt_ArmageddonAI90_Func");
+    TriggerEnable(gt_ArmageddonAI90, false);
+    TriggerAddEventUnitAttacked2(gt_ArmageddonAI90, UnitRefFromVariable("gv_armageddonBoss"), null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Armageddon 70%
+//--------------------------------------------------------------------------------------------------
+bool gt_Armageddon70_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(gv_armageddonBoss, c_unitPropLifePercent, c_unitPropCurrent) <= 70.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    SoundPlayForPlayer(SoundLink("HybridZerg_Roar", 0), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    UnitSetPropertyFixed(gv_armageddonBoss, c_unitPropMovementSpeed, 3.0);
+    UnitBehaviorAddPlayer(gv_armageddonBoss, "ArmaAttackSpeed", 7, 1);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/2BD30B98"), StringExternal("Param/Value/03AC3663"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TriggerExecute(gt_ArmageddonAI70, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Armageddon70_Init () {
+    gt_Armageddon70 = TriggerCreate("gt_Armageddon70_Func");
+    TriggerAddEventUnitDamaged(gt_Armageddon70, UnitRefFromVariable("gv_armageddonBoss"), c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Armageddon AI 70%
+//--------------------------------------------------------------------------------------------------
+bool gt_ArmageddonAI70_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (true) {
+        Wait(4.0, c_timeGame);
+        UnitIssueOrder(gv_armageddonBoss, OrderTargetingUnit(AbilityCommand("ShadowYamato2", 0), UnitGroupUnit(UnitGroup(null, 5, RegionFromId(12), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1)), c_orderQueueReplace);
+        Wait(20.0, c_timeGame);
+        UnitIssueOrder(gv_armageddonBoss, OrderTargetingUnit(AbilityCommand("ShadowYamato2", 0), UnitGroupUnit(UnitGroup(null, 5, RegionFromId(12), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1)), c_orderQueueReplace);
+        Wait(40.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ArmageddonAI70_Init () {
+    gt_ArmageddonAI70 = TriggerCreate("gt_ArmageddonAI70_Func");
+    TriggerEnable(gt_ArmageddonAI70, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Armageddon 40%
+//--------------------------------------------------------------------------------------------------
+bool gt_Armageddon40_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(gv_armageddonBoss, c_unitPropLifePercent, c_unitPropCurrent) <= 40.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerEnable(gt_ArmageddonAI90, false);
+    TriggerEnable(gt_ArmageddonAI40, true);
+    SoundPlayForPlayer(SoundLink("HybridZerg_Roar", 2), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    UnitSetPropertyFixed(gv_armageddonBoss, c_unitPropMovementSpeed, 3.5);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/2F168DA9"), StringExternal("Param/Value/EF64673B"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(20.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/A497D76F"), StringExternal("Param/Value/9C1D3839"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(20.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(99904601), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1637184634)), c_orderQueueReplace);
+    UnitIssueOrder(UnitFromId(99904601), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(gv_armageddonBoss)), c_orderQueueReplace);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/E143F241"), StringExternal("Param/Value/1ACF128F"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(10.0, c_timeGame);
+    TriggerExecute(gt_BoomrockerAI, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Armageddon40_Init () {
+    gt_Armageddon40 = TriggerCreate("gt_Armageddon40_Func");
+    TriggerAddEventUnitDamaged(gt_Armageddon40, UnitRefFromVariable("gv_armageddonBoss"), c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Armageddon AI 40%
+//--------------------------------------------------------------------------------------------------
+bool gt_ArmageddonAI40_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGetOwner(EventUnitTarget()) == 1) || (UnitGetOwner(EventUnitTarget()) == 2)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(4.0, c_timeGame);
+    UnitIssueOrder(gv_armageddonBoss, Order(AbilityCommand("HybridFAoEStun2", 0)), c_orderQueueReplace);
+    Wait(20.0, c_timeGame);
+    TriggerEnable(gt_ArmageddonAI402, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ArmageddonAI40_Init () {
+    gt_ArmageddonAI40 = TriggerCreate("gt_ArmageddonAI40_Func");
+    TriggerEnable(gt_ArmageddonAI40, false);
+    TriggerAddEventUnitAttacked2(gt_ArmageddonAI40, UnitRefFromVariable("gv_armageddonBoss"), null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Armageddon AI 40% 2
+//--------------------------------------------------------------------------------------------------
+bool gt_ArmageddonAI402_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGetOwner(EventUnitTarget()) == 1) || (UnitGetOwner(EventUnitTarget()) == 2)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(4.0, c_timeGame);
+    UnitIssueOrder(gv_armageddonBoss, Order(AbilityCommand("PsionicShockwave", 0)), c_orderQueueReplace);
+    Wait(20.0, c_timeGame);
+    TriggerEnable(gt_ArmageddonAI40, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ArmageddonAI402_Init () {
+    gt_ArmageddonAI402 = TriggerCreate("gt_ArmageddonAI402_Func");
+    TriggerEnable(gt_ArmageddonAI402, false);
+    TriggerAddEventUnitAttacked2(gt_ArmageddonAI402, UnitRefFromVariable("gv_armageddonBoss"), null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Boomrocker AI
+//--------------------------------------------------------------------------------------------------
+bool gt_BoomrockerAI_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (true) {
+        UnitIssueOrder(UnitFromId(99904601), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(gv_armageddonBoss)), c_orderQueueReplace);
+        Wait(12.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BoomrockerAI_Init () {
+    gt_BoomrockerAI = TriggerCreate("gt_BoomrockerAI_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Boomrocker Dies
+//--------------------------------------------------------------------------------------------------
+bool gt_BoomrockerDies_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/866ECF70"), StringExternal("Param/Value/71612233"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BoomrockerDies_Init () {
+    gt_BoomrockerDies = TriggerCreate("gt_BoomrockerDies_Func");
+    TriggerAddEventUnitDied(gt_BoomrockerDies, UnitRefFromUnit(UnitFromId(99904601)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - Activate Links - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveActivateLinksCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    ObjectiveCreate(StringExternal("Param/Value/B55088C9"), StringToText(""), c_objectiveStateActive, false);
+    gv_activateLink1 = ObjectiveLastCreated();
+    ObjectiveCreate(StringExternal("Param/Value/ECD7A97C"), StringToText(""), c_objectiveStateActive, false);
+    gv_activateLink2 = ObjectiveLastCreated();
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/82E55DD3"), StringExternal("Param/Value/DA1A2690"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/AB0AFD47"), StringExternal("Param/Value/205A6C61"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitFromId(1062054588)), null);
+    gv_bonusPing1 = PingLastCreated();
+    libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitFromId(1067250010)), null);
+    gv_bonusPing2 = PingLastCreated();
+    VisRevealerCreate(1, RegionFromId(34));
+    VisRevealerCreate(2, RegionFromId(34));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveActivateLinksCreate_Init () {
+    gt_ObjectiveActivateLinksCreate = TriggerCreate("gt_ObjectiveActivateLinksCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - Activate Links - Complete 1
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveActivateLinksComplete1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitCount(null, 3, RegionFromId(32), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0) == 0))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == 3))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PingDestroy(gv_bonusPing1);
+    UnitIssueOrder(UnitFromId(1062054588), Order(AbilityCommand("PsiDisintegratorPowerLink", 0)), c_orderQueueReplace);
+    ObjectiveSetState(gv_activateLink1, c_objectiveStateCompleted);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/E309E1EC"), StringExternal("Param/Value/BE714DA5"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TriggerExecute(gt_ObjectiveActivateLinksCompleted, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveActivateLinksComplete1_Init () {
+    gt_ObjectiveActivateLinksComplete1 = TriggerCreate("gt_ObjectiveActivateLinksComplete1_Func");
+    TriggerAddEventUnitDied(gt_ObjectiveActivateLinksComplete1, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - Activate Links - Complete 2
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveActivateLinksComplete2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitCount(null, 4, RegionFromId(33), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0) == 0))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == 4))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    PingDestroy(gv_bonusPing2);
+    UnitIssueOrder(UnitFromId(1067250010), Order(AbilityCommand("PsiDisintegratorPowerLink", 0)), c_orderQueueReplace);
+    ObjectiveSetState(gv_activateLink2, c_objectiveStateCompleted);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/A127FC23"), StringExternal("Param/Value/BEFAD320"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TriggerExecute(gt_ObjectiveActivateLinksCompleted, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveActivateLinksComplete2_Init () {
+    gt_ObjectiveActivateLinksComplete2 = TriggerCreate("gt_ObjectiveActivateLinksComplete2_Func");
+    TriggerAddEventUnitDied(gt_ObjectiveActivateLinksComplete2, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - Activate Links - Completed
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveActivateLinksCompleted_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((ObjectiveGetState(gv_activateLink1) == c_objectiveStateCompleted))) {
+            return false;
+        }
+
+        if (!((ObjectiveGetState(gv_activateLink2) == c_objectiveStateCompleted))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(4.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/48449D44"), StringExternal("Param/Value/2C6FD5C4"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TimerStart(TimerCreate(), 60.0, false, c_timeGame);
+    TimerWindowCreate(TimerLastStarted(), StringExternal("Param/Value/1ABF7FD0"), true, false);
+    TimerWindowSetPosition(TimerWindowLastCreated(), 400, 300);
+    Wait(60.0, c_timeGame);
+    TimerWindowDestroy(TimerWindowLastCreated());
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/532485B2"), StringExternal("Param/Value/38805714"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    UnitIssueOrder(gv_armageddonBoss, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
+    SoundPlayForPlayer(SoundLink("SkyTank_LaserBeam_Fire", 0), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    libNtve_gf_CreateModelAtPoint("Stuner", UnitGetPosition(gv_armageddonBoss));
+    UnitBehaviorAddPlayer(gv_armageddonBoss, "DehakaLeapStun", 7, 1);
+    UnitSetState(gv_armageddonBoss, c_unitStateMoveSuppressed, false);
+    Wait(2.0, c_timeGame);
+    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+    Wait(40.0, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(gv_armageddonBoss), "AnimPlay Dance Stand,Victory");
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/ADF6C64C"), StringExternal("Param/Value/767DB0B8"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(3.0, c_timeGame);
+    UnitSetState(gv_armageddonBoss, c_unitStateMoveSuppressed, true);
+    UnitBehaviorRemove(gv_armageddonBoss, "DehakaLeapStun", 1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveActivateLinksCompleted_Init () {
+    gt_ObjectiveActivateLinksCompleted = TriggerCreate("gt_ObjectiveActivateLinksCompleted_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy 0
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroy0_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter2"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 500.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP2", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_Downtown_Building_Destroyed 0");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroy0_Init () {
+    gt_BuildingDestroy0 = TriggerCreate("gt_BuildingDestroy0_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroy0, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy 1
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroy1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter22"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 500.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP2", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_Downtown_Building_Destroyed 1");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroy1_Init () {
+    gt_BuildingDestroy1 = TriggerCreate("gt_BuildingDestroy1_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroy1, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy 2
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroy2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter222"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 500.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP2", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_Downtown_Building_Destroyed 2");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroy2_Init () {
+    gt_BuildingDestroy2 = TriggerCreate("gt_BuildingDestroy2_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroy2, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy 3
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroy3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter23"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 500.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP2", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_Downtown_Building_Destroyed 3");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroy3_Init () {
+    gt_BuildingDestroy3 = TriggerCreate("gt_BuildingDestroy3_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroy3, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy 4
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroy4_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter24"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 500.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP2", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_Downtown_Building_Destroyed 4");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroy4_Init () {
+    gt_BuildingDestroy4 = TriggerCreate("gt_BuildingDestroy4_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroy4, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy 5
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroy5_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter25"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 500.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP2", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_Downtown_Building_Destroyed 5");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroy5_Init () {
+    gt_BuildingDestroy5 = TriggerCreate("gt_BuildingDestroy5_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroy5, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy 6
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroy6_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter26"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 500.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP2", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_Downtown_Building_Destroyed 7");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroy6_Init () {
+    gt_BuildingDestroy6 = TriggerCreate("gt_BuildingDestroy6_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroy6, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy Stadium
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroyStadium_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter27"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 500.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP2", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_Stadium_Destroyed 0");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroyStadium_Init () {
+    gt_BuildingDestroyStadium = TriggerCreate("gt_BuildingDestroyStadium_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroyStadium, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy Stoplight SE
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroyStoplightSE_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter28"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 400.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP22", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_StreetLight_Destroyed 6");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroyStoplightSE_Init () {
+    gt_BuildingDestroyStoplightSE = TriggerCreate("gt_BuildingDestroyStoplightSE_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroyStoplightSE, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy Stoplight SW
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroyStoplightSW_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter282"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 400.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP22", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_StreetLight_Destroyed 5");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroyStoplightSW_Init () {
+    gt_BuildingDestroyStoplightSW = TriggerCreate("gt_BuildingDestroyStoplightSW_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroyStoplightSW, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy Stoplight NE
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroyStoplightNE_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter284"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 400.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP22", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_StreetLightPost_Destroyed 5");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroyStoplightNE_Init () {
+    gt_BuildingDestroyStoplightNE = TriggerCreate("gt_BuildingDestroyStoplightNE_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroyStoplightNE, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy Stoplight NW
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroyStoplightNW_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter283"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 400.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP22", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_StreetLightPost_Destroyed 9");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroyStoplightNW_Init () {
+    gt_BuildingDestroyStoplightNW = TriggerCreate("gt_BuildingDestroyStoplightNW_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroyStoplightNW, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy Street Alarm /
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroyStreetAlarm_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter28222"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 400.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP22", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_StreetAlarms_Destroyed 0");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroyStreetAlarm_Init () {
+    gt_BuildingDestroyStreetAlarm = TriggerCreate("gt_BuildingDestroyStreetAlarm_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroyStreetAlarm, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy Street Alarm / 2
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroyStreetAlarm2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter2822"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 400.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP22", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_StreetAlarms_Destroyed 1");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroyStreetAlarm2_Init () {
+    gt_BuildingDestroyStreetAlarm2 = TriggerCreate("gt_BuildingDestroyStreetAlarm2_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroyStreetAlarm2, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy Street Signs /
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroyStreetSigns_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter282222"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 400.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP22", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_StreetSigns_Destroyed 0");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroyStreetSigns_Init () {
+    gt_BuildingDestroyStreetSigns = TriggerCreate("gt_BuildingDestroyStreetSigns_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroyStreetSigns, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Building Destroy Street Signs / 2
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingDestroyStreetSigns2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "CommandCenter2822222"))) {
+            return false;
+        }
+
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 400.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingWarning", UnitGetPosition(EventUnit()), ColorWithAlpha(94.90, 100.00, 1.57, 0.00), 4.0);
+    TriggerEnable(TriggerGetCurrent(), false);
+    gv_cityHealth = (gv_cityHealth - 1);
+    libNtve_gf_SetBossBarCurrentValue(1, gv_cityHealth, true);
+    UnitSetState(EventUnit(), c_unitStateHighlightable, false);
+    UnitSetState(EventUnit(), c_unitStateSelectable, false);
+    UnitSetState(EventUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnit(), c_unitStateInvulnerable, true);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("EMP22", 0), UnitGetPosition(EventUnit())), c_orderQueueReplace);
+    Wait(0.5, c_timeGame);
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "ModelSwap PortCity_StreetSigns_Destroyed 1");
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingDestroyStreetSigns2_Init () {
+    gt_BuildingDestroyStreetSigns2 = TriggerCreate("gt_BuildingDestroyStreetSigns2_Func");
+    TriggerAddEventUnitDamaged(gt_BuildingDestroyStreetSigns2, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: City Spawns
+//--------------------------------------------------------------------------------------------------
+bool gt_CitySpawns_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_CitySpawnsNydus, true, false);
+    Wait(200.0, c_timeGame);
+    while (true) {
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnRoach, true, false);
+        TriggerExecute(gt_CitySpawnHydra, true, false);
+        Wait(5.0, c_timeGame);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnRoach, true, false);
+        Wait(19.0, c_timeGame);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnHydra, true, false);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        Wait(12.0, c_timeGame);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        Wait(12.0, c_timeGame);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        Wait(12.0, c_timeGame);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnHydra, true, false);
+        TriggerExecute(gt_CitySpawnHydra, true, false);
+        TriggerExecute(gt_CitySpawnHydra, true, false);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        Wait(12.0, c_timeGame);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        Wait(12.0, c_timeGame);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        Wait(12.0, c_timeGame);
+        TriggerExecute(gt_CitySpawnRoach, true, false);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+        TriggerExecute(gt_CitySpawnHydra, true, false);
+        TriggerExecute(gt_CitySpawnZergling, true, false);
+        TriggerExecute(gt_CitySpawnRoach, true, false);
+        Wait(54.0, c_timeGame);
+        TriggerExecute(gt_CitySpawnsCivillians, true, false);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CitySpawns_Init () {
+    gt_CitySpawns = TriggerCreate("gt_CitySpawns_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: City Spawns Nydus
+//--------------------------------------------------------------------------------------------------
+bool gt_CitySpawnsNydus_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(440.0, c_timeGame);
+    while (true) {
+        TriggerExecute(gt_SpawnNydus, true, false);
+        Wait(400.0, c_timeGame);
+        TriggerExecute(gt_SpawnNydus, true, false);
+        Wait(80.0, c_timeGame);
+        TriggerExecute(gt_SpawnNydus, true, false);
+        Wait(320.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CitySpawnsNydus_Init () {
+    gt_CitySpawnsNydus = TriggerCreate("gt_CitySpawnsNydus_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: City Spawns Civillians
+//--------------------------------------------------------------------------------------------------
+bool gt_CitySpawnsCivillians_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Civilian", 0, 9, RegionRandomPoint(RegionFromId(21)));
+    UnitBehaviorAddPlayer(UnitLastCreated(), "Scared", 9, 1);
+    Wait(30.0, c_timeGame);
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(139432573)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CitySpawnsCivillians_Init () {
+    gt_CitySpawnsCivillians = TriggerCreate("gt_CitySpawnsCivillians_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: City Spawn Zergling
+//--------------------------------------------------------------------------------------------------
+bool gt_CitySpawnZergling_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "ZerglingBurrowed", 0, 8, RegionRandomPoint(RegionFromId(21)));
+    UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("BurrowZerglingUp", 0)), c_orderQueueReplace);
+    Wait(2.0, c_timeGame);
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CitySpawnZergling_Init () {
+    gt_CitySpawnZergling = TriggerCreate("gt_CitySpawnZergling_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: City Spawn Roach
+//--------------------------------------------------------------------------------------------------
+bool gt_CitySpawnRoach_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "RoachBurrowed", 0, 8, RegionRandomPoint(RegionFromId(21)));
+    UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("BurrowRoachUp", 0)), c_orderQueueReplace);
+    Wait(2.0, c_timeGame);
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CitySpawnRoach_Init () {
+    gt_CitySpawnRoach = TriggerCreate("gt_CitySpawnRoach_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: City Spawn Hydra
+//--------------------------------------------------------------------------------------------------
+bool gt_CitySpawnHydra_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "HydraliskBurrowed", 0, 8, RegionRandomPoint(RegionFromId(21)));
+    UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("BurrowHydraliskUp", 0)), c_orderQueueReplace);
+    Wait(2.0, c_timeGame);
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CitySpawnHydra_Init () {
+    gt_CitySpawnHydra = TriggerCreate("gt_CitySpawnHydra_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: City Spawns Air
+//--------------------------------------------------------------------------------------------------
+bool gt_CitySpawnsAir_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(400.0, c_timeGame);
+    while (true) {
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, 8, RegionRandomPoint(RegionFromId(25)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        Wait(60.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, 8, RegionRandomPoint(RegionFromId(25)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, 8, RegionRandomPoint(RegionFromId(25)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        Wait(67.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, 8, RegionRandomPoint(RegionFromId(25)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, 8, RegionRandomPoint(RegionFromId(25)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, 8, RegionRandomPoint(RegionFromId(25)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        Wait(77.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CitySpawnsAir_Init () {
+    gt_CitySpawnsAir = TriggerCreate("gt_CitySpawnsAir_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: City Spawn Void Rift
+//--------------------------------------------------------------------------------------------------
+bool gt_CitySpawnVoidRift_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "VoidRift", 0, 8, RegionRandomPoint(RegionFromId(21)));
+    while (true) {
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 9)), c_orderQueueReplace);
+        Wait(5.0, c_timeGame);
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 5)), c_orderQueueReplace);
+        Wait(5.0, c_timeGame);
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 0)), c_orderQueueReplace);
+        Wait(5.0, c_timeGame);
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 3)), c_orderQueueReplace);
+        Wait(5.0, c_timeGame);
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 12)), c_orderQueueReplace);
+        Wait(9.0, c_timeGame);
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 1)), c_orderQueueReplace);
+        Wait(15.0, c_timeGame);
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 7)), c_orderQueueReplace);
+        Wait(20.0, c_timeGame);
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 6)), c_orderQueueReplace);
+        Wait(25.0, c_timeGame);
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 18)), c_orderQueueReplace);
+        Wait(25.0, c_timeGame);
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 2)), c_orderQueueReplace);
+        Wait(25.0, c_timeGame);
+        UnitIssueOrder(UnitLastCreated(), Order(AbilityCommand("VoidRiftTrain", 21)), c_orderQueueReplace);
+        Wait(5.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CitySpawnVoidRift_Init () {
+    gt_CitySpawnVoidRift = TriggerCreate("gt_CitySpawnVoidRift_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Viking Delete
+//--------------------------------------------------------------------------------------------------
+bool gt_VikingDelete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 6))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitRemove(EventUnit());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VikingDelete_Init () {
+    gt_VikingDelete = TriggerCreate("gt_VikingDelete_Func");
+    TriggerAddEventUnitRegion(gt_VikingDelete, null, RegionFromId(25), true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Void Rift Attack
+//--------------------------------------------------------------------------------------------------
+bool gt_VoidRiftAttack_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (true) {
+        UnitIssueOrder(EventUnitCreatedUnit(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(28))), c_orderQueueReplace);
+        Wait(19.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VoidRiftAttack_Init () {
+    gt_VoidRiftAttack = TriggerCreate("gt_VoidRiftAttack_Func");
+    TriggerAddEventUnitCreated(gt_VoidRiftAttack, null, "VoidRiftTrain", null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: City Remove Civ
+//--------------------------------------------------------------------------------------------------
+bool gt_CityRemoveCiv_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 9))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitRemove(EventUnit());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_CityRemoveCiv_Init () {
+    gt_CityRemoveCiv = TriggerCreate("gt_CityRemoveCiv_Func");
+    TriggerAddEventUnitRegion(gt_CityRemoveCiv, null, RegionFromId(26), true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Marauder Spawn
+//--------------------------------------------------------------------------------------------------
+bool gt_MarauderSpawn_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(200.0, c_timeGame);
+    while (true) {
+        libNtve_gf_CreateUnitsWithDefaultFacing(6, "Marauder", 0, 6, RegionRandomPoint(RegionFromId(23)));
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1637184634)), c_orderQueueReplace);
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        Wait(200.0, c_timeGame);
+        UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        libNtve_gf_CreateUnitsWithDefaultFacing(9, "Marauder", 0, 6, RegionRandomPoint(RegionFromId(23)));
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1637184634)), c_orderQueueReplace);
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        Wait(25.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(6, "VikingFighter", 0, 6, PointFromId(1477042668));
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1637184634)), c_orderQueueReplace);
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1247182325)), c_orderQueueAddToEnd);
+        Wait(26.0, c_timeGame);
+        TriggerExecute(gt_MarauderSpawnHitSquad, true, false);
+        Wait(100.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "VikingFighter", 0, 6, PointFromId(1477042668));
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1637184634)), c_orderQueueReplace);
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(681344297)), c_orderQueueAddToEnd);
+        Wait(15.0, c_timeGame);
+        UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marauder", 0, 6, RegionRandomPoint(RegionFromId(23)));
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1637184634)), c_orderQueueReplace);
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("move", 1), RegionRandomPoint(RegionFromId(11))), c_orderQueueAddToEnd);
+        Wait(60.0, c_timeGame);
+        TriggerExecute(gt_MarauderSpawnHitSquad, true, false);
+        Wait(50.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(7, "VikingFighter", 0, 6, PointFromId(272893399));
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1637184634)), c_orderQueueReplace);
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(270132129)), c_orderQueueAddToEnd);
+        Wait(20.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MarauderSpawn_Init () {
+    gt_MarauderSpawn = TriggerCreate("gt_MarauderSpawn_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Marauder Spawn Hit Squad
+//--------------------------------------------------------------------------------------------------
+bool gt_MarauderSpawnHitSquad_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsWithDefaultFacing(12, "Marauder", 0, 6, RegionRandomPoint(RegionFromId(23)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1637184634)), c_orderQueueReplace);
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(gv_armageddonBoss)), c_orderQueueAddToEnd);
+    Wait(2.0, c_timeGame);
+    while (true) {
+        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(gv_armageddonBoss)), c_orderQueueAddToEnd);
+        Wait(19.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MarauderSpawnHitSquad_Init () {
+    gt_MarauderSpawnHitSquad = TriggerCreate("gt_MarauderSpawnHitSquad_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Zerg Hit Top
+//--------------------------------------------------------------------------------------------------
+bool gt_ZergHitTop_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (true) {
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 8, RegionRandomPoint(RegionFromId(24)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        Wait(40.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 8, RegionRandomPoint(RegionFromId(24)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 8, RegionRandomPoint(RegionFromId(24)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 8, RegionRandomPoint(RegionFromId(24)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 8, RegionRandomPoint(RegionFromId(24)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        Wait(40.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 8, RegionRandomPoint(RegionFromId(24)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 8, RegionRandomPoint(RegionFromId(24)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        Wait(40.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 8, RegionRandomPoint(RegionFromId(24)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 8, RegionRandomPoint(RegionFromId(24)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 8, RegionRandomPoint(RegionFromId(24)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        Wait(40.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ZergHitTop_Init () {
+    gt_ZergHitTop = TriggerCreate("gt_ZergHitTop_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Zerg Hit Bottom
+//--------------------------------------------------------------------------------------------------
+bool gt_ZergHitBottom_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (true) {
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 8, RegionRandomPoint(RegionFromId(22)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        Wait(40.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 8, RegionRandomPoint(RegionFromId(22)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 8, RegionRandomPoint(RegionFromId(22)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        Wait(40.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 8, RegionRandomPoint(RegionFromId(22)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 8, RegionRandomPoint(RegionFromId(22)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 8, RegionRandomPoint(RegionFromId(22)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 8, RegionRandomPoint(RegionFromId(22)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        Wait(40.0, c_timeGame);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 8, RegionRandomPoint(RegionFromId(22)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 8, RegionRandomPoint(RegionFromId(22)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 8, RegionRandomPoint(RegionFromId(22)));
+        UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(11))), c_orderQueueReplace);
+        Wait(40.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ZergHitBottom_Init () {
+    gt_ZergHitBottom = TriggerCreate("gt_ZergHitBottom_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Spawn Marauder Post 1
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnMarauderPost1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_JumpJet_Launch", -1), c_maxPlayers, PlayerGroupAll(), PointFromId(630169372), 0.0, 100.0, 0.0);
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat2", PointFromId(630169372));
+    Wait(2.0, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", 0, 6, PointFromId(337795574));
+    UnitCargoCreate(UnitLastCreated(), "Marauder", 2);
+    UnitSetPosition(UnitLastCreated(), PointFromId(630169372), false);
+    UnitSetHeight(UnitLastCreated(), 40.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitSetHeight(UnitLastCreated(), 0.0, 1.0);
+    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat", UnitGetPosition(UnitLastCreated()));
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_SiegedAttackLaunch", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(UnitLastCreated()), 0.0, 100.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(3))), c_orderQueueReplace);
+    Wait(0.4, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnMarauderPost1_Init () {
+    gt_SpawnMarauderPost1 = TriggerCreate("gt_SpawnMarauderPost1_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Spawn Marauder Post 2
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnMarauderPost2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_JumpJet_Launch", -1), c_maxPlayers, PlayerGroupAll(), PointFromId(2023758047), 0.0, 100.0, 0.0);
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat2", PointFromId(2023758047));
+    Wait(2.0, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", 0, 6, PointFromId(337795574));
+    UnitCargoCreate(UnitLastCreated(), "Marauder", 2);
+    UnitSetPosition(UnitLastCreated(), PointFromId(2023758047), false);
+    UnitSetHeight(UnitLastCreated(), 40.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitSetHeight(UnitLastCreated(), 0.0, 1.0);
+    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat", UnitGetPosition(UnitLastCreated()));
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_SiegedAttackLaunch", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(UnitLastCreated()), 0.0, 100.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+    Wait(0.4, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnMarauderPost2_Init () {
+    gt_SpawnMarauderPost2 = TriggerCreate("gt_SpawnMarauderPost2_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Spawn Marauder Post 3
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnMarauderPost3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_JumpJet_Launch", -1), c_maxPlayers, PlayerGroupAll(), PointFromId(2068039200), 0.0, 100.0, 0.0);
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat2", PointFromId(2068039200));
+    Wait(2.0, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", 0, 6, PointFromId(337795574));
+    UnitCargoCreate(UnitLastCreated(), "Marauder", 2);
+    UnitSetPosition(UnitLastCreated(), PointFromId(2068039200), false);
+    UnitSetHeight(UnitLastCreated(), 40.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitSetHeight(UnitLastCreated(), 0.0, 1.0);
+    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat", UnitGetPosition(UnitLastCreated()));
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_SiegedAttackLaunch", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(UnitLastCreated()), 0.0, 100.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(16))), c_orderQueueReplace);
+    Wait(0.4, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnMarauderPost3_Init () {
+    gt_SpawnMarauderPost3 = TriggerCreate("gt_SpawnMarauderPost3_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Spawn Marauder Post 4
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnMarauderPost4_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_JumpJet_Launch", -1), c_maxPlayers, PlayerGroupAll(), PointFromId(118733920), 0.0, 100.0, 0.0);
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat2", PointFromId(118733920));
+    Wait(2.0, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", 0, 6, PointFromId(337795574));
+    UnitCargoCreate(UnitLastCreated(), "Marauder", 2);
+    UnitSetPosition(UnitLastCreated(), PointFromId(118733920), false);
+    UnitSetHeight(UnitLastCreated(), 40.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitSetHeight(UnitLastCreated(), 0.0, 1.0);
+    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat", UnitGetPosition(UnitLastCreated()));
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_SiegedAttackLaunch", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(UnitLastCreated()), 0.0, 100.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(17))), c_orderQueueReplace);
+    Wait(0.4, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnMarauderPost4_Init () {
+    gt_SpawnMarauderPost4 = TriggerCreate("gt_SpawnMarauderPost4_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Spawn Marauder Post 5
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnMarauderPost5_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_JumpJet_Launch", -1), c_maxPlayers, PlayerGroupAll(), PointFromId(1944376509), 0.0, 100.0, 0.0);
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat2", PointFromId(1944376509));
+    Wait(2.0, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", 0, 6, PointFromId(337795574));
+    UnitCargoCreate(UnitLastCreated(), "Marauder", 2);
+    UnitSetPosition(UnitLastCreated(), PointFromId(1944376509), false);
+    UnitSetHeight(UnitLastCreated(), 40.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitSetHeight(UnitLastCreated(), 0.0, 1.0);
+    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat", UnitGetPosition(UnitLastCreated()));
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_SiegedAttackLaunch", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(UnitLastCreated()), 0.0, 100.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(18))), c_orderQueueReplace);
+    Wait(0.4, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnMarauderPost5_Init () {
+    gt_SpawnMarauderPost5 = TriggerCreate("gt_SpawnMarauderPost5_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Spawn Marauder Post 6
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnMarauderPost6_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_JumpJet_Launch", -1), c_maxPlayers, PlayerGroupAll(), PointFromId(154522532), 0.0, 100.0, 0.0);
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat2", PointFromId(154522532));
+    Wait(2.0, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", 0, 6, PointFromId(337795574));
+    UnitCargoCreate(UnitLastCreated(), "Marauder", 2);
+    UnitSetPosition(UnitLastCreated(), PointFromId(154522532), false);
+    UnitSetHeight(UnitLastCreated(), 40.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitSetHeight(UnitLastCreated(), 0.0, 1.0);
+    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat", UnitGetPosition(UnitLastCreated()));
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_SiegedAttackLaunch", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(UnitLastCreated()), 0.0, 100.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(19))), c_orderQueueReplace);
+    Wait(0.4, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnMarauderPost6_Init () {
+    gt_SpawnMarauderPost6 = TriggerCreate("gt_SpawnMarauderPost6_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Spawn Marauder Post 7
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnMarauderPost7_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_JumpJet_Launch", -1), c_maxPlayers, PlayerGroupAll(), PointFromId(875325055), 0.0, 100.0, 0.0);
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat2", PointFromId(875325055));
+    Wait(2.0, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", 0, 6, PointFromId(337795574));
+    UnitCargoCreate(UnitLastCreated(), "Marauder", 2);
+    UnitSetPosition(UnitLastCreated(), PointFromId(875325055), false);
+    UnitSetHeight(UnitLastCreated(), 40.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitSetHeight(UnitLastCreated(), 0.0, 1.0);
+    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat", UnitGetPosition(UnitLastCreated()));
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_SiegedAttackLaunch", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(UnitLastCreated()), 0.0, 100.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(20))), c_orderQueueReplace);
+    Wait(0.4, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnMarauderPost7_Init () {
+    gt_SpawnMarauderPost7 = TriggerCreate("gt_SpawnMarauderPost7_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Spawn Nydus
+//--------------------------------------------------------------------------------------------------
+bool gt_SpawnNydus_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unit lv_nydus;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "NydusCanal", 0, 8, RegionRandomPoint(RegionFromId(21)));
+    lv_nydus = UnitLastCreated();
+    ActorSend(libNtve_gf_MainActorofUnit(UnitLastCreated()), "AnimPlay Dance Birth");
+    SoundPlayAtPointForPlayer(SoundLink("NydusWorm_Birth", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(UnitLastCreated()), 0.0, 100.0, 0.0);
+    Wait(3.0, c_timeGame);
+    while (true) {
+        Wait(3.0, c_timeGame);
+        UnitCargoCreate(UnitLastCreated(), "Zergling", 4);
+        UnitCargoCreate(UnitLastCreated(), "Roach", 2);
+        UnitCargoCreate(UnitLastCreated(), "Hydralisk", 1);
+        UnitIssueOrder(lv_nydus, Order(AbilityCommand("NydusCanalTransport", 1)), c_orderQueueReplace);
+        Wait(22.0, c_timeGame);
+        UnitCargoCreate(UnitLastCreated(), "Zergling", 7);
+        UnitCargoCreate(UnitLastCreated(), "Roach", 1);
+        UnitIssueOrder(lv_nydus, Order(AbilityCommand("NydusCanalTransport", 1)), c_orderQueueReplace);
+        Wait(34.0, c_timeGame);
+        UnitCargoCreate(UnitLastCreated(), "Hydralisk", 4);
+        UnitCargoCreate(UnitLastCreated(), "Roach", 3);
+        UnitIssueOrder(lv_nydus, Order(AbilityCommand("NydusCanalTransport", 1)), c_orderQueueReplace);
+        Wait(44.0, c_timeGame);
+        UnitCargoCreate(UnitLastCreated(), "Zergling", 12);
+        UnitCargoCreate(UnitLastCreated(), "Hydralisk", 1);
+        UnitIssueOrder(lv_nydus, Order(AbilityCommand("NydusCanalTransport", 1)), c_orderQueueReplace);
+        Wait(32.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SpawnNydus_Init () {
+    gt_SpawnNydus = TriggerCreate("gt_SpawnNydus_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Nydus Unload Attack
+//--------------------------------------------------------------------------------------------------
+bool gt_NydusUnloadAttack_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 8))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (true) {
+        UnitIssueOrder(EventUnitCargo(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(27))), c_orderQueueReplace);
+        Wait(19.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_NydusUnloadAttack_Init () {
+    gt_NydusUnloadAttack = TriggerCreate("gt_NydusUnloadAttack_Func");
+    TriggerAddEventUnitCargo(gt_NydusUnloadAttack, null, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: buildingjump
+//--------------------------------------------------------------------------------------------------
+bool gt_buildingjump_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", 0, 1, PointFromId(337795574));
+    UnitCargoCreate(UnitLastCreated(), "Marauder", 2);
+    UnitSetPosition(UnitLastCreated(), RegionRandomPoint(RegionFromId(3)), false);
+    UnitSetHeight(UnitLastCreated(), 40.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitSetHeight(UnitLastCreated(), 0.0, 1.0);
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat", UnitGetPosition(UnitLastCreated()));
+    SoundPlayAtPointForPlayer(SoundLink("SiegeTank_SiegedAttackLaunch", -1), c_maxPlayers, PlayerGroupAll(), UnitGetPosition(UnitLastCreated()), 0.0, 100.0, 0.0);
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(250457677), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(3))), c_orderQueueReplace);
+    Wait(0.4, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_buildingjump_Init () {
+    gt_buildingjump = TriggerCreate("gt_buildingjump_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Gorgon Move 1
+//--------------------------------------------------------------------------------------------------
+bool gt_GorgonMove1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "GehennaCruiser", 0, 6, PointFromId(1376801179));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(2134249457)), c_orderQueueReplace);
+    Wait((60.0 * 6.0), c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "GehennaCruiser", 0, 6, PointFromId(887337522));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(640361751)), c_orderQueueReplace);
+    Wait((60.0 * 6.0), c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "GehennaCruiser", 0, 6, PointFromId(270132129));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(304133926)), c_orderQueueReplace);
+    Wait((60.0 * 6.0), c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "GehennaCruiser", 0, 6, PointFromId(272893399));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1789040778)), c_orderQueueReplace);
+    Wait((60.0 * 6.0), c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "GehennaCruiser", 0, 6, PointFromId(2044834691));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1247182325)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_GorgonMove1_Init () {
+    gt_GorgonMove1 = TriggerCreate("gt_GorgonMove1_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Gorgon Delete
+//--------------------------------------------------------------------------------------------------
+bool gt_GorgonDelete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "GehennaCruiser"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitRemove(EventUnit());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_GorgonDelete_Init () {
+    gt_GorgonDelete = TriggerCreate("gt_GorgonDelete_Func");
+    TriggerAddEventUnitRegion(gt_GorgonDelete, null, RegionFromId(30), true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Initialization
+//--------------------------------------------------------------------------------------------------
+void InitTriggers () {
+    gt_Init01LoadData_Init();
+    gt_Init02Players_Init();
+    gt_Init03LoadingComplete_Init();
+    gt_StartAI_Init();
+    gt_StartGameQ_Init();
+    gt_EnemyAttackingQ_Init();
+    gt_DefeatPrimaryObjectiveFailed_Init();
+    gt_VictoryPrimaryObjectiveComplete_Init();
+    gt_VictorySequence_Init();
+    gt_VictoryFanfareQ_Init();
+    gt_Victory_Init();
+    gt_Defeat_Init();
+    gt_SetupAttackWaveSpawn_Init();
+    gt_AIAttackWaves_Init();
+    gt_AttackWave01_Init();
+    gt_AttackWave02_Init();
+    gt_AttackWave03_Init();
+    gt_AttackWave04_Init();
+    gt_AttackWave05_Init();
+    gt_AttackWave06_Init();
+    gt_AttackWave07_Init();
+    gt_ObjectiveDefendTheCityCreate_Init();
+    gt_ObjectiveDefendTheCityComplete_Init();
+    gt_ObjectiveDefendTheCityFailed_Init();
+    gt_ObjectiveDelayArmageddonCreate_Init();
+    gt_ObjectiveDelayArmageddonComplete_Init();
+    gt_ArmageddionResetAI_Init();
+    gt_ArmageddonAI_Init();
+    gt_Armageddon90_Init();
+    gt_ArmageddonAI90_Init();
+    gt_Armageddon70_Init();
+    gt_ArmageddonAI70_Init();
+    gt_Armageddon40_Init();
+    gt_ArmageddonAI40_Init();
+    gt_ArmageddonAI402_Init();
+    gt_BoomrockerAI_Init();
+    gt_BoomrockerDies_Init();
+    gt_ObjectiveActivateLinksCreate_Init();
+    gt_ObjectiveActivateLinksComplete1_Init();
+    gt_ObjectiveActivateLinksComplete2_Init();
+    gt_ObjectiveActivateLinksCompleted_Init();
+    gt_BuildingDestroy0_Init();
+    gt_BuildingDestroy1_Init();
+    gt_BuildingDestroy2_Init();
+    gt_BuildingDestroy3_Init();
+    gt_BuildingDestroy4_Init();
+    gt_BuildingDestroy5_Init();
+    gt_BuildingDestroy6_Init();
+    gt_BuildingDestroyStadium_Init();
+    gt_BuildingDestroyStoplightSE_Init();
+    gt_BuildingDestroyStoplightSW_Init();
+    gt_BuildingDestroyStoplightNE_Init();
+    gt_BuildingDestroyStoplightNW_Init();
+    gt_BuildingDestroyStreetAlarm_Init();
+    gt_BuildingDestroyStreetAlarm2_Init();
+    gt_BuildingDestroyStreetSigns_Init();
+    gt_BuildingDestroyStreetSigns2_Init();
+    gt_CitySpawns_Init();
+    gt_CitySpawnsNydus_Init();
+    gt_CitySpawnsCivillians_Init();
+    gt_CitySpawnZergling_Init();
+    gt_CitySpawnRoach_Init();
+    gt_CitySpawnHydra_Init();
+    gt_CitySpawnsAir_Init();
+    gt_CitySpawnVoidRift_Init();
+    gt_VikingDelete_Init();
+    gt_VoidRiftAttack_Init();
+    gt_CityRemoveCiv_Init();
+    gt_MarauderSpawn_Init();
+    gt_MarauderSpawnHitSquad_Init();
+    gt_ZergHitTop_Init();
+    gt_ZergHitBottom_Init();
+    gt_SpawnMarauderPost1_Init();
+    gt_SpawnMarauderPost2_Init();
+    gt_SpawnMarauderPost3_Init();
+    gt_SpawnMarauderPost4_Init();
+    gt_SpawnMarauderPost5_Init();
+    gt_SpawnMarauderPost6_Init();
+    gt_SpawnMarauderPost7_Init();
+    gt_SpawnNydus_Init();
+    gt_NydusUnloadAttack_Init();
+    gt_buildingjump_Init();
+    gt_GorgonMove1_Init();
+    gt_GorgonDelete_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitLibs();
+    InitGlobals();
+    InitCustomAI();
+    InitTriggers();
+}

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CEffectApplyBehavior id="XenosDarkStardustApplyCasterLock">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="XenosDarkStardustCasterLock"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="XenosDarkStardustDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Protoss"/>
+        <Kind value="Ranged"/>
+        <Amount value="12"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="XenosDarkStardustLaunchMissile">
+        <EditorCategories value="Race:Protoss"/>
+        <ImpactEffect value="XenosDarkStardustSet"/>
+        <AmmoUnit value="XenosDarkEnergyBlastProjectile"/>
+        <Movers Link="LiberatorMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectRemoveBehavior id="XenosDarkStardustRemoveCasterLock">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Caster"/>
+        <BehaviorLink value="XenosDarkStardustCasterLock"/>
+    </CEffectRemoveBehavior>
+    <CEffectEnumArea id="XenosDarkStardustSearchArea">
+        <EditorCategories value=""/>
+        <SearchFilters value="Visible;Player,Ally,Missile,Dead,Hidden,Invulnerable"/>
+        <TargetSorts>
+            <SortArray value="TSRandom"/>
+        </TargetSorts>
+        <AreaArray MaxCount="1" Radius="4" Effect="XenosDarkStardustLaunchMissile"/>
+    </CEffectEnumArea>
+    <CEffectSet id="XenosDarkStardustSet">
+        <EffectArray value="XenosDarkStardustDamage"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="XenosDarkStardustStartPersistent">
+        <EditorCategories value=""/>
+        <Flags index="Channeled" value="1"/>
+        <Flags index="Channeling" value="1"/>
+        <InitialEffect value="XenosDarkStardustApplyCasterLock"/>
+        <FinalEffect value="XenosDarkStardustRemoveCasterLock"/>
+        <PeriodCount value="36"/>
+        <PeriodicEffectArray value="XenosDarkStardustSearchArea"/>
+        <PeriodicPeriodArray value="0.0625"/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="XenosMonochromeVeilApplyNormal">
+        <ValidatorArray index="0" value="NotHeroic"/>
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="XenosMonochromeVeil"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="XenosMonochromeVeilApplyHeroic">
+        <ValidatorArray index="0" value="IsHeroic"/>
+        <EditorCategories value=""/>
+        <Behavior value="XenosMonochromeVeilHeroic"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="XenosMonochromeVeilApplySpread">
+        <EditorCategories value=""/>
+        <Behavior value="XenosMonochromeVeilSpreadBehavior"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="XenosMonochromeVeilSpreadApplySet">
+        <ValidatorArray value="XenosMonochromeVeilNotAffectedCombined"/>
+        <EditorCategories value=""/>
+        <EffectArray value="XenosMonochromeVeilApplyNormal"/>
+        <EffectArray value="XenosMonochromeVeilApplyHeroic"/>
+    </CEffectSet>
+    <CEffectEnumArea id="XenosMonochromeVeilSpreadSearch">
+        <EditorCategories value=""/>
+        <SearchFilters value="-;Player,Ally,Neutral,Structure,Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray MaxCount="6" Radius="2.5" Effect="XenosMonochromeVeilSpreadApplySet"/>
+    </CEffectEnumArea>
+    <CEffectSet id="XenosMonochromeVeilStartSet">
+        <EditorCategories value=""/>
+        <EffectArray value="XenosMonochromeVeilApplyNormal"/>
+        <EffectArray value="XenosMonochromeVeilApplyHeroic"/>
+        <EffectArray value="XenosMonochromeVeilApplySpread"/>
+        <ValidatorArray value="XenosMonochromeVeilNotAffectedCombined"/>
+    </CEffectSet>
+    <CEffectDamage id="DestructionWaveConjoinedDamage">
+        <Amount value="0"/>
+    </CEffectDamage>
+    <CEffectDamage id="DestructionWaveDamage">
+        <Amount value="0"/>
+    </CEffectDamage>
+    <CEffectSet id="DestructionWaveDamageSet">
+        <EffectArray value="XenosMonochromeWaveImpactBehavior"/>
+    </CEffectSet>
+    <CEffectSet id="XenosDarkEnergyBlastSet">
+        <EffectArray value="XenosDarkEnergyBlastDamage"/>
+    </CEffectSet>
+    <CEffectDamage id="XenosDarkEnergyBlastDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Protoss"/>
+        <Kind value="Ranged"/>
+        <Amount value="12"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="XenosDarkEnergyBlastLaunchMissile">
+        <EditorCategories value="Race:Protoss"/>
+        <ImpactEffect value="XenosDarkEnergyBlastSet"/>
+        <AmmoUnit value="XenosDarkEnergyBlastProjectile"/>
+        <Movers Link="LiberatorMissile"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="D8ChargeExplodeDamage">
+        <SearchFilters value="Ground;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectDamage id="D8ClusterBombExplodeDamage">
+        <SearchFilters value="Ground;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectDamage id="OdinAADamage">
+        <Amount value="20"/>
+    </CEffectDamage>
+    <CEffectDamage id="OdinDamage">
+        <AttributeBonus index="Structure" value="30"/>
+        <Amount value="20"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="SJPirateCapitalShipLeftRandomLM">
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="SJPirateCapitalShipRightRandomLM">
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="UnstableVoidCrystalResonanceApplyChainBehavior">
+        <ValidatorArray index="0" value="UnstableVoidCrystalResonanceTargetIsVoidCrystal"/>
+        <ValidatorArray value="UnstableVoidCrystalResonanceNoChainDetonationToken"/>
+        <EditorCategories value=""/>
+        <Behavior value="UnstableVoidCrystalResonanceChainDetonationToken"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="UnstableVoidCrystalResonanceDetonationSet">
+        <EditorCategories value=""/>
+        <EffectArray value="Suicide"/>
+        <EffectArray value="UnstableVoidCrystalResonanceImpactSearch"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="UnstableVoidCrystalResonanceImpactChainDelay">
+        <EditorCategories value=""/>
+        <WhichLocation Value="SourceUnit"/>
+        <OffsetVectorEndLocation Value="SourceUnit"/>
+        <Flags index="RandomPeriod" value="1"/>
+        <PeriodCount value="1"/>
+        <PeriodicValidator value="SourceNotDead"/>
+        <PeriodicEffectArray value="UnstableVoidCrystalResonanceDetonationSet"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicPeriodArray value="0.0625"/>
+        <PeriodicPeriodArray value="0.125"/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="UnstableVoidCrystalResonanceApplyDeathTimer">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Source"/>
+        <Behavior value="UnstableVoidCrystalResonanceCountdown"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="UnstableVoidCrystalResonanceImpactDamage">
+        <ValidatorArray value="UnstableVoidCrystalResonanceTargetNotVoidCrystal"/>
+        <EditorCategories value=""/>
+        <Amount value="10"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="UnstableVoidCrystalResonanceImpactSearch">
+        <EditorCategories value=""/>
+        <SearchFilters value="-;Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="2.5" Effect="UnstableVoidCrystalResonanceImpactSet"/>
+        <SearchFlags index="OffsetByUnitRadius" value="1"/>
+        <SearchFlags index="OffsetAreaByAngle" value="0"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="UnstableVoidCrystalResonancePereodicSearch">
+        <EditorCategories value=""/>
+        <SearchFilters value="Psionic;Dead,Hidden,Invulnerable"/>
+        <AreaArray MaxCount="1" Radius="2.5" Effect="UnstableVoidCrystalResonanceApplyDeathTimer"/>
+        <SearchFlags index="OffsetByUnitRadius" value="1"/>
+        <SearchFlags index="OffsetAreaByAngle" value="0"/>
+    </CEffectEnumArea>
+    <CEffectSet id="UnstableVoidCrystalResonanceImpactSet">
+        <EditorCategories value=""/>
+        <EffectArray value="UnstableVoidCrystalResonanceImpactDamage"/>
+        <EffectArray value="UnstableVoidCrystalResonanceApplyChainBehavior"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="VoidConduitHarvestApplyTick">
+        <EditorCategories value=""/>
+        <Behavior value="VoidConduitHarvestTick"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="VoidConduitStandbyApplyBehavior">
+        <EditorCategories value=""/>
+        <Behavior value="VoidConduitStandby"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="VoidMineralFieldHintDurationReapply">
+        <ValidatorArray index="0" value="GameMineralTip"/>
+        <EditorCategories value=""/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="VoidMineralFieldHintDuration"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="VoidMineralFieldHintDurationSearch">
+        <EditorCategories value=""/>
+        <SearchFilters value="-;RawResource,HarvestableResource,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="2.5" Effect="VoidMineralFieldHintDurationReapply"/>
+    </CEffectEnumArea>
+    <CEffectCreatePersistent id="XenosDarkEnergyBlastStartPersistent">
+        <EditorCategories value=""/>
+        <WhichLocation Value="TargetUnit"/>
+        <InitialEffect value="XenosDarkEnergyBlastLaunchMissile"/>
+        <PeriodCount value="2"/>
+        <PeriodicEffectArray value="XenosDarkEnergyBlastLaunchMissile"/>
+        <PeriodicPeriodArray value="0.0625"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="XenosEntombAutoSearch">
+        <EditorCategories value=""/>
+        <SearchFilters value="HarvestableResource;Player,Ally,Enemy"/>
+        <TargetSorts>
+            <SortArray value="TSRandom"/>
+        </TargetSorts>
+        <AreaArray MaxCount="1" Radius="20" Effect="XenosEntombSingleApplyBehavior"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="XenosEntombSingleApplyBehavior">
+        <ValidatorArray index="0" value="XenosEntombAutoTargetCombineValidator"/>
+        <EditorCategories value=""/>
+        <Behavior value="XenosEntombSingleEntombed"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="XenosMonochromeVeilUSERApplyHitToken">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="XenosMonochromeVeilUSERCasterToken"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="XenosMonochromeWallApplyAfterpushStasis">
+        <ValidatorArray index="0" value="NotHeroic"/>
+        <EditorCategories value=""/>
+        <Behavior value="XenosMonochromeWallAffectedPostPushNormal"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="XenosMonochromeWallApplyCasterToken">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="XenosMonochromeWallCasterToken"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="XenosMonochromeWallCasterPersistent">
+        <EditorCategories value=""/>
+        <WhichLocation Value="CasterUnit"/>
+        <Flags index="Channeled" value="1"/>
+        <Flags index="Channeling" value="1"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <PeriodicValidator value="XenosMonochromeWallCasterHasToken"/>
+        <PeriodicPeriodArray value="0.25"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="XenosMonochromeWallStartSet">
+        <EditorCategories value=""/>
+        <EffectArray value="XenosMonochromeWallApplyCasterToken"/>
+        <EffectArray value="XenosMonochromeWallCasterPersistent"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="XenosMonochromeWaveImpactBehavior">
+        <EditorCategories value=""/>
+        <Behavior value="XenosMonochromeWaveStun"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="XenosTormentStrikeDamage" parent="DU_WEAP">
+        <EditorCategories value="Race:Protoss"/>
+        <Amount value="36"/>
+        <Death value="Eviscerate"/>
+    </CEffectDamage>
+</Catalog>

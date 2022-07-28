@@ -1,0 +1,2065 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TriggerData>
+    <Root>
+        <Item Type="CustomScript" Id="E33FC62C"/>
+    </Root>
+    <Element Type="CustomScript" Id="E33FC62C">
+        <ScriptCode>
+            //==================================================================================================
+            // 
+            // Generated Map Script
+            // 
+            // Name:   Smash Bros Test
+            // 
+            //==================================================================================================
+            include &quot;TriggerLibs/NativeLib&quot;
+            include &quot;TriggerLibs/SwarmLib&quot;
+            include &quot;LibCOMI&quot;
+            //--------------------------------------------------------------------------------------------------
+            // Library Initialization
+            //--------------------------------------------------------------------------------------------------
+            void InitLibs () {
+                libNtve_InitLib();
+                libHots_InitLib();
+                libCOMI_InitLib();
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Constants
+            //--------------------------------------------------------------------------------------------------
+            const int gv_pLAYER_01_USER = 1;
+            const int gv_pLAYER_02_USER = 2;
+            const int gv_pLAYER_03_VALERIAN = 3;
+            const int gv_pLAYER_04_AMON = 4;
+            const int gv_pLAYER_05_AMON2 = 5;
+            const int gv_pLAYER_06_AMON3 = 6;
+            const int gv_pLAYER_07_AMON4 = 7;
+            const int gv_pLAYER_08_PURIFIERS = 8;
+            const int gv_pLAYER_09_PURIFIERS_BONUS01 = 9;
+            const int gv_pLAYER_10_PURIFIERS_BONUS02 = 10;
+            //--------------------------------------------------------------------------------------------------
+            // Global Preset Declarations
+            //--------------------------------------------------------------------------------------------------
+            const int ge_PRESET_AttackWaveDirection_North = 0;
+            const int ge_PRESET_AttackWaveDirection_South = 1;
+            //--------------------------------------------------------------------------------------------------
+            // Global Variables
+            //--------------------------------------------------------------------------------------------------
+            playergroup gv_AMON_FORCES;
+            playergroup gv_PURIFIER_FORCES;
+            playergroup gv_VALERIAN_GROUP;
+            playergroup gv_COMMANDERS;
+            int gv_PURIFIER_PROGRESS_COUNT;
+            int gv_VALERIAN_PROGRESS_COUNT;
+            int gv_PURIFIER_ATTACK_LOCATION;
+            string gv_NORMAL_LIGHT;
+            string gv_NORMAL_AMBIENCE;
+            string gv_MAP_MUSICTRACK;
+            timer gv_DISRUPTION_TIMER;
+            int gv_DISRUPTION_TIMER_WINDOW;
+            int gv_DISRUPTION_COUNT;
+            fixed gv_DISRUPTION_DURATION;
+            string gv_DISRUPTION_LIGHT;
+            sound gv_DISRUPTION_SOUND;
+            bool gv_DISRUPTION_ACTIVE;
+            string gv_DISRUPTION_AMBIENCE;
+            fixed gv_DISRUPTION_INACTIVE_DURATION;
+            int gv_FIRST_ARTIFACT_OBJECTIVE;
+            int gv_FINAL_ARTIFACT_OBJECTIVE;
+            int gv_VALERIAN_CC_OBJECTIVE;
+            int gv_BONUS_01;
+            int gv_BONUS_02;
+            point gv_victoryCompletePan;
+            void InitGlobals () {
+                gv_AMON_FORCES = PlayerGroupEmpty();
+                gv_PURIFIER_FORCES = PlayerGroupEmpty();
+                gv_VALERIAN_GROUP = PlayerGroupEmpty();
+                gv_COMMANDERS = PlayerGroupEmpty();
+                gv_NORMAL_AMBIENCE = &quot;Ambience_QdBG_PKorhal02_Lp&quot;;
+                gv_MAP_MUSICTRACK = &quot;PKorhal02_Music_Main&quot;;
+                gv_DISRUPTION_TIMER = TimerCreate();
+                gv_DISRUPTION_TIMER_WINDOW = c_timerWindowNone;
+                gv_DISRUPTION_DURATION = 120.0;
+                gv_DISRUPTION_LIGHT = &quot;KorhalNight&quot;;
+                gv_DISRUPTION_AMBIENCE = &quot;Ambience_Liberty&quot;;
+                gv_DISRUPTION_INACTIVE_DURATION = 210.0;
+                gv_FIRST_ARTIFACT_OBJECTIVE = c_invalidObjectiveId;
+                gv_FINAL_ARTIFACT_OBJECTIVE = c_invalidObjectiveId;
+                gv_VALERIAN_CC_OBJECTIVE = c_invalidObjectiveId;
+                gv_BONUS_01 = c_invalidObjectiveId;
+                gv_BONUS_02 = c_invalidObjectiveId;
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Global Function Declarations
+            //--------------------------------------------------------------------------------------------------
+            void gf_CreateAttackWavesForValerian (int lp_unitCount, string lp_unitType, int lp_direction);
+            void gf_CreateAttackWaveUnitsForAmon (int lp_unitCount, string lp_unitType, int lp_direction);
+            void gf_CreateAttackWavesForPurifiers (int lp_unitCount, string lp_unitType, int lp_direction);
+            void gf_CreateAttackWavesVSPlayers (int lp_unitCount, string lp_unitType, int lp_direction);
+            void gf_CreateHybrid (int lp_unitCount, string lp_unitType, int lp_direction);
+            bool gf_UnitisHybrid (unit lp_unit);
+            void gf_AttackWavePing (unitgroup lp_unitGroup);
+            void gf_HybridPing (unitgroup lp_unitGroup);
+            void gf_PsiStormDominatorAI (unit lp_hybrid);
+            //--------------------------------------------------------------------------------------------------
+            // Trigger Variables
+            //--------------------------------------------------------------------------------------------------
+            trigger gt_MyOwnInitialization;
+            trigger gt_Init01LoadData;
+            trigger gt_Init03LoadingComplete;
+            trigger gt_Init04Technology;
+            trigger gt_Init05Units;
+            trigger gt_Init06MusicSound;
+            trigger gt_Init07Environment;
+            trigger gt_Init08Difficulties;
+            trigger gt_InitBunkers;
+            trigger gt_InitBullies;
+            trigger gt_InitPurifierVisionAndTransmission;
+            trigger gt_AIStart;
+            trigger gt_ValerianWaves;
+            trigger gt_PusherAmonAI1Waves;
+            trigger gt_PurifierAIWaves;
+            trigger gt_PurifierAIWavesFromBonusBase01;
+            trigger gt_PurifierAIWavesFromBonusBase02;
+            trigger gt_HybridWaves;
+            trigger gt_PurifierProgressCheck;
+            trigger gt_ValerianProgressCheck;
+            trigger gt_DisruptionCycle;
+            trigger gt_DisruptionWarning;
+            trigger gt_DisruptionBehavior;
+            trigger gt_IntroductionTransmission;
+            trigger gt_PurifierIntroductionTransmission;
+            trigger gt_BonusObj1Transmission;
+            trigger gt_BonusObj1Transmission2;
+            trigger gt_ReachTheArtifactObjectiveCreate;
+            trigger gt_ReachTheArtifactObjectiveUpdate;
+            trigger gt_ReachTheArtifactNewCreate;
+            trigger gt_ReachTheArtifactCompleted;
+            trigger gt_ReachTheArtifactFailed;
+            trigger gt_ValerianCCMustSurviveCreate;
+            trigger gt_ValerianCCMustSurviveCompleted;
+            trigger gt_ValerianCCMustSurviveFailed;
+            trigger gt_BonusBase1Create;
+            trigger gt_BonusBase1Completed;
+            trigger gt_BonusBase2Create;
+            trigger gt_BonusBase2Completed;
+            trigger gt_UnitBecomesIdle;
+            trigger gt_DefeatArtifactDestroyed;
+            trigger gt_DefeatValerianCCDestroyed;
+            trigger gt_VictoryReachedArtifactComplete;
+            trigger gt_VictorySequence;
+            trigger gt_VictoryFanfareQ;
+            trigger gt_Victory;
+            trigger gt_Defeat;
+            //--------------------------------------------------------------------------------------------------
+            // Global Presets
+            //--------------------------------------------------------------------------------------------------
+            //--------------------------------------------------------------------------------------------------
+            // Global Functions
+            //--------------------------------------------------------------------------------------------------
+            void gf_CreateAttackWavesForValerian (int lp_unitCount, string lp_unitType, int lp_direction) {
+                int auto3996BFE6_val;
+                // Implementation
+                auto3996BFE6_val = gv_VALERIAN_PROGRESS_COUNT;
+                if (auto3996BFE6_val == 0) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_03_VALERIAN, PointFromId(1475659971), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(531064337)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(531064337)), c_orderQueueAddToEnd);
+                }
+                else if (auto3996BFE6_val == 1) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_03_VALERIAN, PointFromId(1475659971), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(312020572)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(312020572)), c_orderQueueAddToEnd);
+                }
+                else if (auto3996BFE6_val == 2) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_03_VALERIAN, PointFromId(1475659971), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(969952089)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(969952089)), c_orderQueueAddToEnd);
+                }
+                else if (auto3996BFE6_val == 3) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_03_VALERIAN, PointFromId(1475659971), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(1030622115)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(1030622115)), c_orderQueueAddToEnd);
+                }
+                else {
+                }
+            }
+            void gf_CreateAttackWaveUnitsForAmon (int lp_unitCount, string lp_unitType, int lp_direction) {
+                // Implementation
+                if ((UnitIsAlive(UnitFromId(1896060985)) == true)) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_05_AMON2, PointFromId(68590058), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(418834535)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(418834535)), c_orderQueueAddToEnd);
+                }
+                else {
+                    if ((UnitIsAlive(UnitFromId(1243136474)) == true)) {
+                        UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_05_AMON2, PointFromId(1117558723), 270.0);
+                        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(418834535)), c_orderQueueReplace);
+                        UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(418834535)), c_orderQueueAddToEnd);
+                    }
+                    else {
+                        if ((UnitIsAlive(UnitFromId(2131590913)) == true)) {
+                            UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_05_AMON2, PointFromId(2147052112), 270.0);
+                            UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(418834535)), c_orderQueueReplace);
+                            UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(418834535)), c_orderQueueAddToEnd);
+                        }
+                    }
+                }
+            }
+            void gf_CreateAttackWavesForPurifiers (int lp_unitCount, string lp_unitType, int lp_direction) {
+                int auto7AD90005_val;
+                // Implementation
+                auto7AD90005_val = gv_PURIFIER_PROGRESS_COUNT;
+                if (auto7AD90005_val == 0) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_08_PURIFIERS, PointFromId(836484166), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(906001415)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(906001415)), c_orderQueueAddToEnd);
+                }
+                else if (auto7AD90005_val == 1) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_08_PURIFIERS, PointFromId(836484166), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(1716240564)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(1716240564)), c_orderQueueAddToEnd);
+                }
+                else if (auto7AD90005_val == 2) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_08_PURIFIERS, PointFromId(836484166), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(929244924)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(929244924)), c_orderQueueAddToEnd);
+                }
+                else if (auto7AD90005_val == 3) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_08_PURIFIERS, PointFromId(836484166), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(752570425)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(752570425)), c_orderQueueAddToEnd);
+                }
+                else {
+                }
+            }
+            void gf_CreateAttackWavesVSPlayers (int lp_unitCount, string lp_unitType, int lp_direction) {
+                int autoCD20D933_val;
+                // Implementation
+                autoCD20D933_val = gv_PURIFIER_ATTACK_LOCATION;
+                if (autoCD20D933_val == 0) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_09_PURIFIERS_BONUS01, PointFromId(1219486138), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(1663787594)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(1663787594)), c_orderQueueAddToEnd);
+                }
+                else if (autoCD20D933_val == 1) {
+                    UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_10_PURIFIERS_BONUS02, PointFromId(1476499390), 270.0);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(654121622)), c_orderQueueReplace);
+                    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(654121622)), c_orderQueueAddToEnd);
+                }
+                else {
+                }
+            }
+            void gf_CreateHybrid (int lp_unitCount, string lp_unitType, int lp_direction) {
+                // Implementation
+                UnitCreate(lp_unitCount, lp_unitType, 0, gv_pLAYER_07_AMON4, PointFromId(1039921296), 270.0);
+                UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(418834535)), c_orderQueueReplace);
+                UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(418834535)), c_orderQueueAddToEnd);
+               
+                //if ((gf_UnitisHybrid(UnitGroupLoopCurrent()) == true)) {
+                //    UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), &quot;DisableMedicHealing&quot;, gv_pLAYER_07_AMON4, 1);
+               // }
+            }
+            bool gf_UnitisHybrid (unit lp_unit) {
+                // Implementation
+                if (((UnitGetType(lp_unit) == &quot;HybridReaver&quot;) || (UnitGetType(lp_unit) == &quot;HybridDestroyer&quot;) || (UnitGetType(lp_unit) == &quot;HybridDominatorVoid&quot;) || (UnitGetType(lp_unit) == &quot;HybridBehemoth&quot;))) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            trigger auto_gf_AttackWavePing_Trigger = null;
+            unitgroup auto_gf_AttackWavePing_lp_unitGroup;
+            void gf_AttackWavePing (unitgroup lp_unitGroup) {
+                auto_gf_AttackWavePing_lp_unitGroup = lp_unitGroup;
+                if (auto_gf_AttackWavePing_Trigger == null) {
+                    auto_gf_AttackWavePing_Trigger = TriggerCreate(&quot;auto_gf_AttackWavePing_TriggerFunc&quot;);
+                }
+                TriggerExecute(auto_gf_AttackWavePing_Trigger, false, false);
+            }
+            bool auto_gf_AttackWavePing_TriggerFunc (bool testConds, bool runActions) {
+                unitgroup lp_unitGroup = auto_gf_AttackWavePing_lp_unitGroup;
+                // Variable Declarations
+                int lv_wavePing;
+                // Variable Initialization
+                lv_wavePing = c_invalidPingId;
+                // Implementation
+                libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), &quot;PingSimple&quot;, UnitGroupCenterOfGroup(lp_unitGroup), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0, 270.0);
+                lv_wavePing = PingLastCreated();
+                PingSetTooltip(PingLastCreated(), StringExternal(&quot;Param/Value/8C1B725D&quot;));
+                PingSetScale(PingLastCreated(), 0.9);
+                TriggerQueueEnter();
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                libCOMI_gf_SendMissionTransmission(&quot;AttackWave&quot;, true, RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER));
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                TriggerQueueExit();
+                while ((libNtve_gf_UnitGroupIsDead(lp_unitGroup) == false) &amp;&amp; (libCOMI_gf_GameIsOver() == false)) {
+                    PingSetPosition(lv_wavePing, UnitGroupCenterOfGroup(lp_unitGroup));
+                    Wait(0.25, c_timeGame);
+                }
+                PingDestroy(lv_wavePing);
+                return true;
+            }
+            trigger auto_gf_HybridPing_Trigger = null;
+            unitgroup auto_gf_HybridPing_lp_unitGroup;
+            void gf_HybridPing (unitgroup lp_unitGroup) {
+                auto_gf_HybridPing_lp_unitGroup = lp_unitGroup;
+                if (auto_gf_HybridPing_Trigger == null) {
+                    auto_gf_HybridPing_Trigger = TriggerCreate(&quot;auto_gf_HybridPing_TriggerFunc&quot;);
+                }
+                TriggerExecute(auto_gf_HybridPing_Trigger, false, false);
+            }
+            bool auto_gf_HybridPing_TriggerFunc (bool testConds, bool runActions) {
+                unitgroup lp_unitGroup = auto_gf_HybridPing_lp_unitGroup;
+                // Variable Declarations
+                int lv_hybridwavePing;
+                // Variable Initialization
+                lv_hybridwavePing = c_invalidPingId;
+                // Implementation
+                libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), &quot;PingSimple&quot;, UnitGroupCenterOfGroup(lp_unitGroup), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0, 270.0);
+                lv_hybridwavePing = PingLastCreated();
+                PingSetTooltip(PingLastCreated(), StringExternal(&quot;Param/Value/8EEC2565&quot;));
+                PingSetScale(PingLastCreated(), 0.9);
+                TriggerQueueEnter();
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                libCOMI_gf_SendMissionTransmission(&quot;AttackWave&quot;, true, RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER));
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                TriggerQueueExit();
+                while ((libNtve_gf_UnitGroupIsDead(lp_unitGroup) == false) &amp;&amp; (libCOMI_gf_GameIsOver() == false)) {
+                    PingSetPosition(lv_hybridwavePing, UnitGroupCenterOfGroup(lp_unitGroup));
+                    Wait(0.25, c_timeGame);
+                }
+                PingDestroy(lv_hybridwavePing);
+                return true;
+            }
+            trigger auto_gf_PsiStormDominatorAI_Trigger = null;
+            unit auto_gf_PsiStormDominatorAI_lp_hybrid;
+            void gf_PsiStormDominatorAI (unit lp_hybrid) {
+                auto_gf_PsiStormDominatorAI_lp_hybrid = lp_hybrid;
+                if (auto_gf_PsiStormDominatorAI_Trigger == null) {
+                    auto_gf_PsiStormDominatorAI_Trigger = TriggerCreate(&quot;auto_gf_PsiStormDominatorAI_TriggerFunc&quot;);
+                }
+                TriggerExecute(auto_gf_PsiStormDominatorAI_Trigger, false, false);
+            }
+            bool auto_gf_PsiStormDominatorAI_TriggerFunc (bool testConds, bool runActions) {
+                unit lp_hybrid = auto_gf_PsiStormDominatorAI_lp_hybrid;
+                // Variable Declarations
+                unitgroup lv_attackerGroup;
+                unit lv_lastAttacker;
+                int lv_targetCount;
+                point lv_targetPoint;
+                // Variable Initialization
+                lv_attackerGroup = UnitGroupEmpty();
+                // Implementation
+                while ((UnitIsAlive(lp_hybrid) == true)) {
+                    lv_lastAttacker = AILastAttacker(lp_hybrid);
+                    lv_attackerGroup = UnitGroupAlliance(UnitGetOwner(lp_hybrid), c_unitAllianceEnemy, RegionCircle(UnitGetPosition(lp_hybrid), 9.0), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterStructure) | (1 &lt;&lt; c_targetFilterMissile) | (1 &lt;&lt; c_targetFilterBuried), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32)) | (1 &lt;&lt; (c_targetFilterInvulnerable - 32))), 0);
+                    lv_targetCount = UnitGroupCount(lv_attackerGroup, c_unitCountAlive);
+                    if ((UnitCheckAbilCmdState(lp_hybrid, AbilityCommand(&quot;HybridDominatorVoidPsiStorm&quot;, 0), c_cmdStateCooldown) == false) &amp;&amp; (lv_targetCount &gt;= 3)) {
+                        UnitGroupLoopBegin(lv_attackerGroup);
+                        for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+                            lv_targetPoint = UnitGetPosition(UnitGroupLoopCurrent());
+                            if ((UnitGroupCount(UnitGroupAlliance(UnitGetOwner(lp_hybrid), c_unitAllianceEnemy, RegionCircle(lv_targetPoint, 2.0), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterStructure) | (1 &lt;&lt; c_targetFilterMissile) | (1 &lt;&lt; c_targetFilterBuried), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32)) | (1 &lt;&lt; (c_targetFilterInvulnerable - 32))), 0), c_unitCountAlive) &gt;= 3)) {
+                                libNtve_gf_AICast(lp_hybrid, OrderTargetingPoint(AbilityCommand(&quot;HybridDominatorVoidPsiStorm&quot;, 0), lv_targetPoint));
+                                break;
+                            }
+                            else {
+                                lv_targetPoint = null;
+                            }
+                        }
+                        UnitGroupLoopEnd();
+                    }
+                    lv_attackerGroup = null;
+                    Wait(1.0, c_timeAI);
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 002
+            //--------------------------------------------------------------------------------------------------
+            bool gt_MyOwnInitialization_Func (bool testConds, bool runActions) {
+                // Variable Declarations
+                int lv_playerIterEnemy;
+                int lv_playerIterAlly;
+                // Variable Initialization
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                PlayerGroupAdd(gv_COMMANDERS, gv_pLAYER_01_USER);
+                PlayerGroupAdd(gv_COMMANDERS, gv_pLAYER_02_USER);
+                PlayerGroupAdd(gv_AMON_FORCES, gv_pLAYER_04_AMON);
+                PlayerGroupAdd(gv_AMON_FORCES, gv_pLAYER_05_AMON2);
+                PlayerGroupAdd(gv_AMON_FORCES, gv_pLAYER_06_AMON3);
+                PlayerGroupAdd(gv_AMON_FORCES, gv_pLAYER_07_AMON4);
+                PlayerGroupAdd(gv_PURIFIER_FORCES, gv_pLAYER_08_PURIFIERS);
+                PlayerGroupAdd(gv_PURIFIER_FORCES, gv_pLAYER_09_PURIFIERS_BONUS01);
+                PlayerGroupAdd(gv_PURIFIER_FORCES, gv_pLAYER_10_PURIFIERS_BONUS02);
+                PlayerGroupAdd(gv_VALERIAN_GROUP, gv_pLAYER_03_VALERIAN);
+                PlayerSetState(gv_pLAYER_03_VALERIAN, c_playerStateMineralCostIgnored, true);
+                PlayerSetState(gv_pLAYER_03_VALERIAN, c_playerStateVespeneCostIgnored, true);
+                PlayerSetState(gv_pLAYER_03_VALERIAN, c_playerStateFoodIgnored, true);
+                PlayerSetState(gv_pLAYER_04_AMON, c_playerStateMineralCostIgnored, true);
+                PlayerSetState(gv_pLAYER_04_AMON, c_playerStateVespeneCostIgnored, true);
+                PlayerSetState(gv_pLAYER_04_AMON, c_playerStateFoodIgnored, true);
+                PlayerSetState(gv_pLAYER_05_AMON2, c_playerStateMineralCostIgnored, true);
+                PlayerSetState(gv_pLAYER_05_AMON2, c_playerStateVespeneCostIgnored, true);
+                PlayerSetState(gv_pLAYER_05_AMON2, c_playerStateFoodIgnored, true);
+                PlayerSetState(gv_pLAYER_06_AMON3, c_playerStateMineralCostIgnored, true);
+                PlayerSetState(gv_pLAYER_06_AMON3, c_playerStateVespeneCostIgnored, true);
+                PlayerSetState(gv_pLAYER_06_AMON3, c_playerStateFoodIgnored, true);
+                PlayerSetState(gv_pLAYER_07_AMON4, c_playerStateMineralCostIgnored, true);
+                PlayerSetState(gv_pLAYER_07_AMON4, c_playerStateVespeneCostIgnored, true);
+                PlayerSetState(gv_pLAYER_07_AMON4, c_playerStateFoodIgnored, true);
+                libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+                libNtve_gf_SetAlliance(gv_pLAYER_01_USER, gv_pLAYER_03_VALERIAN, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+                libNtve_gf_SetAlliance(gv_pLAYER_02_USER, gv_pLAYER_03_VALERIAN, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+                libCOMI_gf_SetPlayerGroupAlliance(gv_AMON_FORCES, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+                libCOMI_gf_SetPlayerGroupAlliance(gv_PURIFIER_FORCES, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+                PlayerGroupLoopBegin(gv_AMON_FORCES);
+                for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
+                    PlayerSetColorIndex(PlayerGroupLoopCurrent(), 1, true);
+                }
+                PlayerGroupLoopEnd();
+                PlayerGroupLoopBegin(gv_PURIFIER_FORCES);
+                for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
+                    PlayerSetColorIndex(PlayerGroupLoopCurrent(), 6, true);
+                }
+                PlayerGroupLoopEnd();
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_MyOwnInitialization_Init () {
+                gt_MyOwnInitialization = TriggerCreate(&quot;gt_MyOwnInitialization_Func&quot;);
+                TriggerAddEventMapInit(gt_MyOwnInitialization);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Init 01 Load Data
+            //--------------------------------------------------------------------------------------------------
+            bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
+                libCOMI_gf_LoadCoopMission(&quot;COOP_Placeholder&quot;, gt_Init03LoadingComplete);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_Init01LoadData_Init () {
+                gt_Init01LoadData = TriggerCreate(&quot;gt_Init01LoadData_Func&quot;);
+                TriggerAddEventMapInit(gt_Init01LoadData);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Init 03 Loading Complete
+            //--------------------------------------------------------------------------------------------------
+            bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
+                TriggerExecute(gt_Init04Technology, true, false);
+                TriggerExecute(gt_Init05Units, true, false);
+                TriggerExecute(gt_Init06MusicSound, true, false);
+                TriggerExecute(gt_Init07Environment, true, false);
+                TriggerExecute(gt_Init08Difficulties, true, false);
+                TriggerExecute(gt_InitBullies, true, false);
+                TriggerExecute(gt_InitBunkers, true, false);
+                TriggerExecute(gt_DisruptionCycle, true, false);
+                TriggerExecute(gt_IntroductionTransmission, true, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_Init03LoadingComplete_Init () {
+                gt_Init03LoadingComplete = TriggerCreate(&quot;gt_Init03LoadingComplete_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Init 04 Technology
+            //--------------------------------------------------------------------------------------------------
+            bool gt_Init04Technology_Func (bool testConds, bool runActions) {
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_08_PURIFIERS, &quot;VoidZealotSuperShields&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_08_PURIFIERS, &quot;Charge&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_08_PURIFIERS, &quot;StalkerResearchBlinkCharges&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_08_PURIFIERS, &quot;ExtendedThermalLance&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_VALERIAN, &quot;ShieldWall&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_VALERIAN, &quot;FireSuppressionSystems&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, &quot;ShieldWall&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, &quot;ShieldWall&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, &quot;ShieldWall&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, &quot;ShieldWall&quot;, 1);
+                Wait(205.0, c_timeGame);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, &quot;TerranInfantryArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, &quot;TerranInfantryArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, &quot;TerranInfantryArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, &quot;TerranInfantryArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, &quot;TerranInfantryWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, &quot;TerranInfantryWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, &quot;TerranInfantryWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, &quot;TerranInfantryWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, &quot;TerranVehicleArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, &quot;TerranVehicleArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, &quot;TerranVehicleArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, &quot;TerranVehicleArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, &quot;TerranVehicleWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, &quot;TerranVehicleWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, &quot;TerranVehicleWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, &quot;TerranVehicleWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, &quot;TerranShipWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, &quot;TerranShipWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, &quot;TerranShipWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, &quot;TerranShipWeaponsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, &quot;TerranShipArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, &quot;TerranShipArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, &quot;TerranShipArmorsLevel1&quot;, 1);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, &quot;TerranShipArmorsLevel1&quot;, 1);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_Init04Technology_Init () {
+                gt_Init04Technology = TriggerCreate(&quot;gt_Init04Technology_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Init 05 Units
+            //--------------------------------------------------------------------------------------------------
+            bool gt_Init05Units_Func (bool testConds, bool runActions) {
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_Init05Units_Init () {
+                gt_Init05Units = TriggerCreate(&quot;gt_Init05Units_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Init 06 Music/Sound
+            //--------------------------------------------------------------------------------------------------
+            bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                libHots_gf_PlaySoundLinkasMusic(SoundLink(&quot;PKorhal02_Music_Main&quot;, -1), true, true);
+                SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, gv_MAP_MUSICTRACK, c_soundtrackCueAny, c_soundtrackIndexAny, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_Init06MusicSound_Init () {
+                gt_Init06MusicSound = TriggerCreate(&quot;gt_Init06MusicSound_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Init 07 Environment
+            //--------------------------------------------------------------------------------------------------
+            bool gt_Init07Environment_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                GameTimeOfDaySet(&quot;17:30:00&quot;);
+                gv_NORMAL_LIGHT = &quot;KorhalCityEx2&quot;;
+                TriggerExecute(gt_InitPurifierVisionAndTransmission, true, false);
+                Wait(57.5, c_timeAI);
+                TriggerExecute(gt_ReachTheArtifactObjectiveCreate, true, false);
+                TriggerExecute(gt_ValerianCCMustSurviveCreate, true, false);
+                VisRevealArea(gv_pLAYER_01_USER, RegionFromId(10), 1.0, false);
+                VisRevealArea(gv_pLAYER_02_USER, RegionFromId(10), 1.0, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_Init07Environment_Init () {
+                gt_Init07Environment = TriggerCreate(&quot;gt_Init07Environment_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Init 08 Difficulties
+            //--------------------------------------------------------------------------------------------------
+            bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_01_USER) == 4)) {
+                    UnitRemove(UnitFromId(1913008642));
+                }
+                if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_02_USER) == 4)) {
+                    UnitRemove(UnitFromId(1018218227));
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_Init08Difficulties_Init () {
+                gt_Init08Difficulties = TriggerCreate(&quot;gt_Init08Difficulties_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_InitBunkers_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                UnitCargoCreate(UnitFromId(397755516), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(246256703), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(606666682), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(842825311), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(1991330606), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(222661530), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(470075680), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(1140920164), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(457469913), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(1305958085), &quot;WarPig&quot;, 4);
+                UnitCargoCreate(UnitFromId(1871183834), &quot;WarPig&quot;, 4);
+                UnitCargoCreate(UnitFromId(1398728726), &quot;WarPig&quot;, 4);
+                UnitCargoCreate(UnitFromId(259988004), &quot;WarPig&quot;, 4);
+                UnitCargoCreate(UnitFromId(1519267900), &quot;WarPig&quot;, 4);
+                UnitCargoCreate(UnitFromId(1082000274), &quot;WarPig&quot;, 4);
+                UnitCargoCreate(UnitFromId(1977556072), &quot;Marine&quot;, 2);
+                UnitCargoCreate(UnitFromId(1254734327), &quot;Marine&quot;, 2);
+                UnitCargoCreate(UnitFromId(203893646), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(1581266174), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(444838149), &quot;Marine&quot;, 4);
+                UnitCargoCreate(UnitFromId(1957164725), &quot;Marine&quot;, 4);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_InitBunkers_Init () {
+                gt_InitBunkers = TriggerCreate(&quot;gt_InitBunkers_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_InitBullies_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                AIToggleBulliesInRegion(2, RegionFromId(4), true);
+                AIToggleBulliesInRegion(2, RegionFromId(5), true);
+                AIToggleBulliesInRegion(2, RegionFromId(6), true);
+                AIToggleBulliesInRegion(2, RegionFromId(1), true);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_InitBullies_Init () {
+                gt_InitBullies = TriggerCreate(&quot;gt_InitBullies_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_InitPurifierVisionAndTransmission_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                Wait(205.0, c_timeAI);
+                VisRevealArea(gv_pLAYER_01_USER, RegionFromId(3), 0.0, false);
+                VisRevealArea(gv_pLAYER_02_USER, RegionFromId(3), 0.0, false);
+                TriggerExecute(gt_PurifierIntroductionTransmission, true, false);
+                Wait(12.0, c_timeAI);
+                TriggerExecute(gt_ReachTheArtifactObjectiveUpdate, true, false);
+                TriggerExecute(gt_ReachTheArtifactNewCreate, true, false);
+                Wait(200.0, c_timeAI);
+                TriggerExecute(gt_BonusObj1Transmission, true, false);
+                Wait(300.0, c_timeAI);
+                TriggerExecute(gt_BonusObj1Transmission2, true, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_InitPurifierVisionAndTransmission_Init () {
+                gt_InitPurifierVisionAndTransmission = TriggerCreate(&quot;gt_InitPurifierVisionAndTransmission_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_AIStart_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                AICampaignStart(gv_pLAYER_03_VALERIAN);
+                AICampaignStart(gv_pLAYER_04_AMON);
+                AICampaignStart(gv_pLAYER_05_AMON2);
+                AICampaignStart(gv_pLAYER_06_AMON3);
+                AICampaignStart(gv_pLAYER_07_AMON4);
+                AICampaignStart(gv_pLAYER_08_PURIFIERS);
+                AICampaignStart(gv_pLAYER_09_PURIFIERS_BONUS01);
+                AICampaignStart(gv_pLAYER_10_PURIFIERS_BONUS02);
+                UnitGroupLoopBegin(UnitGroup(&quot;HybridDominatorVoid&quot;, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
+                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+                    gf_PsiStormDominatorAI(UnitGroupLoopCurrent());
+                }
+                UnitGroupLoopEnd();
+                TriggerExecute(gt_PusherAmonAI1Waves, true, false);
+                TriggerExecute(gt_ValerianWaves, true, false);
+                TriggerExecute(gt_PurifierAIWaves, true, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_AIStart_Init () {
+                gt_AIStart = TriggerCreate(&quot;gt_AIStart_Func&quot;);
+                TriggerAddEventMapInit(gt_AIStart);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_ValerianWaves_Func (bool testConds, bool runActions) {
+                int autoD73FC1E1_n;
+                int autoD73FC1E1_i;
+                int auto62E050A4_n;
+                int auto62E050A4_i;
+                int auto39F237A7_n;
+                int auto39F237A7_i;
+                // Variable Declarations
+                unitgroup lv_Drops;
+                // Variable Initialization
+                lv_Drops = UnitGroupEmpty();
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                Wait(75.0, c_timeAI);
+                autoD73FC1E1_n = 3;
+                for (autoD73FC1E1_i = 1; autoD73FC1E1_i &lt;= autoD73FC1E1_n; autoD73FC1E1_i += 1) {
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, PointFromId(1475659971), UnitGroupEmpty(), true, gv_pLAYER_03_VALERIAN);
+                    Wait(2.0, c_timeAI);
+                    gf_CreateAttackWavesForValerian(6, &quot;Marine&quot;, ge_PRESET_AttackWaveDirection_North);
+                    UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                    gf_CreateAttackWavesForValerian(2, &quot;Medic&quot;, ge_PRESET_AttackWaveDirection_North);
+                    UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_Drops);
+                    AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                    lv_Drops = null;
+                    TriggerExecute(gt_ValerianProgressCheck, true, false);
+                    Wait(40.0, c_timeAI);
+                }
+                libNtve_gf_WaitForTimer(gv_DISRUPTION_TIMER, 0.0, false);
+                Wait(2.0, c_timeAI);
+                if ((gv_DISRUPTION_ACTIVE == false) &amp;&amp; (TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 20.0)) {
+                    auto39F237A7_n = 3;
+                    for (auto39F237A7_i = 1; auto39F237A7_i &lt;= auto39F237A7_n; auto39F237A7_i += 1) {
+                        AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                        libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, PointFromId(1475659971), UnitGroupEmpty(), true, gv_pLAYER_03_VALERIAN);
+                        Wait(2.0, c_timeAI);
+                        gf_CreateAttackWavesForValerian(8, &quot;Marine&quot;, ge_PRESET_AttackWaveDirection_North);
+                        UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                        gf_CreateAttackWavesForValerian(2, &quot;Medic&quot;, ge_PRESET_AttackWaveDirection_North);
+                        UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                        gf_CreateAttackWavesForValerian(2, &quot;Goliath&quot;, ge_PRESET_AttackWaveDirection_North);
+                        UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                        AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_Drops);
+                        AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                        lv_Drops = null;
+                        TriggerExecute(gt_ValerianProgressCheck, true, false);
+                        Wait(40.0, c_timeAI);
+                    }
+                }
+                else {
+                    auto62E050A4_n = 3;
+                    for (auto62E050A4_i = 1; auto62E050A4_i &lt;= auto62E050A4_n; auto62E050A4_i += 1) {
+                        while (!((gv_DISRUPTION_ACTIVE == false) &amp;&amp; (TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 20.0))) {
+                            Wait(1.0, c_timeGame);
+                        }
+                        AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                        libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, PointFromId(1475659971), UnitGroupEmpty(), true, gv_pLAYER_03_VALERIAN);
+                        Wait(2.0, c_timeAI);
+                        gf_CreateAttackWavesForValerian(8, &quot;Marine&quot;, ge_PRESET_AttackWaveDirection_North);
+                        UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                        gf_CreateAttackWavesForValerian(2, &quot;Medic&quot;, ge_PRESET_AttackWaveDirection_North);
+                        UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                        gf_CreateAttackWavesForValerian(2, &quot;Goliath&quot;, ge_PRESET_AttackWaveDirection_North);
+                        UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                        AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_Drops);
+                        AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                        lv_Drops = null;
+                        TriggerExecute(gt_ValerianProgressCheck, true, false);
+                        Wait(40.0, c_timeAI);
+                    }
+                }
+                libNtve_gf_WaitForTimer(gv_DISRUPTION_TIMER, 0.0, false);
+                if ((gv_DISRUPTION_ACTIVE == false) &amp;&amp; (TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 20.0)) {
+                    while (true) {
+                        AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                        libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, PointFromId(1475659971), UnitGroupEmpty(), true, gv_pLAYER_03_VALERIAN);
+                        Wait(2.0, c_timeAI);
+                        gf_CreateAttackWavesForValerian(12, &quot;Marine&quot;, ge_PRESET_AttackWaveDirection_North);
+                        UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                        gf_CreateAttackWavesForValerian(4, &quot;Goliath&quot;, ge_PRESET_AttackWaveDirection_North);
+                        UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                        AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_Drops);
+                        AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                        lv_Drops = null;
+                        TriggerExecute(gt_ValerianProgressCheck, true, false);
+                        Wait(60.0, c_timeAI);
+                    }
+                }
+                else {
+                    while (true) {
+                        while (!((gv_DISRUPTION_ACTIVE == false) &amp;&amp; (TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 20.0))) {
+                            Wait(1.0, c_timeGame);
+                        }
+                        AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                        libCOMI_gf_CreateDropPod(libCOMI_ge_DropPodRace_Terran, PointFromId(1475659971), UnitGroupEmpty(), true, gv_pLAYER_03_VALERIAN);
+                        Wait(2.0, c_timeAI);
+                        gf_CreateAttackWavesForValerian(12, &quot;Marine&quot;, ge_PRESET_AttackWaveDirection_North);
+                        UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                        gf_CreateAttackWavesForValerian(4, &quot;Goliath&quot;, ge_PRESET_AttackWaveDirection_North);
+                        UnitGroupAddUnitGroup(lv_Drops, UnitLastCreatedGroup());
+                        AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_Drops);
+                        AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                        lv_Drops = null;
+                        TriggerExecute(gt_ValerianProgressCheck, true, false);
+                        Wait(60.0, c_timeAI);
+                    }
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_ValerianWaves_Init () {
+                gt_ValerianWaves = TriggerCreate(&quot;gt_ValerianWaves_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: R POST Wave
+            //--------------------------------------------------------------------------------------------------
+            bool gt_PusherAmonAI1Waves_Func (bool testConds, bool runActions) {
+                int autoD06D6A10_n;
+                int autoD06D6A10_i;
+                int auto0DC2DE8F_val;
+                int auto524AF455_n;
+                int auto524AF455_i;
+                int auto589F135A_n;
+                int auto589F135A_i;
+                int auto7090559C_n;
+                int auto7090559C_i;
+                // Variable Declarations
+                unitgroup lv_WaveGroup;
+                // Variable Initialization
+                lv_WaveGroup = UnitGroupEmpty();
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                Wait(70.0, c_timeAI);
+                autoD06D6A10_n = 3;
+                for (autoD06D6A10_i = 1; autoD06D6A10_i &lt;= autoD06D6A10_n; autoD06D6A10_i += 1) {
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateAttackWaveUnitsForAmon(libNtve_gf_DifficultyValueInt(6, 6, 6, 6), &quot;Marine&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                    gf_CreateAttackWaveUnitsForAmon(2, &quot;Diamondback&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_WaveGroup);
+                    AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                    lv_WaveGroup = null;
+                    Wait(40.0, c_timeAI);
+                }
+                libNtve_gf_WaitForTimer(gv_DISRUPTION_TIMER, 0.0, false);
+                while (true) {
+                    Wait(5.0, c_timeAI);
+                    auto0DC2DE8F_val = gv_DISRUPTION_COUNT;
+                    if (auto0DC2DE8F_val == 1) {
+                        auto524AF455_n = 3;
+                        for (auto524AF455_i = 1; auto524AF455_i &lt;= auto524AF455_n; auto524AF455_i += 1) {
+                            if ((TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 10.0) &amp;&amp; (gv_DISRUPTION_ACTIVE == false)) {
+                                AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                                gf_CreateAttackWaveUnitsForAmon(libNtve_gf_DifficultyValueInt(10, 10, 10, 10), &quot;Marine&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                gf_CreateAttackWaveUnitsForAmon(4, &quot;Goliath&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_WaveGroup);
+                                AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                                lv_WaveGroup = null;
+                                Wait(40.0, c_timeAI);
+                            }
+                            else {
+                                while (!((TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 10.0) &amp;&amp; (gv_DISRUPTION_ACTIVE == false))) {
+                                    Wait(1.0, c_timeGame);
+                                }
+                            }
+                        }
+                    }
+                    else if (auto0DC2DE8F_val == 2) {
+                        auto589F135A_n = 5;
+                        for (auto589F135A_i = 1; auto589F135A_i &lt;= auto589F135A_n; auto589F135A_i += 1) {
+                            if ((TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 10.0) &amp;&amp; (gv_DISRUPTION_ACTIVE == false)) {
+                                AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                                gf_CreateAttackWaveUnitsForAmon(libNtve_gf_DifficultyValueInt(12, 12, 12, 12), &quot;Marine&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                gf_CreateAttackWaveUnitsForAmon(5, &quot;Goliath&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                gf_CreateAttackWaveUnitsForAmon(5, &quot;Medic&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_WaveGroup);
+                                AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                                lv_WaveGroup = null;
+                                Wait(40.0, c_timeAI);
+                            }
+                            else {
+                                while (!((TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 10.0) &amp;&amp; (gv_DISRUPTION_ACTIVE == false))) {
+                                    Wait(1.0, c_timeGame);
+                                }
+                            }
+                        }
+                    }
+                    else if (auto0DC2DE8F_val == 3) {
+                        auto7090559C_n = 5;
+                        for (auto7090559C_i = 1; auto7090559C_i &lt;= auto7090559C_n; auto7090559C_i += 1) {
+                            if ((TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 10.0) &amp;&amp; (gv_DISRUPTION_ACTIVE == false)) {
+                                AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                                gf_CreateAttackWaveUnitsForAmon(libNtve_gf_DifficultyValueInt(18, 18, 18, 18), &quot;Marine&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                gf_CreateAttackWaveUnitsForAmon(8, &quot;Goliath&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                gf_CreateAttackWaveUnitsForAmon(2, &quot;Diamondback&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_WaveGroup);
+                                AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                                lv_WaveGroup = null;
+                                Wait(40.0, c_timeAI);
+                            }
+                            else {
+                                while (!((TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 10.0) &amp;&amp; (gv_DISRUPTION_ACTIVE == false))) {
+                                    Wait(1.0, c_timeGame);
+                                }
+                            }
+                        }
+                    }
+                    else if (auto0DC2DE8F_val == 4) {
+                        while (true) {
+                            if ((TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 10.0) &amp;&amp; (gv_DISRUPTION_ACTIVE == false)) {
+                                AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                                gf_CreateAttackWaveUnitsForAmon(libNtve_gf_DifficultyValueInt(10, 10, 10, 10), &quot;Goliath&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                gf_CreateAttackWaveUnitsForAmon(5, &quot;Diamondback&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                gf_CreateAttackWaveUnitsForAmon(2, &quot;Thor&quot;, ge_PRESET_AttackWaveDirection_South);
+                                UnitGroupAddUnitGroup(lv_WaveGroup, UnitLastCreatedGroup());
+                                AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_WaveGroup);
+                                AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                                lv_WaveGroup = null;
+                                Wait(60.0, c_timeAI);
+                            }
+                            else {
+                                while (!((TimerGetRemaining(gv_DISRUPTION_TIMER) &gt;= 10.0) &amp;&amp; (gv_DISRUPTION_ACTIVE == false))) {
+                                    Wait(1.0, c_timeGame);
+                                }
+                            }
+                        }
+                    }
+                    else {
+                    }
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_PusherAmonAI1Waves_Init () {
+                gt_PusherAmonAI1Waves = TriggerCreate(&quot;gt_PusherAmonAI1Waves_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: L POST Wave 5
+            //--------------------------------------------------------------------------------------------------
+            bool gt_PurifierAIWaves_Func (bool testConds, bool runActions) {
+                // Variable Declarations
+                unitgroup lv_PurifierWaveGroup;
+                // Variable Initialization
+                lv_PurifierWaveGroup = UnitGroupEmpty();
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                libNtve_gf_WaitForTimer(gv_DISRUPTION_TIMER, 0.0, false);
+                while (!((gv_DISRUPTION_ACTIVE == true))) {
+                    Wait(1.0, c_timeGame);
+                }
+                AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                gf_CreateAttackWavesForPurifiers(5, &quot;ZealotPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_PurifierWaveGroup);
+                AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                lv_PurifierWaveGroup = null;
+                TriggerExecute(gt_PurifierProgressCheck, true, false);
+                TriggerExecute(gt_PurifierAIWavesFromBonusBase01, true, false);
+                libNtve_gf_WaitForTimer(gv_DISRUPTION_TIMER, 0.0, false);
+                while (true) {
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateAttackWavesForPurifiers(12, &quot;ZealotPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    gf_CreateAttackWavesForPurifiers(5, &quot;StalkerPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    gf_CreateAttackWavesForPurifiers(2, &quot;ColossusPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_PurifierWaveGroup);
+                    AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                    lv_PurifierWaveGroup = null;
+                    TriggerExecute(gt_PurifierProgressCheck, true, false);
+                    Wait(90.0, c_timeAI);
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateAttackWavesForPurifiers(15, &quot;ZealotPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    gf_CreateAttackWavesForPurifiers(5, &quot;StalkerPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_PurifierWaveGroup);
+                    AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                    lv_PurifierWaveGroup = null;
+                    TriggerExecute(gt_PurifierProgressCheck, true, false);
+                    TriggerExecute(gt_PurifierAIWavesFromBonusBase02, true, false);
+                    Wait(90.0, c_timeAI);
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateAttackWavesForPurifiers(20, &quot;ZealotPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_PurifierWaveGroup);
+                    AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                    lv_PurifierWaveGroup = null;
+                    TriggerExecute(gt_PurifierProgressCheck, true, false);
+                    Wait(90.0, c_timeAI);
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateAttackWavesForPurifiers(20, &quot;StalkerPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    gf_CreateAttackWavesForPurifiers(5, &quot;SentryPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_PurifierWaveGroup);
+                    AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                    lv_PurifierWaveGroup = null;
+                    TriggerExecute(gt_PurifierProgressCheck, true, false);
+                    TriggerExecute(gt_PurifierAIWavesFromBonusBase01, true, false);
+                    Wait(90.0, c_timeAI);
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_07_AMON4, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateAttackWavesForPurifiers(8, &quot;ZealotPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    gf_CreateAttackWavesForPurifiers(10, &quot;StalkerPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    gf_CreateAttackWavesForPurifiers(8, &quot;SentryPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    gf_CreateAttackWavesForPurifiers(3, &quot;ColossusPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_PurifierWaveGroup, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_07_AMON4, lv_PurifierWaveGroup);
+                    AIAttackWaveSend(gv_pLAYER_07_AMON4, 0, false);
+                    lv_PurifierWaveGroup = null;
+                    gv_PURIFIER_ATTACK_LOCATION = 1;
+                    TriggerExecute(gt_PurifierProgressCheck, true, false);
+                    Wait(60.0, c_timeGame);
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_PurifierAIWaves_Init () {
+                gt_PurifierAIWaves = TriggerCreate(&quot;gt_PurifierAIWaves_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: L POST Wave 6
+            //--------------------------------------------------------------------------------------------------
+            bool gt_PurifierAIWavesFromBonusBase01_Func (bool testConds, bool runActions) {
+                // Variable Declarations
+                unitgroup lv_Bonus_Group1;
+                // Variable Initialization
+                lv_Bonus_Group1 = UnitGroupEmpty();
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                Wait(30.0, c_timeAI);
+                AIAttackWaveSetTargetPlayer(gv_pLAYER_01_USER, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                gf_CreateAttackWavesVSPlayers(8, &quot;ZealotPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_Bonus_Group1, UnitLastCreatedGroup());
+                gf_CreateAttackWavesVSPlayers(3, &quot;StalkerPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_Bonus_Group1, UnitLastCreatedGroup());
+                AIAttackWaveUseGroup(gv_pLAYER_01_USER, lv_Bonus_Group1);
+                AIAttackWaveSend(gv_pLAYER_01_USER, 0, false);
+                gf_AttackWavePing(lv_Bonus_Group1);
+                lv_Bonus_Group1 = null;
+                Wait(300.0, c_timeGame);
+                AIAttackWaveSetTargetPlayer(gv_pLAYER_01_USER, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                gf_CreateAttackWavesVSPlayers(25, &quot;ZealotPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_Bonus_Group1, UnitLastCreatedGroup());
+                gf_CreateAttackWavesVSPlayers(12, &quot;StalkerPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_Bonus_Group1, UnitLastCreatedGroup());
+                gf_CreateAttackWavesVSPlayers(5, &quot;ColossusPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_Bonus_Group1, UnitLastCreatedGroup());
+                AIAttackWaveUseGroup(gv_pLAYER_01_USER, lv_Bonus_Group1);
+                AIAttackWaveSend(gv_pLAYER_01_USER, 0, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_PurifierAIWavesFromBonusBase01_Init () {
+                gt_PurifierAIWavesFromBonusBase01 = TriggerCreate(&quot;gt_PurifierAIWavesFromBonusBase01_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: L POST Wave 7
+            //--------------------------------------------------------------------------------------------------
+            bool gt_PurifierAIWavesFromBonusBase02_Func (bool testConds, bool runActions) {
+                // Variable Declarations
+                bool lv_First_Attack2;
+                unitgroup lv_Bonus_Group2;
+                // Variable Initialization
+                lv_Bonus_Group2 = UnitGroupEmpty();
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                gv_PURIFIER_ATTACK_LOCATION = 1;
+                Wait(5.0, c_timeAI);
+                AIAttackWaveSetTargetPlayer(gv_pLAYER_02_USER, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                gf_CreateAttackWavesVSPlayers(12, &quot;ZealotPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_Bonus_Group2, UnitLastCreatedGroup());
+                gf_CreateAttackWavesVSPlayers(5, &quot;StalkerPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_Bonus_Group2, UnitLastCreatedGroup());
+                AIAttackWaveUseGroup(gv_pLAYER_02_USER, lv_Bonus_Group2);
+                AIAttackWaveSend(gv_pLAYER_02_USER, 0, false);
+                gf_AttackWavePing(lv_Bonus_Group2);
+                lv_Bonus_Group2 = null;
+                lv_First_Attack2 = true;
+                gv_PURIFIER_ATTACK_LOCATION = 0;
+                Wait(300.0, c_timeGame);
+                gv_PURIFIER_ATTACK_LOCATION = 1;
+                AIAttackWaveSetTargetPlayer(gv_pLAYER_02_USER, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                gf_CreateAttackWavesVSPlayers(18, &quot;ZealotPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_Bonus_Group2, UnitLastCreatedGroup());
+                gf_CreateAttackWavesVSPlayers(10, &quot;StalkerPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_Bonus_Group2, UnitLastCreatedGroup());
+                gf_CreateAttackWavesVSPlayers(3, &quot;ColossusPurifier&quot;, ge_PRESET_AttackWaveDirection_South);
+                UnitGroupAddUnitGroup(lv_Bonus_Group2, UnitLastCreatedGroup());
+                AIAttackWaveUseGroup(gv_pLAYER_02_USER, lv_Bonus_Group2);
+                AIAttackWaveSend(gv_pLAYER_02_USER, 0, false);
+                gv_PURIFIER_ATTACK_LOCATION = 0;
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_PurifierAIWavesFromBonusBase02_Init () {
+                gt_PurifierAIWavesFromBonusBase02 = TriggerCreate(&quot;gt_PurifierAIWavesFromBonusBase02_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_HybridWaves_Func (bool testConds, bool runActions) {
+                int autoF2183284_val;
+                // Variable Declarations
+                unitgroup lv_hybrid_group;
+                // Variable Initialization
+                lv_hybrid_group = UnitGroupEmpty();
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                autoF2183284_val = gv_DISRUPTION_COUNT;
+                if (autoF2183284_val == 1) {
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateHybrid(2, &quot;HybridDestroyer&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_hybrid_group);
+                    AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                    gf_HybridPing(lv_hybrid_group);
+                    lv_hybrid_group = null;
+                }
+                else if (autoF2183284_val == 2) {
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateHybrid(2, &quot;HybridDestroyer&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    gf_CreateHybrid(1, &quot;HybridReaver&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_hybrid_group);
+                    AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                    gf_HybridPing(lv_hybrid_group);
+                    lv_hybrid_group = null;
+                }
+                else if (autoF2183284_val == 3) {
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateHybrid(4, &quot;HybridDestroyer&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    gf_CreateHybrid(1, &quot;HybridReaver&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_hybrid_group);
+                    AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                    gf_HybridPing(lv_hybrid_group);
+                    lv_hybrid_group = null;
+                }
+                else if (autoF2183284_val == 4) {
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateHybrid(2, &quot;HybridDestroyer&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    gf_CreateHybrid(4, &quot;HybridReaver&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_hybrid_group);
+                    AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                    gf_HybridPing(lv_hybrid_group);
+                    lv_hybrid_group = null;
+                }
+                else if (autoF2183284_val == 5) {
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateHybrid(4, &quot;HybridDestroyer&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    gf_CreateHybrid(1, &quot;HybridDominatorVoid&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_hybrid_group);
+                    AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                    gf_HybridPing(lv_hybrid_group);
+                    lv_hybrid_group = null;
+                }
+                else if (autoF2183284_val == 6) {
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateHybrid(5, &quot;HybridDestroyer&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    gf_CreateHybrid(2, &quot;HybridDominatorVoid&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_hybrid_group);
+                    AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                    gf_HybridPing(lv_hybrid_group);
+                    lv_hybrid_group = null;
+                }
+                else if (autoF2183284_val == 7) {
+                    AIAttackWaveSetTargetPlayer(gv_pLAYER_03_VALERIAN, PlayerGroupAlliance(c_playerGroupEnemy, 4));
+                    gf_CreateHybrid(5, &quot;HybridDestroyer&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    gf_CreateHybrid(2, &quot;HybridDominatorVoid&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    gf_CreateHybrid(2, &quot;HybridReaver&quot;, ge_PRESET_AttackWaveDirection_South);
+                    UnitGroupAddUnitGroup(lv_hybrid_group, UnitLastCreatedGroup());
+                    AIAttackWaveUseGroup(gv_pLAYER_03_VALERIAN, lv_hybrid_group);
+                    AIAttackWaveSend(gv_pLAYER_03_VALERIAN, 0, false);
+                    gf_HybridPing(lv_hybrid_group);
+                    lv_hybrid_group = null;
+                }
+                else {
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_HybridWaves_Init () {
+                gt_HybridWaves = TriggerCreate(&quot;gt_HybridWaves_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_PurifierProgressCheck_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                if ((UnitIsAlive(UnitFromId(2089602560)) == false)) {
+                    gv_PURIFIER_PROGRESS_COUNT = 1;
+                    AIToggleBulliesInRegion(gv_pLAYER_06_AMON3, RegionFromId(4), false);
+                    if ((UnitIsAlive(UnitFromId(406600793)) == false)) {
+                        gv_PURIFIER_PROGRESS_COUNT = 2;
+                        if ((UnitIsAlive(UnitFromId(1137241271)) == false)) {
+                            gv_PURIFIER_PROGRESS_COUNT = 3;
+                        }
+                    }
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_PurifierProgressCheck_Init () {
+                gt_PurifierProgressCheck = TriggerCreate(&quot;gt_PurifierProgressCheck_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_ValerianProgressCheck_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                if ((UnitIsAlive(UnitFromId(2098502970)) == false)) {
+                    gv_VALERIAN_PROGRESS_COUNT = 1;
+                    AIToggleBulliesInRegion(gv_pLAYER_04_AMON, RegionFromId(5), false);
+                    if ((UnitIsAlive(UnitFromId(301058458)) == false)) {
+                        gv_VALERIAN_PROGRESS_COUNT = 2;
+                        AIToggleBulliesInRegion(gv_pLAYER_04_AMON, RegionFromId(6), false);
+                        if ((UnitIsAlive(UnitFromId(2131590913)) == false)) {
+                            gv_VALERIAN_PROGRESS_COUNT = 3;
+                            AIToggleBulliesInRegion(gv_pLAYER_04_AMON, RegionFromId(1), false);
+                        }
+                    }
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_ValerianProgressCheck_Init () {
+                gt_ValerianProgressCheck = TriggerCreate(&quot;gt_ValerianProgressCheck_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_DisruptionCycle_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                while (true) {
+                    TimerStart(gv_DISRUPTION_TIMER, gv_DISRUPTION_INACTIVE_DURATION, false, c_timeAI);
+                    if ((gv_DISRUPTION_COUNT == 0)) {
+                        libCOMI_gf_TimerWindowCreate(TimerLastStarted(), StringExternal(&quot;Param/Value/72917A35&quot;), true, false);
+                        gv_DISRUPTION_TIMER_WINDOW = TimerWindowLastCreated();
+                        TimerWindowSetFormat(TimerWindowLastCreated(), StringToText(&quot;&lt;min2/&gt;:&lt;sec2/&gt;&quot;));
+                    }
+                    else {
+                        TimerWindowSetTitle(gv_DISRUPTION_TIMER_WINDOW, StringExternal(&quot;Param/Value/F931DAB8&quot;));
+                    }
+                    libCOMI_gf_SetTimerWindowDangerThreshold(0.0);
+                    libNtve_gf_WaitForTimer(gv_DISRUPTION_TIMER, 30.0, false);
+                    TriggerExecute(gt_DisruptionWarning, true, false);
+                    libNtve_gf_WaitForTimer(gv_DISRUPTION_TIMER, 2.0, false);
+                    libCOMI_gf_SendActorMessageToDoodadsInRegion(&quot;SetOpacity 1.000000 2.000000&quot;, &quot;SnowBlizzard&quot;, RegionEntireMap());
+                    GameSetLighting(gv_DISRUPTION_LIGHT, 2.0);
+                    SoundPlayForPlayer(SoundLink(&quot;PKorhal02_DisruptionOn&quot;, -1), c_maxPlayers, PlayerGroupAll(), 120.0, 0.0);
+                    SoundPlayForPlayer(SoundLink(&quot;PKorhal02_Disruption_Charge&quot;, -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+                    gv_DISRUPTION_SOUND = SoundLastPlayed();
+                    libNtve_gf_WaitForTimer(gv_DISRUPTION_TIMER, 0.0, false);
+                    gv_DISRUPTION_ACTIVE = true;
+                    gv_DISRUPTION_COUNT += 1;
+                    UserDataSetInt(&quot;WriterStates&quot;, &quot;Korhal02Toggle&quot;, &quot;Value&quot;, 1, 1);
+                    SoundtrackStop(PlayerGroupAll(), c_soundtrackCategoryAmbience, true);
+                    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryAmbience, gv_DISRUPTION_AMBIENCE, c_soundtrackCueAny, c_soundtrackIndexAny, false);
+                    SoundtrackStop(PlayerGroupAll(), c_soundtrackCategoryMusic, true);
+                    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryAmbience, &quot;PKorhal02_Music_Disruption&quot;, c_soundtrackCueAny, c_soundtrackIndexAny, false);
+                    TriggerExecute(gt_DisruptionBehavior, true, false);
+                    TriggerExecute(gt_HybridWaves, true, false);
+                    TimerStart(gv_DISRUPTION_TIMER, gv_DISRUPTION_DURATION, false, c_timeGame);
+                    TimerWindowSetTitle(gv_DISRUPTION_TIMER_WINDOW, StringExternal(&quot;Param/Value/16095F89&quot;));
+                    TimerWindowSetFormat(gv_DISRUPTION_TIMER_WINDOW, StringToText(&quot;&lt;min2/&gt;:&lt;sec2/&gt;&quot;));
+                    libCOMI_gf_SetTimerWindowDangerThreshold(300.0);
+                    libNtve_gf_WaitForTimer(gv_DISRUPTION_TIMER, 2.0, false);
+                    libCOMI_gf_SendActorMessageToDoodadsInRegion(&quot;SetOpacity 0.000000 2.000000&quot;, &quot;SnowBlizzard&quot;, RegionEntireMap());
+                    GameSetLighting(gv_NORMAL_LIGHT, 2.0);
+                    SoundPlayForPlayer(SoundLink(&quot;PKorhal02_DisruptionOff&quot;, -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+                    SoundPlayForPlayer(SoundLink(&quot;PKorhal02_Disruption_Blast&quot;, -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+                    libNtve_gf_WaitForTimer(gv_DISRUPTION_TIMER, 0.0, false);
+                    gv_DISRUPTION_ACTIVE = false;
+                    UserDataSetInt(&quot;WriterStates&quot;, &quot;Korhal02Toggle&quot;, &quot;Value&quot;, 1, 0);
+                    SoundtrackStop(PlayerGroupAll(), c_soundtrackCategoryAmbience, true);
+                    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryAmbience, gv_NORMAL_AMBIENCE, c_soundtrackCueAny, c_soundtrackIndexAny, false);
+                    SoundtrackStop(PlayerGroupAll(), c_soundtrackCategoryMusic, true);
+                    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, gv_MAP_MUSICTRACK, c_soundtrackCueAny, c_soundtrackIndexAny, false);
+                    TriggerExecute(gt_DisruptionBehavior, true, false);
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_DisruptionCycle_Init () {
+                gt_DisruptionCycle = TriggerCreate(&quot;gt_DisruptionCycle_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_DisruptionWarning_Func (bool testConds, bool runActions) {
+                int auto5CCA7D43_val;
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                auto5CCA7D43_val = RandomInt(1, 5);
+                if (auto5CCA7D43_val == 1) {
+                    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/A9C1FFD7&quot;), StringExternal(&quot;Param/Value/65A547B6&quot;), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                }
+                else if (auto5CCA7D43_val == 2) {
+                    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/E088DCDA&quot;), StringExternal(&quot;Param/Value/2088C07C&quot;), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                }
+                else if (auto5CCA7D43_val == 3) {
+                    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/C5D57629&quot;), StringExternal(&quot;Param/Value/2CB1BADC&quot;), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                }
+                else if (auto5CCA7D43_val == 4) {
+                    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/F2155158&quot;), StringExternal(&quot;Param/Value/6C75EFB3&quot;), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                }
+                else if (auto5CCA7D43_val == 5) {
+                    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/FE03356A&quot;), StringExternal(&quot;Param/Value/CB548CDD&quot;), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                }
+                else {
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_DisruptionWarning_Init () {
+                gt_DisruptionWarning = TriggerCreate(&quot;gt_DisruptionWarning_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_DisruptionBehavior_Func (bool testConds, bool runActions) {
+                // Variable Declarations
+                unitgroup lv_DISRUPTION_GROUP;
+                unitgroup lv_BUNKER_GROUP;
+                // Variable Initialization
+                lv_DISRUPTION_GROUP = UnitGroupEmpty();
+                lv_BUNKER_GROUP = UnitGroupEmpty();
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                if ((gv_DISRUPTION_ACTIVE == true)) {
+                    UISetAlertTypeVisible(PlayerGroupAll(), &quot;AttackUnitAlly&quot;, true);
+                    UISetAlertTypeVisible(PlayerGroupAll(), &quot;AttackTown&quot;, true);
+                    PlayerGroupLoopBegin(gv_AMON_FORCES);
+                    for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
+                        UnitGroupAddUnitGroup(lv_DISRUPTION_GROUP, UnitGroup(null, PlayerGroupLoopCurrent(), RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
+                        UnitGroupAddUnitGroup(lv_BUNKER_GROUP, UnitGroup(&quot;Bunker&quot;, PlayerGroupLoopCurrent(), RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
+                    }
+                    PlayerGroupLoopEnd();
+                    PlayerGroupLoopBegin(gv_VALERIAN_GROUP);
+                    for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
+                        PlayerModifyPropertyInt(gv_pLAYER_03_VALERIAN, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 200);
+                        UnitGroupAddUnitGroup(lv_DISRUPTION_GROUP, UnitGroup(null, PlayerGroupLoopCurrent(), RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
+                        UnitGroupAddUnitGroup(lv_BUNKER_GROUP, UnitGroup(&quot;Bunker&quot;, PlayerGroupLoopCurrent(), RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
+                    }
+                    PlayerGroupLoopEnd();
+                    UnitGroupLoopBegin(lv_BUNKER_GROUP);
+                    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+                        UnitGroupAddUnitGroup(lv_DISRUPTION_GROUP, UnitCargoGroup(UnitGroupLoopCurrent()));
+                    }
+                    UnitGroupLoopEnd();
+                    UnitGroupRemove(lv_DISRUPTION_GROUP, UnitFromId(490580547));
+                    UnitGroupLoopBegin(lv_DISRUPTION_GROUP);
+                    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+                        if ((gf_UnitisHybrid(UnitGroupLoopCurrent()) == true)) {
+                            UnitGroupRemove(lv_DISRUPTION_GROUP, UnitGroupLoopCurrent());
+                        }
+                        else {
+                            UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), &quot;HybridKorhalStun&quot;, gv_pLAYER_04_AMON, 1);
+                        }
+                    }
+                    UnitGroupLoopEnd();
+                }
+                else {
+                    UISetAlertTypeVisible(PlayerGroupAll(), &quot;AttackUnitAlly&quot;, false);
+                    UISetAlertTypeVisible(PlayerGroupAll(), &quot;AttackTown&quot;, false);
+                    PlayerGroupLoopBegin(gv_AMON_FORCES);
+                    for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
+                        UnitGroupAddUnitGroup(lv_DISRUPTION_GROUP, UnitGroup(null, PlayerGroupLoopCurrent(), RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
+                        UnitGroupAddUnitGroup(lv_BUNKER_GROUP, UnitGroup(&quot;Bunker&quot;, PlayerGroupLoopCurrent(), RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
+                    }
+                    PlayerGroupLoopEnd();
+                    PlayerGroupLoopBegin(gv_VALERIAN_GROUP);
+                    for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
+                        PlayerModifyPropertyInt(gv_pLAYER_03_VALERIAN, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 100);
+                        UnitGroupAddUnitGroup(lv_DISRUPTION_GROUP, UnitGroup(null, PlayerGroupLoopCurrent(), RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
+                        UnitGroupAddUnitGroup(lv_BUNKER_GROUP, UnitGroup(&quot;Bunker&quot;, PlayerGroupLoopCurrent(), RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
+                    }
+                    PlayerGroupLoopEnd();
+                    UnitGroupLoopBegin(lv_BUNKER_GROUP);
+                    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+                        UnitGroupAddUnitGroup(lv_DISRUPTION_GROUP, UnitCargoGroup(UnitGroupLoopCurrent()));
+                    }
+                    UnitGroupLoopEnd();
+                    UnitGroupLoopBegin(lv_DISRUPTION_GROUP);
+                    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+                        UnitBehaviorRemovePlayer(UnitGroupLoopCurrent(), &quot;HybridKorhalStun&quot;, gv_pLAYER_04_AMON, 1);
+                    }
+                    UnitGroupLoopEnd();
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_DisruptionBehavior_Init () {
+                gt_DisruptionBehavior = TriggerCreate(&quot;gt_DisruptionBehavior_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_IntroductionTransmission_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                Wait(5.0, c_timeAI);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/05BB91F7&quot;), StringExternal(&quot;Param/Value/41F16AFC&quot;), 6.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                Wait(8.0, c_timeAI);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/A871C9AB&quot;), StringExternal(&quot;Param/Value/CCB91C65&quot;), 10.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                Wait(12.0, c_timeAI);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/2AB4D6BE&quot;), StringExternal(&quot;Param/Value/BBAB8012&quot;), 6.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                Wait(8.0, c_timeAI);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/B3FD41CB&quot;), StringExternal(&quot;Param/Value/B2F30824&quot;), 10.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                Wait(10.0, c_timeAI);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/D19E93B7&quot;), StringExternal(&quot;Param/Value/628510ED&quot;), 6.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                Wait(8.0, c_timeAI);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_IntroductionTransmission_Init () {
+                gt_IntroductionTransmission = TriggerCreate(&quot;gt_IntroductionTransmission_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_PurifierIntroductionTransmission_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/69C2559A&quot;), StringExternal(&quot;Param/Value/30CBF744&quot;), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_PurifierIntroductionTransmission_Init () {
+                gt_PurifierIntroductionTransmission = TriggerCreate(&quot;gt_PurifierIntroductionTransmission_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_BonusObj1Transmission_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/EC484D66&quot;), StringExternal(&quot;Param/Value/E76CEB77&quot;), 6.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                Wait(8.0, c_timeAI);
+                TriggerExecute(gt_BonusBase1Create, true, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_BonusObj1Transmission_Init () {
+                gt_BonusObj1Transmission = TriggerCreate(&quot;gt_BonusObj1Transmission_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 008
+            //--------------------------------------------------------------------------------------------------
+            bool gt_BonusObj1Transmission2_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel(&quot;ValerianPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/DC11DEDF&quot;), StringExternal(&quot;Param/Value/C3A6019B&quot;), 6.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                Wait(8.0, c_timeAI);
+                TriggerExecute(gt_BonusBase2Create, true, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_BonusObj1Transmission2_Init () {
+                gt_BonusObj1Transmission2 = TriggerCreate(&quot;gt_BonusObj1Transmission2_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_ReachTheArtifactObjectiveCreate_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveCreateForPlayers(StringExternal(&quot;Param/Value/33A36691&quot;), StringToText(&quot;&quot;), c_objectiveStateActive, true, gv_COMMANDERS);
+                gv_FIRST_ARTIFACT_OBJECTIVE = ObjectiveLastCreated();
+                Wait(2.0, c_timeReal);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_ReachTheArtifactObjectiveCreate_Init () {
+                gt_ReachTheArtifactObjectiveCreate = TriggerCreate(&quot;gt_ReachTheArtifactObjectiveCreate_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_ReachTheArtifactObjectiveUpdate_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveDestroy(gv_FIRST_ARTIFACT_OBJECTIVE);
+                ObjectiveDestroy(gv_FIRST_ARTIFACT_OBJECTIVE);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_ReachTheArtifactObjectiveUpdate_Init () {
+                gt_ReachTheArtifactObjectiveUpdate = TriggerCreate(&quot;gt_ReachTheArtifactObjectiveUpdate_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_ReachTheArtifactNewCreate_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                Wait(5.0, c_timeReal);
+                ObjectiveCreateForPlayers(StringExternal(&quot;Param/Value/96FBA575&quot;), StringToText(&quot;&quot;), c_objectiveStateActive, true, gv_COMMANDERS);
+                gv_FINAL_ARTIFACT_OBJECTIVE = ObjectiveLastCreated();
+                Wait(2.0, c_timeReal);
+                libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(490580547)), null);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_ReachTheArtifactNewCreate_Init () {
+                gt_ReachTheArtifactNewCreate = TriggerCreate(&quot;gt_ReachTheArtifactNewCreate_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_ReachTheArtifactCompleted_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveSetState(gv_FINAL_ARTIFACT_OBJECTIVE, c_objectiveStateCompleted);
+                Wait(2.0, c_timeReal);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_ReachTheArtifactCompleted_Init () {
+                gt_ReachTheArtifactCompleted = TriggerCreate(&quot;gt_ReachTheArtifactCompleted_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_ReachTheArtifactFailed_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveSetState(gv_FINAL_ARTIFACT_OBJECTIVE, c_objectiveStateFailed);
+                Wait(2.0, c_timeReal);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_ReachTheArtifactFailed_Init () {
+                gt_ReachTheArtifactFailed = TriggerCreate(&quot;gt_ReachTheArtifactFailed_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_ValerianCCMustSurviveCreate_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveCreateForPlayers(StringExternal(&quot;Param/Value/5B5D5BA9&quot;), StringToText(&quot;&quot;), c_objectiveStateActive, true, gv_COMMANDERS);
+                gv_VALERIAN_CC_OBJECTIVE = ObjectiveLastCreated();
+                Wait(2.0, c_timeReal);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_ValerianCCMustSurviveCreate_Init () {
+                gt_ValerianCCMustSurviveCreate = TriggerCreate(&quot;gt_ValerianCCMustSurviveCreate_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_ValerianCCMustSurviveCompleted_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveSetState(gv_VALERIAN_CC_OBJECTIVE, c_objectiveStateCompleted);
+                Wait(2.0, c_timeReal);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_ValerianCCMustSurviveCompleted_Init () {
+                gt_ValerianCCMustSurviveCompleted = TriggerCreate(&quot;gt_ValerianCCMustSurviveCompleted_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_ValerianCCMustSurviveFailed_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveSetState(gv_VALERIAN_CC_OBJECTIVE, c_objectiveStateFailed);
+                Wait(2.0, c_timeReal);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_ValerianCCMustSurviveFailed_Init () {
+                gt_ValerianCCMustSurviveFailed = TriggerCreate(&quot;gt_ValerianCCMustSurviveFailed_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_BonusBase1Create_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveCreateForPlayers(StringExternal(&quot;Param/Value/99A7ECE0&quot;), StringToText(&quot;&quot;), c_objectiveStateActive, false, gv_COMMANDERS);
+                Wait(2.0, c_timeReal);
+                gv_BONUS_01 = ObjectiveLastCreated();
+                VisRevealArea(gv_pLAYER_01_USER, RegionFromId(11), 0.5, false);
+                VisRevealArea(gv_pLAYER_02_USER, RegionFromId(11), 5.0, false);
+                libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitFromId(557392389)), null);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_BonusBase1Create_Init () {
+                gt_BonusBase1Create = TriggerCreate(&quot;gt_BonusBase1Create_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_BonusBase1Completed_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveSetState(gv_BONUS_01, c_objectiveStateCompleted);
+                Wait(2.0, c_timeReal);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(739688463), true, true, &quot;Talk&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/E86DAF22&quot;), StringExternal(&quot;Param/Value/D6BC8A54&quot;), 6.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                Wait(8.0, c_timeAI);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_BonusBase1Completed_Init () {
+                gt_BonusBase1Completed = TriggerCreate(&quot;gt_BonusBase1Completed_Func&quot;);
+                TriggerAddEventUnitDied(gt_BonusBase1Completed, UnitRefFromUnit(UnitFromId(557392389)));
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 006
+            //--------------------------------------------------------------------------------------------------
+            bool gt_BonusBase2Create_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveCreateForPlayers(StringExternal(&quot;Param/Value/3999CDF7&quot;), StringToText(&quot;&quot;), c_objectiveStateActive, true, PlayerGroupAll());
+                Wait(2.0, c_timeReal);
+                gv_BONUS_02 = ObjectiveLastCreated();
+                VisRevealArea(gv_pLAYER_01_USER, RegionFromId(12), 5.0, false);
+                VisRevealArea(gv_pLAYER_02_USER, RegionFromId(12), 0.5, false);
+                libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitFromId(1190180279)), null);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_BonusBase2Create_Init () {
+                gt_BonusBase2Create = TriggerCreate(&quot;gt_BonusBase2Create_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 007
+            //--------------------------------------------------------------------------------------------------
+            bool gt_BonusBase2Completed_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                ObjectiveSetState(gv_BONUS_02, c_objectiveStateCompleted);
+                Wait(2.0, c_timeReal);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(739688463), true, true, &quot;Talk&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), &quot;&quot;, &quot;Talk&quot;, null, StringExternal(&quot;Param/Value/1DA757BE&quot;), StringExternal(&quot;Param/Value/726C68E9&quot;), 6.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+                Wait(10.0, c_timeAI);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_BonusBase2Completed_Init () {
+                gt_BonusBase2Completed = TriggerCreate(&quot;gt_BonusBase2Completed_Func&quot;);
+                TriggerAddEventUnitDied(gt_BonusBase2Completed, UnitRefFromUnit(UnitFromId(1190180279)));
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Untitled Trigger 001
+            //--------------------------------------------------------------------------------------------------
+            bool gt_UnitBecomesIdle_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                if ((UnitGetOwner(EventUnit()) == gv_pLAYER_05_AMON2)) {
+                    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(418834535)), c_orderQueueReplace);
+                }
+                else {
+                    if ((UnitGetOwner(EventUnit()) == gv_pLAYER_08_PURIFIERS)) {
+                        UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), PointFromId(929244924)), c_orderQueueReplace);
+                    }
+                }
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_UnitBecomesIdle_Init () {
+                gt_UnitBecomesIdle = TriggerCreate(&quot;gt_UnitBecomesIdle_Func&quot;);
+                TriggerAddEventUnitBecomesIdle(gt_UnitBecomesIdle, null, true);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Defeat Primary Objective Failed
+            //--------------------------------------------------------------------------------------------------
+            bool gt_DefeatArtifactDestroyed_Func (bool testConds, bool runActions) {
+                // Conditions
+                if (testConds) {
+                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+                        return false;
+                    }
+                    if (!((libCOMI_gf_GameIsOver() == false))) {
+                        return false;
+                    }
+                }
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                TriggerEnable(TriggerGetCurrent(), false);
+                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
+                TransmissionClearAll();
+                TriggerQueuePause(true);
+                TriggerQueueClear(c_triggerQueueRemove);
+                libCOMI_gf_SendMissionTransmission(&quot;DestroyedReminder&quot;, false, -1);
+                libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
+                TriggerExecute(gt_ReachTheArtifactFailed, true, false);
+                libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/D7F3761B&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+                CameraLockInput(gv_pLAYER_01_USER, true);
+                CameraLockInput(gv_pLAYER_02_USER, true);
+                UnitClearSelection(gv_pLAYER_01_USER);
+                UnitClearSelection(gv_pLAYER_02_USER);
+                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+                CameraPan(gv_pLAYER_01_USER, RegionGetCenter(RegionEntireMap()), 1.5, -1, 10.0, false);
+                CameraPan(gv_pLAYER_02_USER, RegionGetCenter(RegionEntireMap()), 1.5, -1, 10.0, false);
+                libCOMI_gf_WaitForMissionTransmission();
+                UISetCursorVisible(PlayerGroupAll(), true);
+                TriggerExecute(gt_Defeat, true, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_DefeatArtifactDestroyed_Init () {
+                gt_DefeatArtifactDestroyed = TriggerCreate(&quot;gt_DefeatArtifactDestroyed_Func&quot;);
+                TriggerAddEventUnitDied(gt_DefeatArtifactDestroyed, UnitRefFromUnit(UnitFromId(490580547)));
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Defeat Primary Objective Failed 2
+            //--------------------------------------------------------------------------------------------------
+            bool gt_DefeatValerianCCDestroyed_Func (bool testConds, bool runActions) {
+                // Conditions
+                if (testConds) {
+                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+                        return false;
+                    }
+                    if (!((libCOMI_gf_GameIsOver() == false))) {
+                        return false;
+                    }
+                }
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                TriggerEnable(TriggerGetCurrent(), false);
+                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
+                TransmissionClearAll();
+                TriggerQueuePause(true);
+                TriggerQueueClear(c_triggerQueueRemove);
+                libCOMI_gf_SendMissionTransmission(&quot;DestroyedReminder&quot;, false, -1);
+                libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
+                TriggerExecute(gt_ValerianCCMustSurviveFailed, true, false);
+                TriggerExecute(gt_ReachTheArtifactFailed, true, false);
+                libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/8B270661&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+                CameraLockInput(gv_pLAYER_01_USER, true);
+                CameraLockInput(gv_pLAYER_02_USER, true);
+                UnitClearSelection(gv_pLAYER_01_USER);
+                UnitClearSelection(gv_pLAYER_02_USER);
+                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+                CameraPan(gv_pLAYER_01_USER, RegionGetCenter(RegionEntireMap()), 1.5, -1, 10.0, false);
+                CameraPan(gv_pLAYER_02_USER, RegionGetCenter(RegionEntireMap()), 1.5, -1, 10.0, false);
+                libCOMI_gf_WaitForMissionTransmission();
+                UISetCursorVisible(PlayerGroupAll(), true);
+                TriggerExecute(gt_Defeat, true, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_DefeatValerianCCDestroyed_Init () {
+                gt_DefeatValerianCCDestroyed = TriggerCreate(&quot;gt_DefeatValerianCCDestroyed_Func&quot;);
+                TriggerAddEventUnitDied(gt_DefeatValerianCCDestroyed, UnitRefFromUnit(UnitFromId(1009037094)));
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Victory Primary Objective Complete
+            //--------------------------------------------------------------------------------------------------
+            bool gt_VictoryReachedArtifactComplete_Func (bool testConds, bool runActions) {
+                // Conditions
+                if (testConds) {
+                    if (!((libCOMI_gf_GameIsOver() == false))) {
+                        return false;
+                    }
+                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+                        return false;
+                    }
+                    if (!(((UnitIsAlive(UnitFromId(1174258770)) == false) &amp;&amp; (UnitIsAlive(UnitFromId(54410278)) == false) &amp;&amp; (UnitIsAlive(UnitFromId(992014942)) == false) &amp;&amp; (UnitIsAlive(UnitFromId(1993064828)) == false) &amp;&amp; ((UnitGetOwner(EventUnit()) == gv_pLAYER_01_USER) || (UnitGetOwner(EventUnit()) == gv_pLAYER_02_USER))))) {
+                        return false;
+                    }
+                }
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                TriggerEnable(TriggerGetCurrent(), false);
+                TriggerExecute(gt_ReachTheArtifactCompleted, true, false);
+                TriggerExecute(gt_VictorySequence, true, false);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_VictoryReachedArtifactComplete_Init () {
+                gt_VictoryReachedArtifactComplete = TriggerCreate(&quot;gt_VictoryReachedArtifactComplete_Func&quot;);
+                TriggerAddEventUnitRegion(gt_VictoryReachedArtifactComplete, null, RegionFromId(7), true);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Victory Sequence
+            //--------------------------------------------------------------------------------------------------
+            bool gt_VictorySequence_Func (bool testConds, bool runActions) {
+                // Conditions
+                if (testConds) {
+                    if (!((libCOMI_gf_GameIsOver() == false))) {
+                        return false;
+                    }
+                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+                        return false;
+                    }
+                }
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                TriggerEnable(TriggerGetCurrent(), false);
+                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
+                Wait(2.0, c_timeReal);
+                TriggerExecute(gt_ReachTheArtifactCompleted, true, false);
+                TriggerExecute(gt_ValerianCCMustSurviveCompleted, true, false);
+                libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_VictorySequence_Init () {
+                gt_VictorySequence = TriggerCreate(&quot;gt_VictorySequence_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Victory Fanfare Q
+            //--------------------------------------------------------------------------------------------------
+            bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                TransmissionClearAll();
+                TriggerQueueEnter();
+                libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+                libCOMI_gf_SendMissionTransmission(&quot;PrimaryObjectiveVictory&quot;, false, -1);
+                UnitPauseAll(true);
+                CameraLockInput(gv_pLAYER_01_USER, true);
+                CameraLockInput(gv_pLAYER_02_USER, true);
+                UnitClearSelection(gv_pLAYER_01_USER);
+                UnitClearSelection(gv_pLAYER_02_USER);
+                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+                CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
+                CameraPan(gv_pLAYER_01_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
+                CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
+                CameraPan(gv_pLAYER_02_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
+                libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/070A8DD0&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+                libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/2DE75D2B&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+                libCOMI_gf_WaitForMissionTransmission();
+                Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
+                UISetCursorVisible(PlayerGroupAll(), true);
+                TriggerExecute(gt_Victory, true, false);
+                TriggerQueueExit();
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_VictoryFanfareQ_Init () {
+                gt_VictoryFanfareQ = TriggerCreate(&quot;gt_VictoryFanfareQ_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Victory
+            //--------------------------------------------------------------------------------------------------
+            bool gt_Victory_Func (bool testConds, bool runActions) {
+                // Conditions
+                if (testConds) {
+                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+                        return false;
+                    }
+                }
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                TriggerEnable(TriggerGetCurrent(), false);
+                libCOMI_gf_EndCampaignMission(c_gameOverVictory);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_Victory_Init () {
+                gt_Victory = TriggerCreate(&quot;gt_Victory_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger: Defeat
+            //--------------------------------------------------------------------------------------------------
+            bool gt_Defeat_Func (bool testConds, bool runActions) {
+                // Conditions
+                if (testConds) {
+                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+                        return false;
+                    }
+                }
+                // Actions
+                if (!runActions) {
+                    return true;
+                }
+                TriggerEnable(TriggerGetCurrent(), false);
+                libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
+                return true;
+            }
+            //--------------------------------------------------------------------------------------------------
+            void gt_Defeat_Init () {
+                gt_Defeat = TriggerCreate(&quot;gt_Defeat_Func&quot;);
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Trigger Initialization
+            //--------------------------------------------------------------------------------------------------
+            void InitTriggers () {
+                gt_MyOwnInitialization_Init();
+                gt_Init01LoadData_Init();
+                gt_Init03LoadingComplete_Init();
+                gt_Init04Technology_Init();
+                gt_Init05Units_Init();
+                gt_Init06MusicSound_Init();
+                gt_Init07Environment_Init();
+                gt_Init08Difficulties_Init();
+                gt_InitBunkers_Init();
+                gt_InitBullies_Init();
+                gt_InitPurifierVisionAndTransmission_Init();
+                gt_AIStart_Init();
+                gt_ValerianWaves_Init();
+                gt_PusherAmonAI1Waves_Init();
+                gt_PurifierAIWaves_Init();
+                gt_PurifierAIWavesFromBonusBase01_Init();
+                gt_PurifierAIWavesFromBonusBase02_Init();
+                gt_HybridWaves_Init();
+                gt_PurifierProgressCheck_Init();
+                gt_ValerianProgressCheck_Init();
+                gt_DisruptionCycle_Init();
+                gt_DisruptionWarning_Init();
+                gt_DisruptionBehavior_Init();
+                gt_IntroductionTransmission_Init();
+                gt_PurifierIntroductionTransmission_Init();
+                gt_BonusObj1Transmission_Init();
+                gt_BonusObj1Transmission2_Init();
+                gt_ReachTheArtifactObjectiveCreate_Init();
+                gt_ReachTheArtifactObjectiveUpdate_Init();
+                gt_ReachTheArtifactNewCreate_Init();
+                gt_ReachTheArtifactCompleted_Init();
+                gt_ReachTheArtifactFailed_Init();
+                gt_ValerianCCMustSurviveCreate_Init();
+                gt_ValerianCCMustSurviveCompleted_Init();
+                gt_ValerianCCMustSurviveFailed_Init();
+                gt_BonusBase1Create_Init();
+                gt_BonusBase1Completed_Init();
+                gt_BonusBase2Create_Init();
+                gt_BonusBase2Completed_Init();
+                gt_UnitBecomesIdle_Init();
+                gt_DefeatArtifactDestroyed_Init();
+                gt_DefeatValerianCCDestroyed_Init();
+                gt_VictoryReachedArtifactComplete_Init();
+                gt_VictorySequence_Init();
+                gt_VictoryFanfareQ_Init();
+                gt_Victory_Init();
+                gt_Defeat_Init();
+            }
+            //--------------------------------------------------------------------------------------------------
+            // Map Initialization
+            //--------------------------------------------------------------------------------------------------
+            void run () {
+                InitLibs();
+                InitGlobals();
+                InitTriggers();
+            }
+        </ScriptCode>
+        <InitFunc>run</InitFunc>
+    </Element>
+</TriggerData>
