@@ -758,7 +758,7 @@ bool auto_gf_StartFuse_TriggerFunc (bool testConds, bool runActions) {
     if ((gv_facilitiesDestroyed < gv_c_ObjectiveRequiredCount)) {
         libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingNuke", gv_primaryObjectiveTarget[lp_targetFacility].lv_targetFacilityCenter, ColorWithAlpha(100.00, 21.18, 10.20, 0.00), 18.0, 270.0);
         SoundPlayForPlayer(SoundLink("AC_Alarm_AirRaidSiren_2D_Event", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
-        autoB1510A29_g = libCOMI_gf_NondefeatedPlayers();
+        autoB1510A29_g = libCOMI_gf_GetNonDefeatedPlayers();
         autoB1510A29_var = -1;
         while (true) {
             autoB1510A29_var = PlayerGroupNextPlayer(autoB1510A29_g, autoB1510A29_var);
@@ -980,7 +980,7 @@ void gf_TurnPayloadSpeedOnOff (bool lp_onOff) {
     // Implementation
     if ((lp_onOff == true)) {
         gv_payloadSpeedBoost = true;
-        autoD8A615ED_g = libCOMI_gf_NondefeatedPlayers();
+        autoD8A615ED_g = libCOMI_gf_GetNonDefeatedPlayers();
         lv_player = -1;
         while (true) {
             lv_player = PlayerGroupNextPlayer(autoD8A615ED_g, lv_player);
@@ -993,7 +993,7 @@ void gf_TurnPayloadSpeedOnOff (bool lp_onOff) {
     }
     else {
         gv_payloadSpeedBoost = false;
-        autoD03CD218_g = libCOMI_gf_NondefeatedPlayers();
+        autoD03CD218_g = libCOMI_gf_GetNonDefeatedPlayers();
         lv_player = -1;
         while (true) {
             lv_player = PlayerGroupNextPlayer(autoD03CD218_g, lv_player);
@@ -2198,14 +2198,8 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    gv_pLAYER_01_USER = PlayerGroupPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), 1);
-    if ((PlayerGroupCount(libCOMI_gf_GetAlliedCommandersPlayers()) > 1)) {
-        gv_pLAYER_02_USER = PlayerGroupPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), 2);
-    }
-    else {
-        PlayerSetAlliance(gv_pLAYER_STONE, c_allianceIdControl, gv_pLAYER_01_USER, true);
-        gv_pLAYER_02_USER = gv_pLAYER_STONE;
-    }
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     TriggerEnable(gt_TransmissionFirstConstructQ, true);
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init05bTargetLocations, true, false);
