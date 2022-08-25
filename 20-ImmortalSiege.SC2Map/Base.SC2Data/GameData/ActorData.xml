@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CActorUnit id="ArmoredDoor2" parent="GenericUnitStandard" unitName="ArmoredDoor">
+        <EditorCategories value=""/>
+        <Scale value="2.000000,1.400000,1.400000"/>
+        <AutoScaleFromSelectionFactor value="1.000000"/>
+        <RingRadius value="12.000000"/>
+        <HighlightTooltip value="Unit/Name/Bogus"/>
+        <PortraitModel value="MarauderMercenaryPortrait"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-terran-buildingarmor.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\btn-upgrade-terran-buildingarmor.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorDoodad id="ImmortalStasis">
+        <EditorCategories value=""/>
+        <On index="1" Terms="ActorCreation" Send="AnimSetLockedAll"/>
+        <Model value="ImmortalStandard"/>
+    </CActorDoodad>
+    <CActorDoodad id="StalkerStasis">
+        <EditorCategories value=""/>
+        <On index="0" Terms="ActorCreation" Send="Create SoundEmitter Doodad_ImmortalStasis"/>
+        <On index="1" Terms="ActorCreation" Send="AnimSetLockedAll"/>
+        <Model value="StalkerStandard"/>
+    </CActorDoodad>
+    <CActorUnit id="NukePack">
+        <CustomUnitStatusFrame value="HotS_UnitStatus/UnitStatusProgressFrameTemplate"/>
+    </CActorUnit>
+    <CActorDoodad id="PhotonCannonProjectileDoodaad">
+        <EditorCategories value=""/>
+        <On Terms="Create" Send="AttachModel {} LightOmniCyanLarge {Center 0} SOpAttachCenter"/>
+        <Model value="PhotonCannonWeapon"/>
+        <Scale value="2.000000"/>
+    </CActorDoodad>
+    <CActorDoodad id="Slayn_TallGrass">
+        <Scale value="1.000000,1.000000,0.450000"/>
+    </CActorDoodad>
+    <CActorSiteOpBasic id="SopTar">
+        <EditorCategories value=""/>
+        <On Terms="Behavior.Invulnerable2.On" Send="Create"/>
+        <On Terms="Behavior.Invulnerable2.Off" Send="Destroy"/>
+    </CActorSiteOpBasic>
+    <CActorSiteOpBasic id="SopTar2">
+        <EditorCategories value=""/>
+        <On Terms="Behavior.TempleBeam.On" Send="Create"/>
+        <On Terms="Behavior.TempleBeam.Off" Send="Destroy"/>
+    </CActorSiteOpBasic>
+    <CActorDoodad id="ColossusStasis">
+        <EditorCategories value=""/>
+        <On index="0" Terms="ActorCreation" Send="Create SoundEmitter Doodad_ImmortalStasis"/>
+        <On index="1" Terms="ActorCreation" Send="AnimSetLockedAll"/>
+        <Model value="ColossusStandard"/>
+    </CActorDoodad>
+    <CActorDoodad id="SentryStasis">
+        <EditorCategories value=""/>
+        <On index="0" Terms="ActorCreation" Send="Create SoundEmitter Doodad_ImmortalStasis"/>
+        <On index="1" Terms="ActorCreation" Send="AnimSetLockedAll"/>
+        <Model value="SentryStandard"/>
+    </CActorDoodad>
+    <CActorModel id="TempleActive" parent="ModelAddition">
+        <EditorCategories value=""/>
+        <On Terms="ActorCreation" Send="SetTintColor 255,150,0 1.500000"/>
+        <On Terms="ActorCreation" Send="SetOpacity 0.500000 0.100000"/>
+        <On Terms="ActorCreation" Send="TimerSet 2.000000 {Change to green}"/>
+        <On Terms="TimerExpired; TimerName {Change to green}" Send="SetTintColor 0,255,0 1.500000"/>
+        <On Terms="TimerExpired; TimerName {Change to green}" Send="TimerSet 2.000000 {Change to Yellow}"/>
+        <On Terms="TimerExpired; TimerName {Change to Yellow}" Send="TimerSet 2.000000 {Change to green}"/>
+        <On Terms="TimerExpired; TimerName {Change to Yellow}" Send="SetTintColor 255,150,0 1.500000"/>
+        <Model value="DarkArchonMerge"/>
+        <Scale value="0.700000,0.700000,2.000000"/>
+    </CActorModel>
+    <CActorBeamSimple id="TempleBeam" parent="BeamSimpleAnimationStyleOneShot">
+        <EditorCategories value=""/>
+        <On Terms="Behavior.Invulnerable2.Off" Send="Destroy"/>
+        <On Terms="Behavior.Protected.Create" Send="Create"/>
+        <Model value="VoidRayAttackBeam"/>
+        <HostLaunchSiteOps Ops="SOpAttachOverhead"/>
+        <HostImpactSiteOps Ops="SOpAttachOrigin"/>
+    </CActorBeamSimple>
+    <CActorUnit id="Torrasque" parent="GenericUnitStandard" unitName="Torrasque">
+        <EditorCategories value=""/>
+        <On Terms="AbilMorph.MorphToTorrasqueCorpse.Finish; MorphFrom Torrasque; MorphTo TorrasqueCorpse2" Send="Create TorrasqueCorpse2"/>
+        <On Terms="AbilMorph.MorphToTorrasqueCorpse.Finish; MorphFrom Torrasque; MorphTo TorrasqueCorpse2" Send="Destroy"/>
+        <Model value="HotSTorrasque"/>
+        <BuildModel value="HotSTorrasque"/>
+        <PlacementModel value="HotSTorrasque"/>
+        <PortraitModel value="TorrasquePortrait"/>
+        <HighlightTooltip value="Unit/Name/Bogus"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-groundcarapace-level1.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-zerg-ultralisk.dds"/>
+        </Wireframe>
+        <DeathActorModel value="TorrasqueCorpse"/>
+    </CActorUnit>
+    <CActorUnit id="TorrasqueCavern" parent="GenericUnitStandard" unitName="TorrasqueCavern">
+        <EditorCategories value=""/>
+        <On Terms="ActorCreation" Send="TextureSelectById UltraliskDiff"/>
+        <On Terms="ActorCreation" Send="TextureSelectById Ultraliskspec"/>
+        <On Terms="ActorCreation" Send="TextureSelectById UltraliskNorm"/>
+        <Model value="UltraliskCavern"/>
+        <Scale value="2.000000"/>
+        <BuildModel value="UltraliskCavern"/>
+        <PlacementModel value="UltraliskCavern"/>
+        <PortraitModel value="UltraliskCavern"/>
+        <HighlightTooltip value="Unit/Name/Bogus"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-buildingarmor.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-zerg-ultraliskcavern.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorUnit id="TorrasqueCorpse2" parent="GenericUnitStandard" unitName="TorrasqueCorpse2">
+        <EditorCategories value=""/>
+        <On Terms="AbilMorph.TorrasqueCorpseToTorrasque.Start; MorphFrom TorrasqueCorpse2; MorphTo Torrasque" Send="Create Torrasque"/>
+        <On Terms="AbilMorph.TorrasqueCorpseToTorrasque.Start; MorphFrom TorrasqueCorpse2; MorphTo Torrasque" Send="Destroy"/>
+        <Model value="TorrasqueChrysalis"/>
+        <BuildModel value="TorrasqueChrysalis"/>
+        <PlacementModel value="TorrasqueChrysalis"/>
+        <PortraitModel value="EggPortrait"/>
+        <HighlightTooltip value="Unit/Name/Bogus"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-groundcarapace-level1.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-zerg-egg.dds"/>
+        </Wireframe>
+        <DeathActorModel value="TorrasqueChrysalisEggsplosion"/>
+        <DeathActorModelLow value="TorrasqueChrysalisEggsplosion"/>
+    </CActorUnit>
+    <CActorModel id="TorrasqueShield" parent="ModelAddition">
+        <EditorCategories value=""/>
+        <On Terms="Behavior.Invulnerable2.On" Send="Create"/>
+        <On Terms="Behavior.Invulnerable2.Off" Send="Destroy"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+        <Model value="DefensiveMatrixModel"/>
+        <Scale value="0.700000"/>
+    </CActorModel>
+    <CActorUnit id="Turret" parent="GenericUnitStandard" unitName="TurretTest">
+        <EditorCategories value=""/>
+        <Model value="AutoTurret"/>
+        <BuildModel value="AutoTurret"/>
+        <PlacementModel value="AutoTurret"/>
+        <PortraitModel value="AutoTurret"/>
+        <HighlightTooltip value="Unit/Name/Bogus"/>
+    </CActorUnit>
+    <CActorAction id="UltraliskAttack2" parent="GenericAttack" effectAttack="HotSUltraliskKaiserBladesDamage2">
+        <LaunchAssets Model="UltraliskAttackLaunch" Sound="UltraliskAttackLaunch"/>
+        <Beam value="UltraliskAttackBeam"/>
+        <Missile value="UltraliskAttackMissile"/>
+        <ImpactMap index="None" Model="UltraliskAttackImpact" Sound="UltraliskAttackImpact" ModelReaction="UltraliskAttackImpactReaction"/>
+        <ImpactMap index="Shield" Sound="UltraliskAttackImpactShield" ModelReaction="UltraliskAttackImpactReactionShield"/>
+        <ImpactPhysics>
+            <Name value="AttackSpell"/>
+            <MatchKeys value="Basic"/>
+            <AttackAnimProps value="Spell,A"/>
+            <Physics value="UltraliskAttackForce"/>
+        </ImpactPhysics>
+        <DamageMap index="None" Model="UltraliskAttackDamage" Sound="UltraliskAttackDamage" ModelReaction="UltraliskAttackDamageReaction"/>
+        <DamageMap index="Shield" Sound="UltraliskAttackDamageShield" ModelReaction="UltraliskAttackDamageReactionShield"/>
+        <ShieldFlashType value="Full"/>
+        <DamageSound value="GenericAttackImpactSound"/>
+    </CActorAction>
+    <CActorDoodad id="TempleActivatedSign">
+        <EditorCategories value=""/>
+        <On index="0" Terms="ActorCreation" Send="AnimBracketStart BSD Birth Stand Death"/>
+        <On index="1" Terms="AnimBracketState.*.AfterClosing; !AnimBracketExitReason ModelSwap; AnimName BSD" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTintColor {244,140,10 2.000000} 1.500000"/>
+        <On Terms="ActorCreation" Send="SetOpacity 0.800000 0.100000"/>
+        <On Terms="ActorCreation" Send="TimerSet 2.000000 {Change to green}"/>
+        <On Terms="TimerExpired; TimerName {Change to green}" Send="SetTintColor {65,255,55 2.000000} 1.500000"/>
+        <On Terms="TimerExpired; TimerName {Change to green}" Send="TimerSet 2.000000 {Change to Yellow}"/>
+        <On Terms="TimerExpired; TimerName {Change to Yellow}" Send="TimerSet 2.000000 {Change to green}"/>
+        <On Terms="TimerExpired; TimerName {Change to Yellow}" Send="SetTintColor {242,141,4 2.000000} 1.500000"/>
+        <Model value="DarkArchonMerge"/>
+        <Scale value="0.700000,0.700000,2.000000"/>
+    </CActorDoodad>
+    <CActorSound id="UltraliskAttackImpact">
+        <On Terms="Effect.KaiserBladesDamage2.Start; At Target" Send="Create"/>
+    </CActorSound>
+</Catalog>

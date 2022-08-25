@@ -1,0 +1,3696 @@
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   [VC] Weathered Shelter
+// 
+//==================================================================================================
+include "TriggerLibs/NativeLib"
+include "LibCOMI"
+include "Lib37CC0EF2"
+include "aiF917F4D7"
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+void InitLibs () {
+    libNtve_InitLib();
+    libCOMI_InitLib();
+    lib37CC0EF2_InitLib();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Constants
+//--------------------------------------------------------------------------------------------------
+const int gv_pLAYER_01_USER = 1;
+const int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 3;
+const int gv_pLAYER_06_ENEMY = 6;
+const int gv_pLAYER_04_ENEMY = 4;
+const int gv_pLAYER_05_SCENARIO = 5;
+const int gv_eNEMY_BASE_LAST = 10;
+const int gv_pP_NOT_YET_ACTIVE = 0;
+const int gv_pP_PLAYERS_NOTIFIED = 1;
+const int gv_pP_CONSTRUCTION_UNIT_DISPATCHED = 2;
+const int gv_pP_OLD_DECOMMISSIONED = 3;
+const int gv_pP_UNDER_CONSTRUCTION = 4;
+const int gv_pP_CONSTRUCTION_COMPLETED = 5;
+const int gv_pP_FAILED = 6;
+
+//--------------------------------------------------------------------------------------------------
+// Global Variables
+//--------------------------------------------------------------------------------------------------
+int[7] gv_tentativeDifficulty;
+timer gv_objectiveTimer;
+int gv_objectiveTimerWindow;
+fixed gv_timeLimitForConstructionAttempt;
+unitfilter gv_vICTORY_REQUIREMENT;
+int[11] gv_enemyBaseObjectiveMarkers;
+int gv_completedNewPowerPlants;
+point gv_victoryCompletePan;
+string gv_hybridMajor;
+string gv_hybridMinor;
+int gv_wavesToNotNotifyAbout;
+unitgroup[17] gv_warpDisruptedEnemyGroups;
+int[17] gv_warpDisruptedEnemyGroupPings;
+point gv_attackWaveA_Wave05Path;
+region[3][11] gv_attackSpawn;
+unitgroup gv_allAttackWaveUnits;
+fixed gv_powerPlantLastDestroyedTime;
+unit[8] gv_powerPlant;
+point[8] gv_powerPlantPoints;
+unit[8] gv_powerPlantConstructor;
+unit[8] gv_powerPlantReplacement;
+fixed[8] gv_powerPlantRewardTime;
+int[8] gv_powerPlantPing;
+int[8] gv_powerPlantConstructorPing;
+text[8] gv_powerPlantName;
+int[8] gv_powerPlantState;
+int gv_powerPlantsLost;
+int gv_powerPlantsMakingProgress;
+fixed gv_powerPlantsDoubleTimeStart;
+unit gv_bonusObjVoidThrasher;
+int gv_bonusObjective;
+fixed gv_bonusObjStopTime;
+int gv_bonusObjThrasherPing;
+int gv_objectiveDestroyTheOldPowerPlants;
+int gv_objectiveDoNotLoseTwo;
+
+void InitGlobals () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 6; init_i += 1) {
+        gv_tentativeDifficulty[init_i] = 2;
+    }
+    gv_objectiveTimer = TimerCreate();
+    gv_objectiveTimerWindow = c_timerWindowNone;
+    gv_timeLimitForConstructionAttempt = 540.0;
+    gv_vICTORY_REQUIREMENT = UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)));
+    for (init_i = 0; init_i <= 10; init_i += 1) {
+        gv_enemyBaseObjectiveMarkers[init_i] = c_invalidPingId;
+    }
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        gv_warpDisruptedEnemyGroups[init_i] = UnitGroupEmpty();
+    }
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        gv_warpDisruptedEnemyGroupPings[init_i] = c_invalidPingId;
+    }
+    gv_allAttackWaveUnits = UnitGroupEmpty();
+    for (init_i = 0; init_i <= 7; init_i += 1) {
+        gv_powerPlantPing[init_i] = c_invalidPingId;
+    }
+    for (init_i = 0; init_i <= 7; init_i += 1) {
+        gv_powerPlantConstructorPing[init_i] = c_invalidPingId;
+    }
+    gv_bonusObjVoidThrasher = UnitFromId(356466168);
+    gv_bonusObjective = c_invalidObjectiveId;
+    gv_bonusObjThrasherPing = c_invalidPingId;
+    gv_objectiveDestroyTheOldPowerPlants = c_invalidObjectiveId;
+    gv_objectiveDoNotLoseTwo = c_invalidObjectiveId;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Function Declarations
+//--------------------------------------------------------------------------------------------------
+void gf_QueueTransmission (string lp_transmission);
+void gf_RunMissionEvent (trigger lp_missionEventTrigger, fixed lp_missionEventTime);
+region gf_AttackWaveSpawn ();
+void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time);
+int gf_ReduceResourceBucketByDifficulty (int lp_originalResourceBucket);
+int gf_IntegerToTechBucket (int lp_techBucketInteger);
+int gf_GetFreeWarpDisruptedEnemyGroup ();
+void gf_MaintainEnemyGroupPing (int lp_index);
+point gf_GetFirstActivebutIncompletePowerPlantPoint ();
+int gf_IndexFromPowerPlant (unit lp_identifiedUnit);
+int gf_IndexFromPowerPlantReplacement (unit lp_identifiedUnit);
+int gf_IndexFromPoint (unit lp_identifiedUnit);
+int gf_IndexFromConstructionUnit (unit lp_identifiedUnit);
+void gf_DeactivateWarpDisruptionZone (region lp_zone);
+void gf_DispatchPowerPlantConstructor (int lp_powerPlantIndex);
+void gf_NotifyofNextObjective ();
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Variables
+//--------------------------------------------------------------------------------------------------
+trigger gt_BanksPreloading;
+trigger gt_Init01LoadData;
+trigger gt_Init03LoadingComplete;
+trigger gt_Init05Units;
+trigger gt_Init07Environment;
+trigger gt_Init08Difficulties;
+trigger gt_StartAI;
+trigger gt_StartGameQ;
+trigger gt_ObjectiveTimerWindow;
+trigger gt_ShowandUpdateObjectiveMarkers;
+trigger gt_UpdateNewPowerPlants;
+trigger gt_EnemyAttackWaveNotice;
+trigger gt_EnemyAttackingObjective;
+trigger gt_Defeat2PowerPlantsLost;
+trigger gt_DefeatTooSlow;
+trigger gt_VictoryPrimaryObjectiveComplete;
+trigger gt_VictorySequence;
+trigger gt_VictoryFanfareQ;
+trigger gt_Victory;
+trigger gt_Defeat;
+trigger gt_DisableBullies;
+trigger gt_SetupAttackWaveSpawn;
+trigger gt_AIAttackWaves;
+trigger gt_AttackWave01;
+trigger gt_AttackWave02;
+trigger gt_AttackWave03;
+trigger gt_AttackWave04;
+trigger gt_AttackWave05;
+trigger gt_AttackWave06;
+trigger gt_AttackWave07;
+trigger gt_PowerPlantAttackWave01;
+trigger gt_PowerPlantAttackWave02;
+trigger gt_PowerPlantAttackWave03;
+trigger gt_PowerPlantAttackWave04;
+trigger gt_RandomWarpDisruptedAttacks;
+trigger gt_PowerPlant0_Notify;
+trigger gt_PowerPlant0_NotifyEarly;
+trigger gt_AnyPowerPlant_Rush;
+trigger gt_AnyPowerPlant_OldDismantled;
+trigger gt_AnyPowerPlant_DefenseFail;
+trigger gt_PowerPlantConstructionStarted;
+trigger gt_PowerPlantConstructionCompleted;
+trigger gt_SetPowerPlants;
+trigger gt_BonusObjStartThrashing;
+trigger gt_BonusObjTimerUpdate;
+trigger gt_BonusObjVoidThrasherDies;
+trigger gt_ThrasherAggression;
+trigger gt_ObjectiveDestroyTheOldPowerPlantsCreate;
+trigger gt_ObjectiveDestroyTheOldPowerPlantsComplete;
+trigger gt_ObjectiveDestroyTheOldPowerPlantsUpdate;
+trigger gt_ObjectiveDestroyTheOldPowerPlantsFailed;
+
+//--------------------------------------------------------------------------------------------------
+// Custom AI Functions
+//--------------------------------------------------------------------------------------------------
+string[17] cai_playerAI;
+
+//--------------------------------------------------------------------------------------------------
+void InitCustomAI () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        cai_playerAI[init_i] = null;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_start (string ai, int p) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    cai_playerAI[p] = ai;
+
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_start(p); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_setDefGather (int p, point val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_setDefGather(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+string cai_getCustomData (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getCustomData(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave cai_getLastWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getLastWave(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_run (int p, playergroup target) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_run(p, target); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_enable(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_stop (string ai) {
+    if (ai == "aiF917F4D7") { aiF917F4D7_waves_stop(); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_wave_run (int w, int p, playergroup target, bool wait) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_run(w, p, target, wait); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_wave_enable (int w, int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_enable(w, p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+bool cai_wave_isEnabled (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_isEnabled(w, p); }
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+unitgroup cai_wave_createdUnits (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdUnits(w, p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave cai_wave_createdWave (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdWave(w, p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_startall () {
+    AICampaignStart(3);
+    AICampaignStart(4);
+    AICampaignStart(5);
+    AICampaignStart(6);
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_runall () {
+    playergroup target = PlayerGroupEmpty();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Functions
+//--------------------------------------------------------------------------------------------------
+trigger auto_gf_QueueTransmission_Trigger = null;
+string auto_gf_QueueTransmission_lp_transmission;
+
+void gf_QueueTransmission (string lp_transmission) {
+    auto_gf_QueueTransmission_lp_transmission = lp_transmission;
+
+    if (auto_gf_QueueTransmission_Trigger == null) {
+        auto_gf_QueueTransmission_Trigger = TriggerCreate("auto_gf_QueueTransmission_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_QueueTransmission_Trigger, false, false);
+}
+
+bool auto_gf_QueueTransmission_TriggerFunc (bool testConds, bool runActions) {
+    string lp_transmission = auto_gf_QueueTransmission_lp_transmission;
+
+    // Automatic Variable Declarations
+    string autoA6C74CCC_val;
+    int auto470B5BD3_val;
+    int autoEA0CE242_val;
+
+    // Implementation
+    TriggerQueueEnter();
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+    autoA6C74CCC_val = lp_transmission;
+    if (autoA6C74CCC_val == "BonusStartedWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDBonus1", -1), 0.0, c_transmissionDurationAdd, true);
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDBonus2", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "CompletedFirstWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDCompletedFirst", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "ConstructionStartedWD") {
+        auto470B5BD3_val = RandomInt(1, 3);
+        if (auto470B5BD3_val == 1) {
+            libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDStarted1", -1), 0.0, c_transmissionDurationAdd, true);
+        }
+        else if (auto470B5BD3_val == 2) {
+            libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDStarted2", -1), 0.0, c_transmissionDurationAdd, true);
+        }
+        else if (auto470B5BD3_val == 3) {
+            libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDStarted3", -1), 0.0, c_transmissionDurationAdd, true);
+        }
+        else {
+        }
+    }
+    else if (autoA6C74CCC_val == "ConstructionStartedFinalWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDFinalStarted", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "DefeatCUWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDLostAnotherCU", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "DefeatPPWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDLostAnotherPP", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "ReadyFirstWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDReadyFirst1", -1), 0.0, c_transmissionDurationAdd, true);
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDReadyFirst2", -1), 0.0, c_transmissionDurationAdd, true);
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDReadyFirst3", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "DestroyedFirstWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDFirstDestroyed", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "DestroyedLowTimeWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDDestroyedLow", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "FirstMistakeLowTimeWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDMistakeLow", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "FirstMistakeLowTimeSerialWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDMistakeLowSerial", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "FirstMistakeSerialWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDMistakeSerial", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "IntroWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDIntro1", -1), 0.0, c_transmissionDurationAdd, true);
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDIntro2", -1), 0.0, c_transmissionDurationAdd, true);
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDIntro3", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "LostCUWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDLostCU", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "LostPPWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDLostPP", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "NotifyFirstSerialWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDSerialNotify", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "NotifySecondSerialWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDSecondSerialNotify", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "TimeSerialWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDOutOfTimePlural", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "TimeSingleWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDOutOfTimeSingular", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "ReadyFinalWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDReadyFinal1", -1), 0.0, c_transmissionDurationAdd, true);
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDReadyFinal2", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "ReadyFirstSerialWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDFirstSerialReady", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "StartedEarlyWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDStartedEarly1", -1), 0.0, c_transmissionDurationAdd, true);
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDStartedEarly2", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else if (autoA6C74CCC_val == "TimeLowWD") {
+        autoEA0CE242_val = RandomInt(1, 3);
+        if (autoEA0CE242_val == 1) {
+            libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDTime1", -1), 0.0, c_transmissionDurationAdd, true);
+        }
+        else if (autoEA0CE242_val == 2) {
+            libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDTime2", -1), 0.0, c_transmissionDurationAdd, true);
+        }
+        else if (autoEA0CE242_val == 3) {
+            libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDTime3", -1), 0.0, c_transmissionDurationAdd, true);
+        }
+        else {
+        }
+    }
+    else if (autoA6C74CCC_val == "VictoryWD") {
+        libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("CivilianBlurredPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("WDVictory", -1), 0.0, c_transmissionDurationAdd, true);
+    }
+    else {
+        libCOMI_gf_SendMissionTransmission(lp_transmission, true, -1);
+    }
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+    Wait(1.0, c_timeGame);
+    TriggerQueueExit();
+    return true;
+}
+
+trigger auto_gf_RunMissionEvent_Trigger = null;
+trigger auto_gf_RunMissionEvent_lp_missionEventTrigger;
+fixed auto_gf_RunMissionEvent_lp_missionEventTime;
+
+void gf_RunMissionEvent (trigger lp_missionEventTrigger, fixed lp_missionEventTime) {
+    auto_gf_RunMissionEvent_lp_missionEventTrigger = lp_missionEventTrigger;
+    auto_gf_RunMissionEvent_lp_missionEventTime = lp_missionEventTime;
+
+    if (auto_gf_RunMissionEvent_Trigger == null) {
+        auto_gf_RunMissionEvent_Trigger = TriggerCreate("auto_gf_RunMissionEvent_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_RunMissionEvent_Trigger, false, false);
+}
+
+bool auto_gf_RunMissionEvent_TriggerFunc (bool testConds, bool runActions) {
+    trigger lp_missionEventTrigger = auto_gf_RunMissionEvent_lp_missionEventTrigger;
+    fixed lp_missionEventTime = auto_gf_RunMissionEvent_lp_missionEventTime;
+
+    // Automatic Variable Declarations
+    // Implementation
+    while (!((GameGetMissionTime() >= lp_missionEventTime))) {
+        Wait(0.5, c_timeAI);
+    }
+    if ((libCOMI_gf_GameIsOver() == false)) {
+        TriggerExecute(lp_missionEventTrigger, true, false);
+    }
+
+    return true;
+}
+
+region gf_AttackWaveSpawn () {
+    // Variable Declarations
+    int lv_mapSide;
+    int lv_spawnLocationIter;
+
+    // Automatic Variable Declarations
+    const int auto9A2E02E3_ae = 10;
+    const int auto9A2E02E3_ai = 1;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_mapSide = RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER);
+    lv_spawnLocationIter = 1;
+    for ( ; ( (auto9A2E02E3_ai >= 0 && lv_spawnLocationIter <= auto9A2E02E3_ae) || (auto9A2E02E3_ai < 0 && lv_spawnLocationIter >= auto9A2E02E3_ae) ) ; lv_spawnLocationIter += auto9A2E02E3_ai ) {
+        if ((UnitGroupCount(UnitGroupAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, gv_attackSpawn[lv_mapSide][lv_spawnLocationIter], UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) > RandomInt(2, 5))) {
+            return gv_attackSpawn[lv_mapSide][lv_spawnLocationIter];
+        }
+
+    }
+    return RegionFromId(13);
+}
+
+trigger auto_gf_RunAttackWaveatMissionTime_Trigger = null;
+trigger auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
+fixed auto_gf_RunAttackWaveatMissionTime_lp_time;
+
+void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time) {
+    auto_gf_RunAttackWaveatMissionTime_lp_attackWave = lp_attackWave;
+    auto_gf_RunAttackWaveatMissionTime_lp_time = lp_time;
+
+    if (auto_gf_RunAttackWaveatMissionTime_Trigger == null) {
+        auto_gf_RunAttackWaveatMissionTime_Trigger = TriggerCreate("auto_gf_RunAttackWaveatMissionTime_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_RunAttackWaveatMissionTime_Trigger, false, false);
+}
+
+bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runActions) {
+    trigger lp_attackWave = auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
+    fixed lp_time = auto_gf_RunAttackWaveatMissionTime_lp_time;
+
+    // Automatic Variable Declarations
+    unitgroup auto0F7682F4_g;
+    int auto0F7682F4_u;
+    unit auto0F7682F4_var;
+    unitgroup auto9D570F92_g;
+    int auto9D570F92_u;
+    unit auto9D570F92_var;
+
+    // Implementation
+    while (!((lp_time <= GameGetMissionTime()))) {
+        Wait(0.3, c_timeAI);
+    }
+    if ((libCOMI_gf_GameIsOver() == false)) {
+        TriggerExecute(lp_attackWave, true, false);
+        UnitGroupAddUnitGroup(gv_allAttackWaveUnits, libCOMI_gf_LastCreatedCoopAttackForce());
+        UnitGroupAddUnitGroup(gv_allAttackWaveUnits, libCOMI_gf_LastCreatedCoopAttackForceTransports());
+        if (((gv_powerPlantLastDestroyedTime + 60.0) < GameGetMissionTime())) {
+            auto0F7682F4_g = libCOMI_gf_LastCreatedCoopAttackForce();
+            auto0F7682F4_u = UnitGroupCount(auto0F7682F4_g, c_unitCountAll);
+            for (;; auto0F7682F4_u -= 1) {
+                auto0F7682F4_var = UnitGroupUnitFromEnd(auto0F7682F4_g, auto0F7682F4_u);
+                if (auto0F7682F4_var == null) { break; }
+                UnitBehaviorAdd(auto0F7682F4_var, "WarpDisruption", UnitFromId(1555082177), 1);
+            }
+            auto9D570F92_g = libCOMI_gf_LastCreatedCoopAttackForceTransports();
+            auto9D570F92_u = UnitGroupCount(auto9D570F92_g, c_unitCountAll);
+            for (;; auto9D570F92_u -= 1) {
+                auto9D570F92_var = UnitGroupUnitFromEnd(auto9D570F92_g, auto9D570F92_u);
+                if (auto9D570F92_var == null) { break; }
+                UnitBehaviorAdd(auto9D570F92_var, "WarpDisruption", UnitFromId(1555082177), 1);
+            }
+        }
+
+    }
+
+    return true;
+}
+
+int gf_ReduceResourceBucketByDifficulty (int lp_originalResourceBucket) {
+    // Automatic Variable Declarations
+    int autoBC0F555C_val;
+    int auto7646AAD1_val;
+    int autoFF9B82A1_val;
+    int auto0FA08D29_val;
+
+    // Implementation
+    if (((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_03_ENEMY) == 1) || (libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY) == 1))) {
+        autoBC0F555C_val = lp_originalResourceBucket;
+        if (autoBC0F555C_val == libCOMI_ge_CoopAIAttackWaveBuckets__3Small) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+        }
+        else if (autoBC0F555C_val == libCOMI_ge_CoopAIAttackWaveBuckets__4Medium) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+        }
+        else if (autoBC0F555C_val == libCOMI_ge_CoopAIAttackWaveBuckets__5Large) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+        }
+        else if (autoBC0F555C_val == libCOMI_ge_CoopAIAttackWaveBuckets__6Larger) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+        }
+        else if (autoBC0F555C_val == libCOMI_ge_CoopAIAttackWaveBuckets__7Largest) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+        }
+        else {
+            return lp_originalResourceBucket;
+        }
+    }
+
+    if (((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_03_ENEMY) == 2) || (libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY) == 2))) {
+        auto7646AAD1_val = lp_originalResourceBucket;
+        if (auto7646AAD1_val == libCOMI_ge_CoopAIAttackWaveBuckets__3Small) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+        }
+        else if (auto7646AAD1_val == libCOMI_ge_CoopAIAttackWaveBuckets__4Medium) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+        }
+        else if (auto7646AAD1_val == libCOMI_ge_CoopAIAttackWaveBuckets__5Large) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+        }
+        else if (auto7646AAD1_val == libCOMI_ge_CoopAIAttackWaveBuckets__6Larger) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
+        }
+        else if (auto7646AAD1_val == libCOMI_ge_CoopAIAttackWaveBuckets__7Largest) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
+        }
+        else {
+            return lp_originalResourceBucket;
+        }
+    }
+
+    if (((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_03_ENEMY) == 3) || (libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY) == 3))) {
+        autoFF9B82A1_val = lp_originalResourceBucket;
+        if (autoFF9B82A1_val == libCOMI_ge_CoopAIAttackWaveBuckets__5Large) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+        }
+        else if (autoFF9B82A1_val == libCOMI_ge_CoopAIAttackWaveBuckets__6Larger) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
+        }
+        else if (autoFF9B82A1_val == libCOMI_ge_CoopAIAttackWaveBuckets__7Largest) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__6Larger;
+        }
+        else {
+            return lp_originalResourceBucket;
+        }
+    }
+
+    if (((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_03_ENEMY) == 4) || (libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY) == 4))) {
+        auto0FA08D29_val = lp_originalResourceBucket;
+        if (auto0FA08D29_val == libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+        }
+        else if (auto0FA08D29_val == libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller) {
+            return libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+        }
+        else {
+            return lp_originalResourceBucket;
+        }
+    }
+
+    return lp_originalResourceBucket;
+}
+
+int gf_IntegerToTechBucket (int lp_techBucketInteger) {
+    // Automatic Variable Declarations
+    int autoF7173A35_val;
+
+    // Implementation
+    autoF7173A35_val = lp_techBucketInteger;
+    if (autoF7173A35_val == 1) {
+        return libCOMI_ge_CoopAITechLevelBuckets__1Early;
+    }
+    else if (autoF7173A35_val == 2) {
+        return libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+    }
+    else if (autoF7173A35_val == 3) {
+        return libCOMI_ge_CoopAITechLevelBuckets__3Mid;
+    }
+    else if (autoF7173A35_val == 4) {
+        return libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
+    }
+    else if (autoF7173A35_val == 5) {
+        return libCOMI_ge_CoopAITechLevelBuckets__5Late;
+    }
+    else if (autoF7173A35_val == 6) {
+        return libCOMI_ge_CoopAITechLevelBuckets_TechLevel06;
+    }
+    else if (autoF7173A35_val == 7) {
+        return libCOMI_ge_CoopAITechLevelBuckets_TechLevel07;
+    }
+    else {
+        return libCOMI_ge_CoopAITechLevelBuckets__1Early;
+    }
+}
+
+int gf_GetFreeWarpDisruptedEnemyGroup () {
+    // Variable Declarations
+    int lv_index;
+
+    // Automatic Variable Declarations
+    const int auto3EE75880_ae = 15;
+    const int auto3EE75880_ai = 1;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_index = 0;
+    for ( ; ( (auto3EE75880_ai >= 0 && lv_index <= auto3EE75880_ae) || (auto3EE75880_ai < 0 && lv_index >= auto3EE75880_ae) ) ; lv_index += auto3EE75880_ai ) {
+        if ((libNtve_gf_UnitGroupIsDead(gv_warpDisruptedEnemyGroups[lv_index]) == true) && (gv_warpDisruptedEnemyGroupPings[lv_index] == c_invalidPingId)) {
+            return lv_index;
+        }
+
+    }
+    return -1;
+}
+
+trigger auto_gf_MaintainEnemyGroupPing_Trigger = null;
+int auto_gf_MaintainEnemyGroupPing_lp_index;
+
+void gf_MaintainEnemyGroupPing (int lp_index) {
+    auto_gf_MaintainEnemyGroupPing_lp_index = lp_index;
+
+    if (auto_gf_MaintainEnemyGroupPing_Trigger == null) {
+        auto_gf_MaintainEnemyGroupPing_Trigger = TriggerCreate("auto_gf_MaintainEnemyGroupPing_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_MaintainEnemyGroupPing_Trigger, false, false);
+}
+
+bool auto_gf_MaintainEnemyGroupPing_TriggerFunc (bool testConds, bool runActions) {
+    int lp_index = auto_gf_MaintainEnemyGroupPing_lp_index;
+
+    // Automatic Variable Declarations
+    // Implementation
+    while ((libNtve_gf_UnitGroupIsDead(gv_warpDisruptedEnemyGroups[lp_index]) == false)) {
+        if ((UnitIsAlive(UnitGroupUnit(gv_warpDisruptedEnemyGroups[lp_index], 1)) == false)) {
+            UnitGroupRemove(gv_warpDisruptedEnemyGroups[lp_index], UnitGroupUnit(gv_warpDisruptedEnemyGroups[lp_index], 1));
+        }
+        else {
+            PingSetUnit(gv_warpDisruptedEnemyGroupPings[lp_index], UnitGroupUnit(gv_warpDisruptedEnemyGroups[lp_index], 1));
+            Wait(0.5, c_timeGame);
+        }
+    }
+    libCOMI_gf_DestroyPingCoop(gv_warpDisruptedEnemyGroupPings[lp_index]);
+    return true;
+}
+
+point gf_GetFirstActivebutIncompletePowerPlantPoint () {
+    // Variable Declarations
+    int lv_index;
+
+    // Automatic Variable Declarations
+    const int auto31238B9F_ae = 6;
+    const int auto31238B9F_ai = 1;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_index = 0;
+    for ( ; ( (auto31238B9F_ai >= 0 && lv_index <= auto31238B9F_ae) || (auto31238B9F_ai < 0 && lv_index >= auto31238B9F_ae) ) ; lv_index += auto31238B9F_ai ) {
+        if ((((UnitGetProgressComplete(gv_powerPlantConstructor[lv_index], 1) < 70.0) && (gv_powerPlantState[lv_index] == gv_pP_UNDER_CONSTRUCTION)) || ((gv_powerPlantState[lv_index] < gv_pP_UNDER_CONSTRUCTION) && (gv_powerPlantState[lv_index] > gv_pP_NOT_YET_ACTIVE)))) {
+            return gv_powerPlantPoints[lv_index];
+        }
+
+    }
+    return PointFromId(1119893910);
+}
+
+int gf_IndexFromPowerPlant (unit lp_identifiedUnit) {
+    // Variable Declarations
+    int lv_index;
+
+    // Automatic Variable Declarations
+    const int autoC6788131_ae = 6;
+    const int autoC6788131_ai = 1;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_index = 0;
+    for ( ; ( (autoC6788131_ai >= 0 && lv_index <= autoC6788131_ae) || (autoC6788131_ai < 0 && lv_index >= autoC6788131_ae) ) ; lv_index += autoC6788131_ai ) {
+        if ((lp_identifiedUnit == gv_powerPlant[lv_index])) {
+            return lv_index;
+        }
+
+    }
+    return -1;
+}
+
+int gf_IndexFromPowerPlantReplacement (unit lp_identifiedUnit) {
+    // Variable Declarations
+    int lv_index;
+
+    // Automatic Variable Declarations
+    const int auto5F05C4BF_ae = 6;
+    const int auto5F05C4BF_ai = 1;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_index = 0;
+    for ( ; ( (auto5F05C4BF_ai >= 0 && lv_index <= auto5F05C4BF_ae) || (auto5F05C4BF_ai < 0 && lv_index >= auto5F05C4BF_ae) ) ; lv_index += auto5F05C4BF_ai ) {
+        if ((lp_identifiedUnit == gv_powerPlantReplacement[lv_index])) {
+            return lv_index;
+        }
+
+    }
+    return -1;
+}
+
+int gf_IndexFromPoint (unit lp_identifiedUnit) {
+    // Variable Declarations
+    int lv_index;
+
+    // Automatic Variable Declarations
+    const int auto58787688_ae = 6;
+    const int auto58787688_ai = 1;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_index = 0;
+    for ( ; ( (auto58787688_ai >= 0 && lv_index <= auto58787688_ae) || (auto58787688_ai < 0 && lv_index >= auto58787688_ae) ) ; lv_index += auto58787688_ai ) {
+        if ((libNtve_gf_UnitInRegion(lp_identifiedUnit, RegionCircle(gv_powerPlantPoints[lv_index], 3.0)) == true)) {
+            return lv_index;
+        }
+
+    }
+    return -1;
+}
+
+int gf_IndexFromConstructionUnit (unit lp_identifiedUnit) {
+    // Variable Declarations
+    int lv_index;
+
+    // Automatic Variable Declarations
+    const int auto16E955C6_ae = 6;
+    const int auto16E955C6_ai = 1;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_index = 0;
+    for ( ; ( (auto16E955C6_ai >= 0 && lv_index <= auto16E955C6_ae) || (auto16E955C6_ai < 0 && lv_index >= auto16E955C6_ae) ) ; lv_index += auto16E955C6_ai ) {
+        if ((lp_identifiedUnit == gv_powerPlantConstructor[lv_index])) {
+            return lv_index;
+        }
+
+    }
+    return -1;
+}
+
+void gf_DeactivateWarpDisruptionZone (region lp_zone) {
+    // Automatic Variable Declarations
+    unitgroup autoBDE1DF4A_g;
+    int autoBDE1DF4A_u;
+    unit autoBDE1DF4A_var;
+    unitgroup autoEB29DD90_g;
+    int autoEB29DD90_u;
+    unit autoEB29DD90_var;
+    unitgroup auto99581953_g;
+    int auto99581953_u;
+    unit auto99581953_var;
+
+    // Implementation
+    AIToggleBulliesInRegion(gv_pLAYER_03_ENEMY, lp_zone, true);
+    AIToggleBulliesInRegion(gv_pLAYER_04_ENEMY, lp_zone, true);
+    autoBDE1DF4A_g = UnitGroup(null, gv_pLAYER_03_ENEMY, lp_zone, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoBDE1DF4A_u = UnitGroupCount(autoBDE1DF4A_g, c_unitCountAll);
+    for (;; autoBDE1DF4A_u -= 1) {
+        autoBDE1DF4A_var = UnitGroupUnitFromEnd(autoBDE1DF4A_g, autoBDE1DF4A_u);
+        if (autoBDE1DF4A_var == null) { break; }
+        UnitBehaviorRemove(autoBDE1DF4A_var, "WarpDisruption", 1);
+    }
+    autoEB29DD90_g = UnitGroup(null, gv_pLAYER_04_ENEMY, lp_zone, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoEB29DD90_u = UnitGroupCount(autoEB29DD90_g, c_unitCountAll);
+    for (;; autoEB29DD90_u -= 1) {
+        autoEB29DD90_var = UnitGroupUnitFromEnd(autoEB29DD90_g, autoEB29DD90_u);
+        if (autoEB29DD90_var == null) { break; }
+        UnitBehaviorRemove(autoEB29DD90_var, "WarpDisruption", 1);
+    }
+    auto99581953_g = UnitGroup(null, gv_pLAYER_06_ENEMY, lp_zone, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto99581953_u = UnitGroupCount(auto99581953_g, c_unitCountAll);
+    for (;; auto99581953_u -= 1) {
+        auto99581953_var = UnitGroupUnitFromEnd(auto99581953_g, auto99581953_u);
+        if (auto99581953_var == null) { break; }
+        UnitBehaviorRemove(auto99581953_var, "WarpDisruption", 1);
+    }
+}
+
+trigger auto_gf_DispatchPowerPlantConstructor_Trigger = null;
+int auto_gf_DispatchPowerPlantConstructor_lp_powerPlantIndex;
+
+void gf_DispatchPowerPlantConstructor (int lp_powerPlantIndex) {
+    auto_gf_DispatchPowerPlantConstructor_lp_powerPlantIndex = lp_powerPlantIndex;
+
+    if (auto_gf_DispatchPowerPlantConstructor_Trigger == null) {
+        auto_gf_DispatchPowerPlantConstructor_Trigger = TriggerCreate("auto_gf_DispatchPowerPlantConstructor_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_DispatchPowerPlantConstructor_Trigger, false, false);
+}
+
+bool auto_gf_DispatchPowerPlantConstructor_TriggerFunc (bool testConds, bool runActions) {
+    int lp_powerPlantIndex = auto_gf_DispatchPowerPlantConstructor_lp_powerPlantIndex;
+
+    // Variable Declarations
+    unit lv_wasConstructor;
+    int lv_pathDisplay;
+
+    // Automatic Variable Declarations
+    int autoF4D48312_val;
+
+    // Variable Initialization
+
+    // Implementation
+    gv_powerPlantState[lp_powerPlantIndex] = gv_pP_CONSTRUCTION_UNIT_DISPATCHED;
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "PortJunker", c_unitCreateIgnorePlacement, gv_pLAYER_05_SCENARIO, RegionGetCenter(RegionFromId(15)));
+    gv_powerPlantConstructor[lp_powerPlantIndex] = UnitLastCreated();
+    UnitSetState(gv_powerPlantConstructor[lp_powerPlantIndex], c_unitStateTargetable, false);
+    UnitSetState(gv_powerPlantConstructor[lp_powerPlantIndex], c_unitStateStoppable, false);
+    PingDestroy(gv_powerPlantPing[lp_powerPlantIndex]);
+    libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitLastCreated()), StringExternal("Param/Value/D70175D4"));
+    PingSetUnit(PingLastCreated(), UnitLastCreated());
+    gv_powerPlantConstructorPing[lp_powerPlantIndex] = PingLastCreated();
+    PathCreateForUnit(PlayerGroupAll(), gv_powerPlantConstructor[lp_powerPlantIndex]);
+    lv_pathDisplay = PathLastCreated();
+    PathSetColor(lv_pathDisplay, c_pathLocationAll, ColorWithAlpha(100.00, 50.20, 25.10, 74.51));
+    PathSetLineWidth(lv_pathDisplay, c_pathLocationWorld, 0.3);
+    if ((lp_powerPlantIndex > 0)) {
+        UnitIssueOrder(gv_powerPlantConstructor[lp_powerPlantIndex], OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1119893910)), c_orderQueueReplace);
+        PathAddWayPoint(lv_pathDisplay, PointFromId(1119893910));
+    }
+
+    if ((lp_powerPlantIndex > 1)) {
+        UnitIssueOrder(gv_powerPlantConstructor[lp_powerPlantIndex], OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(2003109309)), c_orderQueueAddToEnd);
+        PathAddWayPoint(lv_pathDisplay, PointFromId(2003109309));
+    }
+
+    UnitIssueOrder(gv_powerPlantConstructor[lp_powerPlantIndex], OrderTargetingUnit(AbilityCommand("BuildPowerPlant", 0), UnitGroupRandomUnit(UnitGroup("GeothermalVent", c_playerAny, RegionCircle(gv_powerPlantPoints[lp_powerPlantIndex], 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive)), c_orderQueueAddToEnd);
+    PathSetDestinationPoint(lv_pathDisplay, gv_powerPlantPoints[lp_powerPlantIndex]);
+    if ((UnitIsAlive(gv_powerPlant[lp_powerPlantIndex]) == true)) {
+        UnitSetOwner(gv_powerPlant[lp_powerPlantIndex], gv_pLAYER_03_ENEMY, false);
+    }
+
+    autoF4D48312_val = lp_powerPlantIndex;
+    if (autoF4D48312_val == 1) {
+        TriggerExecute(gt_PowerPlantAttackWave01, true, false);
+    }
+    else if (autoF4D48312_val == 2) {
+        TriggerExecute(gt_PowerPlantAttackWave02, true, false);
+    }
+    else if (autoF4D48312_val == 3) {
+        TriggerExecute(gt_PowerPlantAttackWave02, true, false);
+    }
+    else if (autoF4D48312_val == 4) {
+        TriggerExecute(gt_PowerPlantAttackWave03, true, false);
+    }
+    else if (autoF4D48312_val == 5) {
+        TriggerExecute(gt_PowerPlantAttackWave03, true, false);
+    }
+    else if (autoF4D48312_val == 6) {
+        TriggerExecute(gt_PowerPlantAttackWave04, true, false);
+    }
+    else {
+    }
+    gv_powerPlantsMakingProgress = (gv_powerPlantsMakingProgress + 1);
+    if ((gv_powerPlantsMakingProgress == 2)) {
+        gv_powerPlantsDoubleTimeStart = GameGetMissionTime();
+    }
+
+    if (((lp_powerPlantIndex == 0) || (lp_powerPlantIndex == 1) || (lp_powerPlantIndex == 6) || ((lp_powerPlantIndex == 2) && (gv_powerPlantState[3] >= gv_pP_CONSTRUCTION_UNIT_DISPATCHED)) || ((lp_powerPlantIndex == 3) && (gv_powerPlantState[2] >= gv_pP_CONSTRUCTION_UNIT_DISPATCHED)) || ((lp_powerPlantIndex == 4) && (gv_powerPlantState[5] >= gv_pP_CONSTRUCTION_UNIT_DISPATCHED)) || ((lp_powerPlantIndex == 5) && (gv_powerPlantState[4] >= gv_pP_CONSTRUCTION_UNIT_DISPATCHED)))) {
+        TimerWindowShow(gv_objectiveTimerWindow, PlayerGroupAll(), false);
+    }
+
+    gf_QueueTransmission("EscortMoving");
+    if ((lp_powerPlantIndex > 0)) {
+        while (!(((UnitIsAlive(gv_powerPlantConstructor[lp_powerPlantIndex]) == false) || (libNtve_gf_UnitInRegion(gv_powerPlantConstructor[lp_powerPlantIndex], RegionCircle(PointFromId(1119893910), 1.0)) == true)))) {
+            Wait(0.1, c_timeGame);
+        }
+        PathClearWayPoints(lv_pathDisplay);
+        if ((lp_powerPlantIndex > 1)) {
+            PathAddWayPoint(lv_pathDisplay, PointFromId(2003109309));
+        }
+
+    }
+
+    if ((lp_powerPlantIndex > 1)) {
+        while (!(((UnitIsAlive(gv_powerPlantConstructor[lp_powerPlantIndex]) == false) || (libNtve_gf_UnitInRegion(gv_powerPlantConstructor[lp_powerPlantIndex], RegionCircle(PointFromId(2003109309), 1.0)) == true)))) {
+            Wait(0.1, c_timeGame);
+        }
+        PathClearWayPoints(lv_pathDisplay);
+    }
+
+    while (!(((UnitGroupCount(UnitGroup("SpaceArmoredGenerator", gv_pLAYER_05_SCENARIO, RegionCircle(gv_powerPlantPoints[lp_powerPlantIndex], 5.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1), c_unitCountAlive) == 1) || (UnitIsAlive(gv_powerPlantConstructor[lp_powerPlantIndex]) == false)))) {
+        Wait(0.1, c_timeGame);
+    }
+    PingDestroy(gv_powerPlantConstructorPing[lp_powerPlantIndex]);
+    PathDestroy(lv_pathDisplay);
+    return true;
+}
+
+void gf_NotifyofNextObjective () {
+    // Variable Declarations
+    int lv_index;
+
+    // Automatic Variable Declarations
+    const int auto6B0BAC97_ae = 6;
+    const int auto6B0BAC97_ai = 1;
+    const int auto64DE3B87_ae = 6;
+    const int auto64DE3B87_ai = 1;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_index = 0;
+    for ( ; ( (auto6B0BAC97_ai >= 0 && lv_index <= auto6B0BAC97_ae) || (auto6B0BAC97_ai < 0 && lv_index >= auto6B0BAC97_ae) ) ; lv_index += auto6B0BAC97_ai ) {
+        if ((gv_powerPlantState[lv_index] > gv_pP_NOT_YET_ACTIVE) && (gv_powerPlantState[lv_index] <= gv_pP_UNDER_CONSTRUCTION)) {
+            return ;
+        }
+
+    }
+    lv_index = 0;
+    for ( ; ( (auto64DE3B87_ai >= 0 && lv_index <= auto64DE3B87_ae) || (auto64DE3B87_ai < 0 && lv_index >= auto64DE3B87_ae) ) ; lv_index += auto64DE3B87_ai ) {
+        if ((gv_powerPlantState[lv_index] == gv_pP_NOT_YET_ACTIVE)) {
+            gv_powerPlantState[lv_index] = gv_pP_PLAYERS_NOTIFIED;
+            libNtve_gf_MakeUnitInvulnerable(gv_powerPlant[lv_index], false);
+            if (((lv_index == 2) || (lv_index == 4))) {
+                lv_index = (lv_index + 1);
+                gv_powerPlantState[lv_index] = gv_pP_PLAYERS_NOTIFIED;
+                libNtve_gf_MakeUnitInvulnerable(gv_powerPlant[lv_index], false);
+                if ((lv_index == 3)) {
+                    gf_QueueTransmission("NotifyFirstSerialWD");
+                }
+                else {
+                    gf_QueueTransmission("NotifySecondSerialWD");
+                }
+            }
+            else {
+                if ((lv_index == 6)) {
+                    gf_QueueTransmission("ReadyFinalWD");
+                }
+                else {
+                    if ((lv_index == 0)) {
+                        gf_QueueTransmission("ReadyFirstWD");
+                    }
+
+                }
+            }
+            return ;
+        }
+
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Banks Preloading
+//--------------------------------------------------------------------------------------------------
+bool gt_BanksPreloading_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BanksPreloading_Init () {
+    gt_BanksPreloading = TriggerCreate("gt_BanksPreloading_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 01 Load Data
+//--------------------------------------------------------------------------------------------------
+bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init01LoadData_Init () {
+    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
+    TriggerAddEventMapInit(gt_Init01LoadData);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 03 Loading Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_Init05Units, true, false);
+    TriggerExecute(gt_Init07Environment, true, false);
+    TriggerExecute(gt_Init08Difficulties, true, false);
+    TriggerExecute(gt_StartAI, true, false);
+    TriggerExecute(gt_StartGameQ, true, true);
+    TriggerEnable(gt_UpdateNewPowerPlants, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init03LoadingComplete_Init () {
+    gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 05 Units
+//--------------------------------------------------------------------------------------------------
+bool gt_Init05Units_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoA1B87FF9_g;
+    int autoA1B87FF9_u;
+    unit autoA1B87FF9_var;
+    unitgroup auto8A99B13F_g;
+    int auto8A99B13F_u;
+    unit auto8A99B13F_var;
+    unitgroup autoD02918E4_g;
+    int autoD02918E4_u;
+    unit autoD02918E4_var;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_SetPowerPlants, true, false);
+    UnitAbilityEnable(gv_bonusObjVoidThrasher, "NarudEpilogueTrain", false);
+    UnitAbilityEnable(gv_bonusObjVoidThrasher, "NarudEpilogueSpawnMode", false);
+    UnitAbilityEnable(gv_bonusObjVoidThrasher, "VoidThrasherLightningAoEExtra", false);
+    autoA1B87FF9_g = UnitGroup(null, gv_pLAYER_03_ENEMY, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoA1B87FF9_u = UnitGroupCount(autoA1B87FF9_g, c_unitCountAll);
+    for (;; autoA1B87FF9_u -= 1) {
+        autoA1B87FF9_var = UnitGroupUnitFromEnd(autoA1B87FF9_g, autoA1B87FF9_u);
+        if (autoA1B87FF9_var == null) { break; }
+        UnitBehaviorAddPlayer(autoA1B87FF9_var, "WarpDisruption", gv_pLAYER_05_SCENARIO, 1);
+    }
+    auto8A99B13F_g = UnitGroup(null, gv_pLAYER_04_ENEMY, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto8A99B13F_u = UnitGroupCount(auto8A99B13F_g, c_unitCountAll);
+    for (;; auto8A99B13F_u -= 1) {
+        auto8A99B13F_var = UnitGroupUnitFromEnd(auto8A99B13F_g, auto8A99B13F_u);
+        if (auto8A99B13F_var == null) { break; }
+        UnitBehaviorAddPlayer(auto8A99B13F_var, "WarpDisruption", gv_pLAYER_05_SCENARIO, 1);
+    }
+    autoD02918E4_g = UnitGroup(null, gv_pLAYER_06_ENEMY, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoD02918E4_u = UnitGroupCount(autoD02918E4_g, c_unitCountAll);
+    for (;; autoD02918E4_u -= 1) {
+        autoD02918E4_var = UnitGroupUnitFromEnd(autoD02918E4_g, autoD02918E4_u);
+        if (autoD02918E4_var == null) { break; }
+        UnitBehaviorAddPlayer(autoD02918E4_var, "WarpDisruption", gv_pLAYER_05_SCENARIO, 1);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init05Units_Init () {
+    gt_Init05Units = TriggerCreate("gt_Init05Units_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 07 Environment
+//--------------------------------------------------------------------------------------------------
+bool gt_Init07Environment_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    GameTimeOfDaySet("08:00:00");
+    VisRevealArea(gv_pLAYER_01_USER, RegionFromId(19), 0.0, false);
+    VisRevealArea(gv_pLAYER_02_USER, RegionFromId(19), 0.0, false);
+    VisRevealArea(gv_pLAYER_03_ENEMY, RegionFromId(19), 0.0, false);
+    VisRevealArea(gv_pLAYER_04_ENEMY, RegionFromId(19), 0.0, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init07Environment_Init () {
+    gt_Init07Environment = TriggerCreate("gt_Init07Environment_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 08 Difficulties
+//--------------------------------------------------------------------------------------------------
+bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    fixed lv_bonusObjectiveLife;
+    fixed lv_mainObjectiveLife;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    CatalogFieldValueModify(c_gameCatalogUnit, "PortJunker", "LifeMax", gv_pLAYER_05_SCENARIO, IntToString(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_03_ENEMY), 500, 250, 0, 0, 0, 0)), c_upgradeOperationAdd);
+    CatalogFieldValueModify(c_gameCatalogUnit, "PortJunker", "LifeMax", gv_pLAYER_05_SCENARIO, IntToString(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 500, 250, 0, 0, 0, 0)), c_upgradeOperationAdd);
+    CatalogFieldValueModify(c_gameCatalogUnit, "SpaceArmoredGenerator", "LifeArmor", gv_pLAYER_05_SCENARIO, IntToString(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_03_ENEMY), 3, 2, 1, 0, 0, 0)), c_upgradeOperationAdd);
+    CatalogFieldValueModify(c_gameCatalogUnit, "SpaceArmoredGenerator", "LifeArmor", gv_pLAYER_05_SCENARIO, IntToString(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 3, 2, 1, 0, 0, 0)), c_upgradeOperationAdd);
+    CatalogFieldValueSet(c_gameCatalogUnit, "PortJunker", "LifeStart", gv_pLAYER_05_SCENARIO, CatalogFieldValueGet(c_gameCatalogUnit, "PortJunker", "LifeMax", gv_pLAYER_05_SCENARIO));
+    CatalogFieldValueSet(c_gameCatalogUnit, "SpaceArmoredGenerator2", "LifeArmor", gv_pLAYER_05_SCENARIO, CatalogFieldValueGet(c_gameCatalogUnit, "SpaceArmoredGenerator", "LifeArmor", gv_pLAYER_05_SCENARIO));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init08Difficulties_Init () {
+    gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start AI
+//--------------------------------------------------------------------------------------------------
+bool gt_StartAI_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    PlayerModifyPropertyInt(gv_pLAYER_05_SCENARIO, c_playerPropMinerals, c_playerPropOperSetTo, 10000);
+    TriggerExecute(gt_SetupAttackWaveSpawn, true, false);
+    TriggerExecute(gt_AIAttackWaves, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartAI_Init () {
+    gt_StartAI = TriggerCreate("gt_StartAI_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start Game Q
+//--------------------------------------------------------------------------------------------------
+bool gt_StartGameQ_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_enemyBase;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    ConversationDataRegisterPortrait("char_Scientist1", libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft));
+    Wait(7.0, c_timeReal);
+    gf_QueueTransmission("IntroWD");
+    TriggerExecute(gt_ObjectiveDestroyTheOldPowerPlantsCreate, true, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartGameQ_Init () {
+    gt_StartGameQ = TriggerCreate("gt_StartGameQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective Timer Window
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveTimerWindow_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_powerPlantsAttempted;
+    int lv_index;
+    bool lv_notifiedSinceTimerWasLow;
+    int lv_constructionUnitsNeeded;
+
+    // Automatic Variable Declarations
+    const int auto5BDA2366_ae = 6;
+    const int auto5BDA2366_ai = 1;
+    const int autoC1929BD6_ae = 6;
+    const int autoC1929BD6_ai = 1;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TimerStart(gv_objectiveTimer, (gv_timeLimitForConstructionAttempt - GameGetMissionTime()), false, c_timeGame);
+    libCOMI_gf_TimerWindowCreate(gv_objectiveTimer, StringExternal("Param/Value/AFD0FF28"), true, false);
+    libCOMI_gf_SetTimerWindowDangerThreshold(90.0);
+    gv_objectiveTimerWindow = TimerWindowLastCreated();
+    Wait(4.0, c_timeGame);
+    while ((libCOMI_gf_GameIsOver() == false)) {
+        lv_powerPlantsAttempted = 0;
+        lv_index = 0;
+        for ( ; ( (auto5BDA2366_ai >= 0 && lv_index <= auto5BDA2366_ae) || (auto5BDA2366_ai < 0 && lv_index >= auto5BDA2366_ae) ) ; lv_index += auto5BDA2366_ai ) {
+            if ((gv_powerPlantState[lv_index] >= gv_pP_CONSTRUCTION_UNIT_DISPATCHED)) {
+                lv_powerPlantsAttempted = (lv_powerPlantsAttempted + 1);
+            }
+
+        }
+        if ((lv_powerPlantsAttempted == 7)) {
+            TimerWindowDestroy(gv_objectiveTimerWindow);
+            return true;
+        }
+
+        lv_constructionUnitsNeeded = 0;
+        lv_index = 0;
+        for ( ; ( (autoC1929BD6_ai >= 0 && lv_index <= autoC1929BD6_ae) || (autoC1929BD6_ai < 0 && lv_index >= autoC1929BD6_ae) ) ; lv_index += autoC1929BD6_ai ) {
+            if ((gv_powerPlantState[lv_index] == gv_pP_PLAYERS_NOTIFIED)) {
+                lv_constructionUnitsNeeded = (lv_constructionUnitsNeeded + 1);
+            }
+
+        }
+        if ((TimerGetRemaining(gv_objectiveTimer) < 89.0) && (lv_constructionUnitsNeeded > 0) && (lv_notifiedSinceTimerWasLow == false)) {
+            lv_notifiedSinceTimerWasLow = true;
+            gf_QueueTransmission("TimeLowWD");
+        }
+        else {
+            if ((TimerGetRemaining(gv_objectiveTimer) >= 89.0)) {
+                lv_notifiedSinceTimerWasLow = false;
+            }
+
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveTimerWindow_Init () {
+    gt_ObjectiveTimerWindow = TriggerCreate("gt_ObjectiveTimerWindow_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Show and Update Objective Markers
+//--------------------------------------------------------------------------------------------------
+bool gt_ShowandUpdateObjectiveMarkers_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_baseIter;
+
+    // Automatic Variable Declarations
+    const int auto2562EF18_ae = 6;
+    const int auto2562EF18_ai = 1;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while ((libCOMI_gf_GameIsOver() == false)) {
+        lv_baseIter = 0;
+        for ( ; ( (auto2562EF18_ai >= 0 && lv_baseIter <= auto2562EF18_ae) || (auto2562EF18_ai < 0 && lv_baseIter >= auto2562EF18_ae) ) ; lv_baseIter += auto2562EF18_ai ) {
+            if ((gv_powerPlantPing[lv_baseIter] == c_invalidPingId)) {
+                if ((gv_powerPlantState[lv_baseIter] <= gv_pP_UNDER_CONSTRUCTION) && (gv_powerPlantState[lv_baseIter] > gv_pP_NOT_YET_ACTIVE)) {
+                    libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, gv_powerPlantPoints[lv_baseIter], gv_powerPlantName[lv_baseIter]);
+                    gv_powerPlantPing[lv_baseIter] = PingLastCreated();
+                }
+
+            }
+            else {
+                if ((gv_powerPlantState[lv_baseIter] > gv_pP_UNDER_CONSTRUCTION)) {
+                    PingDestroy(gv_powerPlantPing[lv_baseIter]);
+                }
+
+            }
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ShowandUpdateObjectiveMarkers_Init () {
+    gt_ShowandUpdateObjectiveMarkers = TriggerCreate("gt_ShowandUpdateObjectiveMarkers_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Update New Power Plants
+//--------------------------------------------------------------------------------------------------
+bool gt_UpdateNewPowerPlants_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_enemyBase;
+    unitgroup lv_enemyBaseTargets;
+    int lv_index;
+    int lv_counter;
+
+    // Automatic Variable Declarations
+    const int autoEC52A6A4_ae = 6;
+    const int autoEC52A6A4_ai = 1;
+
+    // Variable Initialization
+    lv_enemyBaseTargets = UnitGroupEmpty();
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_counter = 0;
+    lv_index = 0;
+    for ( ; ( (autoEC52A6A4_ai >= 0 && lv_index <= autoEC52A6A4_ae) || (autoEC52A6A4_ai < 0 && lv_index >= autoEC52A6A4_ae) ) ; lv_index += autoEC52A6A4_ai ) {
+        if ((gv_powerPlantState[lv_index] == gv_pP_CONSTRUCTION_COMPLETED)) {
+            lv_counter = (lv_counter + 1);
+        }
+
+    }
+    gv_completedNewPowerPlants = lv_counter;
+    if ((gv_completedNewPowerPlants == 6)) {
+        TriggerEnable(TriggerGetCurrent(), false);
+        TriggerExecute(gt_VictoryPrimaryObjectiveComplete, true, false);
+    }
+
+    TriggerExecute(gt_ObjectiveDestroyTheOldPowerPlantsUpdate, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_UpdateNewPowerPlants_Init () {
+    gt_UpdateNewPowerPlants = TriggerCreate("gt_UpdateNewPowerPlants_Func");
+    TriggerEnable(gt_UpdateNewPowerPlants, false);
+    TriggerAddEventTimePeriodic(gt_UpdateNewPowerPlants, 0.5, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Enemy Attack Wave Notice
+//--------------------------------------------------------------------------------------------------
+bool gt_EnemyAttackWaveNotice_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((gv_wavesToNotNotifyAbout > 0)) {
+        gv_wavesToNotNotifyAbout = (gv_wavesToNotNotifyAbout - 1);
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    gf_QueueTransmission("AttackWave");
+    Wait(20.0, c_timeAI);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_EnemyAttackWaveNotice_Init () {
+    gt_EnemyAttackWaveNotice = TriggerCreate("gt_EnemyAttackWaveNotice_Func");
+    TriggerAddEventPlayerAIWave(gt_EnemyAttackWaveNotice, gv_pLAYER_03_ENEMY);
+    TriggerAddEventPlayerAIWave(gt_EnemyAttackWaveNotice, gv_pLAYER_04_ENEMY);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Enemy Attacking Objective
+//--------------------------------------------------------------------------------------------------
+bool gt_EnemyAttackingObjective_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    if ((gf_IndexFromPowerPlantReplacement(EventUnit()) == -1)) {
+        if ((gf_IndexFromConstructionUnit(EventUnit()) == -1)) {
+            TriggerEnable(TriggerGetCurrent(), true);
+            return true;
+        }
+
+    }
+
+    if ((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) > (CatalogFieldValueGetAsInt(c_gameCatalogUnit, UnitGetType(EventUnit()), "LifeMax", gv_pLAYER_05_SCENARIO) * 0.25))) {
+        gf_QueueTransmission("MainObjectiveDefendDamaged");
+    }
+    else {
+        gf_QueueTransmission("MainObjectiveDefendCritical");
+    }
+    Wait(20.0, c_timeAI);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_EnemyAttackingObjective_Init () {
+    gt_EnemyAttackingObjective = TriggerCreate("gt_EnemyAttackingObjective_Func");
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantReplacement[0]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantReplacement[1]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantReplacement[2]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantReplacement[3]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantReplacement[4]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantReplacement[5]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantReplacement[6]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantConstructor[0]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantConstructor[1]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantConstructor[2]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantConstructor[3]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantConstructor[4]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantConstructor[5]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+    TriggerAddEventUnitDamaged(gt_EnemyAttackingObjective, UnitRefFromVariable("gv_powerPlantConstructor[6]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat 2 Power Plants Lost
+//--------------------------------------------------------------------------------------------------
+bool gt_Defeat2PowerPlantsLost_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    bool lv_lostByPowerPlant;
+
+    // Automatic Variable Declarations
+    const int auto3F40F7C7_ae = 6;
+    int auto3F40F7C7_var;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto3F40F7C7_var = 0;
+    for ( ; auto3F40F7C7_var <= auto3F40F7C7_ae; auto3F40F7C7_var += 1 ) {
+        if ((EventUnit() == gv_powerPlantConstructor[auto3F40F7C7_var]) && (gv_powerPlantState[auto3F40F7C7_var] != gv_pP_FAILED)) {
+            gv_powerPlantState[auto3F40F7C7_var] = gv_pP_FAILED;
+            TriggerEnable(TriggerGetCurrent(), false);
+        }
+
+        if ((EventUnit() == gv_powerPlantReplacement[auto3F40F7C7_var]) && (gv_powerPlantState[auto3F40F7C7_var] != gv_pP_FAILED)) {
+            lv_lostByPowerPlant = true;
+            gv_powerPlantState[auto3F40F7C7_var] = gv_pP_FAILED;
+            TriggerEnable(TriggerGetCurrent(), false);
+        }
+
+    }
+    if ((TriggerIsEnabled(TriggerGetCurrent()) == true)) {
+        return true;
+    }
+
+    gv_powerPlantsLost = 2;
+    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
+    TransmissionClearAll();
+    TriggerQueuePause(true);
+    TriggerQueueClear(c_triggerQueueRemove);
+    if ((lv_lostByPowerPlant == true)) {
+        libCOMI_gf_SendMissionTransmission("DefeatPPWD", false, -1);
+    }
+    else {
+        libCOMI_gf_SendMissionTransmission("DefeatCUWD", false, -1);
+    }
+    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
+    TriggerExecute(gt_ObjectiveDestroyTheOldPowerPlantsFailed, true, false);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/79462FB3"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    CameraLockInput(gv_pLAYER_01_USER, true);
+    CameraLockInput(gv_pLAYER_02_USER, true);
+    UnitClearSelection(gv_pLAYER_01_USER);
+    UnitClearSelection(gv_pLAYER_02_USER);
+    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    CameraPan(gv_pLAYER_01_USER, UnitGetPosition(EventUnit()), 1.5, -1, 10.0, false);
+    CameraPan(gv_pLAYER_02_USER, UnitGetPosition(EventUnit()), 1.5, -1, 10.0, false);
+    libCOMI_gf_WaitForMissionTransmission();
+    UISetCursorVisible(PlayerGroupAll(), true);
+    TriggerExecute(gt_Defeat, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Defeat2PowerPlantsLost_Init () {
+    gt_Defeat2PowerPlantsLost = TriggerCreate("gt_Defeat2PowerPlantsLost_Func");
+    TriggerEnable(gt_Defeat2PowerPlantsLost, false);
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantConstructor[0]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantConstructor[1]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantConstructor[2]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantConstructor[3]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantConstructor[4]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantConstructor[5]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantConstructor[6]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantReplacement[0]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantReplacement[1]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantReplacement[2]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantReplacement[3]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantReplacement[4]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantReplacement[5]"));
+    TriggerAddEventUnitDied(gt_Defeat2PowerPlantsLost, UnitRefFromVariable("gv_powerPlantReplacement[6]"));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat Too Slow
+//--------------------------------------------------------------------------------------------------
+bool gt_DefeatTooSlow_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_powerPlantsLost = 2;
+    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
+    TransmissionClearAll();
+    TriggerQueuePause(true);
+    TriggerQueueClear(c_triggerQueueRemove);
+    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
+    TriggerExecute(gt_ObjectiveDestroyTheOldPowerPlantsFailed, true, false);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/86E013E8"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    CameraLockInput(gv_pLAYER_01_USER, true);
+    CameraLockInput(gv_pLAYER_02_USER, true);
+    UnitClearSelection(gv_pLAYER_01_USER);
+    UnitClearSelection(gv_pLAYER_02_USER);
+    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    CameraPan(gv_pLAYER_01_USER, UnitGetPosition(UnitFromId(1555082177)), 1.5, -1, 10.0, false);
+    CameraPan(gv_pLAYER_02_USER, UnitGetPosition(UnitFromId(1555082177)), 1.5, -1, 10.0, false);
+    libCOMI_gf_WaitForMissionTransmission();
+    UISetCursorVisible(PlayerGroupAll(), true);
+    TriggerExecute(gt_Defeat, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DefeatTooSlow_Init () {
+    gt_DefeatTooSlow = TriggerCreate("gt_DefeatTooSlow_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Primary Objective Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_VictorySequence, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictoryPrimaryObjectiveComplete_Init () {
+    gt_VictoryPrimaryObjectiveComplete = TriggerCreate("gt_VictoryPrimaryObjectiveComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Sequence
+//--------------------------------------------------------------------------------------------------
+bool gt_VictorySequence_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
+    ObjectiveSetState(gv_objectiveDestroyTheOldPowerPlants, c_objectiveStateCompleted);
+    ObjectiveSetState(gv_objectiveDoNotLoseTwo, c_objectiveStateCompleted);
+    TimerWindowDestroy(gv_objectiveTimerWindow);
+    libNtve_gf_StopTimer(gv_objectiveTimer);
+    gv_powerPlantConstructor[6] = null;
+    gv_powerPlantReplacement[6] = null;
+    TriggerQueueClear(c_triggerQueueRetain);
+    libCOMI_gf_WaitForMissionTransmission();
+    TriggerExecute(gt_ObjectiveDestroyTheOldPowerPlantsComplete, true, false);
+    TriggerExecute(gt_VictoryFanfareQ, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictorySequence_Init () {
+    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Fanfare Q
+//--------------------------------------------------------------------------------------------------
+bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TransmissionClearAll();
+    TriggerQueueEnter();
+    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    libCOMI_gf_SendMissionTransmission("VictoryWD", false, -1);
+    UnitPauseAll(true);
+    CameraLockInput(gv_pLAYER_01_USER, true);
+    CameraLockInput(gv_pLAYER_02_USER, true);
+    UnitClearSelection(gv_pLAYER_01_USER);
+    UnitClearSelection(gv_pLAYER_02_USER);
+    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
+    CameraPan(gv_pLAYER_01_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
+    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
+    CameraPan(gv_pLAYER_02_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
+    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/684A78B4"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/E5C8709E"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_WaitForMissionTransmission();
+    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
+    UISetCursorVisible(PlayerGroupAll(), true);
+    TriggerExecute(gt_Victory, true, false);
+    TriggerQueueExit();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictoryFanfareQ_Init () {
+    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory
+//--------------------------------------------------------------------------------------------------
+bool gt_Victory_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    GameOver(gv_pLAYER_01_USER, c_gameOverVictory, true, true);
+    GameOver(gv_pLAYER_02_USER, c_gameOverVictory, true, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Victory_Init () {
+    gt_Victory = TriggerCreate("gt_Victory_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat
+//--------------------------------------------------------------------------------------------------
+bool gt_Defeat_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    GameOver(gv_pLAYER_01_USER, c_gameOverDefeat, true, true);
+    GameOver(gv_pLAYER_02_USER, c_gameOverDefeat, true, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Defeat_Init () {
+    gt_Defeat = TriggerCreate("gt_Defeat_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Disable Bullies
+//--------------------------------------------------------------------------------------------------
+bool gt_DisableBullies_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_region;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGetOwner(EventUnit()) == gv_pLAYER_03_ENEMY) || (UnitGetOwner(EventUnit()) == gv_pLAYER_04_ENEMY)))) {
+            return false;
+        }
+
+        if (!(((UnitFilterMatch(EventUnit(), gv_pLAYER_03_ENEMY, UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterHidden - 32)))) == true) || (UnitFilterMatch(EventUnit(), gv_pLAYER_04_ENEMY, UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterHidden - 32)))) == true)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_region = RegionFromId(9);
+    if ((UnitGroupCount(UnitGroup(null, gv_pLAYER_03_ENEMY, lv_region, UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 3), c_unitCountAlive) < 3) && (UnitGroupCount(UnitGroup(null, gv_pLAYER_04_ENEMY, lv_region, UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 3), c_unitCountAlive) < 3)) {
+        AIToggleBulliesInRegion(gv_pLAYER_03_ENEMY, lv_region, false);
+        AIToggleBulliesInRegion(gv_pLAYER_04_ENEMY, lv_region, false);
+    }
+
+    lv_region = RegionFromId(14);
+    if ((UnitGroupCount(UnitGroup(null, gv_pLAYER_03_ENEMY, lv_region, UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 3), c_unitCountAlive) < 3) && (UnitGroupCount(UnitGroup(null, gv_pLAYER_04_ENEMY, lv_region, UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 3), c_unitCountAlive) < 3)) {
+        AIToggleBulliesInRegion(gv_pLAYER_03_ENEMY, lv_region, false);
+        AIToggleBulliesInRegion(gv_pLAYER_04_ENEMY, lv_region, false);
+    }
+
+    lv_region = RegionFromId(2);
+    if ((UnitGroupCount(UnitGroup(null, gv_pLAYER_03_ENEMY, lv_region, UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 3), c_unitCountAlive) < 3) && (UnitGroupCount(UnitGroup(null, gv_pLAYER_04_ENEMY, lv_region, UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 3), c_unitCountAlive) < 3)) {
+        AIToggleBulliesInRegion(gv_pLAYER_03_ENEMY, lv_region, false);
+        AIToggleBulliesInRegion(gv_pLAYER_04_ENEMY, lv_region, false);
+    }
+
+    lv_region = RegionFromId(13);
+    if ((UnitGroupCount(UnitGroup(null, gv_pLAYER_03_ENEMY, lv_region, UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 3), c_unitCountAlive) < 3) && (UnitGroupCount(UnitGroup(null, gv_pLAYER_04_ENEMY, lv_region, UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 3), c_unitCountAlive) < 3)) {
+        AIToggleBulliesInRegion(gv_pLAYER_03_ENEMY, lv_region, false);
+        AIToggleBulliesInRegion(gv_pLAYER_04_ENEMY, lv_region, false);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DisableBullies_Init () {
+    gt_DisableBullies = TriggerCreate("gt_DisableBullies_Func");
+    TriggerAddEventUnitDied(gt_DisableBullies, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Setup Attack Wave Spawn
+//--------------------------------------------------------------------------------------------------
+bool gt_SetupAttackWaveSpawn_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_spawnLocationIter;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(9);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(13);
+    lv_spawnLocationIter = 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(14);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(2);
+    lv_spawnLocationIter += 1;
+    gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(13);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SetupAttackWaveSpawn_Init () {
+    gt_SetupAttackWaveSpawn = TriggerCreate("gt_SetupAttackWaveSpawn_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: AI Attack Waves
+//--------------------------------------------------------------------------------------------------
+bool gt_AIAttackWaves_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    string auto0FE11623_val;
+    unitgroup auto3E184CE9_g;
+    int auto3E184CE9_u;
+    unit auto3E184CE9_var;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto0FE11623_val = PlayerRace(gv_pLAYER_03_ENEMY);
+    if (auto0FE11623_val == "Prot") {
+        gv_hybridMajor = "HybridBehemoth";
+        gv_hybridMinor = "HybridDestroyer";
+    }
+    else if (auto0FE11623_val == "Terr") {
+        gv_hybridMajor = "HybridDominatorVoid";
+        gv_hybridMinor = "HybridReaver";
+    }
+    else if (auto0FE11623_val == "Zerg") {
+        gv_hybridMajor = "HybridDominatorVoid";
+        gv_hybridMinor = "HybridNemesis";
+    }
+    else {
+    }
+    gf_RunAttackWaveatMissionTime(gt_AttackWave01, (3.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave02, (5.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave03, (9.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave04, (12.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave05, (15.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave06, (18.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave07, (21.0 * 60.0));
+    gf_RunAttackWaveatMissionTime(gt_AttackWave07, (23.0 * 60.0));
+    Wait(58.0, c_timeGame);
+    while ((libCOMI_gf_GameIsOver() == false)) {
+        auto3E184CE9_g = gv_allAttackWaveUnits;
+        auto3E184CE9_u = UnitGroupCount(auto3E184CE9_g, c_unitCountAll);
+        for (;; auto3E184CE9_u -= 1) {
+            auto3E184CE9_var = UnitGroupUnitFromEnd(auto3E184CE9_g, auto3E184CE9_u);
+            if (auto3E184CE9_var == null) { break; }
+            if ((UnitIsAlive(auto3E184CE9_var) == true)) {
+                UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(707)), c_orderQueueAddToEnd);
+                UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(241)), c_orderQueueAddToEnd);
+            }
+
+        }
+        Wait(60.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AIAttackWaves_Init () {
+    gt_AIAttackWaves = TriggerCreate("gt_AIAttackWaves_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 01
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave01_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_03_ENEMY) != 1))) {
+            return false;
+        }
+
+        if (!((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_03_ENEMY) != 2))) {
+            return false;
+        }
+
+        if (!((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY) != 1))) {
+            return false;
+        }
+
+        if (!((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY) != 2))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+    lv_attackWaveSpawn = RegionFromId(13);
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave01_Init () {
+    gt_AttackWave01 = TriggerCreate("gt_AttackWave01_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 02
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave02_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+    point lv_nextPowerPlantPoint;
+
+    // Automatic Variable Declarations
+    string autoB1083B51_val;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = gf_IntegerToTechBucket(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 1, 1, 1, 1, 0, 0));
+    lv_attackWaveSpawn = RegionFromId(9);
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    lv_nextPowerPlantPoint = gf_GetFirstActivebutIncompletePowerPlantPoint();
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(lv_resourceBucket);
+    if ((lv_attackWaveSpawn == RegionFromId(2))) {
+        autoB1083B51_val = PlayerRace(gv_pLAYER_03_ENEMY);
+        if (autoB1083B51_val == "Prot") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "WarpPrism");
+        }
+        else if (autoB1083B51_val == "Zerg") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Overlord");
+        }
+        else if (autoB1083B51_val == "Terr") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Medivac");
+        }
+        else {
+        }
+    }
+    else {
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    }
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave02_Init () {
+    gt_AttackWave02 = TriggerCreate("gt_AttackWave02_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 03
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave03_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+    int lv_numberOfStructures_ExpLeft;
+    int lv_numberOfStructures_ExpRight;
+    point lv_attackPathWaypoint;
+    point lv_nextPowerPlantPoint;
+
+    // Automatic Variable Declarations
+    playergroup auto200FB8AA_g;
+    int auto200FB8AA_var;
+    string auto472B7883_val;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+    lv_techBucket = gf_IntegerToTechBucket(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 1, 2, 2, 2, 0, 0));
+    lv_attackWaveSpawn = gf_AttackWaveSpawn();
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    lv_nextPowerPlantPoint = gf_GetFirstActivebutIncompletePowerPlantPoint();
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(lv_resourceBucket);
+    auto200FB8AA_g = libCOMI_gf_HumanPlayers();
+    auto200FB8AA_var = -1;
+    while (true) {
+        auto200FB8AA_var = PlayerGroupNextPlayer(auto200FB8AA_g, auto200FB8AA_var);
+        if (auto200FB8AA_var < 0) { break; }
+        lv_numberOfStructures_ExpLeft += UnitGroupCount(UnitGroup(null, auto200FB8AA_var, RegionFromId(3), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
+        lv_numberOfStructures_ExpRight += UnitGroupCount(UnitGroup(null, auto200FB8AA_var, RegionFromId(4), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
+    }
+    if ((((lv_numberOfStructures_ExpLeft == 0) && (lv_numberOfStructures_ExpRight == 0)) || ((lv_numberOfStructures_ExpLeft > 0) && (lv_numberOfStructures_ExpRight > 0)))) {
+        if ((RandomInt(0, 100) < 50)) {
+            lv_attackPathWaypoint = PointFromId(367);
+        }
+        else {
+            lv_attackPathWaypoint = PointFromId(358);
+        }
+    }
+    else {
+        if ((lv_numberOfStructures_ExpLeft > lv_numberOfStructures_ExpRight)) {
+            lv_attackPathWaypoint = PointFromId(367);
+        }
+        else {
+            lv_attackPathWaypoint = PointFromId(358);
+        }
+    }
+    if ((lv_attackPathWaypoint == PointFromId(367))) {
+        gv_attackWaveA_Wave05Path = PointFromId(358);
+    }
+    else {
+        gv_attackWaveA_Wave05Path = PointFromId(367);
+    }
+    if ((lv_attackWaveSpawn == RegionFromId(2))) {
+        auto472B7883_val = PlayerRace(gv_pLAYER_03_ENEMY);
+        if (auto472B7883_val == "Prot") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "WarpPrism");
+        }
+        else if (auto472B7883_val == "Zerg") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Overlord");
+        }
+        else if (auto472B7883_val == "Terr") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Medivac");
+        }
+        else {
+        }
+    }
+    else {
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    }
+    libCOMI_gf_AddAttackForceWaypoint(lv_attackPathWaypoint, false);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave03_Init () {
+    gt_AttackWave03 = TriggerCreate("gt_AttackWave03_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 04
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave04_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+    int lv_attackingAI;
+    int lv_defendingPlayer;
+    point lv_nextPowerPlantPoint;
+
+    // Automatic Variable Declarations
+    string auto5D773494_val;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+    lv_techBucket = gf_IntegerToTechBucket(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 2, 2, 4, 5, 0, 0));
+    lv_attackWaveSpawn = gf_AttackWaveSpawn();
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    lv_nextPowerPlantPoint = gf_GetFirstActivebutIncompletePowerPlantPoint();
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(lv_resourceBucket);
+    if ((lv_attackWaveSpawn == RegionFromId(2))) {
+        auto5D773494_val = PlayerRace(gv_pLAYER_03_ENEMY);
+        if (auto5D773494_val == "Prot") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "WarpPrism");
+        }
+        else if (auto5D773494_val == "Zerg") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Overlord");
+        }
+        else if (auto5D773494_val == "Terr") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Medivac");
+        }
+        else {
+        }
+    }
+    else {
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    }
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave04_Init () {
+    gt_AttackWave04 = TriggerCreate("gt_AttackWave04_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 05
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave05_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+    int lv_numberOfStructures_ExpLeft;
+    int lv_numberOfStructures_ExpRight;
+    point lv_attackPathWaypoint;
+    point lv_nextPowerPlantPoint;
+
+    // Automatic Variable Declarations
+    string auto7903252D_val;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__5Late;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
+    lv_techBucket = gf_IntegerToTechBucket(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 2, 3, 4, 5, 0, 0));
+    lv_attackWaveSpawn = gf_AttackWaveSpawn();
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    lv_nextPowerPlantPoint = gf_GetFirstActivebutIncompletePowerPlantPoint();
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(lv_resourceBucket);
+    lv_attackPathWaypoint = gv_attackWaveA_Wave05Path;
+    if ((lv_attackWaveSpawn == RegionFromId(2))) {
+        auto7903252D_val = PlayerRace(gv_pLAYER_03_ENEMY);
+        if (auto7903252D_val == "Prot") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "WarpPrism");
+        }
+        else if (auto7903252D_val == "Zerg") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Overlord");
+        }
+        else if (auto7903252D_val == "Terr") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Medivac");
+        }
+        else {
+        }
+    }
+    else {
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    }
+    libCOMI_gf_AddAttackForceWaypoint(lv_attackPathWaypoint, false);
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave05_Init () {
+    gt_AttackWave05 = TriggerCreate("gt_AttackWave05_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 06
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave06_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+    point lv_nextPowerPlantPoint;
+
+    // Automatic Variable Declarations
+    string auto9CF41395_val;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__6Larger;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel06;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__6Larger;
+    lv_techBucket = gf_IntegerToTechBucket(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 3, 3, 6, 6, 0, 0));
+    lv_attackWaveSpawn = gf_AttackWaveSpawn();
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    lv_nextPowerPlantPoint = gf_GetFirstActivebutIncompletePowerPlantPoint();
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(lv_resourceBucket);
+    if ((lv_attackWaveSpawn == RegionFromId(2))) {
+        auto9CF41395_val = PlayerRace(gv_pLAYER_03_ENEMY);
+        if (auto9CF41395_val == "Prot") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "WarpPrism");
+        }
+        else if (auto9CF41395_val == "Zerg") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Overlord");
+        }
+        else if (auto9CF41395_val == "Terr") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Medivac");
+        }
+        else {
+        }
+    }
+    else {
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    }
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave06_Init () {
+    gt_AttackWave06 = TriggerCreate("gt_AttackWave06_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Wave 07
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackWave07_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+    point lv_nextPowerPlantPoint;
+
+    // Automatic Variable Declarations
+    string autoF50A3972_val;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__7Largest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel07;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__7Largest;
+    lv_techBucket = gf_IntegerToTechBucket(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 4, 5, 7, 7, 0, 0));
+    lv_attackWaveSpawn = gf_AttackWaveSpawn();
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
+    lv_nextPowerPlantPoint = gf_GetFirstActivebutIncompletePowerPlantPoint();
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, lv_nextPowerPlantPoint, false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(lv_resourceBucket);
+    if ((lv_attackWaveSpawn == RegionFromId(2))) {
+        lv_attackWaveSpawn = RegionFromId(9);
+        autoF50A3972_val = PlayerRace(gv_pLAYER_03_ENEMY);
+        if (autoF50A3972_val == "Prot") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "WarpPrism");
+        }
+        else if (autoF50A3972_val == "Zerg") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Overlord");
+        }
+        else if (autoF50A3972_val == "Terr") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Medivac");
+        }
+        else {
+        }
+    }
+    else {
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    }
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackWave07_Init () {
+    gt_AttackWave07 = TriggerCreate("gt_AttackWave07_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Plant Attack Wave 01
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerPlantAttackWave01_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    string auto780E425D_val;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = gf_IntegerToTechBucket(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 1, 1, 2, 2, 0, 0));
+    lv_attackWaveSpawn = gf_AttackWaveSpawn();
+    Wait(RandomInt(20, 40), c_timeGame);
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[1]);
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[1]);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[1], false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[1], false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(lv_resourceBucket);
+    if ((lv_attackWaveSpawn == RegionFromId(2))) {
+        auto780E425D_val = PlayerRace(gv_pLAYER_03_ENEMY);
+        if (auto780E425D_val == "Prot") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "WarpPrism");
+        }
+        else if (auto780E425D_val == "Zerg") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Overlord");
+        }
+        else if (auto780E425D_val == "Terr") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Medivac");
+        }
+        else {
+        }
+    }
+    else {
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    }
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerPlantAttackWave01_Init () {
+    gt_PowerPlantAttackWave01 = TriggerCreate("gt_PowerPlantAttackWave01_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Plant Attack Wave 02
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerPlantAttackWave02_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    string auto072FA4AA_val;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+    lv_techBucket = gf_IntegerToTechBucket(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 2, 2, 3, 4, 0, 0));
+    lv_attackWaveSpawn = gf_AttackWaveSpawn();
+    Wait(RandomInt(15, 30), c_timeGame);
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[2]);
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[3]);
+    lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(lv_resourceBucket);
+    if ((gv_powerPlantState[2] > gv_pP_PLAYERS_NOTIFIED) && (gv_powerPlantState[3] > gv_pP_PLAYERS_NOTIFIED)) {
+        AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[2], false);
+        AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[3], false);
+    }
+    else if ((gv_powerPlantState[2] <= gv_pP_PLAYERS_NOTIFIED) && (gv_powerPlantState[3] > gv_pP_PLAYERS_NOTIFIED)) {
+        AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[3], false);
+        AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[3], false);
+    }
+    else if ((gv_powerPlantState[2] > gv_pP_PLAYERS_NOTIFIED) && (gv_powerPlantState[3] <= gv_pP_PLAYERS_NOTIFIED)) {
+        AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[2], false);
+        AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[2], false);
+    }
+    else if ((gv_powerPlantState[2] <= gv_pP_PLAYERS_NOTIFIED) && (gv_powerPlantState[3] <= gv_pP_PLAYERS_NOTIFIED)) {
+    }
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    if ((lv_attackWaveSpawn == RegionFromId(2))) {
+        auto072FA4AA_val = PlayerRace(gv_pLAYER_03_ENEMY);
+        if (auto072FA4AA_val == "Prot") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "WarpPrism");
+        }
+        else if (auto072FA4AA_val == "Zerg") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Overlord");
+        }
+        else if (auto072FA4AA_val == "Terr") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Medivac");
+        }
+        else {
+        }
+    }
+    else {
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    }
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerPlantAttackWave02_Init () {
+    gt_PowerPlantAttackWave02 = TriggerCreate("gt_PowerPlantAttackWave02_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Plant Attack Wave 03
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerPlantAttackWave03_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    string auto2EC75C6B_val;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
+    lv_techBucket = gf_IntegerToTechBucket(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 3, 3, 5, 5, 0, 0));
+    lv_attackWaveSpawn = gf_AttackWaveSpawn();
+    Wait(RandomInt(15, 30), c_timeGame);
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[4]);
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[5]);
+    lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(lv_resourceBucket);
+    if ((gv_powerPlantState[4] > gv_pP_PLAYERS_NOTIFIED) && (gv_powerPlantState[5] > gv_pP_PLAYERS_NOTIFIED)) {
+        AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[4], false);
+        AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[5], false);
+    }
+    else if ((gv_powerPlantState[4] <= gv_pP_PLAYERS_NOTIFIED) && (gv_powerPlantState[5] > gv_pP_PLAYERS_NOTIFIED)) {
+        AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[5], false);
+        AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[5], false);
+    }
+    else if ((gv_powerPlantState[4] > gv_pP_PLAYERS_NOTIFIED) && (gv_powerPlantState[5] <= gv_pP_PLAYERS_NOTIFIED)) {
+        AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[4], false);
+        AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[4], false);
+    }
+    else if ((gv_powerPlantState[4] <= gv_pP_PLAYERS_NOTIFIED) && (gv_powerPlantState[5] <= gv_pP_PLAYERS_NOTIFIED)) {
+    }
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    if ((lv_attackWaveSpawn == RegionFromId(2))) {
+        auto2EC75C6B_val = PlayerRace(gv_pLAYER_03_ENEMY);
+        if (auto2EC75C6B_val == "Prot") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "WarpPrism");
+        }
+        else if (auto2EC75C6B_val == "Zerg") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Overlord");
+        }
+        else if (auto2EC75C6B_val == "Terr") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Medivac");
+        }
+        else {
+        }
+    }
+    else {
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    }
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerPlantAttackWave03_Init () {
+    gt_PowerPlantAttackWave03 = TriggerCreate("gt_PowerPlantAttackWave03_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Plant Attack Wave 04
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerPlantAttackWave04_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_attackWaveSpawn;
+    int lv_resourceBucket;
+    int lv_techBucket;
+
+    // Automatic Variable Declarations
+    string auto47DDD87A_val;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(libCOMI_ge_CoopAIAttackWaveBuckets__6Larger);
+    lv_techBucket = gf_IntegerToTechBucket(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY), 3, 4, 7, 7, 0, 0));
+    lv_attackWaveSpawn = gf_AttackWaveSpawn();
+    Wait(RandomInt(10, 20), c_timeGame);
+    AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[6]);
+    AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[6]);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, gv_powerPlantPoints[6], false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, gv_powerPlantPoints[6], false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(249), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_03_ENEMY, PointFromId(707), false);
+    AIAttackWaveAddWaypoint(gv_pLAYER_04_ENEMY, PointFromId(241), false);
+    if ((lv_attackWaveSpawn == RegionFromId(2))) {
+        auto47DDD87A_val = PlayerRace(gv_pLAYER_03_ENEMY);
+        if (auto47DDD87A_val == "Prot") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "WarpPrism");
+        }
+        else if (auto47DDD87A_val == "Zerg") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Overlord");
+        }
+        else if (auto47DDD87A_val == "Terr") {
+            libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), "Medivac");
+        }
+        else {
+        }
+    }
+    else {
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_attackWaveSpawn), true);
+    }
+    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerPlantAttackWave04_Init () {
+    gt_PowerPlantAttackWave04 = TriggerCreate("gt_PowerPlantAttackWave04_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Random Warp Disrupted Attacks
+//--------------------------------------------------------------------------------------------------
+bool gt_RandomWarpDisruptedAttacks_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    region lv_region;
+    point lv_spawnPoint;
+    int lv_resourceBucket;
+    int lv_techBucket;
+    unitgroup lv_lastCreatedUnits;
+    int lv_index;
+
+    // Automatic Variable Declarations
+    int autoAFBA4A66_val;
+    unitgroup auto960B0157_g;
+    int auto960B0157_u;
+    unit auto960B0157_var;
+
+    // Variable Initialization
+    lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+    lv_lastCreatedUnits = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (true) {
+        Wait(RandomInt(libCOMI_gf_MinimumDifficultyValueCoopInteger(150, 120, 100, 90, 90, 90), libCOMI_gf_MinimumDifficultyValueCoopInteger(175, 145, 120, 105, 105, 105)), c_timeGame);
+        lv_region = RegionFromName(("SafeWarp " + IntToString(RandomInt(1, 4))));
+        lv_spawnPoint = RegionRandomPoint(lv_region);
+        if ((UnitGroupCount(UnitGroupAlliance(gv_pLAYER_03_ENEMY, c_unitAllianceEnemy, RegionFromId(17), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 10), c_unitCountAlive) != 0)) {
+            lv_spawnPoint = UnitGetPosition(UnitGroupRandomUnit(UnitGroupAlliance(gv_pLAYER_03_ENEMY, c_unitAllianceEnemy, RegionFromId(17), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive));
+            lv_spawnPoint = PointWithOffsetPolar(lv_spawnPoint, RandomInt(1, 6), RandomInt(0, 359));
+        }
+
+        autoAFBA4A66_val = gv_completedNewPowerPlants;
+        if (autoAFBA4A66_val == 2) {
+            lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+            lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+        }
+        else if (autoAFBA4A66_val == 3) {
+            lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
+            lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
+        }
+        else if (autoAFBA4A66_val == 4) {
+            lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+            lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
+        }
+        else if (autoAFBA4A66_val == 5) {
+            lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+            lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__5Late;
+        }
+        else {
+        }
+        lv_resourceBucket = gf_ReduceResourceBucketByDifficulty(lv_resourceBucket);
+        gv_wavesToNotNotifyAbout = (gv_wavesToNotNotifyAbout + 1);
+        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, lv_spawnPoint, false);
+        AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(367));
+        AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(367));
+        libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, false);
+        UnitGroupAddUnitGroup(gv_allAttackWaveUnits, libCOMI_gf_LastCreatedCoopAttackForce());
+        AISetGroupSuicide(lv_lastCreatedUnits, true);
+        libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingSquare", lv_spawnPoint, Color(100.00, 0.00, 0.00), 0.0);
+        PingSetScale(PingLastCreated(), 0.3);
+        PingSetUnit(PingLastCreated(), UnitGroupRandomUnit(lv_lastCreatedUnits, c_unitCountAlive));
+        libCOMI_gf_ShowHidePingCoop(PingLastCreated(), true);
+        lv_index = gf_GetFreeWarpDisruptedEnemyGroup();
+        gv_warpDisruptedEnemyGroups[lv_index] = lv_lastCreatedUnits;
+        gv_warpDisruptedEnemyGroupPings[lv_index] = PingLastCreated();
+        if ((UnitIsAlive(gv_powerPlant[6]) == true)) {
+            auto960B0157_g = lv_lastCreatedUnits;
+            auto960B0157_u = UnitGroupCount(auto960B0157_g, c_unitCountAll);
+            for (;; auto960B0157_u -= 1) {
+                auto960B0157_var = UnitGroupUnitFromEnd(auto960B0157_g, auto960B0157_u);
+                if (auto960B0157_var == null) { break; }
+                UnitBehaviorAdd(auto960B0157_var, "WarpDisruption", UnitFromId(1555082177), 1);
+            }
+        }
+
+        gf_MaintainEnemyGroupPing(lv_index);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_RandomWarpDisruptedAttacks_Init () {
+    gt_RandomWarpDisruptedAttacks = TriggerCreate("gt_RandomWarpDisruptedAttacks_Func");
+    TriggerAddEventTimeElapsed(gt_RandomWarpDisruptedAttacks, 240.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PowerPlant0_Notify
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerPlant0_Notify_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_powerPlantState[0] == gv_pP_NOT_YET_ACTIVE))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_powerPlantState[0] = gv_pP_PLAYERS_NOTIFIED;
+    TriggerExecute(gt_ObjectiveTimerWindow, true, false);
+    TriggerExecute(gt_ShowandUpdateObjectiveMarkers, true, false);
+    gf_QueueTransmission("ReadyFirstWD");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerPlant0_Notify_Init () {
+    gt_PowerPlant0_Notify = TriggerCreate("gt_PowerPlant0_Notify_Func");
+    TriggerAddEventTimeElapsed(gt_PowerPlant0_Notify, 240.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: PowerPlant0_NotifyEarly
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerPlant0_NotifyEarly_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_powerPlantState[0] == gv_pP_NOT_YET_ACTIVE))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_powerPlantState[0] = gv_pP_PLAYERS_NOTIFIED;
+    TriggerExecute(gt_ObjectiveTimerWindow, true, false);
+    TriggerExecute(gt_ShowandUpdateObjectiveMarkers, true, false);
+    gf_QueueTransmission("PrimaryObjectiveRevealed");
+    gf_QueueTransmission("StartedEarlyWD");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerPlant0_NotifyEarly_Init () {
+    gt_PowerPlant0_NotifyEarly = TriggerCreate("gt_PowerPlant0_NotifyEarly_Func");
+    TriggerAddEventUnitDamaged(gt_PowerPlant0_NotifyEarly, UnitRefFromVariable("gv_powerPlant[0]"), c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: AnyPowerPlant_Rush
+//--------------------------------------------------------------------------------------------------
+bool gt_AnyPowerPlant_Rush_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_powerPlantIndex;
+    int lv_powerPlantActiveCount;
+
+    // Automatic Variable Declarations
+    const int autoB1689684_ae = 6;
+    const int autoB1689684_ai = 1;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_powerPlantIndex = 0;
+    for ( ; ( (autoB1689684_ai >= 0 && lv_powerPlantIndex <= autoB1689684_ae) || (autoB1689684_ai < 0 && lv_powerPlantIndex >= autoB1689684_ae) ) ; lv_powerPlantIndex += autoB1689684_ai ) {
+        if ((gv_powerPlantState[lv_powerPlantIndex] == gv_pP_PLAYERS_NOTIFIED)) {
+            lv_powerPlantActiveCount = (lv_powerPlantActiveCount + 1);
+            gf_DispatchPowerPlantConstructor(lv_powerPlantIndex);
+        }
+
+    }
+    if ((lv_powerPlantActiveCount == 1)) {
+        gf_QueueTransmission("TimeSingleWD");
+    }
+    else if ((lv_powerPlantActiveCount > 1)) {
+        gf_QueueTransmission("TimeSerialWD");
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AnyPowerPlant_Rush_Init () {
+    gt_AnyPowerPlant_Rush = TriggerCreate("gt_AnyPowerPlant_Rush_Func");
+    TriggerAddEventTimer(gt_AnyPowerPlant_Rush, gv_objectiveTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: AnyPowerPlant_OldDismantled
+//--------------------------------------------------------------------------------------------------
+bool gt_AnyPowerPlant_OldDismantled_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_powerPlantIndex;
+
+    // Automatic Variable Declarations
+    unitgroup autoCAB46C46_g;
+    int autoCAB46C46_u;
+    unit autoCAB46C46_var;
+    int auto59376B48_val;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_powerPlantLastDestroyedTime = GameGetMissionTime();
+    autoCAB46C46_g = gv_allAttackWaveUnits;
+    autoCAB46C46_u = UnitGroupCount(autoCAB46C46_g, c_unitCountAll);
+    for (;; autoCAB46C46_u -= 1) {
+        autoCAB46C46_var = UnitGroupUnitFromEnd(autoCAB46C46_g, autoCAB46C46_u);
+        if (autoCAB46C46_var == null) { break; }
+        UnitBehaviorRemove(autoCAB46C46_var, "WarpDisruption", 1);
+    }
+    lv_powerPlantIndex = gf_IndexFromPowerPlant(EventUnit());
+    if ((lv_powerPlantIndex == -1)) {
+        return true;
+    }
+
+    if ((gv_powerPlantState[lv_powerPlantIndex] == gv_pP_PLAYERS_NOTIFIED)) {
+        gf_DispatchPowerPlantConstructor(lv_powerPlantIndex);
+    }
+    else if ((gv_powerPlantState[lv_powerPlantIndex] == gv_pP_CONSTRUCTION_UNIT_DISPATCHED)) {
+        gf_QueueTransmission("DestroyedLowTimeWD");
+    }
+    else if ((gv_powerPlantState[lv_powerPlantIndex] == gv_pP_FAILED)) {
+        return true;
+    }
+    gv_powerPlantState[lv_powerPlantIndex] = gv_pP_OLD_DECOMMISSIONED;
+    auto59376B48_val = lv_powerPlantIndex;
+    if (auto59376B48_val == 0) {
+        gf_QueueTransmission("DestroyedFirstWD");
+        gf_DeactivateWarpDisruptionZone(RegionFromId(16));
+    }
+    else if (auto59376B48_val == 1) {
+        gf_QueueTransmission("ConstructionStartedWD");
+        gf_DeactivateWarpDisruptionZone(RegionFromId(17));
+    }
+    else if (auto59376B48_val == 2) {
+        gf_QueueTransmission("ConstructionStartedWD");
+        gf_DeactivateWarpDisruptionZone(RegionFromId(18));
+    }
+    else if (auto59376B48_val == 3) {
+        gf_QueueTransmission("ConstructionStartedWD");
+        gf_DeactivateWarpDisruptionZone(RegionFromId(18));
+    }
+    else if (auto59376B48_val == 4) {
+        gf_QueueTransmission("ConstructionStartedWD");
+    }
+    else if (auto59376B48_val == 5) {
+        gf_QueueTransmission("ConstructionStartedWD");
+    }
+    else if (auto59376B48_val == 6) {
+        gf_QueueTransmission("ConstructionStartedFinalWD");
+    }
+    else {
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AnyPowerPlant_OldDismantled_Init () {
+    gt_AnyPowerPlant_OldDismantled = TriggerCreate("gt_AnyPowerPlant_OldDismantled_Func");
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_OldDismantled, UnitRefFromVariable("gv_powerPlant[0]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_OldDismantled, UnitRefFromVariable("gv_powerPlant[1]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_OldDismantled, UnitRefFromVariable("gv_powerPlant[2]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_OldDismantled, UnitRefFromVariable("gv_powerPlant[3]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_OldDismantled, UnitRefFromVariable("gv_powerPlant[4]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_OldDismantled, UnitRefFromVariable("gv_powerPlant[5]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_OldDismantled, UnitRefFromVariable("gv_powerPlant[6]"));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: AnyPowerPlant_DefenseFail
+//--------------------------------------------------------------------------------------------------
+bool gt_AnyPowerPlant_DefenseFail_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    bool lv_gaveLeeway;
+    int lv_index;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    lv_index = gf_IndexFromConstructionUnit(EventUnit());
+    if ((lv_index != -1)) {
+        PingDestroy(gv_powerPlantConstructorPing[lv_index]);
+        gv_powerPlantState[lv_index] = gv_pP_FAILED;
+        gv_powerPlantsLost = 1;
+        UnitKill(gv_powerPlantReplacement[lv_index]);
+        gf_QueueTransmission("LostCUWD");
+        gf_QueueTransmission("TransportLost");
+    }
+    else {
+        lv_index = gf_IndexFromPowerPlantReplacement(EventUnit());
+        if ((lv_index != -1)) {
+            PingDestroy(gv_powerPlantConstructorPing[lv_index]);
+            gv_powerPlantState[lv_index] = gv_pP_FAILED;
+            gv_powerPlantsLost = 1;
+            UnitKill(gv_powerPlantConstructor[lv_index]);
+            gf_QueueTransmission("LostPPWD");
+            gf_QueueTransmission("CaptureControlLost");
+        }
+        else {
+            TriggerEnable(TriggerGetCurrent(), true);
+            return true;
+        }
+    }
+    gv_powerPlantsMakingProgress = (gv_powerPlantsMakingProgress - 1);
+    TriggerEnable(gt_Defeat2PowerPlantsLost, true);
+    if ((GameGetMissionTime() > (gv_timeLimitForConstructionAttempt - 60.0))) {
+        gv_timeLimitForConstructionAttempt = (GameGetMissionTime() + 90.0);
+        TimerStart(gv_objectiveTimer, (gv_timeLimitForConstructionAttempt - GameGetMissionTime()), false, c_timeGame);
+        lv_gaveLeeway = true;
+    }
+
+    if ((gv_powerPlantsMakingProgress == 0)) {
+        TimerWindowShow(gv_objectiveTimerWindow, PlayerGroupAll(), true);
+    }
+
+    if (((lv_index == 2) || (lv_index == 3) || (lv_index == 4) || (lv_index == 5))) {
+        gf_QueueTransmission("FirstMistakeSerialWD");
+        if ((lv_gaveLeeway == true)) {
+            gf_QueueTransmission("FirstMistakeLowTimeSerialWD");
+        }
+
+    }
+    else {
+        if ((lv_gaveLeeway == true)) {
+            gf_QueueTransmission("FirstMistakeLowTimeWD");
+        }
+
+    }
+    gf_NotifyofNextObjective();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AnyPowerPlant_DefenseFail_Init () {
+    gt_AnyPowerPlant_DefenseFail = TriggerCreate("gt_AnyPowerPlant_DefenseFail_Func");
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantConstructor[0]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantConstructor[1]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantConstructor[2]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantConstructor[3]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantConstructor[4]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantConstructor[5]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantConstructor[6]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantReplacement[0]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantReplacement[1]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantReplacement[2]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantReplacement[3]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantReplacement[4]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantReplacement[5]"));
+    TriggerAddEventUnitDied(gt_AnyPowerPlant_DefenseFail, UnitRefFromVariable("gv_powerPlantReplacement[6]"));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Plant Construction Started
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerPlantConstructionStarted_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_index;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnitProgressUnit()) == "SpaceArmoredGenerator"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitSetState(EventUnitProgressUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnitProgressUnit(), c_unitStateStoppable, false);
+    UnitSetPropertyFixed(EventUnitProgressUnit(), c_unitPropLifePercent, 50.0);
+    lv_index = gf_IndexFromPoint(EventUnitProgressUnit());
+    if ((lv_index == -1)) {
+        return true;
+    }
+
+    if ((UnitIsAlive(gv_powerPlant[lv_index]) == true)) {
+        UnitIssueOrder(gv_powerPlantConstructor[lv_index], Order(AbilityCommand("BuildPowerPlant", 30)), c_orderQueueReplace);
+        TriggerExecute(gt_DefeatTooSlow, true, false);
+        return true;
+    }
+
+    gv_powerPlantReplacement[lv_index] = EventUnitProgressUnit();
+    gv_powerPlantState[lv_index] = gv_pP_UNDER_CONSTRUCTION;
+    libCOMI_gf_CreatePingFacingAngleCoop(libCOMI_gf_HumanPlayers(), gv_powerPlantPoints[lv_index], 270.0, "BeaconDefendPing", ColorWithAlpha(0.00, 100.00, 0.00, 49.80), 90.0);
+    PingSetScale(PingLastCreated(), 0.75);
+    gv_powerPlantPing[lv_index] = PingLastCreated();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerPlantConstructionStarted_Init () {
+    gt_PowerPlantConstructionStarted = TriggerCreate("gt_PowerPlantConstructionStarted_Func");
+    TriggerAddEventUnitConstructProgress(gt_PowerPlantConstructionStarted, null, c_unitProgressStageStart);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Power Plant Construction Completed
+//--------------------------------------------------------------------------------------------------
+bool gt_PowerPlantConstructionCompleted_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_index;
+    int lv_otherIndex;
+    unit lv_wasConstructor;
+    unit lv_wasOtherConstructor;
+
+    // Automatic Variable Declarations
+    const int auto0C80AB0C_ae = 6;
+    const int auto0C80AB0C_ai = 1;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnitProgressUnit()) == "SpaceArmoredGenerator"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_index = gf_IndexFromPowerPlantReplacement(EventUnitProgressUnit());
+    if ((lv_index == -1)) {
+        return true;
+    }
+
+    UnitSetState(EventUnitProgressUnit(), c_unitStateTargetable, false);
+    UnitSetState(EventUnitProgressUnit(), c_unitStateStoppable, false);
+    lv_otherIndex = 0;
+    for ( ; ( (auto0C80AB0C_ai >= 0 && lv_otherIndex <= auto0C80AB0C_ae) || (auto0C80AB0C_ai < 0 && lv_otherIndex >= auto0C80AB0C_ae) ) ; lv_otherIndex += auto0C80AB0C_ai ) {
+        if ((gv_powerPlantState[lv_otherIndex] == gv_pP_CONSTRUCTION_UNIT_DISPATCHED) && (TimerGetDuration(gv_objectiveTimer) > 20.0) && (lv_otherIndex != lv_index)) {
+            gv_powerPlantState[lv_otherIndex] = gv_pP_PLAYERS_NOTIFIED;
+            lv_wasOtherConstructor = gv_powerPlantConstructor[lv_otherIndex];
+            gv_powerPlantConstructor[lv_otherIndex] = null;
+            gv_powerPlantsMakingProgress = (gv_powerPlantsMakingProgress - 1);
+            UnitSetOwner(lv_wasOtherConstructor, 0, false);
+            UnitIssueOrder(lv_wasOtherConstructor, OrderTargetingPoint(AbilityCommand("move", 0), RegionGetCenter(RegionFromId(15))), c_orderQueueReplace);
+        }
+
+    }
+    if ((gv_powerPlantState[lv_index] == gv_pP_UNDER_CONSTRUCTION)) {
+        gv_powerPlantsMakingProgress = (gv_powerPlantsMakingProgress - 1);
+        if ((gv_powerPlantsMakingProgress == 1)) {
+            gv_powerPlantRewardTime[lv_index] = (gv_powerPlantRewardTime[lv_index] + (GameGetMissionTime() - gv_powerPlantsDoubleTimeStart));
+        }
+
+    }
+
+    lv_wasConstructor = gv_powerPlantConstructor[lv_index];
+    gv_powerPlantConstructor[lv_index] = null;
+    UnitSetOwner(lv_wasConstructor, 0, false);
+    gv_powerPlantState[lv_index] = gv_pP_CONSTRUCTION_COMPLETED;
+    libNtve_gf_ReplaceUnit(gv_powerPlantReplacement[lv_index], "SpaceArmoredGenerator2", libNtve_ge_ReplaceUnitOptions_OldUnitsRelative);
+    gv_powerPlantReplacement[lv_index] = libNtve_gf_LastReplacedUnit();
+    UnitSetState(libNtve_gf_LastReplacedUnit(), c_unitStateTargetable, false);
+    UnitSetState(libNtve_gf_LastReplacedUnit(), c_unitStateStoppable, false);
+    UnitSetOwner(gv_powerPlantReplacement[lv_index], 0, false);
+    libCOMI_gf_DisplayRewardFloatingText(gv_powerPlantPoints[lv_index], libCOMI_ge_CacheResourceType_CustomResource, FixedToInt(gv_powerPlantRewardTime[lv_index]), "Assets\\Textures\\icon-time-terran.dds", StringExternal("Param/Value/AF831C2C"), gv_pLAYER_01_USER);
+    libCOMI_gf_DisplayRewardFloatingText(gv_powerPlantPoints[lv_index], libCOMI_ge_CacheResourceType_CustomResource, FixedToInt(gv_powerPlantRewardTime[lv_index]), "Assets\\Textures\\icon-time-terran.dds", StringExternal("Param/Value/F2F7B2FD"), gv_pLAYER_02_USER);
+    gv_timeLimitForConstructionAttempt = (gv_timeLimitForConstructionAttempt + gv_powerPlantRewardTime[lv_index]);
+    gv_timeLimitForConstructionAttempt = MaxF(gv_timeLimitForConstructionAttempt, (GameGetMissionTime() + 90.0));
+    TimerStart(gv_objectiveTimer, (gv_timeLimitForConstructionAttempt - GameGetMissionTime()), false, c_timeGame);
+    if ((gv_powerPlantsMakingProgress == 0)) {
+        TimerWindowShow(gv_objectiveTimerWindow, PlayerGroupAll(), true);
+    }
+
+    Wait(2.0, c_timeGame);
+    if ((gv_completedNewPowerPlants == 6)) {
+        return true;
+    }
+
+    gf_NotifyofNextObjective();
+    UnitIssueOrder(lv_wasConstructor, OrderTargetingPoint(AbilityCommand("move", 0), RegionGetCenter(RegionFromId(15))), c_orderQueueReplace);
+    Wait(2.0, c_timeGame);
+    if ((lv_wasOtherConstructor != null)) {
+        UnitWaitUntilIdle(lv_wasOtherConstructor, true);
+        UnitRemove(lv_wasOtherConstructor);
+    }
+
+    UnitWaitUntilIdle(lv_wasConstructor, true);
+    UnitRemove(lv_wasConstructor);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PowerPlantConstructionCompleted_Init () {
+    gt_PowerPlantConstructionCompleted = TriggerCreate("gt_PowerPlantConstructionCompleted_Func");
+    TriggerAddEventUnitConstructProgress(gt_PowerPlantConstructionCompleted, null, c_unitProgressStageComplete);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SetPowerPlants
+//--------------------------------------------------------------------------------------------------
+bool gt_SetPowerPlants_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_pickedIndex;
+
+    // Automatic Variable Declarations
+    const int auto87154354_ae = 6;
+    const int auto87154354_ai = 1;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_powerPlant[lv_pickedIndex] = UnitFromId(1592976986);
+    gv_powerPlantName[lv_pickedIndex] = StringExternal("Param/Value/FFADD30C");
+    gv_powerPlantRewardTime[lv_pickedIndex] = 180.0;
+    lv_pickedIndex = (lv_pickedIndex + 1);
+    gv_powerPlant[lv_pickedIndex] = UnitFromId(258149522);
+    gv_powerPlantName[lv_pickedIndex] = StringExternal("Param/Value/43C54437");
+    gv_powerPlantRewardTime[lv_pickedIndex] = 240.0;
+    lv_pickedIndex = (lv_pickedIndex + 1);
+    gv_powerPlant[lv_pickedIndex] = UnitFromId(2128880438);
+    gv_powerPlantName[lv_pickedIndex] = StringExternal("Param/Value/1AD07B63");
+    gv_powerPlantRewardTime[lv_pickedIndex] = 120.0;
+    lv_pickedIndex = (lv_pickedIndex + 1);
+    gv_powerPlant[lv_pickedIndex] = UnitFromId(952168868);
+    gv_powerPlantName[lv_pickedIndex] = StringExternal("Param/Value/5A4F67C8");
+    gv_powerPlantRewardTime[lv_pickedIndex] = 120.0;
+    lv_pickedIndex = (lv_pickedIndex + 1);
+    gv_powerPlant[lv_pickedIndex] = UnitFromId(2072191803);
+    gv_powerPlantName[lv_pickedIndex] = StringExternal("Param/Value/FD10753D");
+    gv_powerPlantRewardTime[lv_pickedIndex] = 180.0;
+    lv_pickedIndex = (lv_pickedIndex + 1);
+    gv_powerPlant[lv_pickedIndex] = UnitFromId(1537040116);
+    gv_powerPlantName[lv_pickedIndex] = StringExternal("Param/Value/1C0023FD");
+    gv_powerPlantRewardTime[lv_pickedIndex] = 180.0;
+    lv_pickedIndex = (lv_pickedIndex + 1);
+    gv_powerPlant[lv_pickedIndex] = UnitFromId(348766986);
+    gv_powerPlantName[lv_pickedIndex] = StringExternal("Param/Value/C16AE863");
+    gv_powerPlantRewardTime[lv_pickedIndex] = 900.0;
+    lv_pickedIndex = (lv_pickedIndex + 1);
+    lv_pickedIndex = 0;
+    for ( ; ( (auto87154354_ai >= 0 && lv_pickedIndex <= auto87154354_ae) || (auto87154354_ai < 0 && lv_pickedIndex >= auto87154354_ae) ) ; lv_pickedIndex += auto87154354_ai ) {
+        gv_powerPlantPoints[lv_pickedIndex] = PointWithOffset(UnitGetPosition(gv_powerPlant[lv_pickedIndex]), -0.5, -0.5);
+        libNtve_gf_MakeUnitInvulnerable(gv_powerPlant[lv_pickedIndex], true);
+    }
+    libNtve_gf_MakeUnitInvulnerable(gv_powerPlant[0], false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SetPowerPlants_Init () {
+    gt_SetPowerPlants = TriggerCreate("gt_SetPowerPlants_Func");
+    TriggerAddEventMapInit(gt_SetPowerPlants);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Bonus Obj - Start Thrashing
+//--------------------------------------------------------------------------------------------------
+bool gt_BonusObjStartThrashing_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_powerPlantState[1] > gv_pP_UNDER_CONSTRUCTION))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(gv_bonusObjVoidThrasher), StringExternal("Param/Value/772C832D"));
+    gv_bonusObjThrasherPing = PingLastCreated();
+    libCOMI_gf_CreateObjectiveCampaign("PlaceholderSecondary");
+    gv_bonusObjective = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 1);
+    ObjectiveSetName(gv_bonusObjective, TextExpressionAssemble("Param/Expression/648A6EE6"));
+    Wait(3.0, c_timeGame);
+    gv_bonusObjStopTime = (GameGetMissionTime() + 360.0);
+    TriggerEnable(gt_BonusObjTimerUpdate, true);
+    gf_QueueTransmission("BonusStartedWD");
+    gf_QueueTransmission("BonusObjectiveDestroy");
+    while (true) {
+        if ((UnitGroupCount(UnitGroupAlliance(gv_pLAYER_03_ENEMY, c_unitAllianceEnemy, RegionCircle(UnitGetPosition(gv_bonusObjVoidThrasher), 10.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1), c_unitCountAlive) > 0)) {
+        }
+        else {
+            if ((GameGetMissionTime() >= gv_bonusObjStopTime)) {
+                if ((UnitIsAlive(gv_bonusObjVoidThrasher) == true)) {
+                    ObjectiveSetState(gv_bonusObjective, c_objectiveStateFailed);
+                    ObjectiveDestroy(gv_bonusObjective);
+                    gf_QueueTransmission("BonusObjectiveLost");
+                    TriggerEnable(gt_BonusObjVoidThrasherDies, false);
+                    UnitKill(gv_bonusObjVoidThrasher);
+                    libCOMI_gf_DestroyPingCoop(gv_bonusObjThrasherPing);
+                }
+
+                return true;
+            }
+
+            UnitIssueOrder(gv_bonusObjVoidThrasher, OrderTargetingUnit(AbilityCommand("KaiserWormScourgeMissile", 0), UnitFromId(1555082177)), c_orderQueueAddToEnd);
+        }
+        UnitWaitUntilIdle(gv_bonusObjVoidThrasher, true);
+        if ((UnitIsAlive(gv_bonusObjVoidThrasher) == false)) {
+            libCOMI_gf_DestroyPingCoop(gv_bonusObjThrasherPing);
+            ObjectiveSetName(gv_bonusObjective, TextExpressionAssemble("Param/Expression/63CF9E6F"));
+            gf_QueueTransmission("BonusObjectiveSuccess");
+            return true;
+        }
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BonusObjStartThrashing_Init () {
+    gt_BonusObjStartThrashing = TriggerCreate("gt_BonusObjStartThrashing_Func");
+    TriggerAddEventTimePeriodic(gt_BonusObjStartThrashing, 120.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Bonus Obj - Timer Update
+//--------------------------------------------------------------------------------------------------
+bool gt_BonusObjTimerUpdate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((GameGetMissionTime() <= gv_bonusObjStopTime)) {
+        TextExpressionSetToken("Param/Expression/AB80AB3F", "Time", TextTimeFormat(StringToText("<min2/>:<sec2/>"), FixedToInt((gv_bonusObjStopTime - GameGetMissionTime()))));
+        ObjectiveSetName(gv_bonusObjective, TextExpressionAssemble("Param/Expression/AB80AB3F"));
+    }
+    else {
+        ObjectiveSetName(gv_bonusObjective, TextExpressionAssemble("Param/Expression/7C89DD78"));
+        TriggerEnable(TriggerGetCurrent(), false);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BonusObjTimerUpdate_Init () {
+    gt_BonusObjTimerUpdate = TriggerCreate("gt_BonusObjTimerUpdate_Func");
+    TriggerEnable(gt_BonusObjTimerUpdate, false);
+    TriggerAddEventTimePeriodic(gt_BonusObjTimerUpdate, 0.5, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Bonus Obj - Void Thrasher Dies
+//--------------------------------------------------------------------------------------------------
+bool gt_BonusObjVoidThrasherDies_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((ObjectiveGetState(gv_bonusObjective) == c_objectiveStateActive))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    ObjectiveSetState(gv_bonusObjective, c_objectiveStateCompleted);
+    TriggerEnable(gt_BonusObjTimerUpdate, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BonusObjVoidThrasherDies_Init () {
+    gt_BonusObjVoidThrasherDies = TriggerCreate("gt_BonusObjVoidThrasherDies_Func");
+    TriggerAddEventUnitDied(gt_BonusObjVoidThrasherDies, UnitRefFromVariable("gv_bonusObjVoidThrasher"));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Thrasher Aggression
+//--------------------------------------------------------------------------------------------------
+bool gt_ThrasherAggression_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unitgroup lv_nearbyUnits;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_nearbyUnits = UnitGroupEmpty();
+
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGetOwner(EventUnit()) == gv_pLAYER_01_USER) || (UnitGetOwner(EventUnit()) == gv_pLAYER_02_USER)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((UnitHasBehavior2(gv_bonusObjVoidThrasher, "WarpDisruption") == true)) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    if ((TriggerIsEnabled(gt_BonusObjStartThrashing) == true)) {
+        TriggerExecute(gt_BonusObjStartThrashing, false, false);
+    }
+
+    while ((UnitIsAlive(gv_bonusObjVoidThrasher) == true)) {
+        lv_nearbyUnits = UnitGroupAlliance(gv_pLAYER_03_ENEMY, c_unitAllianceEnemy, RegionCircle(UnitGetPosition(gv_bonusObjVoidThrasher), 10.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+        if ((UnitGroupCount(lv_nearbyUnits, c_unitCountAlive) >= 1)) {
+            UnitIssueOrder(gv_bonusObjVoidThrasher, OrderTargetingPoint(AbilityCommand("VoidThrasherLightningAoE", 0), UnitGetPosition(UnitGroupClosestToPoint(lv_nearbyUnits, UnitGetPosition(gv_bonusObjVoidThrasher)))), c_orderQueueReplace);
+        }
+
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ThrasherAggression_Init () {
+    gt_ThrasherAggression = TriggerCreate("gt_ThrasherAggression_Func");
+    TriggerAddEventUnitRange(gt_ThrasherAggression, null, UnitFromId(356466168), 10.0, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyTheOldPowerPlants - Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyTheOldPowerPlantsCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_CreateObjectiveCampaign("PlaceholderPrimary");
+    libCOMI_gf_SetObjectiveRequiredCountCampaign("PlaceholderPrimary", gv_completedNewPowerPlants);
+    gv_objectiveDestroyTheOldPowerPlants = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 10);
+    libCOMI_gf_CreateObjectiveCampaign("PlaceholderPrimary");
+    libCOMI_gf_SetObjectiveRequiredCountCampaign("PlaceholderPrimary", 2);
+    gv_objectiveDoNotLoseTwo = ObjectiveLastCreated();
+    ObjectiveSetPriority(ObjectiveLastCreated(), 7);
+    TriggerExecute(gt_ObjectiveDestroyTheOldPowerPlantsUpdate, true, false);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyTheOldPowerPlantsCreate_Init () {
+    gt_ObjectiveDestroyTheOldPowerPlantsCreate = TriggerCreate("gt_ObjectiveDestroyTheOldPowerPlantsCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyTheOldPowerPlants - Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyTheOldPowerPlantsComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDestroyTheOldPowerPlantsCreate, true, false);
+    ObjectiveSetState(gv_objectiveDestroyTheOldPowerPlants, c_objectiveStateCompleted);
+    ObjectiveSetState(gv_objectiveDoNotLoseTwo, c_objectiveStateCompleted);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyTheOldPowerPlantsComplete_Init () {
+    gt_ObjectiveDestroyTheOldPowerPlantsComplete = TriggerCreate("gt_ObjectiveDestroyTheOldPowerPlantsComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyTheOldPowerPlants - Update
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyTheOldPowerPlantsUpdate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_ObjectiveDestroyTheOldPowerPlantsCreate, true, false);
+    libCOMI_gf_SetMissionObjectiveProgress("PlaceholderPrimary", gv_completedNewPowerPlants);
+    TextExpressionSetToken("Param/Expression/089DE02D", "StructureCount", IntToText(gv_completedNewPowerPlants));
+    ObjectiveSetName(gv_objectiveDestroyTheOldPowerPlants, TextExpressionAssemble("Param/Expression/089DE02D"));
+    TextExpressionSetToken("Param/Expression/FC4F6CFE", "StructureCount", IntToText(gv_powerPlantsLost));
+    ObjectiveSetName(gv_objectiveDoNotLoseTwo, TextExpressionAssemble("Param/Expression/FC4F6CFE"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyTheOldPowerPlantsUpdate_Init () {
+    gt_ObjectiveDestroyTheOldPowerPlantsUpdate = TriggerCreate("gt_ObjectiveDestroyTheOldPowerPlantsUpdate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - DestroyTheOldPowerPlants - Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyTheOldPowerPlantsFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDestroyTheOldPowerPlantsCreate, true, false);
+    ObjectiveSetState(gv_objectiveDestroyTheOldPowerPlants, c_objectiveStateFailed);
+    ObjectiveSetState(gv_objectiveDoNotLoseTwo, c_objectiveStateFailed);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyTheOldPowerPlantsFailed_Init () {
+    gt_ObjectiveDestroyTheOldPowerPlantsFailed = TriggerCreate("gt_ObjectiveDestroyTheOldPowerPlantsFailed_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Initialization
+//--------------------------------------------------------------------------------------------------
+void InitTriggers () {
+    gt_BanksPreloading_Init();
+    gt_Init01LoadData_Init();
+    gt_Init03LoadingComplete_Init();
+    gt_Init05Units_Init();
+    gt_Init07Environment_Init();
+    gt_Init08Difficulties_Init();
+    gt_StartAI_Init();
+    gt_StartGameQ_Init();
+    gt_ObjectiveTimerWindow_Init();
+    gt_ShowandUpdateObjectiveMarkers_Init();
+    gt_UpdateNewPowerPlants_Init();
+    gt_EnemyAttackWaveNotice_Init();
+    gt_EnemyAttackingObjective_Init();
+    gt_Defeat2PowerPlantsLost_Init();
+    gt_DefeatTooSlow_Init();
+    gt_VictoryPrimaryObjectiveComplete_Init();
+    gt_VictorySequence_Init();
+    gt_VictoryFanfareQ_Init();
+    gt_Victory_Init();
+    gt_Defeat_Init();
+    gt_DisableBullies_Init();
+    gt_SetupAttackWaveSpawn_Init();
+    gt_AIAttackWaves_Init();
+    gt_AttackWave01_Init();
+    gt_AttackWave02_Init();
+    gt_AttackWave03_Init();
+    gt_AttackWave04_Init();
+    gt_AttackWave05_Init();
+    gt_AttackWave06_Init();
+    gt_AttackWave07_Init();
+    gt_PowerPlantAttackWave01_Init();
+    gt_PowerPlantAttackWave02_Init();
+    gt_PowerPlantAttackWave03_Init();
+    gt_PowerPlantAttackWave04_Init();
+    gt_RandomWarpDisruptedAttacks_Init();
+    gt_PowerPlant0_Notify_Init();
+    gt_PowerPlant0_NotifyEarly_Init();
+    gt_AnyPowerPlant_Rush_Init();
+    gt_AnyPowerPlant_OldDismantled_Init();
+    gt_AnyPowerPlant_DefenseFail_Init();
+    gt_PowerPlantConstructionStarted_Init();
+    gt_PowerPlantConstructionCompleted_Init();
+    gt_SetPowerPlants_Init();
+    gt_BonusObjStartThrashing_Init();
+    gt_BonusObjTimerUpdate_Init();
+    gt_BonusObjVoidThrasherDies_Init();
+    gt_ThrasherAggression_Init();
+    gt_ObjectiveDestroyTheOldPowerPlantsCreate_Init();
+    gt_ObjectiveDestroyTheOldPowerPlantsComplete_Init();
+    gt_ObjectiveDestroyTheOldPowerPlantsUpdate_Init();
+    gt_ObjectiveDestroyTheOldPowerPlantsFailed_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitLibs();
+    InitGlobals();
+    InitCustomAI();
+    InitTriggers();
+}

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CActorUnit id="DuelBubbleUnit2" parent="GenericUnitBase" unitName="">
+        <On index="0" Terms="UnitBirth.Voidbeast" Send="Create"/>
+        <On index="1" Terms="UnitConstruction.DuelBubbleUnit.Start"/>
+        <On index="2" Terms="UnitConstruction.DuelBubbleUnit.Finish" Send="AnimPlay ConstructionDeath Stand,Birth,Death FullMatch"/>
+        <On index="3" Terms="AnimDone.*.Missing; AnimName ConstructionDeath" Send="Destroy"/>
+        <On index="4" Terms="ActorCreation; ValidateUnit IsFlying; Option Shadow Low; $AllowBlobShadow" Send="Create FlyerShadow"/>
+        <On index="5" Terms="ActorCreation; ValidateUnit IsNotFlying; Option Shadow Low; $AllowBlobShadow" Send="Create GroundShadow"/>
+        <On index="6" Terms="StatusOn.*.PreTargetingModel" Send="Create ModelPretargetGround"/>
+        <On index="7" Terms="StatusOff.*.PreTargetingModel" Target="ModelPretargetGround" Send="Destroy"/>
+        <On index="8" Terms="StatusOn.*.PreTargetingModel; ValidateUnit IsFlying" Send="Create GroundPreSelection"/>
+        <On index="9" Terms="StatusOff.*.PreTargetingModel" Target="GroundPreSelection" Send="Destroy"/>
+        <On index="10" Terms="StatusIncrement.*.PreTargetingModel; IsStatus PreTargetingModel 2" Target="" Send="StatusSet PreTargetingModel 1"/>
+        <On index="11" Terms="PreTargetingUpdate.*.Start" Send="SetTintColorBlendPair 255,192,192 255,128,128 0.150000 Bounce Pretarget"/>
+        <On index="12" Terms="PreTargetingUpdate.*.Stop" Target="" Send="ClearTintColor 0.100000 Pretarget"/>
+        <On index="13" Terms="StatusOn.*.PreTargetingTint" Send="PreTargetingUpdate Start"/>
+        <On index="14" Terms="StatusOff.*.PreTargetingTint" Send="PreTargetingUpdate Stop"/>
+        <On index="15" Terms="StatusIncrement.*.PreTargetingTint; IsStatus PreTargetingTint 2" Send="StatusSet PreTargetingTint 1"/>
+        <On index="16" Terms="CursorUpdate.*.Start; ValidateUnit IsFlying" Send="StatusIncrement FlyerHelper"/>
+        <On index="17" Terms="CursorUpdate.*.Stop; ValidateUnit IsFlying; HasStatus FlyerHelper" Send="StatusDecrement FlyerHelper"/>
+        <On index="18" Terms="ActorCreation; ScopeContains GroundLocalSelection" Send="StatusSet Selected 1"/>
+        <On index="19" Terms="SelectionLocalUpdate.*.Start" Send="StatusSet Selected 1"/>
+        <On index="20" Terms="SelectionLocalUpdate.*.Stop" Send="StatusSet Selected 0"/>
+        <On index="21" Terms="StatusOn.*.Selected; ValidateUnit IsFlying" Send="StatusIncrement FlyerHelper"/>
+        <On index="22" Terms="StatusOff.*.Selected; ValidateUnit IsFlying; HasStatus FlyerHelper" Send="StatusDecrement FlyerHelper"/>
+        <On index="23" Terms="StatusOn.*.FlyerHelper; FlyerHelper All" Send="Create FlyerHelperSplat"/>
+        <On index="24" Terms="StatusOn.*.FlyerHelper; FlyerHelper Selected" Send="Create FlyerHelperSplat"/>
+        <On index="25" Terms="StatusOff.*.FlyerHelper; FlyerHelper Selected" Target="FlyerHelperSplat" Send="Destroy"/>
+        <On index="26" Terms="ActorCreation; FlyerHelper All; ValidateUnit IsFlying" Send="Create FlyerHelperSplat"/>
+        <On index="27" Terms="ActorDestruction; FlyerHelper All; !HasStatus FlyerHelper" Target="FlyerHelperSplat" Send="Destroy"/>
+        <On index="28" Terms="FlyerHelperChange; FlyerHelper None" Target="FlyerHelperSplat" Send="Destroy"/>
+        <On index="29" Terms="FlyerHelperChange; FlyerHelper Selected; HasStatus FlyerHelper; !ScopeContains FlyerHelperSplat" Send="Create FlyerHelperSplat"/>
+        <On index="30" Terms="FlyerHelperChange; FlyerHelper Selected; !HasStatus FlyerHelper" Target="FlyerHelperSplat" Send="Destroy"/>
+        <On index="31" Terms="FlyerHelperChange; FlyerHelper All; ValidateUnit IsFlying; !ScopeContains FlyerHelperSplat" Target="" Send="Create FlyerHelperSplat"/>
+        <On index="32" Terms="UnitBirth.*.Normal" Send="$Birth 0 0.000000"/>
+        <On index="33" Terms="UnitFidget" Target="" Send="AnimPlay Fidget Fidget"/>
+        <On index="34" Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Fidget"/>
+        <On index="35" Terms="UnitDetectedByViewer.*.On; ValidateUnit IsHallucination" Target="_HallucinationTinter" Send="Signal HallucinationTintOn"/>
+        <On index="36" Terms="UnitDetectedByViewer.*.Off; ValidateUnit IsHallucination" Target="_HallucinationTinter" Send="Signal HallucinationTintOff"/>
+        <On index="37" Terms="UnitDeathCustomize; ValidateUnit NotStructure; IsStatus InAir 1" Send="DeathCustomize AntiGravGeneric"/>
+        <On index="38" Terms="UnitDeathCustomize; ValidateUnit IsProtossUnit; IsStatus InAir 1" Target="" Send="DeathCustomize AntiGravProtoss"/>
+        <On index="39" Terms="UnitDeathCustomize; ValidateUnit IsTerranUnit; IsStatus InAir 1" Target="" Send="DeathCustomize AntiGravTerran"/>
+        <On index="40" Terms="UnitDeathCustomize; ValidateUnit IsZergUnit; IsStatus InAir 1" Send="DeathCustomize AntiGravZerg"/>
+        <On index="41" Terms="UnitDeathCustomize; ValidateUnit IsVortexed" Send="DeathCustomize Vortex"/>
+        <On index="42" Terms="UnitDeathCustomize; ValidateUnit HasForceLowDeathProtoss" Send="DeathCustomize AntiGravProtoss"/>
+        <On index="43" Terms="UnitDeathCustomize; ValidateUnit HasForceLowDeathZerg" Send="DeathCustomize AntiGravZerg"/>
+        <On index="44" Terms="UnitDeathCustomize; ValidateUnit HasForceLowDeathTerran" Send="DeathCustomize AntiGravTerran"/>
+        <On index="45" Terms="Behavior.PhoenixAntiGrav.On" Send="ModelSuddenMotionStart"/>
+        <On index="46" Terms="Behavior.PhoenixAntiGrav.Off" Send="ModelSuddenMotionStop"/>
+        <On index="47" Terms="Behavior.ForceLowDeath.On" Send="DeathCustomsEnablePhysics 0"/>
+        <On index="48" Terms="UnitTaunt.*.Start; Taunt" Send="AnimPlay Cheer Stand,Victory"/>
+        <On index="49" Terms="UnitTaunt.*.Stop; Taunt" Send="AnimClear Cheer"/>
+        <On index="50" Terms="UnitTaunt.*.Start; Taunt Dance" Send="AnimPlay Dance Stand,Dance"/>
+        <On index="51" Terms="UnitTaunt.*.Stop; Taunt Dance" Send="AnimClear Dance"/>
+        <On index="52" Terms="UnitTaunt.*.Start; Taunt Tease" Send="AnimPlay Taunt Taunt"/>
+        <On index="53" Terms="UnitTaunt.*.Stop; Taunt Tease" Send="AnimClear Taunt"/>
+        <On index="54" Terms="ActorCreation" Send="StatusSet InAir 0"/>
+        <On index="55" Terms="UnitHeightUpdate.*.Lift" Send="StatusSet InAir 1"/>
+        <On index="56" Terms="UnitHeightUpdate.*.Land" Send="StatusSet InAir 0"/>
+        <On index="57" Terms="ActorCreation" Send="Create DuelBubbleUnit_AlarakMalashBattleSwirl_LoopSound"/>
+        <On index="58" Terms="ActorCreation" Send="Create DuelBubbleUnit_AlarakMalashBattleSwirl_StartAS"/>
+        <On index="59" Terms="ActorCreation" Send="SetScale 2.000000"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+        <Model value="DuelBubbleUnit"/>
+        <EventDataFootprint index="0" Actor="UnitFootprint" Model="DuelBubbleUnitFootprint"/>
+        <BuildModel value="DuelBubbleUnit"/>
+        <DeathArray index="Normal" ModelLink="DuelBubbleUnitDeath" SoundLink="DuelBubbleUnit_AlarakMalashBattleSwirl_End" VoiceLink="DuelBubbleUnitDeathVoice"/>
+        <PlacementModel value="DuelBubbleUnit"/>
+        <GroupSoundArray index="What" value="DuelBubbleUnit_GroupWhat"/>
+        <GroupSoundArray index="Yes" value="DuelBubbleUnit_GroupYes"/>
+        <GroupSoundArray index="Attack" value="DuelBubbleUnit_GroupAttack"/>
+        <GroupSoundArray index="Board" value="DuelBubbleUnit_GroupBoard"/>
+        <HighlightTooltip value="Unit/Name/DuelBubbleUnit2"/>
+        <SoundArray index="Birth" value="DuelBubbleUnit_Birth"/>
+        <SoundArray index="Ready" value="DuelBubbleUnit_Ready"/>
+        <SoundArray index="Help" value="DuelBubbleUnit_Help"/>
+        <SoundArray index="What" value="DuelBubbleUnit_What"/>
+        <SoundArray index="Yes" value="DuelBubbleUnit_Yes"/>
+        <SoundArray index="Attack" value="DuelBubbleUnit_Attack"/>
+        <SoundArray index="Pissed" value="DuelBubbleUnit_Pissed"/>
+        <SoundArray index="Movement" value="DuelBubbleUnit_Movement"/>
+        <SoundArray index="Turning" value="DuelBubbleUnit_Turning"/>
+        <SoundArray index="Board" value="DuelBubbleUnit_Board"/>
+        <SoundArray index="Click" value="DuelBubbleUnit_Click"/>
+        <SoundArray index="ClickError" value="DuelBubbleUnit_ClickError"/>
+        <SoundArray index="Highlight" value="DuelBubbleUnit_Highlight"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Progress" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+    </CActorUnit>
+    <CActorUnit id="NukePack">
+        <CustomUnitStatusFrame value="HotS_UnitStatus/UnitStatusProgressFrameTemplate"/>
+    </CActorUnit>
+    <CActorUnit id="VoidThrasherWalker2" parent="GenericUnitBase" unitName="Voidbeast">
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="AnimClear Spell"/>
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="AnimBracketStart Tunnel Burrow Stand,Burrow Unburrow ClosingFull,OpeningPlayForever"/>
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="Create NydusBeastBurrowDownEffects"/>
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="Create BurrowDownUltralisk"/>
+        <On Terms="Effect.NydusBeastDeepTunnelCreatePersistentForce.Start; At Caster" Send="AnimBracketStop Tunnel"/>
+        <On Terms="Effect.NydusBeastDeepTunnelCreatePersistentForce.Start; At Caster" Send="Create NydusBeastBurrowUpEffects"/>
+        <On Terms="Effect.NydusBeastDeepTunnelCreatePersistentForce.Start; At Caster" Send="Create BurrowUpLarge"/>
+        <On Terms="Effect.NydusBeastFireballCreatePersistent.Start; At Caster" Send="TimerSet 2.000000 FireballDelay"/>
+        <On Terms="TimerExpired; TimerName FireballDelay; !AnimPlaying Spell" Send="AnimPlay Spell Attack,01"/>
+        <On Terms="WeaponStart.*.AttackStart; !AnimPlaying Spell" Send="AnimPlay Spell Attack,01"/>
+        <On Terms="Abil.KaiserWormScourgeMissile.SourceCastStart; !AnimPlaying Work" Send="AnimBracketStart Spell Stand,Work,Start Stand,Work Stand,Work,End ContentPlayOnce 1.500000 AsTimeScale"/>
+        <On Terms="Effect.KaiserWormBanelingMissileLaunch.Start; !AnimPlaying Spell" Send="AnimPlay Throw Cover,Attack"/>
+        <On Terms="Effect.VoidThrasherThrasherWaveCreatePersistent.Start; !AnimPlaying Spell" Send="AnimPlay Throw Cover,Attack"/>
+        <On Terms="Abil.VoidThrasherLightningAoE.SourceCastStart" Send="AnimBracketStart WorkA Stand,Work,A,Start Stand,Work,A Stand,Work,A,End"/>
+        <On Terms="Abil.VoidThrasherLightningAoE.SourceCastStart" Send="TimerSet 4.000000 WorkTimer"/>
+        <On Terms="Abil.VoidThrasherLightningAoE.SourceCastStart; AnimPlaying Birth" Send="AnimClear Birth"/>
+        <On Terms="TimerExpired; TimerName WorkTimer" Send="AnimBracketStop WorkA"/>
+        <On Terms="DeathCustomize" Send="AnimSetTimeScaleAbsolute Birth 1.000000"/>
+        <On Terms="ActorCreation" Send="SetScale 1.500000"/>
+        <Model value="VoidThrasherWalker"/>
+        <BuildModel value="NydusRumble"/>
+        <DeathArray index="Normal" ModelLink="VoidThrasherWalkerDeath" SoundLink="Void_Thrasher_Death_LowEnd_Fx" VoiceLink="Void_Thrasher_Death_Fx"/>
+        <DeathArray index="UnderConstruction" ModelLink="ZergBuildingDeath" SoundLink="Zerg_ExplosionLarge"/>
+        <PlacementModel value="VoidThrasherWalker"/>
+        <PlacementSound value="Zerg_BuildingPlacement"/>
+        <PlacementActorModel value="ZergPlacementModel"/>
+        <PlaceholderActorModel value="ZergPlacementModel"/>
+        <PortraitModel value="NydusBeastPortrait"/>
+        <BarOffset value="225"/>
+        <BarWidth value="155"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        </GroupIcon>
+        <GroupSoundArray index="Birth" value="Yagdra_UnBurrow"/>
+        <HeroIcon value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-ancillaryarmor.dds"/>
+        <NameOffset value="70"/>
+        <SoundArray index="Birth" value="Void_Thrasher_Birth_Fx"/>
+        <SoundArray index="Ready" value="NydusWorm_Ready"/>
+        <SoundArray index="What" value="NydusWorm_What"/>
+        <SoundArray index="Yes" value="NydusWorm_What"/>
+        <SoundArray index="Attack" value="Yagdra_Attack"/>
+        <SoundArray index="Construction" value="Zerg_BuildingMorphWhat"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <UnitIcon value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        <UnitKillRank Text="UnitKillRank/NydusBeast"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        </Wireframe>
+        <HighlightTooltip value="Unit/Name/VoidThrasherWalker2"/>
+        <VisibleTo index="All" value="1"/>
+        <VisibleToPlayers index="1" value="1"/>
+        <VisibleToPlayers index="2" value="1"/>
+        <FogVisibility value="Visible"/>
+    </CActorUnit>
+    <CActorUnit id="VoidThrasherWalker3" parent="GenericUnitBase" unitName="VoidThrasherWalker3">
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="AnimClear Spell"/>
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="AnimBracketStart Tunnel Burrow Stand,Burrow Unburrow ClosingFull,OpeningPlayForever"/>
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="Create NydusBeastBurrowDownEffects"/>
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="Create BurrowDownUltralisk"/>
+        <On Terms="Effect.NydusBeastDeepTunnelCreatePersistentForce.Start; At Caster" Send="AnimBracketStop Tunnel"/>
+        <On Terms="Effect.NydusBeastDeepTunnelCreatePersistentForce.Start; At Caster" Send="Create NydusBeastBurrowUpEffects"/>
+        <On Terms="Effect.NydusBeastDeepTunnelCreatePersistentForce.Start; At Caster" Send="Create BurrowUpLarge"/>
+        <On Terms="Effect.NydusBeastFireballCreatePersistent.Start; At Caster" Send="TimerSet 2.000000 FireballDelay"/>
+        <On Terms="TimerExpired; TimerName FireballDelay; !AnimPlaying Spell" Send="AnimPlay Spell Attack,01"/>
+        <On Terms="WeaponStart.*.AttackStart; !AnimPlaying Spell" Send="AnimPlay Spell Attack,01"/>
+        <On Terms="Abil.KaiserWormScourgeMissile.SourceCastStart; !AnimPlaying Work" Send="AnimBracketStart Spell Stand,Work,Start Stand,Work Stand,Work,End ContentPlayOnce 1.500000 AsTimeScale"/>
+        <On Terms="Effect.KaiserWormBanelingMissileLaunch.Start; !AnimPlaying Spell" Send="AnimPlay Throw Cover,Attack"/>
+        <On Terms="Effect.VoidThrasherThrasherWaveCreatePersistent.Start; !AnimPlaying Spell" Send="AnimPlay Throw Cover,Attack"/>
+        <On Terms="Abil.VoidThrasherLightningAoE.SourceCastStart" Send="AnimBracketStart WorkA Stand,Work,A,Start Stand,Work,A Stand,Work,A,End"/>
+        <On Terms="Abil.VoidThrasherLightningAoE.SourceCastStart" Send="TimerSet 4.000000 WorkTimer"/>
+        <On Terms="Abil.VoidThrasherLightningAoE.SourceCastStart; AnimPlaying Birth" Send="AnimClear Birth"/>
+        <On Terms="TimerExpired; TimerName WorkTimer" Send="AnimBracketStop WorkA"/>
+        <On Terms="DeathCustomize" Send="AnimSetTimeScaleAbsolute Birth 1.000000"/>
+        <Model value="VoidThrasherWalker"/>
+        <BuildModel value="NydusRumble"/>
+        <DeathArray index="Normal" ModelLink="VoidThrasherWalkerDeath" SoundLink="Void_Thrasher_Death_LowEnd_Fx" VoiceLink="Void_Thrasher_Death_Fx"/>
+        <DeathArray index="UnderConstruction" ModelLink="ZergBuildingDeath" SoundLink="Zerg_ExplosionLarge"/>
+        <PlacementModel value="VoidThrasherWalker"/>
+        <PlacementSound value="Zerg_BuildingPlacement"/>
+        <PlacementActorModel value="ZergPlacementModel"/>
+        <PlaceholderActorModel value="ZergPlacementModel"/>
+        <PortraitModel value="NydusBeastPortrait"/>
+        <BarOffset value="225"/>
+        <BarWidth value="155"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        </GroupIcon>
+        <GroupSoundArray index="Birth" value="Yagdra_UnBurrow"/>
+        <HeroIcon value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-ancillaryarmor.dds"/>
+        <NameOffset value="70"/>
+        <SoundArray index="Birth" value="Void_Thrasher_Birth_Fx"/>
+        <SoundArray index="Ready" value="NydusWorm_Ready"/>
+        <SoundArray index="What" value="NydusWorm_What"/>
+        <SoundArray index="Yes" value="NydusWorm_What"/>
+        <SoundArray index="Attack" value="Yagdra_Attack"/>
+        <SoundArray index="Construction" value="Zerg_BuildingMorphWhat"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <UnitIcon value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        <UnitKillRank Text="UnitKillRank/NydusBeast"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorUnit id="VoidThrasherWalker4" parent="GenericUnitBase" unitName="VoidThrasherWalker2">
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="AnimClear Spell"/>
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="AnimBracketStart Tunnel Burrow Stand,Burrow Unburrow ClosingFull,OpeningPlayForever"/>
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="Create NydusBeastBurrowDownEffects"/>
+        <On Terms="Abil.NydusBeastDeepTunnel.SourceCastStart" Send="Create BurrowDownUltralisk"/>
+        <On Terms="Effect.NydusBeastDeepTunnelCreatePersistentForce.Start; At Caster" Send="AnimBracketStop Tunnel"/>
+        <On Terms="Effect.NydusBeastDeepTunnelCreatePersistentForce.Start; At Caster" Send="Create NydusBeastBurrowUpEffects"/>
+        <On Terms="Effect.NydusBeastDeepTunnelCreatePersistentForce.Start; At Caster" Send="Create BurrowUpLarge"/>
+        <On Terms="Effect.NydusBeastFireballCreatePersistent.Start; At Caster" Send="TimerSet 2.000000 FireballDelay"/>
+        <On Terms="TimerExpired; TimerName FireballDelay; !AnimPlaying Spell" Send="AnimPlay Spell Attack,01"/>
+        <On Terms="WeaponStart.*.AttackStart; !AnimPlaying Spell" Send="AnimPlay Spell Attack,01"/>
+        <On Terms="Abil.KaiserWormScourgeMissile.SourceCastStart; !AnimPlaying Work" Send="AnimBracketStart Spell Stand,Work,Start Stand,Work Stand,Work,End ContentPlayOnce 1.500000 AsTimeScale"/>
+        <On Terms="Effect.KaiserWormBanelingMissileLaunch.Start; !AnimPlaying Spell" Send="AnimPlay Throw Cover,Attack"/>
+        <On Terms="Effect.VoidThrasherThrasherWaveCreatePersistent.Start; !AnimPlaying Spell" Send="AnimPlay Throw Cover,Attack"/>
+        <On Terms="Abil.VoidThrasherLightningAoE.SourceCastStart" Send="AnimBracketStart WorkA Stand,Work,A,Start Stand,Work,A Stand,Work,A,End"/>
+        <On Terms="Abil.VoidThrasherLightningAoE.SourceCastStart" Send="TimerSet 4.000000 WorkTimer"/>
+        <On Terms="Abil.VoidThrasherLightningAoE.SourceCastStart; AnimPlaying Birth" Send="AnimClear Birth"/>
+        <On Terms="TimerExpired; TimerName WorkTimer" Send="AnimBracketStop WorkA"/>
+        <On Terms="DeathCustomize" Send="AnimSetTimeScaleAbsolute Birth 1.000000"/>
+        <Model value="VoidThrasherWalker"/>
+        <BuildModel value="NydusRumble"/>
+        <DeathArray index="Normal" ModelLink="VoidThrasherWalkerDeath" SoundLink="Void_Thrasher_Death_LowEnd_Fx" VoiceLink="Void_Thrasher_Death_Fx"/>
+        <DeathArray index="UnderConstruction" ModelLink="ZergBuildingDeath" SoundLink="Zerg_ExplosionLarge"/>
+        <PlacementModel value="VoidThrasherWalker"/>
+        <PlacementSound value="Zerg_BuildingPlacement"/>
+        <PlacementActorModel value="ZergPlacementModel"/>
+        <PlaceholderActorModel value="ZergPlacementModel"/>
+        <PortraitModel value="NydusBeastPortrait"/>
+        <BarOffset value="225"/>
+        <BarWidth value="155"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        </GroupIcon>
+        <GroupSoundArray index="Birth" value="Yagdra_UnBurrow"/>
+        <HeroIcon value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        <HighlightTooltip value="Unit/Name/VoidThrasherWalker4"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-ancillaryarmor.dds"/>
+        <NameOffset value="70"/>
+        <SoundArray index="Birth" value="Void_Thrasher_Birth_Fx"/>
+        <SoundArray index="Ready" value="NydusWorm_Ready"/>
+        <SoundArray index="What" value="NydusWorm_What"/>
+        <SoundArray index="Yes" value="NydusWorm_What"/>
+        <SoundArray index="Attack" value="Yagdra_Attack"/>
+        <SoundArray index="Construction" value="Zerg_BuildingMorphWhat"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <UnitIcon value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        <UnitKillRank Text="UnitKillRank/NydusBeast"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Void-VoidThrasher.dds"/>
+        </Wireframe>
+    </CActorUnit>
+</Catalog>

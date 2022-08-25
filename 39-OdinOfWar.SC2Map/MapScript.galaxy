@@ -1,0 +1,2091 @@
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   [ARC] Odin of War
+// 
+//==================================================================================================
+include "TriggerLibs/NativeLib"
+include "LibCOMI"
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+void InitLibs () {
+    libNtve_InitLib();
+    libCOMI_InitLib();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Variables
+//--------------------------------------------------------------------------------------------------
+unitgroup gv_oBJECTIVEMAIN1;
+unitgroup gv_oBJECTIVEARMY;
+unitgroup gv_oBJECTIVEMAIN2;
+unitgroup gv_oBJECTIVEMAIN3;
+bool gv_enviromenteffects;
+bool gv_gameended;
+playergroup gv_pLAYER1;
+playergroup gv_pLAYER2;
+timer gv_odinTimer1;
+timer gv_odinTimer2;
+timer gv_odinTimer3;
+unitgroup gv_hybrid;
+int[3] gv_objective;
+int[3] gv_bonus;
+unitgroup gv_attackwave1;
+unitgroup gv_attackwave2;
+unitgroup gv_attackwave3;
+bool gv_core1isdead;
+bool gv_core2isdead;
+bool gv_core3isdead;
+
+void InitGlobals () {
+    int init_i;
+
+    gv_oBJECTIVEMAIN1 = UnitGroupEmpty();
+    gv_oBJECTIVEARMY = UnitGroupEmpty();
+    gv_oBJECTIVEMAIN2 = UnitGroupEmpty();
+    gv_oBJECTIVEMAIN3 = UnitGroupEmpty();
+    gv_pLAYER1 = PlayerGroupEmpty();
+    gv_pLAYER2 = PlayerGroupEmpty();
+    gv_odinTimer1 = TimerCreate();
+    gv_odinTimer2 = TimerCreate();
+    gv_odinTimer3 = TimerCreate();
+    gv_hybrid = UnitGroupEmpty();
+    for (init_i = 0; init_i <= 2; init_i += 1) {
+        gv_bonus[init_i] = 1;
+    }
+    gv_attackwave1 = UnitGroupEmpty();
+    gv_attackwave2 = UnitGroupEmpty();
+    gv_attackwave3 = UnitGroupEmpty();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Variables
+//--------------------------------------------------------------------------------------------------
+trigger gt_Init01LoadData;
+trigger gt_Init03LoadingComplete;
+trigger gt_Init05Units;
+trigger gt_Objectiveini;
+trigger gt_Environment;
+trigger gt_Doorsgenerator;
+trigger gt_Datacoreselfprotection;
+trigger gt_Datacoreprotection;
+trigger gt_Datacoreprotection2;
+trigger gt_Datacoreprotection3;
+trigger gt_Victory;
+trigger gt_DefeatOdinTimer;
+trigger gt_OdinAttack;
+trigger gt_Warning1;
+trigger gt_Warning2;
+trigger gt_FollowPing;
+trigger gt_DestroyPing;
+trigger gt_Wave1;
+trigger gt_Wave2;
+trigger gt_Wave3;
+trigger gt_Wave4;
+trigger gt_WaveCombined1;
+trigger gt_Wave5;
+trigger gt_Wave6;
+trigger gt_Wave7;
+trigger gt_Wave8;
+trigger gt_Wave9;
+trigger gt_Wave10;
+trigger gt_Wave11;
+trigger gt_Wave12;
+trigger gt_Wave13;
+trigger gt_BonusObjective;
+trigger gt_BonusObjectiveComplete;
+trigger gt_Destroymainping1;
+trigger gt_Destroymainping2;
+trigger gt_Destroymainping3;
+trigger gt_Stage1;
+trigger gt_Stage2;
+trigger gt_Stage3;
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 01 Load Data
+//--------------------------------------------------------------------------------------------------
+bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init01LoadData_Init () {
+    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
+    TriggerAddEventMapInit(gt_Init01LoadData);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 03 Loading Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_Init05Units, true, false);
+    TriggerExecute(gt_Objectiveini, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init03LoadingComplete_Init () {
+    gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 05 Units
+//--------------------------------------------------------------------------------------------------
+bool gt_Init05Units_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto55B4F05F_g;
+    int auto55B4F05F_u;
+    unit auto55B4F05F_var;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_bonus[0] += RandomInt(1, 2);
+    UnitIssueOrder(UnitFromId(925660218), OrderTargetingUnit(AbilityCommand("SCVHarvest", 0), UnitFromId(322485029)), c_orderQueueReplace);
+    UnitIssueOrder(UnitFromId(1511738926), OrderTargetingUnit(AbilityCommand("SCVHarvest", 0), UnitFromId(1475882071)), c_orderQueueReplace);
+    auto55B4F05F_g = UnitGroup(null, c_playerAny, RegionFromId(1), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto55B4F05F_u = UnitGroupCount(auto55B4F05F_g, c_unitCountAll);
+    for (;; auto55B4F05F_u -= 1) {
+        auto55B4F05F_var = UnitGroupUnitFromEnd(auto55B4F05F_g, auto55B4F05F_u);
+        if (auto55B4F05F_var == null) { break; }
+        UnitIssueOrder(auto55B4F05F_var, OrderTargetingUnit(AbilityCommand("SCVHarvest", 0), UnitFromId(354730319)), c_orderQueueReplace);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init05Units_Init () {
+    gt_Init05Units = TriggerCreate("gt_Init05Units_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective ini
+//--------------------------------------------------------------------------------------------------
+bool gt_Objectiveini_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(5.0, c_timeGame);
+    PortraitCreate(50, 0, c_anchorLeft, 237, 360, "GhostPortrait", "", "Talk", true, true);
+    DataTableSetPortrait(true, "111", PortraitLastCreated());
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/A5DCE32F"));
+    SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(15.0, c_timeGame);
+    gv_enviromenteffects = true;
+    PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), false, false);
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    Wait(0.1, c_timeGame);
+    PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), true, false);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/49DD94AC"));
+    SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(15.0, c_timeGame);
+    PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), false, false);
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    Wait(0.1, c_timeGame);
+    PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), true, false);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/49FD29A1"));
+    SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(10.0, c_timeGame);
+    PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), false, false);
+    PortraitSetVisible(PortraitLastCreated(), PlayerGroupAll(), false, false);
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    ObjectiveCreateForPlayers(StringExternal("Param/Value/B3F21FC6"), StringExternal("Param/Value/40C07A09"), c_objectiveStateActive, true, PlayerGroupAll());
+    DataTableSetObjective(true, "1", ObjectiveLastCreated());
+    libCOMI_gf_TimerWindowCreate(gv_odinTimer1, StringExternal("Param/Value/D8BA8A9A"), true, false);
+    TimerStart(gv_odinTimer1, 1200.0, false, c_timeGame);
+    TimerWindowSetColor(TimerWindowLastCreated(), c_timerWindowColorBackground, Color(100.00, 100.00, 100.00), 100.0);
+    TimerWindowShowBorder(TimerWindowLastCreated(), false);
+    UnitGroupAdd(gv_oBJECTIVEMAIN1, UnitFromId(271831681));
+    UnitGroupAdd(gv_oBJECTIVEMAIN2, UnitFromId(53904036));
+    UnitGroupAdd(gv_oBJECTIVEMAIN3, UnitFromId(1550270736));
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", UnitGetPosition(UnitFromId(271831681)), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "o1", PingLastCreated());
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", UnitGetPosition(UnitFromId(53904036)), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "o2", PingLastCreated());
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", UnitGetPosition(UnitFromId(1550270736)), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "o3", PingLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Objectiveini_Init () {
+    gt_Objectiveini = TriggerCreate("gt_Objectiveini_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Environment
+//--------------------------------------------------------------------------------------------------
+bool gt_Environment_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_enviromenteffects == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    GameTimeOfDaySet("08:00:00");
+    SoundPlayForPlayer(SoundLink("Lightning_Strike2", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    libNtve_gf_CreateActorAtPoint("LightningStrikeBolt", RegionRandomPoint(RegionFromId(6)));
+    CameraShakeStart(1, c_cameraPositionTarget, c_cameraDirectionZ, 0.1, 0.1, 50.0, 2.0);
+    Wait(2.0, c_timeGame);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Environment_Init () {
+    gt_Environment = TriggerCreate("gt_Environment_Func");
+    TriggerAddEventTimePeriodic(gt_Environment, RandomInt(70, 200), c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Doors generator
+//--------------------------------------------------------------------------------------------------
+bool gt_Doorsgenerator_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitIssueOrder(UnitFromId(1122215477), Order(AbilityCommand("MoebiusLabDoorsWideRightLowered", 0)), c_orderQueueReplace);
+    Wait(1.0, c_timeReal);
+    UnitIssueOrder(UnitFromId(381789922), Order(AbilityCommand("MoebiusLabDoorsWideRightLowered", 0)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Doorsgenerator_Init () {
+    gt_Doorsgenerator = TriggerCreate("gt_Doorsgenerator_Func");
+    TriggerAddEventUnitDied(gt_Doorsgenerator, UnitRefFromUnit(UnitFromId(503555440)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Data core self protection 
+//--------------------------------------------------------------------------------------------------
+bool gt_Datacoreselfprotection_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitIssueOrder(UnitFromId(271831681), Order(AbilityCommand("ZHybridPsionicShockwave", 0)), c_orderQueueReplace);
+    UnitIssueOrder(UnitFromId(53904036), Order(AbilityCommand("ZHybridPsionicShockwave", 0)), c_orderQueueReplace);
+    UnitIssueOrder(UnitFromId(1550270736), Order(AbilityCommand("ZHybridPsionicShockwave", 0)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Datacoreselfprotection_Init () {
+    gt_Datacoreselfprotection = TriggerCreate("gt_Datacoreselfprotection_Func");
+    TriggerAddEventTimePeriodic(gt_Datacoreselfprotection, RandomInt(5, 10), c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Data core protection
+//--------------------------------------------------------------------------------------------------
+bool gt_Datacoreprotection_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto3007A068_g;
+    int auto3007A068_u;
+    unit auto3007A068_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "RipFieldGeneratorSmall"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitCreate(1, "HybridGeneral", 0, 3, UnitGetPosition(EventUnit()), libNtve_gf_RandomAngle());
+    PingCreate(PlayerGroupAll(), "PingWarning", UnitGetPosition(UnitLastCreated()), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 10.0);
+    libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
+    libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 1);
+    libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 2);
+    Wait(10.0, c_timeGame);
+    auto3007A068_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto3007A068_u = UnitGroupCount(auto3007A068_g, c_unitCountAll);
+    for (;; auto3007A068_u -= 1) {
+        auto3007A068_var = UnitGroupUnitFromEnd(auto3007A068_g, auto3007A068_u);
+        if (auto3007A068_var == null) { break; }
+        if ((UnitGetType(auto3007A068_var) == "HybridGeneral")) {
+            UnitIssueOrder(auto3007A068_var, OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+        }
+
+    }
+    TriggerEnable(TriggerGetCurrent(), false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Datacoreprotection_Init () {
+    gt_Datacoreprotection = TriggerCreate("gt_Datacoreprotection_Func");
+    TriggerAddEventUnitDied(gt_Datacoreprotection, UnitRefFromUnit(UnitFromId(271831681)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Data core protection 2
+//--------------------------------------------------------------------------------------------------
+bool gt_Datacoreprotection2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto6B9DBD25_g;
+    int auto6B9DBD25_u;
+    unit auto6B9DBD25_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "RipFieldGeneratorSmall"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitCreate(1, "HybridGeneral", 0, 3, UnitGetPosition(EventUnit()), libNtve_gf_RandomAngle());
+    PingCreate(PlayerGroupAll(), "PingWarning", UnitGetPosition(UnitLastCreated()), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 10.0);
+    libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
+    libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 1);
+    libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 2);
+    Wait(10.0, c_timeGame);
+    auto6B9DBD25_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto6B9DBD25_u = UnitGroupCount(auto6B9DBD25_g, c_unitCountAll);
+    for (;; auto6B9DBD25_u -= 1) {
+        auto6B9DBD25_var = UnitGroupUnitFromEnd(auto6B9DBD25_g, auto6B9DBD25_u);
+        if (auto6B9DBD25_var == null) { break; }
+        if ((UnitGetType(auto6B9DBD25_var) == "HybridGeneral")) {
+            UnitIssueOrder(auto6B9DBD25_var, OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+        }
+
+    }
+    TriggerEnable(TriggerGetCurrent(), false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Datacoreprotection2_Init () {
+    gt_Datacoreprotection2 = TriggerCreate("gt_Datacoreprotection2_Func");
+    TriggerAddEventUnitDied(gt_Datacoreprotection2, UnitRefFromUnit(UnitFromId(53904036)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Data core protection 3
+//--------------------------------------------------------------------------------------------------
+bool gt_Datacoreprotection3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto753C2D45_g;
+    int auto753C2D45_u;
+    unit auto753C2D45_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "RipFieldGeneratorSmall"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitCreate(1, "HybridGeneral", 0, 3, UnitGetPosition(EventUnit()), libNtve_gf_RandomAngle());
+    PingCreate(PlayerGroupAll(), "PingWarning", UnitGetPosition(UnitLastCreated()), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 10.0);
+    libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
+    libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 1);
+    libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 2);
+    Wait(10.0, c_timeGame);
+    auto753C2D45_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto753C2D45_u = UnitGroupCount(auto753C2D45_g, c_unitCountAll);
+    for (;; auto753C2D45_u -= 1) {
+        auto753C2D45_var = UnitGroupUnitFromEnd(auto753C2D45_g, auto753C2D45_u);
+        if (auto753C2D45_var == null) { break; }
+        if ((UnitGetType(auto753C2D45_var) == "HybridGeneral")) {
+            UnitIssueOrder(auto753C2D45_var, OrderTargetingPoint(AbilityCommand("attack", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+        }
+
+    }
+    TriggerEnable(TriggerGetCurrent(), false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Datacoreprotection3_Init () {
+    gt_Datacoreprotection3 = TriggerCreate("gt_Datacoreprotection3_Func");
+    TriggerAddEventUnitDied(gt_Datacoreprotection3, UnitRefFromUnit(UnitFromId(1550270736)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory
+//--------------------------------------------------------------------------------------------------
+bool gt_Victory_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitIsAlive(UnitFromId(53904036)) != true))) {
+            return false;
+        }
+
+        if (!((UnitIsAlive(UnitFromId(1550270736)) != true))) {
+            return false;
+        }
+
+        if (!((UnitIsAlive(UnitFromId(271831681)) != true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_enviromenteffects = false;
+    gv_gameended = true;
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    Wait(0.1, c_timeGame);
+    ObjectiveSetState(DataTableGetObjective(true, "1"), c_objectiveStateCompleted);
+    SoundPlayForPlayer(SoundLink("Alert_UniObjectiveCompleted", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(5.0, c_timeGame);
+    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    CameraApplyInfo(1, CameraInfoFromId(1923027717), 1.0, -1, 10.0, true);
+    CameraApplyInfo(2, CameraInfoFromId(1923027717), 1.0, 100.0, 10.0, true);
+    VisRevealerCreate(1, RegionEntireMap());
+    VisRevealerCreate(2, RegionEntireMap());
+    libCOMI_gf_DisplayCampaignMessage(PlayerGroupAll(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/4C1BC53C"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    CinematicFade(false, 10.0, c_fadeStyleNormal, Color(0.00, 0.00, 0.00), 0.0, true);
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    Wait(0.1, c_timeGame);
+    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Victory_Init () {
+    gt_Victory = TriggerCreate("gt_Victory_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat Odin Timer
+//--------------------------------------------------------------------------------------------------
+bool gt_DefeatOdinTimer_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
+    TransmissionClearAll();
+    TriggerQueuePause(true);
+    TriggerQueueClear(c_triggerQueueRemove);
+    libCOMI_gf_SendMissionTransmission("DestroyedReminder", false, -1);
+    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
+    Wait(1.0, c_timeGame);
+    CameraLockInput(1, true);
+    CameraLockInput(2, true);
+    UnitClearSelection(1);
+    UnitClearSelection(2);
+    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    CameraPan(1, PointFromId(1945616116), 1.5, -1, 10.0, false);
+    CameraPan(2, PointFromId(1945616116), 1.5, -1, 10.0, false);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/F50A9013"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    Wait(5.0, c_timeGame);
+    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DefeatOdinTimer_Init () {
+    gt_DefeatOdinTimer = TriggerCreate("gt_DefeatOdinTimer_Func");
+    TriggerAddEventTimer(gt_DefeatOdinTimer, gv_odinTimer1);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Odin Attack
+//--------------------------------------------------------------------------------------------------
+bool gt_OdinAttack_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    const int autoD2EBE98C_n = 100;
+    int autoD2EBE98C_i;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((gv_objective[0] == 2)) {
+        Wait(6.0, c_timeGame);
+        PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), true, false);
+        TransmissionClearAll();
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/E26EDD94"));
+        SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+        Wait(10.0, c_timeGame);
+        PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), false, false);
+        UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+        for (autoD2EBE98C_i = 1; autoD2EBE98C_i <= autoD2EBE98C_n; autoD2EBE98C_i += 1) {
+            if ((gv_gameended == false)) {
+                TimerPause(gv_odinTimer1, true);
+                UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                Wait(0.5, c_timeGame);
+                UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                Wait(0.5, c_timeGame);
+                UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                Wait(0.5, c_timeGame);
+                UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                Wait(0.5, c_timeGame);
+                UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                Wait(0.5, c_timeGame);
+                TimerPause(gv_odinTimer1, false);
+                Wait(60.0, c_timeGame);
+                if ((gv_gameended == false)) {
+                    PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), true, false);
+                    TransmissionClearAll();
+                    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/FA353134"));
+                    SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+                    Wait(10.0, c_timeGame);
+                    PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), false, false);
+                    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+                    Wait(2.0, c_timeGame);
+                    TimerPause(gv_odinTimer1, true);
+                    libCOMI_gf_FlashTimerWindow(15.0, false);
+                    Wait(0.5, c_timeGame);
+                    UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    Wait(0.5, c_timeGame);
+                    UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    Wait(0.5, c_timeGame);
+                    UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    Wait(0.5, c_timeGame);
+                    UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    Wait(0.5, c_timeGame);
+                    UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    Wait(0.5, c_timeGame);
+                    UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    Wait(0.5, c_timeGame);
+                    UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    Wait(0.5, c_timeGame);
+                    UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                    Wait(0.5, c_timeGame);
+                    TimerPause(gv_odinTimer1, false);
+                    Wait(120.0, c_timeGame);
+                    if ((gv_gameended == false)) {
+                        PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), true, false);
+                        TransmissionClearAll();
+                        UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/014FC56F"));
+                        SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+                        Wait(5.0, c_timeGame);
+                        PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), false, false);
+                        UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+                        TimerPause(gv_odinTimer1, true);
+                        TimerPause(gv_odinTimer1, false);
+                        UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        Wait(0.5, c_timeGame);
+                        UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        Wait(0.5, c_timeGame);
+                        UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        Wait(0.5, c_timeGame);
+                        UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        Wait(0.5, c_timeGame);
+                        UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        Wait(0.5, c_timeGame);
+                        UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(313267159), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1533853368), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(1921219980), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        UnitIssueOrder(UnitFromId(627332850), OrderTargetingPoint(AbilityCommand("TitanMechMissileShot", 0), RegionRandomPoint(RegionFromId(4))), c_orderQueueReplace);
+                        Wait(120.0, c_timeGame);
+                        PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), true, false);
+                        UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/3736D740"));
+                        SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+                        Wait(5.0, c_timeGame);
+                        PortraitSetVisible(DataTableGetPortrait(true, "111"), PlayerGroupAll(), false, false);
+                        UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_OdinAttack_Init () {
+    gt_OdinAttack = TriggerCreate("gt_OdinAttack_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Warning 1
+//--------------------------------------------------------------------------------------------------
+bool gt_Warning1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_SendMissionTransmission("AttackWave", false, 1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Warning1_Init () {
+    gt_Warning1 = TriggerCreate("gt_Warning1_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Warning 2
+//--------------------------------------------------------------------------------------------------
+bool gt_Warning2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_SendMissionTransmission("AttackWave", false, 2);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Warning2_Init () {
+    gt_Warning2 = TriggerCreate("gt_Warning2_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Follow Ping
+//--------------------------------------------------------------------------------------------------
+bool gt_FollowPing_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    PingSetPosition(DataTableGetPing(true, "111"), UnitGroupCenterOfGroup(gv_attackwave1));
+    PingSetPosition(DataTableGetPing(true, "222"), UnitGroupCenterOfGroup(gv_attackwave2));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FollowPing_Init () {
+    gt_FollowPing = TriggerCreate("gt_FollowPing_Func");
+    TriggerAddEventTimePeriodic(gt_FollowPing, 0.1, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Destroy Ping
+//--------------------------------------------------------------------------------------------------
+bool gt_DestroyPing_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libNtve_gf_UnitGroupIsDead(gv_attackwave1) == true)) {
+        libCOMI_gf_DestroyPingCoop(DataTableGetPing(true, "111"));
+        PingDestroy(DataTableGetPing(true, "111"));
+    }
+    else {
+        if ((libNtve_gf_UnitGroupIsDead(gv_attackwave2) == true)) {
+            libCOMI_gf_DestroyPingCoop(DataTableGetPing(true, "222"));
+            PingDestroy(DataTableGetPing(true, "222"));
+        }
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DestroyPing_Init () {
+    gt_DestroyPing = TriggerCreate("gt_DestroyPing_Func");
+    TriggerAddEventTimePeriodic(gt_DestroyPing, 1.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 1
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto5F21C705_g;
+    int auto5F21C705_u;
+    unit auto5F21C705_var;
+    unitgroup auto4FE21351_g;
+    int auto4FE21351_u;
+    unit auto4FE21351_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((GameAttributeGameValue("[bnet:Core (Mod)/0.0/999,file:Mods/Core.SC2Mod]3009") != "0001"))) {
+            return false;
+        }
+
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(180.0, c_timeGame);
+    TriggerExecute(gt_Warning1, true, false);
+    auto5F21C705_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto5F21C705_u = UnitGroupCount(auto5F21C705_g, c_unitCountAll);
+    for (;; auto5F21C705_u -= 1) {
+        auto5F21C705_var = UnitGroupUnitFromEnd(auto5F21C705_g, auto5F21C705_u);
+        if (auto5F21C705_var == null) { break; }
+        UnitKill(auto5F21C705_var);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Marine");
+    Wait(0.5, c_timeGame);
+    auto4FE21351_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto4FE21351_u = UnitGroupCount(auto4FE21351_g, c_unitCountAll);
+    for (;; auto4FE21351_u -= 1) {
+        auto4FE21351_var = UnitGroupUnitFromEnd(auto4FE21351_g, auto4FE21351_u);
+        if (auto4FE21351_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, auto4FE21351_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(auto4FE21351_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(647426395)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave1_Init () {
+    gt_Wave1 = TriggerCreate("gt_Wave1_Func");
+    TriggerAddEventMapInit(gt_Wave1);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 2
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto2BB26E8D_g;
+    int auto2BB26E8D_u;
+    unit auto2BB26E8D_var;
+    unitgroup autoE34FD71F_g;
+    int autoE34FD71F_u;
+    unit autoE34FD71F_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(300.0, c_timeGame);
+    auto2BB26E8D_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto2BB26E8D_u = UnitGroupCount(auto2BB26E8D_g, c_unitCountAll);
+    for (;; auto2BB26E8D_u -= 1) {
+        auto2BB26E8D_var = UnitGroupUnitFromEnd(auto2BB26E8D_g, auto2BB26E8D_u);
+        if (auto2BB26E8D_var == null) { break; }
+        UnitKill(auto2BB26E8D_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning2, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(183008311), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(183008311), "Marauder");
+    autoE34FD71F_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoE34FD71F_u = UnitGroupCount(autoE34FD71F_g, c_unitCountAll);
+    for (;; autoE34FD71F_u -= 1) {
+        autoE34FD71F_var = UnitGroupUnitFromEnd(autoE34FD71F_g, autoE34FD71F_u);
+        if (autoE34FD71F_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, autoE34FD71F_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(autoE34FD71F_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1543326779)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave2_Init () {
+    gt_Wave2 = TriggerCreate("gt_Wave2_Func");
+    TriggerAddEventMapInit(gt_Wave2);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 3
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoE28EC354_g;
+    int autoE28EC354_u;
+    unit autoE28EC354_var;
+    unitgroup autoDA2187E9_g;
+    int autoDA2187E9_u;
+    unit autoDA2187E9_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(500.0, c_timeGame);
+    autoE28EC354_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoE28EC354_u = UnitGroupCount(autoE28EC354_g, c_unitCountAll);
+    for (;; autoE28EC354_u -= 1) {
+        autoE28EC354_var = UnitGroupUnitFromEnd(autoE28EC354_g, autoE28EC354_u);
+        if (autoE28EC354_var == null) { break; }
+        UnitKill(autoE28EC354_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning1, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Marauder");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Hellion");
+    Wait(0.5, c_timeGame);
+    autoDA2187E9_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoDA2187E9_u = UnitGroupCount(autoDA2187E9_g, c_unitCountAll);
+    for (;; autoDA2187E9_u -= 1) {
+        autoDA2187E9_var = UnitGroupUnitFromEnd(autoDA2187E9_g, autoDA2187E9_u);
+        if (autoDA2187E9_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, autoDA2187E9_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(autoDA2187E9_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(647426395)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave3_Init () {
+    gt_Wave3 = TriggerCreate("gt_Wave3_Func");
+    TriggerAddEventMapInit(gt_Wave3);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 4
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave4_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto06894760_g;
+    int auto06894760_u;
+    unit auto06894760_var;
+    unitgroup auto640A5EF3_g;
+    int auto640A5EF3_u;
+    unit auto640A5EF3_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(675.0, c_timeGame);
+    auto06894760_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto06894760_u = UnitGroupCount(auto06894760_g, c_unitCountAll);
+    for (;; auto06894760_u -= 1) {
+        auto06894760_var = UnitGroupUnitFromEnd(auto06894760_g, auto06894760_u);
+        if (auto06894760_var == null) { break; }
+        UnitKill(auto06894760_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning2, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(183008311), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(183008311), "Marauder");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(183008311), "Goliath");
+    auto640A5EF3_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto640A5EF3_u = UnitGroupCount(auto640A5EF3_g, c_unitCountAll);
+    for (;; auto640A5EF3_u -= 1) {
+        auto640A5EF3_var = UnitGroupUnitFromEnd(auto640A5EF3_g, auto640A5EF3_u);
+        if (auto640A5EF3_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, auto640A5EF3_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(auto640A5EF3_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1543326779)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave4_Init () {
+    gt_Wave4 = TriggerCreate("gt_Wave4_Func");
+    TriggerAddEventMapInit(gt_Wave4);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave Combined 1
+//--------------------------------------------------------------------------------------------------
+bool gt_WaveCombined1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoD293BBC3_g;
+    int autoD293BBC3_u;
+    unit autoD293BBC3_var;
+    unitgroup auto6F92769B_g;
+    int auto6F92769B_u;
+    unit auto6F92769B_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+
+        if (!((GameAttributeGameValue("[bnet:Core (Mod)/0.0/999,file:Mods/Core.SC2Mod]3009") != "0001"))) {
+            return false;
+        }
+
+        if (!((GameAttributeGameValue("[bnet:Core (Mod)/0.0/999,file:Mods/Core.SC2Mod]3009") != "0001"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(900.0, c_timeGame);
+    autoD293BBC3_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoD293BBC3_u = UnitGroupCount(autoD293BBC3_g, c_unitCountAll);
+    for (;; autoD293BBC3_u -= 1) {
+        autoD293BBC3_var = UnitGroupUnitFromEnd(autoD293BBC3_g, autoD293BBC3_u);
+        if (autoD293BBC3_var == null) { break; }
+        UnitKill(autoD293BBC3_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning1, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__3Small, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__3Small, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Goliath");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Vulture");
+    auto6F92769B_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto6F92769B_u = UnitGroupCount(auto6F92769B_g, c_unitCountAll);
+    for (;; auto6F92769B_u -= 1) {
+        auto6F92769B_var = UnitGroupUnitFromEnd(auto6F92769B_g, auto6F92769B_u);
+        if (auto6F92769B_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, auto6F92769B_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(auto6F92769B_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(647426395)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_WaveCombined1_Init () {
+    gt_WaveCombined1 = TriggerCreate("gt_WaveCombined1_Func");
+    TriggerAddEventMapInit(gt_WaveCombined1);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 5
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave5_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto0FD5BA3D_g;
+    int auto0FD5BA3D_u;
+    unit auto0FD5BA3D_var;
+    unitgroup auto135FB605_g;
+    int auto135FB605_u;
+    unit auto135FB605_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(1140.0, c_timeGame);
+    auto0FD5BA3D_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto0FD5BA3D_u = UnitGroupCount(auto0FD5BA3D_g, c_unitCountAll);
+    for (;; auto0FD5BA3D_u -= 1) {
+        auto0FD5BA3D_var = UnitGroupUnitFromEnd(auto0FD5BA3D_g, auto0FD5BA3D_u);
+        if (auto0FD5BA3D_var == null) { break; }
+        UnitKill(auto0FD5BA3D_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning1, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__4Medium, libCOMI_ge_CoopAITechLevelBuckets__3Mid, PointFromId(47251197), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__3Small, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(47251197), "HellionTank");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__3Small, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Vulture");
+    auto135FB605_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto135FB605_u = UnitGroupCount(auto135FB605_g, c_unitCountAll);
+    for (;; auto135FB605_u -= 1) {
+        auto135FB605_var = UnitGroupUnitFromEnd(auto135FB605_g, auto135FB605_u);
+        if (auto135FB605_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, auto135FB605_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(auto135FB605_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1543326779)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave5_Init () {
+    gt_Wave5 = TriggerCreate("gt_Wave5_Func");
+    TriggerAddEventMapInit(gt_Wave5);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 6
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave6_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoE236405F_g;
+    int autoE236405F_u;
+    unit autoE236405F_var;
+    unitgroup autoAEC4F072_g;
+    int autoAEC4F072_u;
+    unit autoAEC4F072_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(1470.0, c_timeGame);
+    autoE236405F_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoE236405F_u = UnitGroupCount(autoE236405F_g, c_unitCountAll);
+    for (;; autoE236405F_u -= 1) {
+        autoE236405F_var = UnitGroupUnitFromEnd(autoE236405F_g, autoE236405F_u);
+        if (autoE236405F_var == null) { break; }
+        UnitKill(autoE236405F_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning2, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__3Mid, PointFromId(183008311), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__4Medium, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(183008311), "HellionTank");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(183008311), "Thor");
+    autoAEC4F072_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoAEC4F072_u = UnitGroupCount(autoAEC4F072_g, c_unitCountAll);
+    for (;; autoAEC4F072_u -= 1) {
+        autoAEC4F072_var = UnitGroupUnitFromEnd(autoAEC4F072_g, autoAEC4F072_u);
+        if (autoAEC4F072_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, autoAEC4F072_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(autoAEC4F072_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(647426395)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave6_Init () {
+    gt_Wave6 = TriggerCreate("gt_Wave6_Func");
+    TriggerAddEventMapInit(gt_Wave6);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 7
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave7_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto608F0D92_g;
+    int auto608F0D92_u;
+    unit auto608F0D92_var;
+    unitgroup auto1866B8EA_g;
+    int auto1866B8EA_u;
+    unit auto1866B8EA_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(1680.0, c_timeGame);
+    auto608F0D92_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto608F0D92_u = UnitGroupCount(auto608F0D92_g, c_unitCountAll);
+    for (;; auto608F0D92_u -= 1) {
+        auto608F0D92_var = UnitGroupUnitFromEnd(auto608F0D92_g, auto608F0D92_u);
+        if (auto608F0D92_var == null) { break; }
+        UnitKill(auto608F0D92_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning1, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__4LateMid, PointFromId(47251197), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__4Medium, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(47251197), "Cyclone");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Thor");
+    auto1866B8EA_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto1866B8EA_u = UnitGroupCount(auto1866B8EA_g, c_unitCountAll);
+    for (;; auto1866B8EA_u -= 1) {
+        auto1866B8EA_var = UnitGroupUnitFromEnd(auto1866B8EA_g, auto1866B8EA_u);
+        if (auto1866B8EA_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, auto1866B8EA_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(auto1866B8EA_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1543326779)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave7_Init () {
+    gt_Wave7 = TriggerCreate("gt_Wave7_Func");
+    TriggerAddEventMapInit(gt_Wave7);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 8
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave8_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto4924944F_g;
+    int auto4924944F_u;
+    unit auto4924944F_var;
+    unitgroup autoC0616180_g;
+    int autoC0616180_u;
+    unit autoC0616180_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(1920.0, c_timeGame);
+    auto4924944F_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto4924944F_u = UnitGroupCount(auto4924944F_g, c_unitCountAll);
+    for (;; auto4924944F_u -= 1) {
+        auto4924944F_var = UnitGroupUnitFromEnd(auto4924944F_g, auto4924944F_u);
+        if (auto4924944F_var == null) { break; }
+        UnitKill(auto4924944F_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning2, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__4LateMid, PointFromId(183008311), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(183008311), "Cyclone");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__3Small, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(183008311), "Thor");
+    autoC0616180_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoC0616180_u = UnitGroupCount(autoC0616180_g, c_unitCountAll);
+    for (;; autoC0616180_u -= 1) {
+        autoC0616180_var = UnitGroupUnitFromEnd(autoC0616180_g, autoC0616180_u);
+        if (autoC0616180_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, autoC0616180_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(autoC0616180_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(647426395)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave8_Init () {
+    gt_Wave8 = TriggerCreate("gt_Wave8_Func");
+    TriggerAddEventMapInit(gt_Wave8);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 9
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave9_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto6C7F2EF4_g;
+    int auto6C7F2EF4_u;
+    unit auto6C7F2EF4_var;
+    unitgroup autoF373193A_g;
+    int autoF373193A_u;
+    unit autoF373193A_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(2160.0, c_timeGame);
+    auto6C7F2EF4_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto6C7F2EF4_u = UnitGroupCount(auto6C7F2EF4_g, c_unitCountAll);
+    for (;; auto6C7F2EF4_u -= 1) {
+        auto6C7F2EF4_var = UnitGroupUnitFromEnd(auto6C7F2EF4_g, auto6C7F2EF4_u);
+        if (auto6C7F2EF4_var == null) { break; }
+        UnitKill(auto6C7F2EF4_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning1, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__4LateMid, PointFromId(47251197), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__4Medium, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(47251197), "Cyclone");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Thor");
+    autoF373193A_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoF373193A_u = UnitGroupCount(autoF373193A_g, c_unitCountAll);
+    for (;; autoF373193A_u -= 1) {
+        autoF373193A_var = UnitGroupUnitFromEnd(autoF373193A_g, autoF373193A_u);
+        if (autoF373193A_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, autoF373193A_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(autoF373193A_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1543326779)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave9_Init () {
+    gt_Wave9 = TriggerCreate("gt_Wave9_Func");
+    TriggerAddEventMapInit(gt_Wave9);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 10
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave10_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto0EB25FF1_g;
+    int auto0EB25FF1_u;
+    unit auto0EB25FF1_var;
+    unitgroup auto5D8AEBFC_g;
+    int auto5D8AEBFC_u;
+    unit auto5D8AEBFC_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(2400.0, c_timeGame);
+    auto0EB25FF1_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto0EB25FF1_u = UnitGroupCount(auto0EB25FF1_g, c_unitCountAll);
+    for (;; auto0EB25FF1_u -= 1) {
+        auto0EB25FF1_var = UnitGroupUnitFromEnd(auto0EB25FF1_g, auto0EB25FF1_u);
+        if (auto0EB25FF1_var == null) { break; }
+        UnitKill(auto0EB25FF1_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning2, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__4LateMid, PointFromId(183008311), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(183008311), "Cyclone");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__3Small, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(183008311), "Thor");
+    auto5D8AEBFC_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto5D8AEBFC_u = UnitGroupCount(auto5D8AEBFC_g, c_unitCountAll);
+    for (;; auto5D8AEBFC_u -= 1) {
+        auto5D8AEBFC_var = UnitGroupUnitFromEnd(auto5D8AEBFC_g, auto5D8AEBFC_u);
+        if (auto5D8AEBFC_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, auto5D8AEBFC_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(auto5D8AEBFC_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(647426395)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave10_Init () {
+    gt_Wave10 = TriggerCreate("gt_Wave10_Func");
+    TriggerAddEventMapInit(gt_Wave10);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 11
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave11_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto70A669BC_g;
+    int auto70A669BC_u;
+    unit auto70A669BC_var;
+    unitgroup autoC9DAB15C_g;
+    int autoC9DAB15C_u;
+    unit autoC9DAB15C_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(2700.0, c_timeGame);
+    auto70A669BC_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto70A669BC_u = UnitGroupCount(auto70A669BC_g, c_unitCountAll);
+    for (;; auto70A669BC_u -= 1) {
+        auto70A669BC_var = UnitGroupUnitFromEnd(auto70A669BC_g, auto70A669BC_u);
+        if (auto70A669BC_var == null) { break; }
+        UnitKill(auto70A669BC_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning1, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__4LateMid, PointFromId(47251197), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__4Medium, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(47251197), "Cyclone");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Thor");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Thor");
+    autoC9DAB15C_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoC9DAB15C_u = UnitGroupCount(autoC9DAB15C_g, c_unitCountAll);
+    for (;; autoC9DAB15C_u -= 1) {
+        autoC9DAB15C_var = UnitGroupUnitFromEnd(autoC9DAB15C_g, autoC9DAB15C_u);
+        if (autoC9DAB15C_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, autoC9DAB15C_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(autoC9DAB15C_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1543326779)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave11_Init () {
+    gt_Wave11 = TriggerCreate("gt_Wave11_Func");
+    TriggerAddEventMapInit(gt_Wave11);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 12
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave12_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto66F3B3CF_g;
+    int auto66F3B3CF_u;
+    unit auto66F3B3CF_var;
+    unitgroup autoDCD64D65_g;
+    int autoDCD64D65_u;
+    unit autoDCD64D65_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(3000.0, c_timeGame);
+    auto66F3B3CF_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto66F3B3CF_u = UnitGroupCount(auto66F3B3CF_g, c_unitCountAll);
+    for (;; auto66F3B3CF_u -= 1) {
+        auto66F3B3CF_var = UnitGroupUnitFromEnd(auto66F3B3CF_g, auto66F3B3CF_u);
+        if (auto66F3B3CF_var == null) { break; }
+        UnitKill(auto66F3B3CF_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning2, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__4LateMid, PointFromId(183008311), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__4LateMid, PointFromId(183008311), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(183008311), "Cyclone");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(183008311), "Cyclone");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__6Larger, libCOMI_ge_CoopAITechLevelBuckets_TechLevel07, PointFromId(183008311), "WarHound");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__3Small, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(183008311), "Thor");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__3Small, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(183008311), "Thor");
+    autoDCD64D65_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoDCD64D65_u = UnitGroupCount(autoDCD64D65_g, c_unitCountAll);
+    for (;; autoDCD64D65_u -= 1) {
+        autoDCD64D65_var = UnitGroupUnitFromEnd(autoDCD64D65_g, autoDCD64D65_u);
+        if (autoDCD64D65_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, autoDCD64D65_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(autoDCD64D65_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(647426395)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave12_Init () {
+    gt_Wave12 = TriggerCreate("gt_Wave12_Func");
+    TriggerAddEventMapInit(gt_Wave12);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Wave 13
+//--------------------------------------------------------------------------------------------------
+bool gt_Wave13_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto70B4E84D_g;
+    int auto70B4E84D_u;
+    unit auto70B4E84D_var;
+    unitgroup autoA3A9D85F_g;
+    int autoA3A9D85F_u;
+    unit autoA3A9D85F_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(3300.0, c_timeGame);
+    auto70B4E84D_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto70B4E84D_u = UnitGroupCount(auto70B4E84D_g, c_unitCountAll);
+    for (;; auto70B4E84D_u -= 1) {
+        auto70B4E84D_var = UnitGroupUnitFromEnd(auto70B4E84D_g, auto70B4E84D_u);
+        if (auto70B4E84D_var == null) { break; }
+        UnitKill(auto70B4E84D_var);
+    }
+    Wait(0.5, c_timeGame);
+    TriggerExecute(gt_Warning1, true, false);
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__4LateMid, PointFromId(47251197), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__4Medium, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(47251197), "Cyclone");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Thor");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Thor");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__4LateMid, PointFromId(47251197), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__4LateMid, PointFromId(47251197), "Marine");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(47251197), "Cyclone");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid, PointFromId(47251197), "Cyclone");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__6Larger, libCOMI_ge_CoopAITechLevelBuckets_TechLevel07, PointFromId(47251197), "WarHound");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__3Small, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Thor");
+    libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(4, 4, libCOMI_ge_CoopAIAttackWaveBuckets__3Small, libCOMI_ge_CoopAITechLevelBuckets__1Early, PointFromId(47251197), "Thor");
+    autoA3A9D85F_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoA3A9D85F_u = UnitGroupCount(autoA3A9D85F_g, c_unitCountAll);
+    for (;; autoA3A9D85F_u -= 1) {
+        autoA3A9D85F_var = UnitGroupUnitFromEnd(autoA3A9D85F_g, autoA3A9D85F_u);
+        if (autoA3A9D85F_var == null) { break; }
+        UnitGroupAdd(gv_attackwave1, autoA3A9D85F_var);
+        Wait(0.1, c_timeGame);
+        UnitIssueOrder(autoA3A9D85F_var, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1543326779)), c_orderQueueReplace);
+    }
+    Wait(0.5, c_timeGame);
+    libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGroupCenterOfGroup(gv_attackwave1), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "111", PingLastCreated());
+    libCOMI_gf_ShowHidePingCoop(DataTableGetPing(true, "111"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Wave13_Init () {
+    gt_Wave13 = TriggerCreate("gt_Wave13_Func");
+    TriggerAddEventMapInit(gt_Wave13);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Bonus Objective
+//--------------------------------------------------------------------------------------------------
+bool gt_BonusObjective_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoF1D40306_g;
+    int autoF1D40306_u;
+    unit autoF1D40306_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    PortraitCreate(50, 0, c_anchorLeft, 237, 360, "GhostPortrait", "", "Talk", true, true);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/4275F137"));
+    SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(15.0, c_timeGame);
+    PortraitSetVisible(PortraitLastCreated(), PlayerGroupAll(), false, false);
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    Wait(0.1, c_timeGame);
+    UnitCreate(1, "WarpPrismGiantPhasing", 0, 3, RegionRandomPoint(RegionFromId(9)), libNtve_gf_RandomAngle());
+    PingCreate(PlayerGroupAll(), "PingBonus", UnitGetPosition(UnitLastCreated()), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 524287.0);
+    DataTableSetPing(true, "hybrid", PingLastCreated());
+    libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
+    libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 1);
+    libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 2);
+    UnitCreate(1, "HybridDestroyer", 0, 3, UnitGetPosition(UnitLastCreated()), libNtve_gf_RandomAngle());
+    libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
+    UnitCreate(3, "HybridReaver", 0, 3, UnitGetPosition(UnitLastCreated()), libNtve_gf_RandomAngle());
+    libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
+    UnitCreate(2, "HybridNemesis", 0, 3, UnitGetPosition(UnitLastCreated()), libNtve_gf_RandomAngle());
+    libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
+    ObjectiveCreate(StringExternal("Param/Value/599C4A7E"), StringExternal("Param/Value/BD0FBDCC"), c_objectiveStateActive, false);
+    DataTableSetObjective(true, "hybrid", ObjectiveLastCreated());
+    UnitIssueOrder(UnitFromId(381789922), Order(AbilityCommand("MoebiusLabDoorsThinLeftLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(381789922), Order(AbilityCommand("MoebiusLabDoorsThinRightLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(381789922), Order(AbilityCommand("MoebiusLabDoorsWideLeftLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(381789922), Order(AbilityCommand("MoebiusLabDoorsWideRightLowered", 0)), c_orderQueueReplace);
+    Wait(1.0, c_timeReal);
+    UnitIssueOrder(UnitFromId(1122215477), Order(AbilityCommand("MoebiusLabDoorsThinLeftLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(1122215477), Order(AbilityCommand("MoebiusLabDoorsThinRightLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(1122215477), Order(AbilityCommand("MoebiusLabDoorsWideLeftLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(1122215477), Order(AbilityCommand("MoebiusLabDoorsWideRightLowered", 0)), c_orderQueueReplace);
+    Wait(120.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(289223109), Order(AbilityCommand("MoebiusLabDoorsThinLeftLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(289223109), Order(AbilityCommand("MoebiusLabDoorsThinRightLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(289223109), Order(AbilityCommand("MoebiusLabDoorsWideLeftLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(289223109), Order(AbilityCommand("MoebiusLabDoorsWideRightLowered", 0)), c_orderQueueReplace);
+    Wait(10.0, c_timeReal);
+    UnitIssueOrder(UnitFromId(873269439), Order(AbilityCommand("MoebiusLabDoorsThinLeftLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(873269439), Order(AbilityCommand("MoebiusLabDoorsThinRightLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(873269439), Order(AbilityCommand("MoebiusLabDoorsWideLeftLowered", 0)), c_orderQueueReplace);
+    Wait(0.1, c_timeGame);
+    UnitIssueOrder(UnitFromId(873269439), Order(AbilityCommand("MoebiusLabDoorsWideRightLowered", 0)), c_orderQueueReplace);
+    autoF1D40306_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoF1D40306_u = UnitGroupCount(autoF1D40306_g, c_unitCountAll);
+    for (;; autoF1D40306_u -= 1) {
+        autoF1D40306_var = UnitGroupUnitFromEnd(autoF1D40306_g, autoF1D40306_u);
+        if (autoF1D40306_var == null) { break; }
+        if ((UnitGetType(autoF1D40306_var) == "WarpPrismGiantPhasing")) {
+            UnitGroupAdd(gv_hybrid, autoF1D40306_var);
+            Wait(3.0, c_timeGame);
+            while (true) {
+                Wait(0.5, c_timeGame);
+                if ((UnitIsAlive(autoF1D40306_var) == false)) {
+                    libCOMI_gf_DestroyPingCoop(PingLastCreated());
+                    PingDestroy(PingLastCreated());
+                }
+
+            }
+        }
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BonusObjective_Init () {
+    gt_BonusObjective = TriggerCreate("gt_BonusObjective_Func");
+    TriggerAddEventTimeElapsed(gt_BonusObjective, 780.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Bonus Objective Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_BonusObjectiveComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "WarpPrismGiantPhasing"))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == 3))) {
+            return false;
+        }
+
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    ObjectiveSetState(DataTableGetObjective(true, "hybrid"), c_objectiveStateCompleted);
+    PortraitCreate(50, 0, c_anchorLeft, 237, 360, "GhostPortrait", "", "Talk", true, true);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/D508A3BD"));
+    SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(10.0, c_timeGame);
+    PortraitSetVisible(PortraitLastCreated(), PlayerGroupAll(), false, false);
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    Wait(0.1, c_timeGame);
+    ObjectiveSetState(DataTableGetObjective(true, "factory"), c_objectiveStateCompleted);
+    libCOMI_gf_DestroyPingCoop(DataTableGetPing(true, "hybrid"));
+    PingDestroy(DataTableGetPing(true, "hybrid"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BonusObjectiveComplete_Init () {
+    gt_BonusObjectiveComplete = TriggerCreate("gt_BonusObjectiveComplete_Func");
+    TriggerAddEventUnitDied(gt_BonusObjectiveComplete, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Destroy main ping 1
+//--------------------------------------------------------------------------------------------------
+bool gt_Destroymainping1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libNtve_gf_UnitGroupIsDead(gv_oBJECTIVEMAIN1) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_DestroyPingCoop(DataTableGetPing(true, "o1"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Destroymainping1_Init () {
+    gt_Destroymainping1 = TriggerCreate("gt_Destroymainping1_Func");
+    TriggerAddEventTimePeriodic(gt_Destroymainping1, 0.1, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Destroy main ping 2
+//--------------------------------------------------------------------------------------------------
+bool gt_Destroymainping2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libNtve_gf_UnitGroupIsDead(gv_oBJECTIVEMAIN2) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_DestroyPingCoop(DataTableGetPing(true, "o2"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Destroymainping2_Init () {
+    gt_Destroymainping2 = TriggerCreate("gt_Destroymainping2_Func");
+    TriggerAddEventTimePeriodic(gt_Destroymainping2, 0.1, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Destroy main ping 3
+//--------------------------------------------------------------------------------------------------
+bool gt_Destroymainping3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libNtve_gf_UnitGroupIsDead(gv_oBJECTIVEMAIN3) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_DestroyPingCoop(DataTableGetPing(true, "o3"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Destroymainping3_Init () {
+    gt_Destroymainping3 = TriggerCreate("gt_Destroymainping3_Func");
+    TriggerAddEventTimePeriodic(gt_Destroymainping3, 0.1, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Stage 1
+//--------------------------------------------------------------------------------------------------
+bool gt_Stage1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TimerRestart(gv_odinTimer1);
+    gv_objective[0] += 1;
+    TriggerExecute(gt_Victory, true, false);
+    PortraitCreate(50, 0, c_anchorLeft, 237, 360, "GhostPortrait", "", "Talk", true, true);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/6405FC9E"));
+    SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(10.0, c_timeGame);
+    PortraitSetVisible(PortraitLastCreated(), PlayerGroupAll(), false, false);
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    Wait(5.0, c_timeGame);
+    TriggerExecute(gt_OdinAttack, true, false);
+    UnitIssueOrder(UnitFromId(381789922), Order(AbilityCommand("MoebiusLabDoorsWideRightLowered", 0)), c_orderQueueReplace);
+    UnitIssueOrder(UnitFromId(1122215477), Order(AbilityCommand("MoebiusLabDoorsWideRightLowered", 0)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Stage1_Init () {
+    gt_Stage1 = TriggerCreate("gt_Stage1_Func");
+    TriggerAddEventUnitDied(gt_Stage1, UnitRefFromUnit(UnitFromId(271831681)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Stage 2
+//--------------------------------------------------------------------------------------------------
+bool gt_Stage2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TimerRestart(gv_odinTimer1);
+    gv_objective[0] += 1;
+    TriggerExecute(gt_Victory, true, false);
+    PortraitCreate(50, 0, c_anchorLeft, 237, 360, "GhostPortrait", "", "Talk", true, true);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/A58DB2FA"));
+    SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(7.0, c_timeGame);
+    PortraitSetVisible(PortraitLastCreated(), PlayerGroupAll(), false, false);
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    Wait(5.0, c_timeGame);
+    TriggerExecute(gt_OdinAttack, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Stage2_Init () {
+    gt_Stage2 = TriggerCreate("gt_Stage2_Func");
+    TriggerAddEventUnitDied(gt_Stage2, UnitRefFromUnit(UnitFromId(1550270736)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Stage 3
+//--------------------------------------------------------------------------------------------------
+bool gt_Stage3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_gameended == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TimerRestart(gv_odinTimer1);
+    gv_objective[0] += 1;
+    TriggerExecute(gt_Victory, true, false);
+    PortraitCreate(50, 0, c_anchorLeft, 237, 360, "GhostPortrait", "", "Talk", true, true);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/9D86850C"));
+    SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(7.0, c_timeGame);
+    PortraitSetVisible(PortraitLastCreated(), PlayerGroupAll(), false, false);
+    UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
+    Wait(5.0, c_timeGame);
+    TriggerExecute(gt_OdinAttack, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Stage3_Init () {
+    gt_Stage3 = TriggerCreate("gt_Stage3_Func");
+    TriggerAddEventUnitDied(gt_Stage3, UnitRefFromUnit(UnitFromId(53904036)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Initialization
+//--------------------------------------------------------------------------------------------------
+void InitTriggers () {
+    gt_Init01LoadData_Init();
+    gt_Init03LoadingComplete_Init();
+    gt_Init05Units_Init();
+    gt_Objectiveini_Init();
+    gt_Environment_Init();
+    gt_Doorsgenerator_Init();
+    gt_Datacoreselfprotection_Init();
+    gt_Datacoreprotection_Init();
+    gt_Datacoreprotection2_Init();
+    gt_Datacoreprotection3_Init();
+    gt_Victory_Init();
+    gt_DefeatOdinTimer_Init();
+    gt_OdinAttack_Init();
+    gt_Warning1_Init();
+    gt_Warning2_Init();
+    gt_FollowPing_Init();
+    gt_DestroyPing_Init();
+    gt_Wave1_Init();
+    gt_Wave2_Init();
+    gt_Wave3_Init();
+    gt_Wave4_Init();
+    gt_WaveCombined1_Init();
+    gt_Wave5_Init();
+    gt_Wave6_Init();
+    gt_Wave7_Init();
+    gt_Wave8_Init();
+    gt_Wave9_Init();
+    gt_Wave10_Init();
+    gt_Wave11_Init();
+    gt_Wave12_Init();
+    gt_Wave13_Init();
+    gt_BonusObjective_Init();
+    gt_BonusObjectiveComplete_Init();
+    gt_Destroymainping1_Init();
+    gt_Destroymainping2_Init();
+    gt_Destroymainping3_Init();
+    gt_Stage1_Init();
+    gt_Stage2_Init();
+    gt_Stage3_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitLibs();
+    InitGlobals();
+    InitTriggers();
+}

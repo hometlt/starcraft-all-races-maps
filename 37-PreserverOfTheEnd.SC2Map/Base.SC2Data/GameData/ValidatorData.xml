@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CValidatorCombine id="XenosMonochromeWallAUTOCASTCombine">
+        <Type value="And"/>
+        <CombineArray value="XenosMonochromeWallAUTOCASTEnemiesNearby"/>
+        <CombineArray value="XenosMonochromeWallAUTOCASTHasDamagedTokens"/>
+    </CValidatorCombine>
+    <CValidatorLocationEnumArea id="XenosMonochromeWallAUTOCASTEnemiesNearby">
+        <AreaArray Compare="GT" Count="12" Radius="12"/>
+        <SearchFilters value="Visible;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorPlayerRequirement id="GameMineralTip">
+        <WhichPlayer Value="Target"/>
+        <Find value="1"/>
+        <Value value="GameMineralTip"/>
+        <WhichUnit Value="Target"/>
+    </CValidatorPlayerRequirement>
+    <CValidatorCombine id="Minerals">
+        <CombineArray value="XenosEntombAutoIsVoidCrystal"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="XenosEntombAutoHasNoEntomb">
+        <Behavior value="XenosEntombSingleEntombed"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="XenosEntombAutoIsVoidCrystal">
+        <Value value="VoidMineralField"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="XenosEntombAutoTargetCombineValidator">
+        <Type value="And"/>
+        <CombineArray value="XenosEntombAutoIsVoidCrystal"/>
+        <CombineArray value="XenosEntombAutoHasNoEntomb"/>
+    </CValidatorCombine>
+    <CValidatorLocationCompareRange id="XenosEntombSingleDistanceCheck">
+        <ResultFailed value="TargetIsOutOfRange"/>
+        <WhichLocation Value="CasterUnit"/>
+        <Compare value="LT"/>
+        <Range value="20"/>
+        <Value Value="TargetUnit"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorUnitCompareBehaviorCount id="UnstableVoidCrystalResonanceNoCountdown">
+        <WhichUnit Value="Source"/>
+        <Behavior value="UnstableVoidCrystalResonanceCountdown"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="UnstableVoidCrystalResonanceNoChainDetonationToken">
+        <Behavior value="UnstableVoidCrystalResonanceChainDetonationToken"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="UnstableVoidCrystalResonanceTargetNotVoidCrystal">
+        <Value value="UnstableVoidCrystalFormation"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="UnstableVoidCrystalResonanceTargetIsVoidCrystal">
+        <Value value="UnstableVoidCrystalFormation"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="XenosMonochromeVeilAUTOCASTCombineValidator">
+        <CombineArray value="XenosMonochromeVeilAUTOCASTUSERTokenCount"/>
+        <CombineArray value="CasterLifeLT75Percent"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="XenosMonochromeVeilAUTOCASTUSERTokenCount">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="50"/>
+        <Behavior value="XenosMonochromeVeilUSERCasterToken"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="XenosDarkStardustDamageTokenCount">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="15"/>
+        <Behavior value="XenosMonochromeVeilUSERCasterToken"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="XenosMonochromeVeilNotAffectedCombined">
+        <Type value="And"/>
+        <CombineArray value="XenosMonochromeVeilNotAffectedHeroic"/>
+        <CombineArray value="XenosMonochromeVeilNotAffectedNormal"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="XenosMonochromeVeilNotAffectedNormal">
+        <Behavior value="XenosMonochromeVeil"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="XenosMonochromeVeilNotAffectedHeroic">
+        <Behavior value="XenosMonochromeVeilHeroic"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="XenosMonochromeWallAUTOCASTHasDamagedTokens">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="10"/>
+        <Behavior value="XenosMonochromeVeilUSERCasterToken"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="XenosMonochromeWallCasterHasToken">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GT"/>
+        <Behavior value="XenosMonochromeWallCasterToken"/>
+    </CValidatorUnitCompareBehaviorCount>
+</Catalog>

@@ -1,0 +1,1342 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CActorModel id="ExAnomalyCoverB" parent="ModelAnimationStyleContinuousUNIT">
+        <On Terms="UnitCreation.ExAnomaly" Send="Create"/>
+        <On Terms="ActorCreation" Send="SetOpacity"/>
+        <On Terms="ActorCreation" Send="SetOpacity 1.000000 110.000000"/>
+        <On Terms="UnitDeath.ExAnomaly" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpShadow" HoldRotation="1"/>
+        <FogVisibility value="Visible"/>
+    </CActorModel>
+    <CActorSound id="ExPABarrageCastSound" parent="SoundOneShot">
+        <On Terms="Abil.ExPABarrage.SourceFinishStart" Send="Create"/>
+        <On Terms="UnitDeath.ExPrimalAvatarGorrox" Send="Destroy"/>
+        <Sound value="ExPABarrageCast"/>
+    </CActorSound>
+    <CActorAction id="ExPABarrageAttack" parent="GenericAttack" effectImpact="ExPABarrageDamage" effectLaunch="ExPABarrageLaunch">
+        <LaunchAttachQuery Methods="AMFilterCenter"/>
+        <LaunchAssets Sound="Spell_SpineVolley_Launch"/>
+        <Missile value="KraithSpineVolleyAttackMissile"/>
+        <ImpactMap index="None" Model="ExGorroxSpineVolleyImpact" Sound="Spell_SpineVolley_Impact"/>
+    </CActorAction>
+    <CActorSound id="ExPACataclysmCastSound" parent="SoundOneShot">
+        <On Terms="Behavior.ExRazShaLavaBath.On" Send="Create"/>
+        <On Terms="UnitDeath.ExRazSha" Send="Destroy"/>
+        <Sound value="ExPACataclysmCast"/>
+    </CActorSound>
+    <CActorSound id="ExPAGenerateCreepersCastSound" parent="SoundOneShot">
+        <On Terms="Behavior.ExPAGenerateCreepers.On" Send="Create"/>
+        <On Terms="UnitDeath.ExPrimalAvatarNaraxus" Send="Destroy"/>
+        <Sound value="ExPAGenerateCreepersCast"/>
+    </CActorSound>
+    <CActorBeamSimple id="ExPALivingFlameBeam" parent="GenericAttackBeam">
+        <Macros value="GlobalLoopMacro"/>
+        <Supporter Subject="_Unit" Scope="Target"/>
+        <On index="0" Terms="ActorCreation" Send="AnimBracketStart BSD Birth Stand Death"/>
+        <On Terms="Effect.ExPALivingFlameCP.Start" Send="Create"/>
+        <On Terms="Effect.ExPALivingFlameCP.Stop" Send="Destroy"/>
+        <Host Subject="_Unit" Scope="Caster"/>
+        <HostLaunch Subject="_Unit" Scope="Target"/>
+        <HostLaunchSiteOps Ops="SOpAttachCenter"/>
+        <HostImpact Subject="_Unit" Scope="Caster"/>
+        <HostImpactSiteOps Ops="SOpAttachWeapon"/>
+    </CActorBeamSimple>
+    <CActorModel id="ExPALivingFlameBuffEffect" parent="ModelAnimationStyleOneShotUNIT">
+        <Inherits index="Scale" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <On Terms="Behavior.ExRazShaLivingFlame.On" Send="Create"/>
+        <Model value="ExPALivingFlameBuff"/>
+        <AutoScaleFactor value="0.600000"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+    </CActorModel>
+    <CActorModel id="ExPALivingFlameExplosionEffect" parent="ModelAnimationStyleOneShotUNIT">
+        <On Terms="Effect.ExPALivingFlameSearch.Start; At Target" Send="Create"/>
+        <On Terms="ActorCreation" Send="Create ExPALivingFlameExplosionSound"/>
+        <HostSiteOps Ops="SOpAttachCenter" HoldRotation="1"/>
+        <Model value="ExPALivingFlameExplosion"/>
+    </CActorModel>
+    <CActorSound id="ExPALivingFlameCastSound" parent="SoundOneShot">
+        <On Terms="Effect.ExPALivingFlameCP.Start" Send="Create"/>
+        <On Terms="UnitDeath.ExRazSha" Send="Destroy"/>
+        <Sound value="ExPALivingFlameCast"/>
+    </CActorSound>
+    <CActorSound id="ExPALivingFlameExplosionSound" parent="SoundOneShot">
+        <Sound value="ExPALivingFlameExplosion"/>
+    </CActorSound>
+    <CActorSound id="ExPAMyPackCastSound" parent="SoundOneShot">
+        <Flags index="SuppressSaveLoad" value="0"/>
+        <On Terms="Behavior.ExPAMyPack.On" Send="Create"/>
+        <On Terms="UnitDeath.ExPrimalAvatarZorgg" Send="Destroy"/>
+        <Sound value="ExPAMyPackCast"/>
+    </CActorSound>
+    <CActorModel id="ExPALivingFlameColor" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExRazShaLivingFlame.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetTintColor {255,210,64 10.000000} 1.000000 OneShot ExLivingFlameColor"/>
+        <On index="2" Terms="Behavior.ExRazShaLivingFlame.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearTintColor 1.000000 ExLivingFlameColor"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorModel id="ExPARockPowerEffect" parent="ModelAnimationStyleOneShotUNIT">
+        <On Terms="Behavior.ExPARockPower.On" Send="Create"/>
+        <On Terms="Behavior.ExPARockPower.Off" Send="Create"/>
+        <HostSiteOps Ops="SOpAttachCenter" HoldRotation="1"/>
+    </CActorModel>
+    <CActorModel id="ExPATwilightEnergyVoidPresenceEffect" parent="ModelAnimationStyleContinuous">
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <On Terms="Behavior.ExPAVoidPresence.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="SetTintColor 128,0,255"/>
+        <On Terms="Behavior.ExPAVoidPresence.Off" Send="AnimBracketStop BSD"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachCenter" HoldRotation="1"/>
+        <AutoScaleFactor value="0.600000"/>
+    </CActorModel>
+    <CActorModelMaterial id="ExPARockPowerGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExPARockPower.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExPARockPower.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorModel id="ExPAQuakeWarningSplat">
+        <Inherits index="Visibility" value="1"/>
+        <On Terms="ActorCreation" Send="$Stand PlayForever,NonLooping"/>
+        <On Terms="ActorCreation" Send="SetTintColor {255,255,255 5.000000}"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpShadow"/>
+    </CActorModel>
+    <CActorModelMaterial id="ExPACataclysmGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExRazShaLavaBath.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExRazShaLavaBath.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorModel id="ExPAVoidPresenceColor" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExPAVoidPresence.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetTintColor 128,128,192 1.000000 OneShot ExPAVoidPresenceColor"/>
+        <On index="2" Terms="Behavior.ExPAVoidPresence.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearTintColor 1.000000 ExPAVoidPresenceColor"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorModelMaterial id="ExPARuptureGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExPARupture.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExPARupture.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorModel id="ExPARuptureColor" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExPARupture.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetTintColor 255,128,128 1.000000 OneShot ExPARuptureColor"/>
+        <On index="2" Terms="Behavior.ExPARupture.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearTintColor 1.000000 ExPARuptureColor"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorSound id="ExRazShaLivingFlameBeamSoundLoop" parent="SoundContinuous">
+        <On Terms="Effect.ExPALivingFlameCP.Start; At Effect" Send="Create"/>
+        <On Terms="Effect.ExPALivingFlameCP.Stop" Send="Destroy"/>
+        <Sound value="ExPALivingFlameBeamLoop"/>
+    </CActorSound>
+    <CActorSound id="ExRazShaLivingFlameBeamSoundEnd" parent="SoundOneShot">
+        <On Terms="Effect.ExPALivingFlameCP.Stop" Send="Create"/>
+        <Sound value="ExPALivingFlameBeamEnd"/>
+    </CActorSound>
+    <CActorModel id="ExTFOFloatingCorruptionColor" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExTFOFloatingCorruption.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetTintColor {128,0,0 1.500000} 1.000000 OneShot ExTFOFloatingCorruptionColor"/>
+        <On index="2" Terms="Behavior.ExTFOFloatingCorruption.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearTintColor 1.000000 ExTFOFloatingCorruptionColor"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorModelMaterial id="ExPrimalAvatarAwakeningGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExPrimalAvatarAwakening.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExPrimalAvatarAwakening.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorUnit id="ExTFOFloatingCorruption" parent="GenericUnitStandardNoAutoSoundLinks" unitName="ExTFOFloatingCorruption">
+        <Macros value="RemoveFlyerHelperMacro"/>
+        <On Terms="ActorCreation" Send="Create VoidShardACUnstableEnergyActorSoundLoop"/>
+        <DeathArray index="Normal" ModelLink="VoidShardACUnstableEnergy"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Progress" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+    </CActorUnit>
+    <CActorModel id="ExPATwilightStrikeOC" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExPATwilightCover.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetOpacity 0.300000 1.000000 ExPATwilightStrikeOpacity"/>
+        <On index="2" Terms="ActorCreation" Target="_Selectable" Send="SetTintColor {128,128,192 3.000000} 0.500000 OneShot ExPATwilightStrikeColor"/>
+        <On Terms="Behavior.ExPATwilightCover.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearOpacity 1.000000 ExPATwilightStrikeOpacity"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearTintColor 0.500000 ExPATwilightStrikeColor"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorModelMaterial id="ExPATwilightStrikeGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExPATwilightCover.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExPATwilightCover.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorSound id="ExPATwilightStrikeSound" parent="SoundOneShot">
+        <On Terms="Behavior.ExPATwilightCover.On" Send="Create"/>
+        <Sound value="ExPATwilightStrikeImpact"/>
+    </CActorSound>
+    <CActorModel id="ExTFOCorruptionPillarExplosionEffect" parent="ModelAnimationStyleOneShotUNIT">
+        <On Terms="Effect.ExTFOCorruptionPillarExplosionSearch.Start; At Source" Send="Create"/>
+        <On Terms="ActorCreation" Send="Create ExTFOCorruptionPillarExplosionSound"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+    </CActorModel>
+    <CActorSound id="ExTFOCorruptionPillarExplosionSound" parent="SoundOneShot">
+        <Sound value="ExTFOCorruptionPillarExplosionCast"/>
+    </CActorSound>
+    <CActorSound id="ExTFOCorruptionPillarFallSound" parent="SoundOneShot">
+        <On Terms="Effect.ExTFOCorruptionPillarMarker.Start" Send="Create"/>
+        <Sound value="ExTFOCorruptionPillarFall"/>
+    </CActorSound>
+    <CActorSound id="ExTFOCorruptionPillarLandSound" parent="SoundOneShot">
+        <Sound value="ExTFOCorruptionPillarLand"/>
+    </CActorSound>
+    <CActorModel id="ExTFOCorruptionPillarLandEffect" parent="ModelAnimationStyleOneShot">
+        <On Terms="Effect.ExTFOCorruptionPillarLandingSearch.Start; At Effect" Send="Create"/>
+        <On Terms="ActorCreation" Send="Create ExTFOCorruptionPillarLandSound"/>
+        <HostSiteOps Ops="SOpShadow"/>
+    </CActorModel>
+    <CActorModelMaterial id="ExTFODrainingWindStunnedGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExTFODrainingWindStunned.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExTFODrainingWindStunned.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorModel id="ExTFODrainingWindStunnedEffect" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="AnimBracketStart GL_BSD GLbirth GLstand GLdeath"/>
+        <On Terms="Behavior.ExTFODrainingWindStunned.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="SetTintColor {128,0,0 1.100000}"/>
+        <On Terms="Behavior.ExTFODrainingWindStunned.Off" Send="AnimBracketStop BSD"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOverhead"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModel>
+    <CActorModel id="ExPATwilightEnergyWarningSplat">
+        <Inherits index="Visibility" value="1"/>
+        <On Terms="ActorCreation" Send="$Stand PlayForever,NonLooping"/>
+        <On Terms="ActorCreation" Send="SetTintColor {255,255,255 5.000000}"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpShadow"/>
+        <Model value="ExTFODrainingWindWarningSplat"/>
+    </CActorModel>
+    <CActorSound id="ExVoidDevourerGrantProtectionBeamSoundLoop" parent="SoundContinuous">
+        <On Terms="Effect.ExVoidDevourerGrantProtectionCP.Start" Send="Create"/>
+        <On Terms="Effect.ExVoidDevourerGrantProtectionCP.Stop" Send="Destroy"/>
+        <Sound value="ExVoidDevourerGrantProtectionBeamLoop"/>
+    </CActorSound>
+    <CActorBeamSimple id="ExVoidDevourerGrantProtectionBeam" parent="BeamSimpleAnimationStyleContinuous">
+        <Macros value="GlobalLoopMacro"/>
+        <Supporter Subject="_Unit" Scope="Caster"/>
+        <On Terms="Effect.ExVoidDevourerGrantProtectionCP.Start; At Caster" Send="Create"/>
+        <On Terms="Effect.ExVoidDevourerGrantProtectionCP.Stop; At Caster" Send="Destroy"/>
+        <Host Subject="_Unit" Scope="Target"/>
+        <HostLaunch Subject="_Unit" Scope="Caster"/>
+        <HostLaunchSiteOps Ops="SOpAttachWeapon"/>
+        <HostImpact Subject="_Unit" Scope="Target"/>
+        <HostImpactSiteOps Ops="SOpAttachCenter SOpMoveUpBy4"/>
+    </CActorBeamSimple>
+    <CActorModel id="ExPrimalAvatarAwakeningEffect" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="AnimBracketStart GL_BSD GLbirth GLstand GLdeath"/>
+        <On Terms="Behavior.ExPrimalAvatarAwakening.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="SetTintColor {128,0,0 1.100000}"/>
+        <On Terms="Behavior.ExPrimalAvatarAwakening.Off" Send="AnimBracketStop BSD"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOverhead"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModel>
+    <CActorModel id="ExPATornadoSO" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExPATornadoTimedLife.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetScale 1.000000,1.000000,0.400000 5.000000 ExPATornadoSO"/>
+        <On index="2" Terms="ActorCreation" Target="_Selectable" Send="SetOpacity 0.500000 5.000000 ExPATornadoSO"/>
+        <On Terms="Behavior.ExPAMindExplosion.Off" Send="Destroy"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorModelMaterial id="ExTFOTheCrushingGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExTFOTheCrushing.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExTFOTheCrushing.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorUnit id="ExTFOProtectiveDome" parent="GenericUnitStandardNoAutoSoundLinks" unitName="ExTFOProtectiveDome">
+        <InfoText value="Unit/InfoText/TFOProtectiveDome"/>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+        <MinimapIcon value="Assets\Textures\ui_minimap_icon_alert.dds"/>
+        <MinimapIconScale value="1.100000"/>
+    </CActorUnit>
+    <CActorBeamSimple id="ExPAMindExplosionBeam" parent="GenericAttackBeam">
+        <Macros value="GlobalLoopMacro"/>
+        <Supporter Subject="_Unit" Scope="Target"/>
+        <On index="0" Terms="ActorCreation" Send="AnimBracketStart BSD Birth Stand Death"/>
+        <On Terms="Effect.ExPAMindExplosionCP.Start" Send="Create"/>
+        <On Terms="ActorCreation" Send="SetTintColor 128,0,255"/>
+        <On Terms="Effect.ExPAMindExplosionCP.Stop" Send="Destroy"/>
+        <Host Subject="_Unit" Scope="Caster"/>
+        <HostLaunch Subject="_Unit" Scope="Target"/>
+        <HostLaunchSiteOps Ops="SOpAttachCenter"/>
+        <HostImpact Subject="_Unit" Scope="Caster"/>
+        <HostImpactSiteOps Ops="SOpAttachWeapon"/>
+    </CActorBeamSimple>
+    <CActorAction id="ExNaraxusAcidSalivaAttack" parent="GenericAttack" effectImpact="ExNaraxusAcidSalivaDamage" effectLaunch="ExNaraxusAcidSalivaLaunchMissile">
+        <LaunchAssets Sound="BioDischargeLaunch"/>
+        <Missile value="BioDischargeMissile"/>
+        <ImpactMap index="None" Model="BioDischargeMissile" Sound="BioDischargeImpact"/>
+        <ImpactModel value="BioDischargeImpactModel"/>
+        <LaunchAttachQuery Methods="AMFilterHead"/>
+    </CActorAction>
+    <CActorSound id="ExPAMindExplosionCastSound" parent="SoundOneShot">
+        <On Terms="Effect.ExPAMindExplosionCP.Start" Send="Create"/>
+        <Sound value="ExPAMindExplosionCast"/>
+    </CActorSound>
+    <CActorModel id="ExVarookhFrenziedSporesImpact" parent="ModelAnimationStyleOneShot">
+        <On Terms="Effect.ExVarookhFrenziedSporesDamage.Start" Send="Create"/>
+        <HostSiteOps Ops="SOpAttachOrigin SOpRotationRandomDisc"/>
+        <Model value="Devourer_AcidSpores_Impact"/>
+    </CActorModel>
+    <CActorModel id="ExAnomalyCoverA" parent="ModelAnimationStyleContinuousUNIT">
+        <Inherits index="Visibility" value="1"/>
+        <On Terms="UnitCreation.ExAnomaly" Send="Create"/>
+        <On Terms="UnitDeath.ExAnomaly" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpShadow" HoldRotation="1"/>
+    </CActorModel>
+    <CActorModel id="ExBonusGatheringEffect" parent="ModelAnimationStyleContinuousUNIT">
+        <On Terms="Behavior.ExBonusInteractionWithWorker.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="Create ExBonusGatheringSoundStart"/>
+        <On Terms="Behavior.ExBonusInteractionWithWorker.Off" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+    </CActorModel>
+    <CActorModelMaterial id="ExBonusAnomalyBlessingGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExBonusAnomalyBlessing0.On" Send="Create"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing1.On" Send="Create"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing2.On" Send="Create"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing3.On" Send="Create"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing4.On" Send="Create"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing5.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing0.Off" Send="AnimBracketStop BSD"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing1.Off" Send="AnimBracketStop BSD"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing2.Off" Send="AnimBracketStop BSD"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing3.Off" Send="AnimBracketStop BSD"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing4.Off" Send="AnimBracketStop BSD"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessing5.Off" Send="AnimBracketStop BSD"/>
+        <Model value="ExBonusGatheringGlaze"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorSound id="ExBonusGatheringSoundStart" parent="SoundOneShot">
+        <Sound value="ExBonusGatheringStart"/>
+    </CActorSound>
+    <CActorSound id="ExBonusGatheringSoundLoop" parent="SoundContinuous">
+        <On Terms="Behavior.ExBonusGatheringInformationTrigger.On" Send="Create"/>
+        <On Terms="Behavior.ExBonusGatheringInformationTrigger.Off" Send="Destroy"/>
+        <Sound value="ExBonusGatheringLoop"/>
+    </CActorSound>
+    <CActorModel id="ExBonusABLifeScale" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExBonusAnomalyBlessing4.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetScale 1.150000 1.000000 ExBonusABLifeScale"/>
+        <On index="2" Terms="Behavior.ExBonusAnomalyBlessing4.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearScale 1.000000 ExBonusABLifeScale"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorAction id="ExVarookhFrenziedSporesAttack" parent="GenericAttack" effectImpact="ExVarookhFrenziedSporesSearch" effectLaunch="ExVarookhFrenziedSporesLaunch">
+        <LaunchAttachQuery Methods="AMFilterWeapon"/>
+        <LaunchAssets Sound="ExVarookhFrenziedSporesLaunch"/>
+        <Missile value="ExVarookhFrenziedSporesMissile"/>
+        <ImpactMap index="None" Model="ExVarookhFrenziedSporesImpact" Sound="ExVarookhFrenziedSporesImpact"/>
+    </CActorAction>
+    <CActorMissile id="ExVarookhFrenziedSporesMissile" parent="GenericAttackMissile" unitName="ExVarookhFrenziedSporesMissile"/>
+    <CActorModel id="ExPAMindExplosionSC" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExPAMindExplosion.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetScale 1.150000 1.000000 ExPAMindExplosionScale"/>
+        <On index="2" Terms="ActorCreation" Target="_Selectable" Send="SetTintColor {210,170,255 1.200000} 1.000000 OneShot ExPAMindExplosionColor"/>
+        <On Terms="Behavior.ExPAMindExplosion.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearScale 1.000000 ExPAMindExplosionScale"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearTintColor 1.000000 ExPAMindExplosionColor"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorSound id="ExPAMindExplosionImpactSound" parent="SoundOneShot">
+        <On Terms="Behavior.ExPAMindExplosion.On" Send="Create"/>
+        <Sound value="ExPAMindExplosionImpact"/>
+    </CActorSound>
+    <CActorSound id="ExRazShaGeyserSoundLoop" parent="SoundContinuous">
+        <On Terms="Effect.ExRazShaCataclysmGeyserCPSearch.Start; At Effect" Send="Create"/>
+        <On Terms="Effect.ExRazShaCataclysmGeyserCPSearch.Stop" Send="Destroy"/>
+        <Sound value="ExRazShaGeyserLoop"/>
+    </CActorSound>
+    <CActorModel id="ExRazShaGeyserAshEffect" parent="ModelAnimationStyleContinuous">
+        <On index="0" Terms="ActorCreation" Send="AnimBracketStart BSD Birth,A Stand,A Death"/>
+        <On Terms="Effect.ExRazShaCataclysmGeyserCPStart.Start" Send="Create"/>
+        <On Terms="Effect.ExRazShaCataclysmGeyserCPStart.Stop" Send="Destroy"/>
+        <Model value="ExRazShaGeyserEffect"/>
+    </CActorModel>
+    <CActorModel id="ExDehakaFeastOfSurvivalBonusEffect" parent="ModelAnimationStyleOneShotUNIT">
+        <On Terms="Behavior.ExEssenceOfStrength.On" Send="Create"/>
+        <On Terms="Behavior.ExEssenceOfVitality.On" Send="Create"/>
+        <On Terms="Behavior.ExEssenceOfMastery.On" Send="Create"/>
+        <On Terms="Behavior.ExEssenceOfVersality.On" Send="Create"/>
+        <On Terms="Behavior.ExEssenceOfImmunity.On" Send="Create"/>
+        <On Terms="Behavior.ExEssenceOfSwiftness.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="Create ExDehakaFeastOfSurvivalBonusSound"/>
+        <HostSiteOps Ops="SOpAttachOrigin" HoldRotation="1"/>
+    </CActorModel>
+    <CActorModel id="ExDehakaFeastOfSurvivalDrainEffectB" parent="ModelAnimationStyleContinuousUNIT">
+        <On Terms="Behavior.ExDehakaFeastOfSurvivalChanneling.On" Send="Create"/>
+        <On Terms="Behavior.ExDehakaFeastOfSurvivalChanneling.Off" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpAttachCenter" HoldRotation="1"/>
+    </CActorModel>
+    <CActorSound id="ExDehakaFeastOfSurvivalBonusSound" parent="SoundOneShot">
+        <Sound value="ExDehakaFeastOfSurvivalBonus"/>
+    </CActorSound>
+    <CActorSound id="ExDehakaFeastOfSurvivalBeamSound" parent="SoundOneShot">
+        <Sound value="ExDehakaFeastOfSurvivalBeam"/>
+    </CActorSound>
+    <CActorUnit id="ExAnomaly" parent="GenericUnitStandard" unitName="ExAnomaly">
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-general-naturalgas.dds"/>
+        </GroupIcon>
+        <GroupSoundArray index="What" value=""/>
+        <GroupSoundArray index="Yes" value=""/>
+        <GroupSoundArray index="Attack" value=""/>
+        <GroupSoundArray index="Board" value=""/>
+        <HeroIcon value="Assets\Textures\wireframe-general-naturalgas.dds"/>
+        <HighlightTooltip value="Unit/Name/ExAnomalyTooltip"/>
+        <InfoText value="Unit/InfoText/ExAnomalyInfo"/>
+        <SoundArray index="Birth" value=""/>
+        <SoundArray index="Ready" value=""/>
+        <SoundArray index="Help" value=""/>
+        <SoundArray index="What" value=""/>
+        <SoundArray index="Yes" value=""/>
+        <SoundArray index="Attack" value=""/>
+        <SoundArray index="Pissed" value=""/>
+        <SoundArray index="Movement" value=""/>
+        <SoundArray index="Turning" value=""/>
+        <SoundArray index="Board" value=""/>
+        <SoundArray index="Click" value=""/>
+        <SoundArray index="ClickError" value=""/>
+        <SoundArray index="Highlight" value=""/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+        <UnitIcon value="Assets\Textures\wireframe-general-naturalgas.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-general-naturalgas.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorModel id="ExDehakaFeastOfSurvivalDrainEffectA" parent="ModelAnimationStyleContinuousUNIT">
+        <On Terms="Behavior.ExDehakaFeastOfSurvival.On" Send="Create"/>
+        <On Terms="Behavior.ExDehakaFeastOfSurvival.Off" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpAttachOrigin"/>
+    </CActorModel>
+    <CActorModel id="ExEssencesCoverA" parent="ModelAnimationStyleContinuousUNIT">
+        <EditorCategories value=""/>
+        <On Terms="UnitCreation.ExEssence" Send="Create"/>
+        <On Terms="UnitDeath.ExEssence" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpAttachOrigin" HoldRotation="1"/>
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+    </CActorModel>
+    <CActorModel id="ExEssencesCoverB" parent="ModelAnimationStyleContinuousUNIT">
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <EditorCategories value=""/>
+        <On Terms="UnitCreation.ExEssence" Send="Create"/>
+        <On Terms="UnitDeath.ExEssence" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpAttachCenter" HoldRotation="1"/>
+    </CActorModel>
+    <CActorMissile id="ExPAAcidSalivaMissile" parent="GenericAttackMissile" unitName="ExPAAcidSalivaMissile"/>
+    <CActorSound id="ExPAQuakeJumpSound" parent="SoundOneShot">
+        <Sound value="ExPAQuakeJump"/>
+    </CActorSound>
+    <CActorSound id="ExPAQuakeLandSound" parent="SoundOneShot">
+        <Sound value="ExPAQuakeLand"/>
+    </CActorSound>
+    <CActorModel id="ExPAQuakeLandEffect" parent="ModelAnimationStyleOneShot">
+        <On Terms="Effect.ExPAQuakeCP.Stop; At Effect" Send="Create"/>
+        <On Terms="ActorCreation" Send="Create ExPAQuakeLandSound"/>
+        <HostSiteOps Ops="SOpShadow"/>
+    </CActorModel>
+    <CActorSound id="ExPAPrimalFrenzyCastSound" parent="SoundOneShot">
+        <Flags index="SuppressSaveLoad" value="0"/>
+        <Sound value="ExPAPrimalFrenzyCast"/>
+    </CActorSound>
+    <CActorSound id="ExPAArmorOverloadCastSound" parent="SoundOneShot">
+        <Flags index="SuppressSaveLoad" value="0"/>
+        <On Terms="Abil.ExPAArmorOverload.SourceFinishStart" Send="Create"/>
+        <Sound value="ExPAArmorOverloadCast"/>
+    </CActorSound>
+    <CActorModel id="ExPAQuakeJumpEffect" parent="ModelAnimationStyleOneShot">
+        <On Terms="Effect.ExPAQuakeCP.Start; At Effect" Send="Create"/>
+        <On Terms="ActorCreation" Send="Create ExPAQuakeJumpSound"/>
+        <HostSiteOps Ops="SOpShadow"/>
+    </CActorModel>
+    <CActorSound id="ExRazShaBurningSound" parent="SoundContinuous">
+        <On Terms="Behavior.ExPACataclysmBurningGround.On" Send="Create"/>
+        <On Terms="Behavior.ExPACataclysmBurningGround.Off" Send="Destroy"/>
+        <On Terms="Behavior.ExPACataclysmBurningAir.On" Send="Create"/>
+        <On Terms="Behavior.ExPACataclysmBurningAir.Off" Send="Destroy"/>
+        <Sound value="ExRazShaBurningLoop"/>
+    </CActorSound>
+    <CActorModel id="ExRazShaGeyserFireEffect" parent="ModelAnimationStyleContinuous">
+        <On index="0" Terms="ActorCreation" Send="AnimBracketStart BSD Birth,B Stand,B Death"/>
+        <On Terms="Effect.ExRazShaCataclysmGeyserCPSearch.Start" Send="Create"/>
+        <On Terms="Effect.ExRazShaCataclysmGeyserCPSearch.Stop" Send="AnimBracketStop BSD"/>
+        <Model value="ExRazShaGeyserEffect"/>
+    </CActorModel>
+    <CActorSound id="ExRazShaGeyserSoundStart" parent="SoundOneShot">
+        <On Terms="Effect.ExRazShaCataclysmGeyserCPSearch.Start; At Effect" Send="Create"/>
+        <Sound value="ExRazShaGeyserStart"/>
+    </CActorSound>
+    <CActorBeamSimple id="ExVoidDevourerDrainBeam" parent="BeamSimpleAnimationStyleContinuous">
+        <Macros value="GlobalLoopMacro"/>
+        <Supporter Subject="_Unit" Scope="Target"/>
+        <On Terms="Effect.ExVoidDevourerDrainCP.Start; At Caster" Send="Create"/>
+        <On Terms="Effect.ExVoidDevourerDrainCP.Stop; At Caster" Send="Destroy"/>
+        <On Terms="Signal.*.ExecutionStart" Send="ModelSwap ExVoidDevourerExecutionBeam"/>
+        <Host Subject="_Unit" Scope="Caster"/>
+        <HostLaunch Subject="_Unit" Scope="Target"/>
+        <HostLaunchSiteOps Ops="SOpAttachCenter"/>
+        <HostImpact Subject="_Unit" Scope="Caster"/>
+        <HostImpactSiteOps Ops="SOpAttachWeapon"/>
+    </CActorBeamSimple>
+    <CActorUnit id="ExPrimalAvatarZorgg" parent="GenericUnitBase" unitName="ExPrimalAvatarZorgg">
+        <Aliases value="_UnitHuge"/>
+        <Macros value="ZergBurrowStandardAnimMacro"/>
+        <Macros value="ZergMediumBurrowEffects"/>
+        <Macros value="UnloadDropAnim"/>
+        <On Terms="ActorCreation" Send="AnimGroupApply Cover"/>
+        <On Terms="Abil.attack.ReadyStart" Send="AnimGroupApply Ready"/>
+        <On Terms="WeaponStart.ExZorggSerratedTalons.AttackStart" Send="AnimBracketStart Attack Attack"/>
+        <On Terms="WeaponStart.ExZorggAcidicProjection.AttackStart" Send="AnimBracketStart Attack Spell"/>
+        <On Terms="WeaponStop.*.AttackStop" Send="AnimBracketStop Attack"/>
+        <On Terms="Abil.attack.ReadyStop" Send="AnimGroupRemove Ready"/>
+        <On Terms="Behavior.ExPAQuakeCaster.On" Send="AnimBracketStart Spell {} Jump Jump,End"/>
+        <On Terms="Behavior.ExPAQuakeCaster.Off" Send="AnimBracketStop Spell"/>
+        <EventDataSound Name="AttackLaunch" Actor="UnitSound" Sound="PrimalUltralisk_AttackLaunch"/>
+        <EventDataSound Name="AttackImpact" Actor="UnitSound" Sound="PrimalUltralisk_AttackImpact"/>
+        <DeathArray index="Normal" ModelLink="ExPrimalAvatarZorggDeath" SoundLink="Zerus01_Brakk_DeathBlow" VoiceLink=""/>
+        <PortraitModel value="PrimalZergKingPortrait"/>
+        <WalkAnimMoveSpeed value="1.3984"/>
+        <CustomUnitStatusFrame value="HotS_UnitStatus/HeroUnitStatusFrameTemplateWide"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-PrimalKing.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\Wireframe-Zerg-PrimalKing.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-hardenedcarapace.dds"/>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+        <UnitIcon value="Assets\Textures\Wireframe-Zerg-PrimalKing.dds"/>
+        <UnitKillRank Text="UnitKillRank/ExPackLeader"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-PrimalKing.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorModel id="ExDehakaBurrowChargeEffect" parent="ModelAnimationStyleContinuous">
+        <On index="0" Terms="ActorCreation" Send="AnimBracketStart BSD Birth Stand,01 Death"/>
+        <On Terms="Effect.ExDehakaBurrowChargePersistentFast.Start; At Effect" Send="Create"/>
+        <On Terms="Effect.ExDehakaBurrowChargePersistentNormal.Start; At Effect" Send="Create"/>
+        <On Terms="Effect.ExDehakaBurrowChargePersistentFast.Stop" Send="AnimBracketStop BSD"/>
+        <On Terms="Effect.ExDehakaBurrowChargePersistentNormal.Stop" Send="AnimBracketStop BSD"/>
+    </CActorModel>
+    <CActorMissile id="ExDehaka" parent="GenericUnitStandard" unitName="ExDehaka">
+        <Macros value="ZergBurrowStandardAnimMacro"/>
+        <Macros value="UnloadDropAnim"/>
+        <On Terms="ActorCreation" Send="RefSet ::global.Dehaka ::Self"/>
+        <On Terms="Abil.Drag.SourcePrepStart" Send="AnimPlay StandWorkStart Stand,Work,Start 0 0.250000 0.250000 1.000000 AsDuration"/>
+        <On Terms="Abil.DehakaMirrorImage.SourceCastStart" Send="AnimPlay StandMorph Stand,Morph 0 0.125000 0.250000 0.750000 AsDuration"/>
+        <On Terms="AnimDone; AnimName StandWorkStart" Send="AnimPlay StandWorkEnd Stand,Work,Start 0 0.250000 0.250000 1.000000 AsDuration"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Burrow"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Unburrow"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear StandMorph"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear StandWorkStart"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear StandWorkEnd"/>
+        <On Terms="AbilMorph.*.Finish; AbilKey BurrowUp" Send="AnimClear Burrow"/>
+        <On Terms="Behavior.DehakaJump.Launch" Send="AnimClear Unburrow"/>
+        <On Terms="Behavior.DehakaJump.Launch" Send="AnimBracketStart Jump Jump,Start Jump Jump,End"/>
+        <On Terms="Behavior.DehakaJump.Launch" Send="AnimBlendTimeApply 0.100000"/>
+        <On Terms="Behavior.DehakaJump.LandDown" Send="AnimBracketStop Jump"/>
+        <On Terms="Behavior.DehakaJump.LandDown" Send="AnimBlendTimeApply"/>
+        <On Terms="Behavior.DehakaJump.LandUp" Send="AnimBracketStop Jump"/>
+        <On Terms="Behavior.DehakaJump.LandUp" Send="AnimBlendTimeApply"/>
+        <On Terms="AbilMorph.*.Start; AbilKey BurrowDown" Send="Create LargeBurrowDownEffectsDehaka"/>
+        <On Terms="AbilMorph.*.Start; AbilKey BurrowDown" Send="Create DehakaBurrowDown"/>
+        <On Terms="AbilMorph.*.Start; AbilKey BurrowUp" Send="Create DehakaBurrowUp"/>
+        <On Terms="AbilMorph.*.Cancel; MorphFrom Dehaka; MorphTo DehakaBurrowed" Send="AnimClear Burrow"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo Dehaka; MorphFrom DehakaBurrowed" Send="AnimBracketStop Burrow"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo Dehaka; MorphFrom DehakaBurrowed" Send="AnimClear Burrow"/>
+        <On Terms="WeaponStart.Dehaka.AttackStart" Send="Create DehakaAttackSound"/>
+        <On Terms="UnitBirth.DehakaBurrowed" Send="Create"/>
+        <On Terms="UnitBirth.DehakaBurrowed" Send="AnimBracketStart Burrow Burrow IGNORE Unburrow ClosingFull,OpeningPlayForever,Instant"/>
+        <On Terms="UnitRevive.Dehaka" Send="Create ZergHeroRevive"/>
+        <On Terms="UnitRevive.Dehaka" Send="AnimPlay Unburrow Unburrow 0 0.000000 -1.000000 0.000000"/>
+        <On Terms="UnitRevive.Dehaka" Send="Create LargeBurrowUpEffects"/>
+        <On Terms="UnitRevive.Dehaka" Send="Create DehakaBurrowUp"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Birth"/>
+        <On Terms="UnitDeathCustomize" Send="Create LargeBurrowDownEffects"/>
+        <On Terms="UnitDeathCustomize" Send="Create DehakaBurrowDown"/>
+        <On Terms="ActorCreation.ExDehaka" Send="Create DehakaHeroGlow"/>
+        <On Terms="UnitDeathCustomize" Target="DehakaHeroGlow" Send="Destroy"/>
+        <On Terms="Signal.*.RemoveGlow" Target="DehakaHeroGlow" Send="Destroy"/>
+        <On Terms="UnitRevive.DehakaBurrowed" Send="Create"/>
+        <On Terms="UnitRevive.DehakaBurrowed" Send="AnimBracketStart Burrow Burrow IGNORE Unburrow ClosingFull,OpeningPlayForever,Instant"/>
+        <On Terms="Abil.ExFeastOfSurvival.SourceChannelStart" Send="AnimBracketStart Work Stand,Work,Start Stand,Work Stand,Work,End"/>
+        <On Terms="Abil.ExFeastOfSurvival.SourceChannelStop" Send="AnimBracketStop Work"/>
+        <EventDataSound Name="AttackLaunch" Actor="UnitSound" Sound="Dehaka_Whoosh"/>
+        <EventDataSound Name="AttackImpact" Actor="UnitSound" Sound="PrimalUltralisk_AttackImpact"/>
+        <DeathArray index="Normal" VoiceLink=""/>
+        <DeathArray index="Fire" AnimProps="Burrow,Superior" VoiceLink="Dehaka_Death"/>
+        <DeathArray index="Silentkill" AnimProps="Burrow,Superior" VoiceLink="Dehaka_Death"/>
+        <DeathActorModel value="UnitDeathModelDehaka"/>
+        <DeathActorModelLow value="UnitDeathModelDehaka"/>
+        <PortraitActor value="DehakaPortrait"/>
+        <PortraitModel value="DehakaPortrait"/>
+        <WalkAnimMoveSpeed value="2"/>
+        <AbilSoundArray AbilCmd="DehakaMirrorImage,Execute" Sound="Dehaka_Silent"/>
+        <BarOffset value="30"/>
+        <CustomUnitStatusFrame value="HotS_UnitStatus/KerriganHeroUnitStatusFrameTemplate"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-Dehaka.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\btn-hero-dehaka.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-groundcarapace-level0.dds"/>
+        <MinimapIconScale value="0.600000"/>
+        <MinimapRenderPriority value="Hero"/>
+        <NameOffset value="40"/>
+        <SoundArray index="Ready" value="Dehaka_Ready"/>
+        <SoundArray index="Help" value="Dehaka_Help"/>
+        <SoundArray index="What" value="Dehaka_What"/>
+        <SoundArray index="Yes" value="Dehaka_Yes"/>
+        <SoundArray index="Attack" value="Dehaka_Attack"/>
+        <SoundArray index="Pissed" value="Dehaka_Pissed"/>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+        <UnitIcon value="Assets\Textures\btn-unit-zerg-dehaka.dds"/>
+        <UnitKillRank Text="UnitKillRank/ExDehaka"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-Dehaka.dds"/>
+        </Wireframe>
+    </CActorMissile>
+    <CActorModel id="ExDehakaBurrowChargeSplat" parent="ModelAnimationStyleContinuous">
+        <On index="0" Terms="ActorCreation" Send="AnimBracketStart BSD Birth Stand,01 Death"/>
+        <On Terms="Effect.ExDehakaBurrowChargePersistentFast.Start; At Effect" Send="Create"/>
+        <On Terms="Effect.ExDehakaBurrowChargePersistentNormal.Start; At Effect" Send="Create"/>
+        <On Terms="Effect.ExDehakaBurrowChargePersistentFast.Stop" Send="AnimBracketStop BSD"/>
+        <On Terms="Effect.ExDehakaBurrowChargePersistentNormal.Stop" Send="AnimBracketStop BSD"/>
+    </CActorModel>
+    <CActorMissile id="ExDehakaBurrowed" parent="GenericUnitStandard" unitName="ExDehakaBurrowed">
+        <Macros value="ZergBurrowStandardAnimMacro"/>
+        <Macros value="UnloadDropAnim"/>
+        <On Terms="ActorCreation" Send="RefSet ::global.Dehaka ::Self"/>
+        <On Terms="Abil.Drag.SourcePrepStart" Send="AnimPlay StandWorkStart Stand,Work,Start 0 0.250000 0.250000 1.000000 AsDuration"/>
+        <On Terms="Abil.DehakaMirrorImage.SourceCastStart" Send="AnimPlay StandMorph Stand,Morph 0 0.125000 0.250000 0.750000 AsDuration"/>
+        <On Terms="AnimDone; AnimName StandWorkStart" Send="AnimPlay StandWorkEnd Stand,Work,Start 0 0.250000 0.250000 1.000000 AsDuration"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Burrow"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Unburrow"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear StandMorph"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear StandWorkStart"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear StandWorkEnd"/>
+        <On Terms="AbilMorph.*.Finish; AbilKey BurrowUp" Send="AnimClear Burrow"/>
+        <On Terms="Behavior.DehakaJump.Launch" Send="AnimClear Unburrow"/>
+        <On Terms="Behavior.DehakaJump.Launch" Send="AnimBracketStart Jump Jump,Start Jump Jump,End"/>
+        <On Terms="Behavior.DehakaJump.Launch" Send="AnimBlendTimeApply 0.100000"/>
+        <On Terms="Behavior.DehakaJump.LandDown" Send="AnimBracketStop Jump"/>
+        <On Terms="Behavior.DehakaJump.LandDown" Send="AnimBlendTimeApply"/>
+        <On Terms="Behavior.DehakaJump.LandUp" Send="AnimBracketStop Jump"/>
+        <On Terms="Behavior.DehakaJump.LandUp" Send="AnimBlendTimeApply"/>
+        <On Terms="AbilMorph.*.Start; AbilKey BurrowDown" Send="Create LargeBurrowDownEffectsDehaka"/>
+        <On Terms="AbilMorph.*.Start; AbilKey BurrowDown" Send="Create DehakaBurrowDown"/>
+        <On Terms="AbilMorph.*.Start; AbilKey BurrowUp" Send="Create DehakaBurrowUp"/>
+        <On Terms="AbilMorph.*.Cancel; MorphFrom Dehaka; MorphTo DehakaBurrowed" Send="AnimClear Burrow"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo Dehaka; MorphFrom DehakaBurrowed" Send="AnimBracketStop Burrow"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo Dehaka; MorphFrom DehakaBurrowed" Send="AnimClear Burrow"/>
+        <On Terms="WeaponStart.Dehaka.AttackStart" Send="Create DehakaAttackSound"/>
+        <On Terms="UnitBirth.DehakaBurrowed" Send="Create"/>
+        <On Terms="UnitBirth.DehakaBurrowed" Send="AnimBracketStart Burrow Burrow IGNORE Unburrow ClosingFull,OpeningPlayForever,Instant"/>
+        <On Terms="UnitRevive.Dehaka" Send="Create ZergHeroRevive"/>
+        <On Terms="UnitRevive.Dehaka" Send="AnimPlay Unburrow Unburrow 0 0.000000 -1.000000 0.000000"/>
+        <On Terms="UnitRevive.Dehaka" Send="Create LargeBurrowUpEffects"/>
+        <On Terms="UnitRevive.Dehaka" Send="Create DehakaBurrowUp"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Birth"/>
+        <On Terms="UnitDeathCustomize" Send="Create LargeBurrowDownEffects"/>
+        <On Terms="UnitDeathCustomize" Send="Create DehakaBurrowDown"/>
+        <On Terms="ActorCreation.Dehaka" Send="Create DehakaHeroGlow"/>
+        <On Terms="UnitDeathCustomize" Target="DehakaHeroGlow" Send="Destroy"/>
+        <On Terms="Signal.*.RemoveGlow" Target="DehakaHeroGlow" Send="Destroy"/>
+        <On Terms="UnitRevive.DehakaBurrowed" Send="Create"/>
+        <On Terms="UnitRevive.DehakaBurrowed" Send="AnimBracketStart Burrow Burrow IGNORE Unburrow ClosingFull,OpeningPlayForever,Instant"/>
+        <Model value="ExDehaka"/>
+        <EventDataSound Name="AttackLaunch" Actor="UnitSound" Sound="Dehaka_Whoosh"/>
+        <EventDataSound Name="AttackImpact" Actor="UnitSound" Sound="PrimalUltralisk_AttackImpact"/>
+        <BuildModel value="ExDehaka"/>
+        <DeathArray index="Normal" AnimProps="Burrow,Superior" ModelLink="ExDehaka" VoiceLink="Dehaka_Death"/>
+        <DeathArray index="Fire" AnimProps="Burrow,Superior" VoiceLink="Dehaka_Death"/>
+        <DeathArray index="Silentkill" AnimProps="Burrow,Superior" VoiceLink="Dehaka_Death"/>
+        <DeathActorModel value="UnitDeathModelDehaka"/>
+        <DeathActorModelLow value="UnitDeathModelDehaka"/>
+        <PlacementModel value="ExDehaka"/>
+        <PortraitActor value="DehakaPortrait"/>
+        <PortraitModel value="DehakaPortrait"/>
+        <WalkAnimMoveSpeed value="2"/>
+        <AbilSoundArray AbilCmd="DehakaMirrorImage,Execute" Sound="Dehaka_Silent"/>
+        <BarOffset value="30"/>
+        <CustomUnitStatusFrame value="HotS_UnitStatus/KerriganHeroUnitStatusFrameTemplate"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-Dehaka.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\btn-hero-dehaka.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-groundcarapace-level0.dds"/>
+        <MinimapIconScale value="0.600000"/>
+        <MinimapRenderPriority value="Hero"/>
+        <NameOffset value="40"/>
+        <SoundArray index="Ready" value="Dehaka_Ready"/>
+        <SoundArray index="Help" value="Dehaka_Help"/>
+        <SoundArray index="What" value="Dehaka_What"/>
+        <SoundArray index="Yes" value="Dehaka_Yes"/>
+        <SoundArray index="Attack" value="Dehaka_Attack"/>
+        <SoundArray index="Pissed" value="Dehaka_Pissed"/>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+        <UnitIcon value="Assets\Textures\btn-unit-zerg-dehaka.dds"/>
+        <UnitKillRank Text="UnitKillRank/ExDehakaBurrowed"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-Dehaka.dds"/>
+        </Wireframe>
+    </CActorMissile>
+    <CActorUnit id="ExVoidDevourer" parent="GenericUnitStandard" unitName="ExVoidDevourer">
+        <On Terms="Abil.ExVoidDevourerDrain.SourceChannelStart" Send="AnimBracketStart Work Stand,Work,Start Stand,Work Stand,Work,End"/>
+        <On Terms="Abil.ExVoidDevourerDrain.SourceChannelStop" Send="AnimBracketStop Work"/>
+        <On Terms="Abil.ExVoidDevourerGrantProtection.SourceChannelStart" Send="AnimBracketStart Work Stand,Work,Start Stand,Work Stand,Work,End"/>
+        <On Terms="Abil.ExVoidDevourerGrantProtection.SourceChannelStop" Send="AnimBracketStop Work"/>
+        <ModelFlags index="OutlineEmitter" value="1"/>
+        <DeathArray index="Normal" ModelLink="ProtossSpiritDeath" SoundLink="HighTemplar_Death"/>
+        <DeathActorModel value="UnitDeathModelWithDeathMotionGround"/>
+        <HeroIcon value="Assets\Textures\btn-unit-protoss-mutator-reanimator.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-protoss-groundarmorlevel0.dds"/>
+        <UnitIcon value="Assets\Textures\btn-unit-protoss-mutator-reanimator.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-protoss-reanimator-mutator.dds"/>
+        </Wireframe>
+        <WireframeShield>
+            <Image value="Assets\Textures\wireframe-protoss-reanimator-mutator-shield00.dds"/>
+            <Image value="Assets\Textures\wireframe-protoss-reanimator-mutator-shield01.dds"/>
+            <Image value="Assets\Textures\wireframe-protoss-reanimator-mutator-shield02.dds"/>
+        </WireframeShield>
+        <CustomUnitStatusFrame value="LotV_UnitStatus/UnitStatusProgressFrameTemplateHigh"/>
+        <Aliases value="_ExVoidDevourer"/>
+    </CActorUnit>
+    <CActorModel id="ExVoidDevourerAmonsCoverEffect" parent="ModelAnimationStyleContinuousUNIT">
+        <On Terms="Behavior.ExAmonsCover.On" Send="Create"/>
+        <On Terms="Behavior.ExAmonsCover.Off" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpAttachCenter" HoldRotation="1"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+    </CActorModel>
+    <CActorSound id="ExVoidDevourerAmonsCoverSound" parent="SoundContinuous">
+        <On Terms="Behavior.ExAmonsCover.On" Send="Create"/>
+        <On Terms="Behavior.ExAmonsCover.Off" Send="Destroy"/>
+        <Sound value="ExVoidDevourerAmonsCoverLoop"/>
+    </CActorSound>
+    <CActorBeamSimple id="ExDehakaFeastOfSurvivalBeam" parent="BeamSimpleAnimationStyleContinuous">
+        <Macros value="GlobalLoopMacro"/>
+        <Supporter Subject="_Unit" Scope="Caster"/>
+        <On Terms="Effect.ExDehakaFeastOfSurvivalCP.Start; At Caster" Send="Create"/>
+        <On Terms="ActorCreation" Send="Create ExDehakaFeastOfSurvivalBeamSound"/>
+        <On Terms="Effect.ExDehakaFeastOfSurvivalCP.Stop; At Caster" Send="AnimBracketStop BSD"/>
+        <Host Subject="_Unit" Scope="Target"/>
+        <HostLaunch Subject="_Unit" Scope="Caster"/>
+        <HostLaunchSiteOps Ops="SOpAttachWeapon"/>
+        <HostImpact Subject="_Unit" Scope="Target"/>
+        <HostImpactSiteOps Ops="SOpAttachOrigin"/>
+    </CActorBeamSimple>
+    <CActorModel id="ExDehakaFeastOfSurvivalOpacity" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExDehakaFeastOfSurvival.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetOpacity 0.000000 4.500000 ExFeastOfSurvivalOpacity"/>
+        <On index="2" Terms="Behavior.ExDehakaFeastOfSurvival.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearOpacity 1.000000 ExFeastOfSurvivalOpacity"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorModel id="ExPAPrimalFrenzyCastEffect" parent="ModelAnimationStyleOneShotUNIT">
+        <Inherits index="Visibility" value="1"/>
+        <On Terms="Effect.ExPAPrimalFrenzyABCaster.Start; At Caster" Send="Create"/>
+        <On Terms="ActorCreation" Send="SetTintColor {255,0,0 1.500000}"/>
+        <On Terms="ActorCreation; ValidateUnit ExPrimalAvatarTypeZorgg" Send="Create ExPAPrimalFrenzyRoarZorgg"/>
+        <On Terms="ActorCreation; ValidateUnit ExPrimalAvatarTypeRazSha" Send="Create ExPAPrimalFrenzyRoarRazSha"/>
+        <On Terms="ActorCreation; ValidateUnit ExPrimalAvatarTypeNaraxus" Send="Create ExPAPrimalFrenzyRoarNaraxus"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+    </CActorModel>
+    <CActorModelMaterial id="ExRazShaBurningGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExPACataclysmBurningGround.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExPACataclysmBurningGround.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorModel id="ExPABileDuctsDebuff" parent="ModelAnimationStyleContinuousUNIT">
+        <Inherits index="Scale" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <On Terms="Behavior.ExPABileDucts.On" Send="Create"/>
+        <On Terms="Behavior.ExPABileDucts.Off" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpAttachCenter" HoldRotation="1"/>
+        <AutoScaleFactor value="0.500000"/>
+    </CActorModel>
+    <CActorAction id="ExPAArmorOverloadAction" parent="GenericAttack" effectImpact="ExPAArmorOverloadABCaster" effectLaunch="ExPAArmorOverloadLaunch">
+        <LaunchSiteOps Ops="SOpAttachCenter"/>
+        <LaunchAttachQuery Methods="AMFilterCenter"/>
+        <LaunchAssets Model="ExPAArmorOverloadLaunch" Sound=""/>
+        <Missile value="ExPAArmorOverloadMissile"/>
+        <ImpactSiteOps Ops="SOpAttachWeapon"/>
+        <ImpactAttachQuery Methods="AMFilterWeapon" Fallback="Weapon"/>
+    </CActorAction>
+    <CActorModelMaterial id="ExBonusGatheringGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExBonusGatheringInformationTrigger.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExBonusGatheringInformationTrigger.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorModelMaterial id="ExPAMindExplosionGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExPAMindExplosion.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExPAMindExplosion.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorModel id="ExVoidDevourerExecutionImpactColor" parent="ModelAddition">
+        <On index="0" Terms="Effect.ExVoidDevourerExecutionABCaster.Start; At Caster" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetTintColor {175,0,0 2.000000} 0.000000 OneShot ExExecutionColorCover"/>
+        <On index="2" Terms="ActorCreation" Target="_Selectable" Send="ClearTintColor 0.700000 ExExecutionColorCover"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorModel id="ExVoidDevourerEscapeOpacity" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExVoidDevourerEscape.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetOpacity 0.000000 4.500000 ExEscapeOpacity"/>
+        <On index="2" Terms="Behavior.ExVoidDevourerEscape.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearOpacity 0.000000 ExEscapeOpacity"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorSound id="ExVoidDevourerEscapeBuffSound" parent="SoundOneShot">
+        <On Terms="Behavior.ExVoidDevourerEscape.On" Send="Create"/>
+        <Sound value="ExVoidDevourerEscapeBuff"/>
+    </CActorSound>
+    <CActorModel id="ExVoidDevourerEscapeBuffEffect" parent="ModelAnimationStyleContinuousUNIT">
+        <Inherits index="BaseModelScale" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <On Terms="Behavior.ExVoidDevourerEscape.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="SetTintColor {128,0,0 2.000000}"/>
+        <On Terms="Behavior.ExVoidDevourerEscape.Off" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpAttachOrigin" HoldRotation="1"/>
+        <Model value="ExVoidDevourerEscapeBuff"/>
+    </CActorModel>
+    <CActorMissile id="ExPAArmorOverloadMissile" parent="GenericAttackMissile" unitName="ExPAArmorOverloadMissile"/>
+    <CActorModel id="ExPAArmorOverloadImpactColor" parent="ModelAddition">
+        <On index="0" Terms="Effect.ExPAArmorOverloadABTarget.Start; At Target" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetTintColor 175,0,0 0.000000 OneShot ExPAArmorOverloadImpactColor"/>
+        <On index="2" Terms="ActorCreation" Target="_Selectable" Send="ClearTintColor 0.500000 ExPAArmorOverloadImpactColor"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorModel id="ExVoidDevourerExecutionScale" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExVoidDevourerExecutionPower.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetScale 1.300000 300.000000 ExExecutionScale"/>
+        <On index="2" Terms="Behavior.ExVoidDevourerExecutionPower.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearScale 1.000000 ExExecutionScale"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorAction id="ExVoidDevourerExecutionAction" parent="GenericAttack" effectImpact="ExVoidDevourerExecutionABCaster" effectLaunch="ExVoidDevourerExecutionLaunchMissile">
+        <LaunchSiteOps Ops="SOpAttachCenter"/>
+        <LaunchAttachQuery Methods="AMFilterCenter"/>
+        <LaunchAssets Sound="ExVoidDevourerExecutionBoltLaunch"/>
+        <Missile value="ExVoidDevourerExecutionMissile"/>
+    </CActorAction>
+    <CActorModel id="ExVoidDevourerExecutionDebuff" parent="ModelAnimationStyleContinuousUNIT">
+        <Inherits index="Visibility" value="1"/>
+        <On Terms="Behavior.ExVoidDevourerExecution.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="SetTintColor {128,0,0 2.000000}"/>
+        <On Terms="Behavior.ExVoidDevourerExecution.Off" Send="AnimBracketStop BSD"/>
+        <HostSiteOps Ops="SOpAttachCenter" HoldRotation="1"/>
+    </CActorModel>
+    <CActorMissile id="ExVoidDevourerExecutionMissile" parent="GenericAttackMissile" unitName="ExVoidDevourerExecutionMissile"/>
+    <CActorModelMaterial id="ExVoidDevourerExecutionGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExVoidDevourerExecution.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExVoidDevourerExecution.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorBeamSimple id="ExVoidDevourerExecutionBeam" parent="BeamSimpleAnimationStyleContinuous">
+        <Macros value="GlobalLoopMacro"/>
+        <Supporter Subject="_Unit" Scope="Caster"/>
+        <On Terms="Effect.ExVoidDevourerExecutionCastPersistent.Start; At Caster" Send="Create"/>
+        <On Terms="Effect.ExVoidDevourerExecutionCastPersistent.Stop; At Caster" Send="Destroy"/>
+        <Host Subject="_Unit" Scope="Target"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+        <HostLaunch Subject="_Unit" Scope="Caster"/>
+        <HostLaunchSiteOps Ops="SOpAttachWeapon"/>
+        <HostImpact Subject="_Unit" Scope="Target"/>
+        <HostImpactSiteOps Ops="SOpAttachOrigin"/>
+    </CActorBeamSimple>
+    <CActorModel id="ExVoidDevourerDrainDebuff" parent="ModelAnimationStyleContinuousUNIT">
+        <Inherits index="Visibility" value="1"/>
+        <On Terms="Behavior.ExVoidDevourerDrain.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="SetTintColor {128,0,0 2.000000}"/>
+        <On Terms="Behavior.ExVoidDevourerDrain.Off" Send="AnimBracketStop BSD"/>
+        <On Terms="ActorCreation; ValidateUnit ExPrimalAvatarTypeZorgg" Send="SetScale 0.500000"/>
+        <On Terms="ActorCreation; ValidateUnit ExPrimalAvatarTypeGorrox" Send="SetScale 0.625000"/>
+        <On Terms="ActorCreation; ValidateUnit ExPrimalAvatarTypeNaraxus" Send="SetScale 0.700000"/>
+        <HostSiteOps Ops="SOpAttachOrigin" HoldRotation="1"/>
+    </CActorModel>
+    <CActorSound id="ExVoidDevourerDrainBeamSoundOnOff" parent="SoundOneShot">
+        <On Terms="Effect.ExVoidDevourerDrainCP.Start" Send="Create"/>
+        <On Terms="Effect.ExVoidDevourerDrainCP.Stop" Send="Create"/>
+        <Sound value="ExVoidDevourerDrainBeamOnOff"/>
+    </CActorSound>
+    <CActorSound id="ExVoidDevourerDrainBeamSoundLoop" parent="SoundContinuous">
+        <On Terms="Effect.ExVoidDevourerDrainCP.Start" Send="Create"/>
+        <On Terms="Effect.ExVoidDevourerDrainCP.Stop" Send="Destroy"/>
+        <Sound value="ExVoidDevourerDrainBeamLoop"/>
+    </CActorSound>
+    <CActorModelMaterial id="ExVoidDevourerDrainGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExVoidDevourerDrain.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExVoidDevourerDrain.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorModel id="ExVoidDevourerDrainColor" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExVoidDevourerDrain.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetTintColor 175,0,0 1.000000 OneShot ExDrainColorCover"/>
+        <On index="2" Terms="Behavior.ExVoidDevourerDrain.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearTintColor 1.000000 ExDrainColorCover"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorUnit id="ExEssence" parent="GenericUnitStandardNoAutoSoundLinks" unitName="ExEssence">
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Pickup-DNA.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\Wireframe-Pickup-DNA.dds"/>
+        <InfoText value="Unit/InfoText/DNAPickup"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Progress" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+        <UnitIcon value="Assets\Textures\Wireframe-Pickup-DNA.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Pickup-DNA.dds"/>
+        </Wireframe>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+    </CActorUnit>
+    <CActorModelMaterial id="ExDehakaFeastOfSurvivalGlaze" parent="GlazeParent">
+        <On Terms="Behavior.ExDehakaFeastOfSurvivalChanneling.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.ExDehakaFeastOfSurvivalChanneling.Off" Send="AnimBracketStop BSD"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <CActorModel id="ExPAPrimalFrenzySC" parent="ModelAddition">
+        <On index="0" Terms="Behavior.ExPAPrimalFrenzy.On" Send="Create"/>
+        <On index="1" Terms="ActorCreation" Target="_Selectable" Send="SetScale 1.100000 1.000000 ExPrimalFrenzyScale"/>
+        <On index="2" Terms="ActorCreation" Target="_Selectable" Send="SetTintColor {255,150,150 1.200000} 1.000000 OneShot ExPrimalFrenzyColor"/>
+        <On Terms="Behavior.ExPAPrimalFrenzy.Off" Send="Destroy"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearScale 1.000000 ExPrimalFrenzyScale"/>
+        <On Terms="ActorDestruction" Target="_Selectable" Send="ClearTintColor 1.000000 ExPrimalFrenzyColor"/>
+        <Model value="Invisible"/>
+    </CActorModel>
+    <CActorUnit id="ExPrimalAvatarGorrox" parent="GenericUnitBase" unitName="ExPrimalAvatarGorrox">
+        <Aliases value="_UnitHuge"/>
+        <Macros value="UnloadDropAnim"/>
+        <Macros value="ZergBurrowStandardAnimMacro"/>
+        <Macros value="ZergSmallBurrowEffects"/>
+        <AcceptedHostedPropTransfers index="Scale" value="0"/>
+        <On Terms="Abil.attack.ReadyStart" Send="AnimGroupApply Ready"/>
+        <On Terms="WeaponStart.ExGorroxSpineVolley.AttackStart" Send="AnimBracketStart Attack Spell,01"/>
+        <On Terms="WeaponStop.*.AttackStop" Send="AnimBracketStop Attack"/>
+        <On Terms="Abil.attack.ReadyStop" Send="AnimGroupRemove Ready"/>
+        <On Terms="Abil.ExPACrashingCharge.SourcePrepStart" Send="AnimPlay ChargeStart Run,Start 0 0.250000 0.250000 2.500000 AsDuration"/>
+        <On Terms="Abil.ExPACrashingCharge.SourcePrepStop" Send="AnimClear ChargeStart"/>
+        <On Terms="Abil.ExPACrashingCharge.SourceChannelStart" Send="AnimPlay Charge Run PlayForever 0.250000"/>
+        <On Terms="Abil.ExPACrashingCharge.SourceChannelStop" Send="AnimClear Charge"/>
+        <On Terms="Abil.ExPACrashingCharge.SourceChannelStop" Send="AnimPlay ChargeStop Run,End"/>
+        <On Terms="Abil.ExPAArmorOverload.SourceFinishStart" Send="AnimPlay SpellCastB Spell,Start,B NonLooping"/>
+        <On Terms="Abil.ExPABarrage.SourceFinishStart" Send="AnimPlay SpellCastC Work NonLooping"/>
+        <DeathArray index="Normal" ModelLink="KraithDeath" SoundLink="" VoiceLink="Kraith_DeathRoar"/>
+        <PortraitModel value="PrimalZergKraithPortrait"/>
+        <WalkAnimMoveSpeed value="1"/>
+        <CustomUnitStatusFrame value="HotS_UnitStatus/HeroUnitStatusFrameTemplateWide"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-Kraith.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\Wireframe-Zerg-Kraith.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-hardenedcarapace.dds"/>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+        <UnitIcon value="Assets\Textures\Wireframe-Zerg-Kraith.dds"/>
+        <UnitKillRank Text="UnitKillRank/ExPackLeader"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-Kraith.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorAction id="ExGorroxSpineVolleyAttack" parent="GenericAttack" effectImpact="ExGorroxSpineVolleyDamage" effectLaunch="ExGorroxSpineVolleyLaunch">
+        <LaunchAttachQuery Methods="AMFilterWeapon01"/>
+        <LaunchAssets Sound="Spell_SpineVolley_Launch"/>
+        <Missile value="KraithSpineVolleyAttackMissile"/>
+        <ImpactMap index="None" Model="ExGorroxSpineVolleyImpact" Sound="Spell_SpineVolley_Impact"/>
+    </CActorAction>
+    <CActorUnit id="ExRazSha" parent="GenericUnitBase" unitName="ExRazSha">
+        <Aliases value="_UnitHuge"/>
+        <On Terms="WeaponStart.ExRazShaFireball.AttackStart" Send="AnimBracketStart Attack Attack,01"/>
+        <On Terms="WeaponStop.*.AttackStop" Send="AnimBracketStop Attack"/>
+        <On Terms="ActorCreation" Send="Create YagdraBase"/>
+        <On Terms="Abil.ExPAFirebreath.SourceCastStart" Send="AnimPlay SpellCast Spell,Start"/>
+        <On Terms="Effect.YagdraFirebreathCreateGoverningPersistent.Start; At Caster" Send="AnimBracketStart SpellCast {} Spell Spell,End"/>
+        <On Terms="Effect.YagdraFirebreathCreateGoverningPersistent.Stop; At Caster" Send="AnimBracketStop SpellCast"/>
+        <On Terms="Abil.ExRazShaLivingFlame.SourceCastStart" Send="AnimPlay SpellCast Spell,Start NonLooping -1.000000 -1.000000 0.750000"/>
+        <On Terms="Effect.ExPALivingFlameCP.Stop; At Caster" Send="AnimBracketStop SpellCast"/>
+        <BuildModel value="NydusRumble"/>
+        <DeathArray index="Normal" ModelLink="YagdraDeath" SoundLink="Yagdra_DeathMove" VoiceLink="Yagdra_VoxSnarl"/>
+        <DeathArray index="UnderConstruction" ModelLink="ZergBuildingDeath" SoundLink="Zerg_ExplosionLarge"/>
+        <DeathActorModel value="UnitDeathModelYagdra"/>
+        <DeathActorModelLow value="UnitDeathModelYagdra"/>
+        <PlacementSound value="Zerg_BuildingPlacement"/>
+        <PlacementActorModel value="ZergPlacementModel"/>
+        <PlaceholderActorModel value="ZergPlacementModel"/>
+        <PortraitModel value="PrimalZergYagdraPortrait"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-yagdra.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\Wireframe-Zerg-yagdra.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-hardenedcarapace.dds"/>
+        <SoundArray index="Birth" value=""/>
+        <SoundArray index="Ready" value="NydusWorm_Ready"/>
+        <SoundArray index="What" value="NydusWorm_What"/>
+        <SoundArray index="Yes" value="NydusWorm_What"/>
+        <SoundArray index="Attack" value="Yagdra_Attack"/>
+        <SoundArray index="Construction" value="Zerg_BuildingMorphWhat"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+        <UnitIcon value="Assets\Textures\Wireframe-Zerg-yagdra.dds"/>
+        <UnitKillRank Text="UnitKillRank/ExPackLeader"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-yagdra.dds"/>
+        </Wireframe>
+        <CustomUnitStatusFrame value="HotS_UnitStatus/HeroUnitStatusFrameTemplateWide"/>
+    </CActorUnit>
+    <CActorAction id="ExRazShaFireballAttack" parent="GenericAttack" effectImpact="ExRazShaFireballDamage" effectLaunch="ExRazShaFireballLaunch">
+        <LaunchAttachQuery Methods="AMFilterWeapon01"/>
+        <LaunchAssets Sound="Yagdra_Attack"/>
+        <Missile value="YagdraFireballMissile"/>
+        <ImpactSiteOps Ops="SOpForwardLaunchGuide SOp2DRotation" HoldPosition="1"/>
+        <ImpactAttachQuery Methods="Origin"/>
+        <ImpactMap index="None" Model="YagdraFireballImpact" Sound="Yagdra_Fireball_Impact"/>
+        <ImpactMap index="Miss" Model="None"/>
+    </CActorAction>
+    <CActorUnit id="ExPrimalAvatarNaraxus" parent="GenericBurrowerStandard" unitName="ExPrimalAvatarNaraxus">
+        <Aliases value="_UnitHuge"/>
+        <Macros value="UnloadDropAnim"/>
+        <Macros value="ZergBurrowStandardAnimMacro"/>
+        <Macros value="ZergSmallBurrowEffects"/>
+        <On Terms="ActorCreation" Send="AnimPlay Wiggle Spell,Alternate PlayForever"/>
+        <On Terms="Behavior.SlivanGoingBoom.On" Send="SetTintColor 255,0,0 3.000000 OneShot Boom"/>
+        <On Terms="Behavior.SlivanGoingBoom.On" Send="SetScale 1.250000 3.000000"/>
+        <On Terms="Behavior.SlivanGoingBoom.On" Send="AnimPlay Boom Spell,Channel PlayForever"/>
+        <On Terms="Abil.SlivanPuke.SourceCastStart" Send="AnimBracketStart Spell Spell,Start Spell,Channel Spell,End"/>
+        <On Terms="Abil.SlivanPuke.SourceFinishStop" Send="AnimBracketStop Spell"/>
+        <On Terms="Signal.*.BeginSpawning" Send="AnimPlay Spawn Spell,Alternate PlayForever"/>
+        <On Terms="Signal.*.StopSpawning" Send="AnimClear Spawn"/>
+        <DeathArray index="Normal" ModelLink="SlivanDeath" SoundLink="BodyHit_Explosion" VoiceLink="Slivan_DeathRoar_Vox"/>
+        <DeathActorModelLow value="UnitDeathModel"/>
+        <PortraitModel value="PrimalZergSlivanPortrait"/>
+        <WalkAnimMoveSpeed value="0.75"/>
+        <CustomUnitStatusFrame value="HotS_UnitStatus/HeroUnitStatusFrameTemplateWide"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-zerg-slivan.dds"/>
+        </GroupIcon>
+        <GroupSoundArray index="Help" value="HybridAHelp"/>
+        <GroupSoundArray index="What" value=""/>
+        <GroupSoundArray index="Yes" value=""/>
+        <GroupSoundArray index="Attack" value=""/>
+        <HeroIcon value="Assets\Textures\Wireframe-zerg-slivan.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-hardenedcarapace.dds"/>
+        <SoundArray index="Birth" value=""/>
+        <SoundArray index="Ready" value=""/>
+        <SoundArray index="Help" value="HybridCHelp"/>
+        <SoundArray index="What" value=""/>
+        <SoundArray index="Yes" value=""/>
+        <SoundArray index="Attack" value=""/>
+        <SoundArray index="Pissed" value=""/>
+        <SoundArray index="Movement" value="HybridCMovement"/>
+        <SoundArray index="Turning" value="HybridCTurning"/>
+        <SoundArray index="Board" value="HybridCBoard"/>
+        <SoundArray index="Click" value="HybridCClick"/>
+        <SoundArray index="ClickError" value="HybridCClickError"/>
+        <SoundArray index="Highlight" value="HybridCHighlight"/>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+        <UnitIcon value="Assets\Textures\Wireframe-zerg-slivan.dds"/>
+        <UnitKillRank Text="UnitKillRank/ExPackLeader"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-zerg-slivan.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorModel id="ExRazShaBurningEffect" parent="ModelAnimationStyleContinuousUNIT">
+        <Inherits index="BaseModelScale" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <On Terms="Behavior.ExPACataclysmBurningGround.On" Send="Create"/>
+        <On Terms="Behavior.ExPACataclysmBurningGround.Off" Send="Destroy"/>
+        <On Terms="Behavior.ExPACataclysmBurningAir.On" Send="Create"/>
+        <On Terms="Behavior.ExPACataclysmBurningAir.Off" Send="Destroy"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+        <AutoScaleFactor value="0.300000"/>
+    </CActorModel>
+    <CActorUnit id="ExPrimalAvatarVarookh" parent="GenericUnitBase" unitName="ExPrimalAvatarVarookh">
+        <Aliases value="_UnitHuge"/>
+        <Macros value="ZergBurrowStandardAnimMacro"/>
+        <Macros value="ZergMediumBurrowEffects"/>
+        <Macros value="UnloadDropAnim"/>
+        <On Terms="WeaponStart.*.AttackStart" Send="AnimBracketStart Attack Attack"/>
+        <On Terms="WeaponStop.*.AttackStop" Send="AnimBracketStop Attack"/>
+        <On Terms="Abil.ExVarookhMindExplosion.SourceChannelStart" Send="AnimBracketStart SpellCast Attack"/>
+        <On Terms="Abil.ExVarookhMindExplosion.SourceChannelStop" Send="AnimBracketStop SpellCast"/>
+        <On Terms="Effect.VoidThrasherLightningAoECreatePersistentDelay.Start; At Caster" Send="AnimBracketStart SpellCast Attack {} {} 0 4.000000 AsDuration"/>
+        <On Terms="Effect.VoidThrasherLightningAoECreatePersistentDelay.Stop; At Caster" Send="AnimBracketStop SpellCast"/>
+        <DeathArray index="Normal" ModelLink="PrimalTownHallDeath" SoundLink="BodyHit_Explosion"/>
+        <DeathArray index="UnderConstruction" ModelLink="ZergLargeBuildingDeath" SoundLink="Lurker_Explode"/>
+        <PlacementSound value="Zerg_BuildingPlacement"/>
+        <PlacementActorModel value="PrimalPlacementModel"/>
+        <PlaceholderActorModel value="PrimalPlacementModel"/>
+        <PortraitModel value="PrimalZergLeaderPortrait"/>
+        <WalkAnimMoveSpeed value="1.3007"/>
+        <CustomUnitStatusFrame value="HotS_UnitStatus/HeroUnitStatusFrameTemplateWide"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-PrimalTownHall.dds"/>
+        </GroupIcon>
+        <GroupSoundArray index="What" value=""/>
+        <GroupSoundArray index="Yes" value=""/>
+        <GroupSoundArray index="Attack" value=""/>
+        <GroupSoundArray index="Board" value=""/>
+        <HeroIcon value="Assets\Textures\Wireframe-Zerg-PrimalTownHall.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-hardenedcarapace.dds"/>
+        <SoundArray index="Birth" value=""/>
+        <SoundArray index="Ready" value="Hatchery_What"/>
+        <SoundArray index="Help" value=""/>
+        <SoundArray index="What" value=""/>
+        <SoundArray index="Yes" value=""/>
+        <SoundArray index="Attack" value=""/>
+        <SoundArray index="Pissed" value=""/>
+        <SoundArray index="Movement" value=""/>
+        <SoundArray index="Turning" value=""/>
+        <SoundArray index="Board" value=""/>
+        <SoundArray index="Construction" value="Zerg_BuildingMorphWhat"/>
+        <SoundArray index="Click" value=""/>
+        <SoundArray index="ClickError" value=""/>
+        <SoundArray index="Highlight" value=""/>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+        <UnitIcon value="Assets\Textures\btn-building-zerg-primalhive.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-PrimalTownHall.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorModel id="ExBonusABSlowedEffect" parent="ModelAnimationStyleContinuous">
+        <On Terms="ActorCreation" Send="AnimBracketStart GL_BSD GLbirth GLstand GLdeath"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessingSlowed.On" Send="Create"/>
+        <On Terms="Behavior.ExBonusAnomalyBlessingSlowed.Off" Send="AnimBracketStop BSD"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOverhead"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModel>
+    <CActorUnit id="ExPrimalAvatarOmosh" parent="GenericUnitStandard" unitName="ExPrimalAvatarOmosh">
+        <Aliases value="_UnitHuge"/>
+        <HostSiteOps Ops="SOpBankerMutalisk"/>
+        <DeathArray index="Normal" ModelLink="PrimalMutaliskDeath" SoundLink="Mutalisk_Explode"/>
+        <PortraitModel value="PrimalMutaliskPortrait"/>
+        <WalkAnimMoveSpeed value="2"/>
+        <CustomUnitStatusFrame value="HotS_UnitStatus/HeroUnitStatusFrameTemplateWide"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-PrimalMutalisk.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\btn-unit-Zerg-PrimalMutalisk.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-hardenedcarapace.dds"/>
+        <SoundArray index="Ready" value="Mutalisk_Ready"/>
+        <SoundArray index="What" value="Mutalisk_What"/>
+        <SoundArray index="Yes" value="Mutalisk_Yes"/>
+        <SoundArray index="Attack" value="Mutalisk_Attack"/>
+        <SoundArray index="Pissed" value="Mutalisk_What"/>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+        <UnitIcon value="Assets\Textures\btn-unit-Zerg-PrimalMutalisk.dds"/>
+        <UnitKillRank Text="UnitKillRank/ExPackLeaderLost"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-PrimalMutalisk.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorUnit id="ExTFODrainingWind" parent="GenericUnitStandard" unitName="ExTFODrainingWind">
+        <Aliases value="_NoGlaze"/>
+        <On Terms="ActorCreation" Send="Create ExTFODrainingWindSound"/>
+        <On Terms="ActorCreation" Send="Create ExTFODrainingWindWarningSplat"/>
+        <UnitFlags index="SuppressDefaultStatusBar" value="1"/>
+    </CActorUnit>
+    <CActorModel id="ExTFODrainingWindWarningSplat">
+        <Inherits index="Visibility" value="1"/>
+        <On Terms="ActorCreation" Send="$Stand PlayForever,NonLooping"/>
+        <On Terms="ActorCreation" Send="SetTintColor {255,255,255 5.000000}"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpShadow"/>
+    </CActorModel>
+    <CActorSound id="ExTFODrainingWindSound" parent="SoundContinuous">
+        <Sound value="Mutator_Tornado_Base_Loop"/>
+        <Layers Sound="Mutator_Tornado_Spirit_OneShots_Lp"/>
+        <Layers Sound="Mutator_Tornado_Wind_OneShots_Lp"/>
+    </CActorSound>
+    <CActorUnit id="ExTFOCorruptionPillar" parent="GenericUnitStandard" unitName="ExTFOCorruptionPillar">
+        <Aliases value="_CreepEngulfable"/>
+        <Macros value="BuildingFlattenTerrainMacro"/>
+        <On Terms="ActorCreation" Send="Create VoidCorruption_Idle_LoopSound"/>
+        <CreepHeightClass value="Tiny"/>
+        <CreepRateGrow value="Grow"/>
+        <CreepRateShrink value="Shrink"/>
+        <DeathArray index="Normal" ModelLink="PhotonTowerDeath" SoundLink="PhotonCannon_Explode" VoiceLink="PhotonCannonDeathVoice"/>
+        <DeathArray index="UnderConstruction" ModelLink="ProtossWarpInDeath" SoundLink="PhotonCannon_Explode"/>
+        <DeathCustoms ModelLink="PhotonTowerDeathUnpowered" SoundLink="PhotonCannon_Explode" Name="Variation2"/>
+        <BarOffset value="60"/>
+        <BarWidth value="75"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-protoss-voidconstruct.dds"/>
+        </GroupIcon>
+        <LifeArmorIcon value="Assets\Textures\btn-amonshardsarmor.dds"/>
+        <MinimapIcon value="Assets\Textures\ui_minimap_icon_alert.dds"/>
+        <SoundArray index="Birth" value="PhotonCannon_Birth"/>
+        <SoundArray index="Ready" value="PhotonCannon_Ready"/>
+        <SoundArray index="Help" value="PhotonCannon_Help"/>
+        <SoundArray index="What" value="PhotonCannon_What"/>
+        <SoundArray index="Yes" value="PhotonCannon_Yes"/>
+        <SoundArray index="Attack" value="PhotonCannon_Attack"/>
+        <SoundArray index="Pissed" value="PhotonCannon_Pissed"/>
+        <SoundArray index="Movement" value="PhotonCannon_Movement"/>
+        <SoundArray index="Turning" value="PhotonCannon_Turning"/>
+        <SoundArray index="Board" value="PhotonCannon_Board"/>
+        <SoundArray index="Construction" value="Protoss_ConstructionWhat"/>
+        <SoundArray index="Click" value="PhotonCannon_Click"/>
+        <SoundArray index="ClickError" value="PhotonCannon_ClickError"/>
+        <SoundArray index="Highlight" value="PhotonCannon_Highlight"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-protoss-voidconstruct.dds"/>
+        </Wireframe>
+        <PortraitModel value="ZergBuildingEx2_Portrait"/>
+    </CActorUnit>
+    <CActorModel id="ExTFOCorruptionPillarMarker" parent="ModelAnimationStyleContinuous">
+        <On Terms="Effect.ExTFOCorruptionPillarMarker.Start" Send="Create"/>
+        <On Terms="ActorCreation" Send="TimerSet 4.500000 ExTFOCorruptionPillarMarker"/>
+        <On Terms="TimerExpired; TimerName ExTFOCorruptionPillarMarker" Send="AnimBracketStop BSD"/>
+    </CActorModel>
+    <CActorDoodad id="TerranTarmac">
+        <DoodadFlags index="DefaultToModelAABBBounds" value="0"/>
+    </CActorDoodad>
+    <CActorUnit id="ExTheForgottenOne" parent="GenericUnitBase" unitName="ExTheForgottenOne">
+        <On Terms="ActorCreation" Send="RefSet ::global.ZurvanCore ::Self"/>
+        <On Terms="ActorCreation" Send="AnimGroupApply A"/>
+        <On Terms="Abil.ExTFOSpawnPrimalZergling.SourceCastStart; !AnimPlaying SpawnUnits" Send="AnimPlay SpawnUnits Spell,A"/>
+        <On Terms="Abil.ExTFOSpawnPrimalHydralisk.SourceCastStart; !AnimPlaying SpawnUnits" Send="AnimPlay SpawnUnits Spell,A"/>
+        <On Terms="Abil.ExTFOSpawnRavasaur.SourceCastStart; !AnimPlaying SpawnUnits" Send="AnimPlay SpawnUnits Spell,A"/>
+        <On Terms="Abil.ExTFOSpawnPrimalUltralisk.SourceCastStart; !AnimPlaying SpawnUnits" Send="AnimPlay SpawnUnits Spell,A"/>
+        <On Terms="Behavior.ZurvanDeathDelay.On" Send="AnimClear SpawnUnits"/>
+        <On Terms="Behavior.ZurvanDeathDelay.On" Send="AnimBracketStop LightningBreath Instant"/>
+        <On Terms="Behavior.ZurvanDeathDelay.On" Send="AnimBracketStop Chomp Instant"/>
+        <On Terms="Behavior.ZurvanDeathDelay.On" Send="$Spell,C PlayForever,NonLooping 0.500000 0.000000"/>
+        <On Terms="Signal.*.Transition" Send="AnimGroupRemove A"/>
+        <On Terms="Signal.*.Transition" Send="AnimPlay Transition Morph"/>
+        <On Terms="Signal.*.Transition" Send="AnimGroupApply B"/>
+        <On Terms="Signal.*.Chomp" Send="AnimBracketStart Chomp IGNORE Attack,Start Attack,End ContentPlayOnce"/>
+        <On Terms="Signal.*.LightningBreath" Send="AnimBracketStart LightningBreath Spell,B,Start Spell,B Spell,B,End ContentPlayOnce 0.600000 AsTimeScale"/>
+        <On Terms="Signal.*.LightningBreath" Send="Create ZurvanLightningBreathIndicator"/>
+        <On Terms="Signal.*.LightningBreath" Send="Create Zurvan_LB_WeaponCharge_Start"/>
+        <On Terms="Signal.*.Cutscene" Send="AnimGroupRemove A"/>
+        <On Terms="Signal.*.Cutscene" Send="SetHeight"/>
+        <On Terms="Behavior.ExTFOTheCrushing.On" Send="SetOpacity 0.300000 0.000000 ExTFOHidden"/>
+        <On Terms="Behavior.ExTFOTheCrushing.Off" Send="ClearOpacity 1.000000 ExTFOHidden"/>
+        <DeathArray index="Normal" ModelLink="ZurvanDeath" SoundLink="Zurvan_DeathRoar"/>
+        <PortraitModel value="PrimalZergAncientOnePortrait"/>
+        <WalkAnimMoveSpeed value="1.875"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-PrimalZergBossFight.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\Wireframe-Zerg-PrimalZergBossFight.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-hardenedcarapace.dds"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <UnitIcon value="Assets\Textures\Wireframe-Zerg-PrimalZergBossFight.dds"/>
+        <UnitKillRank Text="UnitKillRank/Zurvan"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-PrimalZergBossFight.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorArc id="ExTFOLightningBreatherIndicatorSplat">
+        <Aliases value="_Scalable"/>
+        <Flags index="SuppressSaveLoad" value="1"/>
+        <FogVisibility value="Visible"/>
+        <On Terms="Abil.ExTFOLightningBreath.SourcePrepStart" Send="Create"/>
+        <On Terms="ActorCreation" Send="SetTintColor {255,255,255 2.000000}"/>
+        <On Terms="Abil.ExTFOLightningBreath.SourcePrepStop" Send="Destroy"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpShadow"/>
+        <Model value="ZergAOEConeRed"/>
+        <Angle value="80.000000"/>
+        <Radius value="10.000000"/>
+    </CActorArc>
+    <CActorUnit id="ExTheForgottenOneDead" parent="GenericUnitBase" unitName="ExTheForgottenOneDead">
+        <On Terms="ActorCreation" Send="RefSet ::global.ZurvanCore ::Self"/>
+        <On Terms="ActorCreation" Send="AnimGroupApply A"/>
+        <On Terms="Abil.ZurvanSpawnPrimalZergling.SourceCastStart; !AnimPlaying SpawnUnits" Send="AnimPlay SpawnUnits Spell,A"/>
+        <On Terms="Abil.ZurvanSpawnPrimalHydralisk.SourceCastStart; !AnimPlaying SpawnUnits" Send="AnimPlay SpawnUnits Spell,A"/>
+        <On Terms="Abil.ZurvanSpawnRavasaur.SourceCastStart; !AnimPlaying SpawnUnits" Send="AnimPlay SpawnUnits Spell,A"/>
+        <On Terms="Abil.ZurvanSpawnPrimalUltralisk.SourceCastStart; !AnimPlaying SpawnUnits" Send="AnimPlay SpawnUnits Spell,A"/>
+        <On Terms="Behavior.ZurvanDeathDelay.On" Send="AnimClear SpawnUnits"/>
+        <On Terms="Behavior.ZurvanDeathDelay.On" Send="AnimBracketStop LightningBreath Instant"/>
+        <On Terms="Behavior.ZurvanDeathDelay.On" Send="AnimBracketStop Chomp Instant"/>
+        <On Terms="Behavior.ZurvanDeathDelay.On" Send="$Spell,C PlayForever,NonLooping 0.500000 0.000000"/>
+        <On Terms="Signal.*.Transition" Send="AnimGroupRemove A"/>
+        <On Terms="Signal.*.Transition" Send="AnimPlay Transition Morph"/>
+        <On Terms="Signal.*.Transition" Send="AnimGroupApply B"/>
+        <On Terms="Signal.*.Chomp" Send="AnimBracketStart Chomp IGNORE Attack,Start Attack,End ContentPlayOnce"/>
+        <On Terms="Signal.*.LightningBreath" Send="AnimBracketStart LightningBreath Spell,B,Start Spell,B Spell,B,End ContentPlayOnce 0.600000 AsTimeScale"/>
+        <On Terms="Signal.*.LightningBreath" Send="Create ZurvanLightningBreathIndicator"/>
+        <On Terms="Signal.*.LightningBreath" Send="Create Zurvan_LB_WeaponCharge_Start"/>
+        <On Terms="Signal.*.Cutscene" Send="AnimGroupRemove A"/>
+        <On Terms="Signal.*.Cutscene" Send="SetHeight"/>
+        <DeathArray index="Normal" ModelLink="ZurvanDeath" SoundLink="Zurvan_DeathRoar"/>
+        <PortraitModel value="PrimalZergAncientOnePortrait"/>
+        <WalkAnimMoveSpeed value="1.875"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-PrimalZergBossFight.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\Wireframe-Zerg-PrimalZergBossFight.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-zerg-groundcarapace-level0.dds"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <UnitIcon value="Assets\Textures\Wireframe-Zerg-PrimalZergBossFight.dds"/>
+        <UnitKillRank Text="UnitKillRank/Zurvan"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-PrimalZergBossFight.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorUnit id="ExPATwilightEnergy" parent="GenericUnitStandardNoAutoSoundLinks" unitName="ExPATwilightEnergy">
+        <Macros value="RemoveFlyerHelperMacro"/>
+        <On Terms="ActorCreation" Send="Create ExPATwilightEnergyAddition"/>
+        <On Terms="ActorCreation" Send="Create VoidShardACUnstableEnergyActorSoundLoop"/>
+        <On Terms="ActorCreation" Send="Create ExPATwilightEnergyWarningSplat"/>
+        <Model value="VoidShardACUnstableEnergy"/>
+        <BuildModel value="VoidShardACUnstableEnergy"/>
+        <DeathArray index="Normal" ModelLink="VoidShardACUnstableEnergy"/>
+        <PlacementModel value="VoidShardACUnstableEnergy"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Progress" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+    </CActorUnit>
+    <CActorModel id="ExPATwilightEnergyAddition">
+        <On Terms="ActorCreation" Send="AnimBracketStart BSD Birth Stand Death"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <On Terms="AnimBracketState.*.AfterClosing; !AnimBracketExitReason ModelSwap; AnimName BSD" Send="Destroy"/>
+    </CActorModel>
+</Catalog>

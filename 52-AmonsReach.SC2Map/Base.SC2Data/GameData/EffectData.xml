@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CEffectDamage id="AquireDummyDamage">
+        <EditorCategories value=""/>
+        <ResponseFlags index="Acquire" value="1"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="CloakTargetUndetectable1sec">
+        <EditorCategories value=""/>
+        <Behavior value="CloackTargetUndetectable"/>
+        <Flags index="UseDuration" value="1"/>
+        <Duration value="1"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="CloakTargetUndetectablePartSec">
+        <EditorCategories value=""/>
+        <Behavior value="CloackTargetUndetectable"/>
+        <Flags index="UseDuration" value="1"/>
+        <Duration value="0.4"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="ConduitKhaydarinBeamTargetAB">
+        <EditorCategories value=""/>
+        <Behavior value="ConduitKhaydarinAttackTarget"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="ConduitKhaydarinBeamTargetAreaCP">
+        <EditorCategories value=""/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <InitialEffect value="ConduitKhaydarinBeamTargetSearch"/>
+        <PeriodicValidator value="CasterNotDead"/>
+        <PeriodicEffectArray value="ConduitKhaydarinBeamTargetSearch"/>
+        <PeriodicPeriodArray value="0.25"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="ConduitKhaydarinBeamTargetSearch">
+        <EditorCategories value="Race:Protoss"/>
+        <SearchFilters value="Visible;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="12" Effect="ConduitKhaydarinBeamTargetAB"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="DarkPowerCellKnockbackSearch3">
+        <SearchFilters value="-;Self,Structure,Missile,Dead,Hidden"/>
+        <AreaArray Radius="2" Effect="UnitKnockbackBy3"/>
+    </CEffectEnumArea>
+    <CEffectIssueOrder id="DarkPowerCellMassRecallOrder">
+        <ValidatorArray value="TargetIsDarkPowerCell"/>
+        <ValidatorArray value="TargetIsNotExitNodeforPlayer01"/>
+        <ValidatorArray value="TargetIsNotExitNodeforPlayer02"/>
+        <EditorCategories value=""/>
+        <Abil value="TeleportAllDarkPowerCell"/>
+    </CEffectIssueOrder>
+    <CEffectIssueOrder id="DarkPowerCellTeleportAllOrder">
+        <EditorCategories value=""/>
+        <Target Value="CasterUnitOrPoint"/>
+        <Abil value="move"/>
+    </CEffectIssueOrder>
+    <CEffectEnumArea id="DarkPowerCellMassRecallSearch">
+        <EditorCategories value=""/>
+        <SearchFilters value="Structure;Self,Ally,Neutral,Enemy"/>
+        <AreaArray Radius="500" Effect="DarkPowerCellMassRecallOrder"/>
+        <MinCount value="1"/>
+    </CEffectEnumArea>
+    <CEffectTeleport id="DarkPowerCellTeleport">
+        <EditorCategories value=""/>
+        <PlacementArc value="360"/>
+        <PlacementAround Value="CasterUnit"/>
+        <PlacementRange value="10"/>
+        <SourceLocation Value="TargetUnit"/>
+        <TeleportEffect value="DarkPowerCellAssignRally"/>
+        <TeleportFlags index="TestFog" value="0"/>
+    </CEffectTeleport>
+    <CEffectApplyBehavior id="DarkPowerCellTeleportAB">
+        <ValidatorArray index="0" value="TargetIsMovingOrScanMovingToCaster"/>
+        <EditorCategories value=""/>
+        <Behavior value="DarkPowerCellTeleporting"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="DarkPowerCellTeleportAllSearch">
+        <EditorCategories value=""/>
+        <LaunchLocation Value="CasterUnit"/>
+        <ImpactLocation Value="CasterUnit"/>
+        <SearchFilters value="-;Ally,Neutral,Enemy,Structure,Worker,Missile,Uncommandable,Stasis,Dead,Hidden,Stunned"/>
+        <AreaArray Radius="11" Effect="DarkPowerCellTeleportAllOrder"/>
+        <MinCount value="1"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="DarkPowerCellTeleportSearch">
+        <EditorCategories value=""/>
+        <AreaArray Radius="6" Effect="DarkPowerCellTeleportAB"/>
+        <SearchFilters value="-;Neutral,Enemy"/>
+        <MaxCount value="1"/>
+    </CEffectEnumArea>
+    <CEffectModifyUnit id="DarkPowerCellAssignRally">
+        <RallyUnit Value="Caster"/>
+    </CEffectModifyUnit>
+    <CEffectSet id="ConduitKhaydarinBeamDamageSet">
+        <ValidatorArray value="KhaydarinTargets"/>
+        <ValidatorArray value="KhaydarinBeamDamageLowCheck"/>
+        <EditorCategories value="Race:Protoss"/>
+        <EffectArray value="KhaydarinBeamDamage"/>
+        <EffectArray value="KhaydarinBeamRetarget"/>
+    </CEffectSet>
+    <CEffectSet id="ConduitKhaydarinBeamHighDamageSet">
+        <ValidatorArray value="KhaydarinTargets"/>
+        <ValidatorArray value="KhaydarinBeamDamageHighCheck"/>
+        <EditorCategories value="Race:Protoss"/>
+        <EffectArray value="KhaydarinBeamDamage"/>
+        <EffectArray value="KhaydarinBeamRetarget"/>
+    </CEffectSet>
+    <CEffectSet id="RevelationDelayedSet">
+        <EditorCategories value=""/>
+        <EffectArray value="OracleRevelationDelayedApplyBehavior"/>
+        <EffectArray value="RevelationPersistent"/>
+    </CEffectSet>
+    <CEffectRemoveBehavior id="LaunchBayCreepSourceRB">
+        <ValidatorArray index="0" removed="1"/>
+        <EditorCategories value="Race:Zerg"/>
+        <Marker Link="Effect/LaunchBayCreepSourceAB"/>
+        <BehaviorLink value="LaunchBayCreepSource"/>
+        <Count value="1"/>
+    </CEffectRemoveBehavior>
+    <CEffectApplyBehavior id="LaunchBayDisableAB">
+        <EditorCategories value=""/>
+        <Behavior value="LaunchBayLockDummy"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="LaunchBayDisableABZerg">
+        <EditorCategories value="Race:Zerg"/>
+        <Behavior value="LaunchBayDisablebyCreep"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="LaunchBayDisableABProtoss">
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="LaunchBayDisablebyGravity"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="LaunchBayDisableABTerran">
+        <EditorCategories value="Race:Terran"/>
+        <Behavior value="LaunchBayDisablebyElectro"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="LaunchBayCreepSourceAB">
+        <EditorCategories value="Race:Zerg"/>
+        <Behavior value="LaunchBayCreepSource"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="ObeliskBayDisablerSet">
+        <EditorCategories value="Race:Protoss"/>
+        <EffectArray value="LaunchBayDisableABProtoss"/>
+        <EffectArray value="LaunchBayDisableAB"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="OracleRevelationDelayedApplyBehavior">
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="OracleRevelationV2"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="OracleRevelationDelayedSearch">
+        <EditorCategories value="Race:Protoss"/>
+        <ImpactLocation Value="TargetPoint"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Destructible,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="6" Effect="RevelationDelayedSet"/>
+    </CEffectEnumArea>
+    <CEffectCreatePersistent id="OracleRevelationDelayedInitialDelay">
+        <EditorCategories value="Race:Protoss"/>
+        <Flags index="Channeled" value="1"/>
+        <InitialDelay value="3"/>
+        <ExpireEffect value="OracleRevelationDelayedSearch"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="PowerConductorLockShakurasDeathMorph">
+        <EditorCategories value=""/>
+        <EffectArray value="PowerConductorLockDeathMorphResetLife"/>
+        <EffectArray value="PowerConductorLockShakurasDeathMorphIssueOrder"/>
+    </CEffectSet>
+    <CEffectIssueOrder id="PowerConductorLockShakurasDeathMorphIssueOrder">
+        <EditorCategories value="Race:Protoss"/>
+        <WhichUnit Value="Caster"/>
+        <Abil value="PowerConductorLockShakurasMorph"/>
+        <Player Value="Caster"/>
+    </CEffectIssueOrder>
+    <CEffectSet id="PsiDisrupterBayDisablerSet">
+        <EditorCategories value="Race:Terran"/>
+        <Marker Link="Effect/ObeliskBayDisablerSet"/>
+        <EffectArray value="LaunchBayDisableABTerran"/>
+        <EffectArray value="LaunchBayDisableAB"/>
+    </CEffectSet>
+    <CEffectEnumArea id="RepulserField1AirOnlySearchArea">
+        <SearchFilters value="-;Self,Ground,Missile,Dead"/>
+        <AreaArray Radius="1" Effect="RepulserFieldSet"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="ShadowCloudDamageShakurasBonus">
+        <Flags index="Notification" value="1"/>
+        <Kind value="Splash"/>
+        <VitalFractionMax index="Life" value="0.002"/>
+        <VitalFractionMax index="Shields" value="0.002"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="ShadowCloudShakurasBonusAB">
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="ShadowCloudDamageShakurasBonus"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="ShadowCloudSearchShakurasBonus">
+        <AINotifyFlags index="HurtEnemy" value="1"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="15" Effect="ShadowCloudShakurasBonusAB"/>
+    </CEffectEnumArea>
+    <CEffectModifyUnit id="SetExitNodeDummy">
+        <EditorCategories value=""/>
+    </CEffectModifyUnit>
+    <CEffectSet id="VileStreamImpactSet2">
+        <EditorCategories value="Race:Zerg"/>
+        <EffectArray value="LaunchBayDisableABZerg"/>
+        <EffectArray value="LaunchBayDisableAB"/>
+    </CEffectSet>
+    <CEffectLaunchMissile id="VileStreamLM2">
+        <EditorCategories value="Race:Zerg"/>
+        <ImpactEffect value="VileStreamImpact"/>
+        <Flags index="Channeled" value="1"/>
+        <AmmoUnit value="VileStreamWeapon2"/>
+        <ImpactLocation Value="TargetPoint"/>
+    </CEffectLaunchMissile>
+</Catalog>

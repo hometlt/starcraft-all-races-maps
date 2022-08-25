@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CEffectModifyUnit id="CommandedApplyTurret">
+        <EditorCategories value=""/>
+        <ImpactUnit Value="Caster"/>
+        <ModifyTurret Turret="KorhalPalaceTurret">
+            <Target Effect="CommandedCP" Value="TargetPoint"/>
+            <Flags index="Tracking" value="1"/>
+        </ModifyTurret>
+    </CEffectModifyUnit>
+    <CEffectDamage id="CommandedAttack">
+        <EditorCategories value=""/>
+        <Amount value="200"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="CommandedCP">
+        <EditorCategories value=""/>
+        <InitialEffect value="CommandedApplyTurret"/>
+        <FinalEffect value="CommandedClearTurret"/>
+        <PeriodCount value="1"/>
+        <PeriodicEffectArray value="CommandedSearch"/>
+    </CEffectCreatePersistent>
+    <CEffectModifyUnit id="CommandedClearTurret">
+        <EditorCategories value=""/>
+        <ImpactUnit Value="Caster"/>
+        <ModifyTurret Action="ClearTarget" Turret="KorhalPalaceTurret"/>
+    </CEffectModifyUnit>
+    <CEffectEnumArea id="CommandedSearch">
+        <EditorCategories value=""/>
+        <SearchFilters value="-;Self,Structure,Heroic,Missile,Item,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="2" Effect="CommandedAttack"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="ControlUnitActivating">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="ControlUnitActivated"/>
+    </CEffectApplyBehavior>
+</Catalog>

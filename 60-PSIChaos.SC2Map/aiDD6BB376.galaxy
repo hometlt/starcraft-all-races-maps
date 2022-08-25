@@ -1,0 +1,139 @@
+//==================================================================================================
+// 
+// Generated AI Script
+// 
+// AI Name: Drop
+// 
+//==================================================================================================
+include "TriggerLibs/natives"
+include "TriggerLibs/AI"
+include "TriggerLibs/Computer"
+
+//--------------------------------------------------------------------------------------------------
+// Globals
+//--------------------------------------------------------------------------------------------------
+point[17] aiDD6BB376_defGather;
+string[17] aiDD6BB376_customData;
+wave[17] aiDD6BB376_lastWave;
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave Wrappers
+//--------------------------------------------------------------------------------------------------
+void aiDD6BB376_wave_enable (int w, int p, bool val) {
+}
+
+//--------------------------------------------------------------------------------------------------
+bool aiDD6BB376_wave_isEnabled (int w, int p) {
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+unitgroup aiDD6BB376_wave_createdUnits (int w, int p) {
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave aiDD6BB376_wave_createdWave (int w, int p) {
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void aiDD6BB376_wave_run (int w, int p, playergroup target, bool wait) {
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave Sequence
+//--------------------------------------------------------------------------------------------------
+trigger aiDD6BB376_waves_trigger = null;
+int aiDD6BB376_waves_runPlayer;
+playergroup aiDD6BB376_waves_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void aiDD6BB376_waves_init () {
+    aiDD6BB376_waves_trigger = TriggerCreate("aiDD6BB376_waves_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+bool aiDD6BB376_waves_runFunc (bool c, bool a) {
+    int p = aiDD6BB376_waves_runPlayer;
+    playergroup target = aiDD6BB376_waves_runTarget;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void aiDD6BB376_waves_run (int p, playergroup target) {
+    aiDD6BB376_waves_runPlayer = p;
+    aiDD6BB376_waves_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(aiDD6BB376_waves_trigger, false, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+void aiDD6BB376_waves_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+
+}
+
+//--------------------------------------------------------------------------------------------------
+void aiDD6BB376_waves_stop () {
+    TriggerStop(aiDD6BB376_waves_trigger);
+
+}
+
+//--------------------------------------------------------------------------------------------------
+// Configuration
+//--------------------------------------------------------------------------------------------------
+void aiDD6BB376_setDefGather (int p, point val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    aiDD6BB376_defGather[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+string aiDD6BB376_getCustomData (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return aiDD6BB376_customData[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave aiDD6BB376_getLastWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return aiDD6BB376_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+// Start
+//--------------------------------------------------------------------------------------------------
+bool aiDD6BB376_initialized = false;
+
+//--------------------------------------------------------------------------------------------------
+void aiDD6BB376_start (int p) {
+    int init_i;
+
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (!aiDD6BB376_initialized) {
+        aiDD6BB376_waves_init();
+
+        for (init_i = 0; init_i <= 16; init_i += 1) {
+            aiDD6BB376_defGather[init_i] = PointFromId(0);
+        }
+
+        aiDD6BB376_initialized = true;
+    }
+
+    AICampaignStart(p);
+}

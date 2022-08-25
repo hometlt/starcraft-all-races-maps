@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CEffectApplyBehavior id="AenythStormApplyBehavior2">
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="AffectedbyAenythStormAlly"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="AenythStormUnitDamage2">
+        <ValidatorArray value="NotInvulnerable"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Amount value="1"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="AenythStormUnitSearch2">
+        <SearchFilters value="-;Self,Player,Neutral,Enemy,Structure,Missile,Stasis,Dead,Hidden,Invulnerable,MapBoss"/>
+        <AreaArray Radius="3.5" Effect="AenythStormApplyBehavior2"/>
+        <AINotifyFlags index="HurtFriend" value="1"/>
+        <AINotifyFlags index="HurtEnemy" value="1"/>
+        <AINotifyFlags index="MajorDanger" value="1"/>
+    </CEffectEnumArea>
+    <CEffectSet id="AenythStormUnitSearchSet">
+        <EditorCategories value=""/>
+        <EffectArray value="AenythStormUnitSearch"/>
+        <EffectArray value="AenythStormUnitSearch2"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="CrystalPickupHarvestPrepareBuffCaster">
+        <EditorCategories value="Race:Protoss"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="CrystalPickupHarvestPrepareBuff"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="CrystalPickupDescendBuff">
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="CrystalPickupProcessingBuff"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="CrystalPickupProcessingBuffCaster">
+        <EditorCategories value="Race:Protoss"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="CrystalPickupProcessingBuffTransport"/>
+    </CEffectApplyBehavior>
+    <CEffectModifyUnit id="CrystalPickupProcessingMUTransport">
+        <EditorCategories value="Race:Protoss"/>
+        <Height value="2"/>
+        <HeightTime value="0.5"/>
+    </CEffectModifyUnit>
+    <CEffectSet id="CrystalPickupProcessingSet">
+        <EditorCategories value="Race:Protoss"/>
+        <EffectArray value="CrystalPickupProcessingBuff"/>
+        <EffectArray value="CrystalPickupProcessingBuffCaster"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="CrystalPickupProcessingBuff">
+        <EditorCategories value="Race:Protoss"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="CrystalPickupHarvestPreparePersistent">
+        <EditorCategories value="Race:Protoss"/>
+        <WhichLocation Value="TargetUnit"/>
+        <InitialEffect value="CrystalPickupHarvestPrepareBuffCaster"/>
+        <ExpireDelay value="8"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="CrystalPickupHarvestPrepareBuffSet">
+        <EditorCategories value="Race:Protoss"/>
+        <EffectArray value="CrystalPickupHarvestPrepareBuffCaster"/>
+        <EffectArray value="CrystalPickupHarvestPrepareBuffTarget"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="CrystalPickupHarvestPersistent">
+        <EditorCategories value="Race:Protoss"/>
+        <WhichLocation Value="TargetUnit"/>
+        <ExpireDelay value="0.5"/>
+        <ExpireEffect value="KillRemove"/>
+    </CEffectCreatePersistent>
+    <CEffectCreateUnit id="CrystalPickupProcessingCU">
+        <EditorCategories value="Race:Protoss"/>
+        <WhichLocation Value="TargetPoint"/>
+        <CreateFlags index="Placement" value="0"/>
+        <CreateFlags index="PlacementIgnoreBlockers" value="1"/>
+        <CreateFlags index="PlacementIgnoreCliffTest" value="1"/>
+        <SpawnEffect value="CrystalPickupProcessingSet"/>
+        <SpawnUnit value="CrystalPickupUnit"/>
+        <SpawnOwner Value="Neutral"/>
+    </CEffectCreateUnit>
+    <CEffectApplyBehavior id="CrystalTransportECapplybuff">
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="CrystalTransportECstop"/>
+    </CEffectApplyBehavior>
+    <CEffectModifyUnit id="CrystalPickupProcessingMU">
+        <EditorCategories value="Race:Protoss"/>
+        <Height value="-2.5"/>
+        <HeightTime value="0.5"/>
+    </CEffectModifyUnit>
+    <CEffectCreatePersistent id="CrystalTransportWeaponPersistent">
+        <EditorCategories value="Race:Protoss"/>
+        <WhichLocation Value="TargetUnit"/>
+        <PeriodCount value="4"/>
+        <PeriodicEffectArray value="CrystalTransportWeaponLM"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicPeriodArray value="0.25"/>
+        <PeriodicPeriodArray value="0.25"/>
+        <PeriodicPeriodArray value="0.25"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="CrystalTransportWeaponLM">
+        <EditorCategories value="Race:Protoss"/>
+        <ImpactEffect value="CrystalTransportWeaponDamage"/>
+        <AmmoUnit value="CrystalTransportWeaponMissile"/>
+        <Movers Link="CrystalTransportWeaponMover" IfRangeLTE="500"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="CrystalTransportWeaponDamage" parent="DU_WEAP_MISSILE">
+        <EditorCategories value="Race:Protoss"/>
+        <Amount value="7"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="AenythStormUnitPersistent">
+        <EditorCategories value="Race:Protoss"/>
+        <WhichLocation Value="SourceUnit"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <PeriodicValidator value="SourceNotDead"/>
+        <PeriodicEffectArray value="AenythStormUnitSearchSet"/>
+        <PeriodicPeriodArray value="0.5"/>
+        <AINotifyFlags index="HurtFriend" value="1"/>
+        <AINotifyFlags index="HurtEnemy" value="1"/>
+        <AINotifyFlags index="MajorDanger" value="1"/>
+    </CEffectCreatePersistent>
+    <CEffectDamage id="AenythStormUnitDamage">
+        <ValidatorArray value="NotInvulnerable"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Amount value="3"/>
+        <Death value="Blast"/>
+        <Flags index="Notification" value="1"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="AenythStormUnitSearch">
+        <AINotifyFlags index="HurtFriend" value="1"/>
+        <AINotifyFlags index="HurtEnemy" value="1"/>
+        <AINotifyFlags index="MajorDanger" value="1"/>
+        <SearchFilters value="-;Self,Player,Ally,Neutral,Structure,Missile,Stasis,Dead,Hidden,Invulnerable,MapBoss"/>
+        <AreaArray Radius="4" Effect="AenythStormApplyBehavior"/>
+    </CEffectEnumArea>
+    <CEffectApplyBehavior id="AenythStormApplyBehavior">
+        <EditorCategories value="Race:Protoss"/>
+        <Behavior value="AffectedbyAenythStorm"/>
+    </CEffectApplyBehavior>
+</Catalog>

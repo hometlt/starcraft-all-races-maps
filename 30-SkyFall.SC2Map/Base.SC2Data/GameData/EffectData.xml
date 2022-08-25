@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CEffectApplyBehavior id="EnergyOverLoadBuffDarkDean">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Source"/>
+        <Behavior value="EnergyOverLoadDarkDean"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="EnergyOverLoadDamageDarkDean">
+        <EditorCategories value=""/>
+        <Amount value="10"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="EnergyOverLoadLaunchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactEffect value="EnergyOverLoadDamageDarkDean"/>
+        <AmmoUnit value="EnergyOverLoadMissileDarkDean"/>
+    </CEffectLaunchMissile>
+    <CEffectCreatePersistent id="EnergyOverLoadLoopDarkDean">
+        <EditorCategories value=""/>
+        <WhichLocation Value="SourcePoint"/>
+        <InitialEffect value="EnergyOverLoadLoopDarkDean2"/>
+        <PeriodCount value="3"/>
+        <PeriodicEffectArray value="EnergyOverLoadLoopDarkDean2"/>
+        <PeriodicPeriodArray value="0.1875"/>
+    </CEffectCreatePersistent>
+    <CEffectCreatePersistent id="EnergyOverLoadLoopDarkDean2">
+        <EditorCategories value=""/>
+        <Marker>
+            <MatchFlags index="Id" value="1"/>
+        </Marker>
+        <WhichLocation Value="SourcePoint"/>
+        <PeriodCount value="10"/>
+        <PeriodicEffectArray value="EnergyOverLoadSearchDarkDean"/>
+        <PeriodicPeriodArray value="0"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="EnergyOverLoadSearchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactLocation Value="SourcePoint"/>
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Dead,Hidden,Invulnerable"/>
+        <TargetSorts>
+            <SortArray value="TSMarker"/>
+        </TargetSorts>
+        <AreaArray MaxCount="1" Radius="8" Effect="EnergyOverLoadLaunchDarkDean"/>
+    </CEffectEnumArea>
+    <CEffectSet id="EnergyOverloadVisibleWeaponEffectDarkDean">
+        <EditorCategories value=""/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="METEORITE_MeteoriteDrop_GiantCP">
+        <FinalEffect value="METEORITE_MeteoriteDrop_GiantCreate"/>
+        <InitialOffset value="9.5,-16.4545,35"/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="METEORITE_MeteoriteDrop_PeriodNoticeAB">
+        <ValidatorArray index="0" value="SOLARCRYSTAL_ShieldGenerator_IsType"/>
+        <Behavior value="METEORITE_MeteoriteDrop_PeriodNotice"/>
+    </CEffectApplyBehavior>
+    <CEffectCreatePersistent id="METEORITE_MeteoriteDrop_GiantTimerCP">
+        <InitialEffect value="METEORITE_MeteoriteDrop_GiantTimerCreate"/>
+        <OffsetVectorStartLocation Value="SourcePoint"/>
+    </CEffectCreatePersistent>
+    <CEffectModifyUnit id="METEORITE_MeteoriteDrop_GiantTimerFace">
+        <FacingAdjustment value="270"/>
+    </CEffectModifyUnit>
+    <CEffectCreatePersistent id="METEORITE_MeteoriteDrop_MicroCPNoTimer">
+        <InitialEffect value="METEORITE_MeteoriteDrop_MicroCreateNoTimer"/>
+        <InitialOffset value="9.5,-16.4545,35"/>
+    </CEffectCreatePersistent>
+    <CEffectCreateUnit id="METEORITE_MeteoriteDrop_MicroCreateNoTimer">
+        <WhichLocation Value="TargetPoint"/>
+        <CreateFlags index="PlacementIgnoreBlockers" value="1"/>
+        <CreateFlags index="PlacementIgnoreCliffTest" value="1"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnEffect value="METEORITE_MeteoriteDrop_MicroLMNoTimer"/>
+        <SpawnUnit value="METEORITE_MeteoriteDrop_Micro"/>
+    </CEffectCreateUnit>
+    <CEffectLaunchMissile id="METEORITE_MeteoriteDrop_MicroLMNoTimer">
+        <LaunchLocation Value="TargetUnit"/>
+        <ImpactLocation Effect="METEORITE_MeteoriteDrop_MicroCPNoTimer" Value="TargetPoint"/>
+        <ImpactEffect value="METEORITE_MeteoriteDrop_MicroImapctNotice"/>
+        <Flags index="Placement" value="1"/>
+        <Flags index="PlacementIgnoreBlockers" value="1"/>
+        <Flags index="PlacementIgnoreCliffTest" value="1"/>
+        <Flags index="PointFallback" value="0"/>
+        <Flags index="ValidateAbil" value="0"/>
+        <Flags index="ValidateBenign" value="0"/>
+        <Flags index="ValidateTeleport" value="0"/>
+        <Flags index="ValidateWeapon" value="0"/>
+        <Movers Link="METEORITE_MeteoriteDrop_Micro" IfRangeLTE="63352"/>
+        <DeathType value="Unknown"/>
+    </CEffectLaunchMissile>
+    <CEffectCreatePersistent id="METEORITE_MeteoriteDrop_MicroTimerCP">
+        <InitialEffect value="METEORITE_MeteoriteDrop_MicroTimerCreate"/>
+    </CEffectCreatePersistent>
+    <CEffectCreateUnit id="METEORITE_MeteoriteDrop_GiantTimerCreate">
+        <WhichLocation Value="TargetPoint"/>
+        <SpawnUnit value="METEORITE_MeteoriteDrop_GiantTimer"/>
+        <CreateFlags index="PlacementIgnoreBlockers" value="1"/>
+        <CreateFlags index="PlacementIgnoreCliffTest" value="1"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnRange value="0.5"/>
+        <SpawnEffect value="METEORITE_MeteoriteDrop_GiantTimerFace"/>
+    </CEffectCreateUnit>
+    <CEffectCreateUnit id="METEORITE_MeteoriteDrop_MicroTimerCreate">
+        <WhichLocation Value="TargetPoint"/>
+        <CreateFlags index="PlacementIgnoreBlockers" value="1"/>
+        <CreateFlags index="PlacementIgnoreCliffTest" value="1"/>
+        <CreateFlags index="SetFacing" value="1"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnUnit value="METEORITE_MeteoriteDrop_MicroTimer"/>
+        <SpawnRange value="0.5"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="METEORITE_MeteoriteDrop_GiantTimerExpired">
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectDamage id="METEORITE_MeteoriteDrop_MicroDamageGround">
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Flags index="Notification" value="1"/>
+        <Kind value="Splash"/>
+        <Amount value="200"/>
+        <AreaArray Radius="1.5" Fraction="1"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+        <SearchFlags index="OffsetByUnitRadius" value="1"/>
+        <SearchFlags index="SameCliff" value="0"/>
+        <AINotifyFlags index="HurtFriend" value="1"/>
+        <AINotifyFlags index="HurtEnemy" value="1"/>
+        <AINotifyFlags index="MajorDanger" value="1"/>
+        <SearchFilters value="-;Self,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectSet id="METEORITE_MeteoriteDrop_MicroTimerExpired">
+        <EffectArray value="METEORITE_MeteoriteDrop_MicroCPWithTimer"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="METEORITE_MeteoriteDrop_MicroCPWithTimer">
+        <InitialEffect value="METEORITE_MeteoriteDrop_MicroCreateWithTimer"/>
+        <InitialOffset value="9.5,-16.4545,35"/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="METEORITE_MeteoriteDrop_ImpactTimerCoverAB">
+        <ValidatorArray index="0" value="METEORITE_MeteoriteDrop_HasTimerMarker"/>
+        <Behavior value="METEORITE_Timer_ImpactTimerCover"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="METEORITE_MeteoriteDrop_GiantDamageShield">
+        <Marker Link="Effect/METEORITE_MeteoriteDrop_Damage"/>
+        <ResponseFlags index="Acquire" value="1"/>
+        <ResponseFlags index="Flee" value="1"/>
+        <Flags index="Notification" value="1"/>
+        <Kind value="Ranged"/>
+        <Amount value="1"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+        <SearchFlags index="OffsetByUnitRadius" value="1"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="METEORITE_MeteoriteDrop_GiantLM">
+        <ImpactLocation Value="TargetPoint"/>
+        <ImpactEffect value="METEORITE_MeteoriteDrop_GiantImapctNotice"/>
+        <Movers Link="METEORITE_MeteoriteDrop_Giant" IfRangeLTE="63352"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <Flags index="PlacementIgnoreBlockers" value="1"/>
+        <Flags index="PlacementIgnoreCliffTest" value="1"/>
+        <Flags index="PointFallback" value="0"/>
+        <Flags index="ValidateAbil" value="0"/>
+        <Flags index="ValidateBenign" value="0"/>
+        <Flags index="ValidateTeleport" value="0"/>
+        <Flags index="ValidateWeapon" value="0"/>
+        <DeathType value="Unknown"/>
+    </CEffectLaunchMissile>
+    <CEffectSet id="METEORITE_MeteoriteDrop_GiantImapctNotice">
+        <EffectArray value="METEORITE_MeteoriteDrop_ImapctSuicide"/>
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectDamage id="METEORITE_MeteoriteDrop_ImapctShieldSuicide">
+        <ImpactLocation Value="SourceUnit"/>
+        <Flags index="Kill" value="1"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectSet id="METEORITE_MeteoriteDrop_EnumSet">
+        <EffectArray value="METEORITE_MeteoriteDrop_PeriodNotice"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="METEORITE_MeteoriteDrop_CreateTimerCoverAB">
+        <ValidatorArray index="0" value="SOLARCRYSTAL_ShieldGenerator_HasCrystalAndTypeValidator"/>
+        <ValidatorArray value="METEORITE_Timer_IsTimerSpell"/>
+        <WhichUnit Value="Caster"/>
+        <Behavior value="METEORITE_Timer_ImpactTimerCover"/>
+    </CEffectApplyBehavior>
+    <CEffectLaunchMissile id="METEORITE_MeteoriteDrop_ThrowSolarCrystal">
+        <ImpactLocation Value="TargetPoint"/>
+        <Movers Link="METEORITE_MeteoriteDrop_ThrowSunCrystal" IfRangeLTE="63352"/>
+        <DeathType value="Unknown"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="METEORITE_MeteoriteDrop_PeriodNotice">
+        <ValidatorArray value="METEORITE_MeteoriteDrop_PeriodNoticeLength"/>
+        <ImpactLocation Value="CasterUnit"/>
+    </CEffectDamage>
+    <CEffectDamage id="METEORITE_MeteoriteDrop_MicroDamageShield">
+        <Flags index="Notification" value="1"/>
+        <Kind value="Ranged"/>
+        <Amount value="1"/>
+        <SearchFlags index="CallForHelp" value="1"/>
+        <SearchFlags index="OffsetByUnitRadius" value="1"/>
+    </CEffectDamage>
+    <CEffectSet id="METEORITE_MeteoriteDrop_MicroImapctNotice">
+        <EffectArray value="METEORITE_MeteoriteDrop_MicroDamageGround"/>
+        <EffectArray value="METEORITE_MeteoriteDrop_ImapctSuicide"/>
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectDamage id="METEORITE_MeteoriteDrop_CloseNotice">
+        <ImpactLocation Value="SourceUnit"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="METEORITE_MeteoriteDrop_PeriodNoticeEnum">
+        <AreaArray Radius="35" Effect="METEORITE_MeteoriteDrop_PeriodNoticeAB"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="METEORITE_MeteoriteDrop_TimerCreateCoverEnumAB">
+        <ImpactLocation Value="TargetUnit"/>
+        <AreaArray Radius="14.6" Effect="METEORITE_Timer_CoverSet"/>
+        <LaunchLocation Value="SourcePoint"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="METEORITE_MeteoriteDrop_TimerCoverEnumAB">
+        <ImpactLocation Value="TargetUnit"/>
+        <AreaArray Radius="16" Effect="METEORITE_MeteoriteDrop_ImpactTimerCoverAB"/>
+        <ValidatorArray value="SOLARCRYSTAL_ShieldGenerator_IsType"/>
+        <ValidatorArray value="METEORITE_Timer_NotTimerSpell"/>
+    </CEffectEnumArea>
+    <CEffectSet id="METEORITE_Timer_CoverSet">
+        <EffectArray value="METEORITE_MeteoriteDrop_TimerCoverEnumAB"/>
+        <EffectArray value="METEORITE_MeteoriteDrop_CreateTimerCoverAB"/>
+    </CEffectSet>
+    <CEffectDamage id="PlanetCrackerDamageDarkDean">
+        <EditorCategories value=""/>
+        <Amount value="15"/>
+    </CEffectDamage>
+    <CEffectDamage id="PlanetCrackerDamageInitDarkDean">
+        <EditorCategories value=""/>
+        <Amount value="100"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="PlanetCrackerDarkDean">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Source"/>
+    </CEffectApplyBehavior>
+    <CEffectEnumArea id="PlanetCrackerSearchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactLocation Value="SourcePoint"/>
+        <SearchFilters value="-;Player,Ally,Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="2" Effect="PlanetCrackerDamageDarkDean"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="PlanetCrackerSearchInitDarkDean">
+        <EditorCategories value=""/>
+        <ImpactLocation Value="SourcePoint"/>
+        <SearchFilters value="-;Player,Ally,Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="3" Effect="PlanetCrackerDamageInitDarkDean"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="SOLARCRYSTAL_MagalithCutter_MainWeaponTargetDamage">
+        <ValidatorArray value="SOLARCRYSTAL_MegalithCutter_IsMainWeaponTarget"/>
+        <Flags index="Kill" value="1"/>
+        <Amount value="999"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="SOLARCRYSTAL_MegalithCutter_FunnelBeginLoop">
+        <ValidatorArray value="SOLARCRYSTAL_IsCreateFunnelSet"/>
+        <WhichLocation Value="SourcePoint"/>
+        <InitialDelay value="0.6875"/>
+        <FinalEffect value="SOLARCRYSTAL_MegalithCutter_MainWeaponRemoveHoldAttack"/>
+        <PeriodCount value="8"/>
+        <PeriodicEffectArray value="SOLARCRYSTAL_MegalithCutter_FunnelCreate"/>
+        <PeriodicOffsetArray value="-2.5,-0.1,0"/>
+        <PeriodicOffsetArray value="2.5,-0.1,0"/>
+        <PeriodicOffsetArray value="-2.5,-0.1,0"/>
+        <PeriodicOffsetArray value="2.5,-0.1,0"/>
+        <PeriodicOffsetArray value="-2.5,-0.1,0"/>
+        <PeriodicOffsetArray value="2.5,-0.1,0"/>
+        <PeriodicOffsetArray value="-2.5,-0.1,0"/>
+        <PeriodicOffsetArray value="2.5,-0.1,0"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicPeriodArray value="1.25"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicPeriodArray value="1.25"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicPeriodArray value="1.25"/>
+        <PeriodicPeriodArray value="0"/>
+        <InitialEffect value="SOLARCRYSTAL_MegalithCutter_UseNextIsMegalithMainWeapon"/>
+    </CEffectCreatePersistent>
+    <CEffectIssueOrder id="SOLARCRYSTAL_MegalithCutter_FunnelCommand">
+        <Abil value="attack"/>
+        <Target Effect="SOLARCRYSTAL_MegalithCutter_MainWeaponBegin" Value="TargetUnit"/>
+    </CEffectIssueOrder>
+    <CEffectCreateUnit id="SOLARCRYSTAL_MegalithCutter_FunnelCreate">
+        <WhichLocation Value="TargetPoint"/>
+        <CreateFlags index="SetFacing" value="1"/>
+        <SpawnEffect value="SOLARCRYSTAL_MegalithCutter_FunnelCreateSet"/>
+        <SpawnUnit value="SOLARCRYSTAL_MegalithCutter_Funnel"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="SOLARCRYSTAL_MegalithCutter_FunnelCreateSet">
+        <EffectArray value="SOLARCRYSTAL_MegalithCutter_FunnelUseNum"/>
+        <EffectArray value="SOLARCRYSTAL_Megalith_FunnelUseBuff"/>
+        <EffectArray value="SOLARCRYSTAL_MegalithCutter_FunnelCommand"/>
+    </CEffectSet>
+    <CEffectDamage id="SOLARCRYSTAL_MegalithCutter_FunnelDamage">
+        <ArmorReduction value="1"/>
+        <Kind value="Ranged"/>
+        <Amount value="10"/>
+    </CEffectDamage>
+    <CEffectSet id="SOLARCRYSTAL_MegalithCutter_FunnelDeathSet">
+        <EffectArray value="SOLARCRYSTAL_MegalithCutter_FunnelRemoveNum"/>
+        <EffectArray value="Suicide"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="SOLARCRYSTAL_MegalithCutter_FunnelEnableUseBuff">
+        <WhichUnit Effect="SOLARCRYSTAL_MegalithCutter_MainWeaponBegin" Value="Source"/>
+        <Behavior value="SOLARCRYSTAL_MegalithCutter_FunnelEnable"/>
+    </CEffectApplyBehavior>
+    <CEffectLaunchMissile id="SOLARCRYSTAL_MegalithCutter_FunnelLaunch">
+        <ImpactEffect value="SOLARCRYSTAL_MegalithCutter_FunnelDamage"/>
+        <AmmoUnit value="SOLARCRYSTAL_MegalithCutter_FunnelMissile"/>
+        <Movers Link="SOLARCRYSTAL_MegalithCutter_FunnalWeaponMover"/>
+    </CEffectLaunchMissile>
+    <CEffectRemoveBehavior id="SOLARCRYSTAL_MegalithCutter_FunnelRemoveNum">
+        <WhichUnit Effect="SOLARCRYSTAL_Megalith_FunnelUseBuff" Value="Source"/>
+        <BehaviorLink value="SOLARCRYSTAL_MegalithCutter_FunnelNum"/>
+        <Count value="1"/>
+    </CEffectRemoveBehavior>
+    <CEffectApplyBehavior id="SOLARCRYSTAL_Megalith_FunnelUseBuff">
+        <Behavior value="SOLARCRYSTAL_MegalithCutter_Funnel"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="SOLARCRYSTAL_MegalithCutter_FunnelUseNum">
+        <WhichUnit Value="Source"/>
+        <Behavior value="SOLARCRYSTAL_MegalithCutter_FunnelNum"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="SOLARCRYSTAL_MegalithCutter_MainWeaponBegin">
+        <EffectArray value="SOLARCRYSTAL_MegalithCutter_MainWeaponHoldWeapon"/>
+        <EffectArray value="SOLARCRYSTAL_MegalithCutter_FunnelBeginLoop"/>
+        <EffectArray value="SOLARCRYSTAL_MegalithCutter_MainWeaponCreateTargetUnit"/>
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="SOLARCRYSTAL_MegalithCutter_MainWeaponBeginLoop">
+        <InitialDelay value="3.25"/>
+        <InitialEffect value="SOLARCRYSTAL_MegalithCutter_FunnelEnableUseBuff"/>
+        <FinalEffect value="SOLARCRYSTAL_MegalithCutter_MainWeaponRemoveHoldAttack"/>
+        <PeriodCount value="2"/>
+        <PeriodicEffectArray value="SOLARCRYSTAL_MegalithCutter_RemoveNextIsMegalithMainWeapon"/>
+        <PeriodicEffectArray value="SOLARCRYSTAL_MegalithCutter_MainWeaponLaunch"/>
+        <PeriodicPeriodArray value="0"/>
+        <HeightMap value="Ground"/>
+    </CEffectCreatePersistent>
+    <CEffectEnumArea id="SOLARCRYSTAL_MegalithCutter_MainWeaponBeginSearch">
+        <SearchFilters value="-;Player,Ally,Structure,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="3" Effect="SOLARCRYSTAL_MegalithCutter_MainWeaponTargetUseBuff"/>
+    </CEffectEnumArea>
+    <CEffectCreateUnit id="SOLARCRYSTAL_MegalithCutter_MainWeaponCreateTargetUnit">
+        <ValidatorArray value="SOLARCRYSTAL_IsCreateMegalithMainWeaponSet"/>
+        <WhichLocation Value="TargetPoint"/>
+        <CreateFlags index="OffsetByRadius" value="0"/>
+        <CreateFlags index="Placement" value="0"/>
+        <CreateFlags index="ProvideFood" value="0"/>
+        <CreateFlags index="TechComplete" value="0"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <CreateFlags index="NormalizeSpawnOffset" value="0"/>
+        <SpawnEffect value="SOLARCRYSTAL_MegalithCutter_MainWeaponBeginLoop"/>
+        <SpawnUnit value="SOLARCRYSTAL_MegalithCutter_MainWeaponTarget"/>
+        <SpawnRange value="0"/>
+    </CEffectCreateUnit>
+    <CEffectEnumArea id="SOLARCRYSTAL_MegalithCutter_MainWeaponEndSearch">
+        <SearchFilters value="-;Player,Ally,Missile,Dead,Hidden"/>
+        <AreaArray Radius="3" Effect="SOLARCRYSTAL_MagalithCutter_MainWeaponTargetDamage"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="SOLARCRYSTAL_MegalithCutter_MainWeaponEndSearchBuilding">
+        <SearchFilters value="-;Player,Ally,Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="2.5" Effect="SOLARCRYSTAL_MegalithCutter_MainWeaponTargetDamageBuilding"/>
+    </CEffectEnumArea>
+    <CEffectSet id="SOLARCRYSTAL_MegalithCutter_MainWeaponEndSet">
+        <EffectArray value="SOLARCRYSTAL_MegalithCutter_MainWeaponEndSearch"/>
+        <EffectArray value="SOLARCRYSTAL_MegalithCutter_MainWeaponEndSearchBuilding"/>
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectApplyForce id="SOLARCRYSTAL_MegalithCutter_MainWeaponGravity">
+        <WhichLocation Effect="SOLARCRYSTAL_MegalithCutter_MainWeaponTargetLoop" Value="TargetPoint"/>
+        <Amount value="-0.1"/>
+    </CEffectApplyForce>
+    <CEffectApplyBehavior id="SOLARCRYSTAL_MegalithCutter_MainWeaponHoldWeapon">
+        <WhichUnit Value="Source"/>
+        <Behavior value="SOLARCRYSTAL_MegalithCutter_HoldAttack"/>
+    </CEffectApplyBehavior>
+    <CEffectLaunchMissile id="SOLARCRYSTAL_MegalithCutter_MainWeaponLaunch">
+        <ImpactLocation Value="TargetPoint"/>
+        <ImpactEffect value="SOLARCRYSTAL_MegalithCutter_MainWeaponTargetLoop"/>
+        <AmmoUnit value="SOLARCRYSTAL_MegalithCutter_MainWeaponMissile"/>
+        <Movers Link="SOLARCRYSTAL_MegalithCutter_MainWeaponMover"/>
+    </CEffectLaunchMissile>
+    <CEffectRemoveBehavior id="SOLARCRYSTAL_MegalithCutter_MainWeaponRemoveHoldAttack">
+        <WhichUnit Value="Source"/>
+        <BehaviorLink value="SOLARCRYSTAL_MegalithCutter_HoldAttack"/>
+    </CEffectRemoveBehavior>
+    <CEffectDamage id="SOLARCRYSTAL_MegalithCutter_MainWeaponTargetDamageBuilding">
+        <ValidatorArray value="SOLARCRYSTAL_MegalithCutter_NotMainWeaponTarget"/>
+        <Flags index="Kill" value="1"/>
+        <Amount value="999"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="SOLARCRYSTAL_MegalithCutter_MainWeaponTargetLoop">
+        <InitialEffect value="SOLARCRYSTAL_MegalithCutter_MainWeaponBeginSearch"/>
+        <ExpireEffect value="SOLARCRYSTAL_MegalithCutter_MainWeaponEndSet"/>
+        <PeriodCount value="48"/>
+        <PeriodicEffectArray value="SOLARCRYSTAL_MegalithCutter_MainWeaponBeginSearch"/>
+        <PeriodicPeriodArray value="0.0625"/>
+    </CEffectCreatePersistent>
+    <CEffectApplyBehavior id="SOLARCRYSTAL_MegalithCutter_MainWeaponTargetUseBuff">
+        <Behavior value="SOLARCRYSTAL_MegalithCutter_MainWeaponBuff"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="SOLARCRYSTAL_EnergyPort_PlaceCrystal">
+        <Behavior value="SOLARCRYSTAL_EnergyPort_HasCrystal"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="METEORITE_MeteoriteDrop_GiantCraterEnum">
+        <WhichUnit Value="Source"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="SOLARCRYSTAL_EnergyPort_RemoveInteract">
+        <ValidatorArray value="SOLARCRYSTAL_SolarCrystal_NoLocker"/>
+        <EffectArray value="SOLARCRYSTAL_EnergyPort_RemoveCrystal"/>
+        <EffectArray value="SOLARCRYSTAL_Worker_GetCrystal"/>
+    </CEffectSet>
+    <CEffectRemoveBehavior id="SOLARCRYSTAL_EnergyPort_RemoveCrystal">
+        <BehaviorLink value="SOLARCRYSTAL_EnergyPort_HasCrystal"/>
+    </CEffectRemoveBehavior>
+    <CEffectSet id="SOLARCRYSTAL_EnergyPort_PlaceInteract">
+        <EffectArray value="SOLARCRYSTAL_EnergyPort_PlaceCrystal"/>
+        <EffectArray value="SOLARCRYSTAL_Worker_LostCrystal"/>
+        <EffectArray value="METEORITE_Timer_CoverSet"/>
+    </CEffectSet>
+    <CEffectCreateUnit id="METEORITE_MeteoriteDrop_MicroCreateWithTimer">
+        <WhichLocation Value="TargetPoint"/>
+        <CreateFlags index="PlacementIgnoreBlockers" value="1"/>
+        <CreateFlags index="PlacementIgnoreCliffTest" value="1"/>
+        <CreateFlags index="UseFood" value="0"/>
+        <SpawnEffect value="METEORITE_MeteoriteDrop_MicroLMWithTimer"/>
+        <SpawnUnit value="METEORITE_MeteoriteDrop_Micro"/>
+    </CEffectCreateUnit>
+    <CEffectRemoveBehavior id="SOLARCRYSTAL_MegalithCutter_RemoveNextIsMegalithMainWeapon">
+        <WhichUnit Value="Source"/>
+        <BehaviorLink value="SOLARCRYSTAL_NextMegalithMainWeapon"/>
+    </CEffectRemoveBehavior>
+    <CEffectCreateUnit id="SOLARCRYSTAL_SolarCrystal_DeathDrop">
+        <WhichLocation Value="SourceUnit"/>
+        <SpawnOwner Value="Neutral"/>
+        <SpawnUnit value="SOLARCRYSTAL_SolarCrystalUnit"/>
+    </CEffectCreateUnit>
+    <CEffectDamage id="METEORITE_MeteoriteDrop_ImapctSuicide">
+        <ImpactLocation Value="SourceUnit"/>
+        <Flags index="Kill" value="1"/>
+        <Death value="Blast"/>
+    </CEffectDamage>
+    <CEffectCreateUnit id="METEORITE_MeteoriteDrop_GiantCreate">
+        <WhichLocation Value="TargetPoint"/>
+        <SpawnEffect value="METEORITE_MeteoriteDrop_GiantLM"/>
+        <SpawnUnit value="METEORITE_MeteoriteDrop_Giant"/>
+        <CreateFlags index="PlacementIgnoreBlockers" value="1"/>
+        <CreateFlags index="PlacementIgnoreCliffTest" value="1"/>
+        <CreateFlags index="SetFacing" value="1"/>
+        <CreateFlags index="UseFood" value="0"/>
+    </CEffectCreateUnit>
+    <CEffectSet id="SOLARCRYSTAL_SolarCrystal_Pickup">
+        <EffectArray value="SOLARCRYSTAL_SolarCrystal_KillTarget"/>
+        <EffectArray value="SOLARCRYSTAL_Worker_GetCrystal"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="SOLARCRYSTAL_MegalithCutter_UseNextIsMegalithMainWeapon">
+        <WhichUnit Value="Source"/>
+        <Behavior value="SOLARCRYSTAL_NextMegalithMainWeapon"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="SOLARCRYSTAL_Worker_GetCrystal">
+        <WhichUnit Value="Caster"/>
+        <Behavior value="SOLARCRYSTAL_Worker_HasCrystal"/>
+    </CEffectApplyBehavior>
+    <CEffectSwitch id="SOLARCRYSTAL_SolarCrystal_Interact">
+        <ValidatorArray value="SOLARCRYSTAL_SolarCrystal_InteractTarget_HasMarkerValidator"/>
+        <ValidatorArray value="METEORITE_MeteoriteDrop_NoEnergyLostTarget"/>
+        <CaseArray Validator="SOLARCRYSTAL_SunCrystal_PickupValidator" Effect="SOLARCRYSTAL_SolarCrystal_Pickup"/>
+        <CaseArray Validator="SOLARCRYSTAL_EnergyPort_PlaceCrystalValidator" Effect="SOLARCRYSTAL_EnergyPort_PlaceInteract"/>
+        <CaseArray Validator="SOLARCRYSTAL_EnergyPort_RemoveCrystalValidator" Effect="SOLARCRYSTAL_EnergyPort_RemoveInteract"/>
+        <CaseDefault value="SUNCRYSTAL_SolarCrystal_InteractDummy"/>
+    </CEffectSwitch>
+    <CEffectSet id="SUNCRYSTAL_SolarCrystal_InteractDummy"/>
+    <CEffectDamage id="SOLARCRYSTAL_SolarCrystal_KillTarget">
+        <ImpactLocation Value="TargetUnit"/>
+        <Flags index="Kill" value="1"/>
+        <Death value="Timeout"/>
+    </CEffectDamage>
+    <CEffectRemoveBehavior id="SOLARCRYSTAL_Worker_LostCrystal">
+        <WhichUnit Value="Caster"/>
+        <BehaviorLink value="SOLARCRYSTAL_Worker_HasCrystal"/>
+    </CEffectRemoveBehavior>
+    <CEffectLaunchMissile id="METEORITE_MeteoriteDrop_MicroLMWithTimer">
+        <LaunchLocation Value="TargetUnit"/>
+        <ImpactLocation Effect="METEORITE_MeteoriteDrop_MicroCPWithTimer" Value="TargetPoint"/>
+        <ImpactEffect value="METEORITE_MeteoriteDrop_MicroImapctNotice"/>
+        <Flags index="Placement" value="1"/>
+        <Flags index="PlacementIgnoreBlockers" value="1"/>
+        <Flags index="PlacementIgnoreCliffTest" value="1"/>
+        <Flags index="PointFallback" value="0"/>
+        <Flags index="ValidateAbil" value="0"/>
+        <Flags index="ValidateBenign" value="0"/>
+        <Flags index="ValidateTeleport" value="0"/>
+        <Flags index="ValidateWeapon" value="0"/>
+        <Movers Link="METEORITE_MeteoriteDrop_Micro" IfRangeLTE="63352"/>
+        <DeathType value="Unknown"/>
+    </CEffectLaunchMissile>
+    <CEffectTeleport id="BlinkWarpDarkDean">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Source"/>
+        <TargetLocation Value="TargetPoint"/>
+        <TeleportFlags index="TestCliff" value="1"/>
+        <ValidatorArray value="Walkable"/>
+    </CEffectTeleport>
+    <CEffectDamage id="CleaveDamageDarkDean">
+        <EditorCategories value=""/>
+        <ArmorReduction value="1"/>
+        <Amount value="100"/>
+    </CEffectDamage>
+    <CEffectSet id="CleaveInitSetDarkDean">
+        <EditorCategories value=""/>
+        <EffectArray value="CleaveSearchDarkDean"/>
+        <EffectArray value="CleaveReboundSearchDarkDean"/>
+        <TargetLocationType value="Point"/>
+    </CEffectSet>
+    <CEffectRedirectMissile id="CleaveReboundDarkDean">
+        <EditorCategories value=""/>
+    </CEffectRedirectMissile>
+    <CEffectEnumArea id="CleaveReboundSearchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactLocation Value="SourcePoint"/>
+        <SearchFilters value="Missile;Player,Ally"/>
+        <AreaArray Radius="4" Effect="CleaveReboundTargetSearchDarkDean"/>
+        <Chance value="0"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="CleaveReboundTargetSearchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactLocation Value="TargetUnit"/>
+        <SearchFilters value="-;Player,Ally,Missile"/>
+        <AreaArray MaxCount="1" Radius="10" Effect="CleaveReboundDarkDean"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="CleaveSearchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactLocation Value="SourcePoint"/>
+        <SearchFilters value="Ground;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="2" Effect="CleaveDamageDarkDean"/>
+    </CEffectEnumArea>
+    <CEffectEnumArea id="IhanCrystalSearchDarkDean">
+        <EditorCategories value=""/>
+        <SearchFilters value="Heroic;Self,Neutral,Enemy,Structure,Missile,Dead,Hidden"/>
+        <AreaArray Radius="7" Effect="IhanCrystalTargetBuffDarkDean"/>
+    </CEffectEnumArea>
+    <CEffectModifyUnit id="IhanCrystalSetUnitDarkDean">
+        <EditorCategories value=""/>
+        <VitalArray index="Life" ChangeFraction="0.025"/>
+        <ValidatorArray value="NotMaxHP"/>
+    </CEffectModifyUnit>
+    <CEffectApplyBehavior id="IhanCrystalTargetBuffDarkDean">
+        <ValidatorArray index="0" value="NotMaxHP"/>
+        <EditorCategories value=""/>
+        <Behavior value="IhanCrystalTargetDarkDean"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="PsiArmCannonDamageDarkDean">
+        <EditorCategories value=""/>
+        <ArmorReduction value="1"/>
+        <Kind value="Ranged"/>
+        <Amount value="25"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="PsiArmCannonLaunchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactEffect value="PsiArmCannonDamageDarkDean"/>
+        <AmmoUnit value="PsiArmCannonMissileDarkDean"/>
+        <Movers Link="VoidSeekerWeaponMoverDarkDean"/>
+    </CEffectLaunchMissile>
+    <CEffectSet id="PsiBladeBeginDarkDean">
+        <EditorCategories value=""/>
+        <EffectArray value="PsiBladeDamageDarkDean"/>
+        <EffectArray value="PsiBladeSearchDarkDean"/>
+    </CEffectSet>
+    <CEffectEnumArea id="PsiBladeSearchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactLocation Value="SourcePoint"/>
+        <ExcludeArray Effect="PsiBladeBeginDarkDean" Value="Target"/>
+        <SearchFilters value="Ground,Visible;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray Arc="180" Radius="1.25" Effect="PsiBladeDamageDarkDean"/>
+        <SearchFlags index="OffsetByUnitRadius" value="1"/>
+    </CEffectEnumArea>
+    <CEffectCreatePersistent id="HybridDominatorAssimilateShieldLoop">
+        <EditorCategories value=""/>
+        <Flags index="Channeled" value="1"/>
+        <Flags index="PersistUntilDestroyed" value="1"/>
+        <PeriodicEffectArray value="HybridDominatorAssimilateShieldSet"/>
+        <PeriodicPeriodArray value="0.0625"/>
+        <WhichLocation Value="TargetUnit"/>
+        <InitialEffect value="HybridDominatorAssimilateShieldSet"/>
+        <PeriodicValidator value="HybridDominatorVoidShieldSet"/>
+    </CEffectCreatePersistent>
+    <CEffectSet id="HybridDominatorAssimilateShieldSet">
+        <EditorCategories value=""/>
+        <EffectArray value="HybridDominatorAssimilateShieldUseBuff"/>
+        <EffectArray value="HybridDominatorAssimilateShieldUseOriginBuff"/>
+    </CEffectSet>
+    <CEffectApplyBehavior id="HybridDominatorAssimilateShieldUseBuff">
+        <EditorCategories value=""/>
+        <Behavior value="HybridDominatorAssimilateShield"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="HybridDominatorAssimilateShieldUseOriginBuff">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Source"/>
+        <Behavior value="METEORITE_ShieldGenerator_EnergyLost"/>
+        <Flags index="UseDuration" value="1"/>
+        <Duration value="0.25"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="PsiBladeDamageDarkDean">
+        <EditorCategories value=""/>
+        <Amount value="50"/>
+        <AreaArray Radius="0.6" Fraction="0.5"/>
+        <SearchFilters value="Ground;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectApplyBehavior id="UseNoStealthDarkDean">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Source"/>
+        <Behavior value="NoStealthDarkDean"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="VoidPrisonBuffDarkDean">
+        <EditorCategories value=""/>
+        <Behavior value="VoidPrisonDarkDean"/>
+        <ValidatorArray index="0" value="IsGroundUnit"/>
+    </CEffectApplyBehavior>
+    <CEffectApplyBehavior id="VoidPrisonBuffAirDarkDean">
+        <ValidatorArray index="0" value="IsFlying"/>
+        <EditorCategories value=""/>
+        <Behavior value="VoidPrisonAirDarkDean"/>
+    </CEffectApplyBehavior>
+    <CEffectDamage id="VoidPrisonDamageDarkDean">
+        <EditorCategories value=""/>
+        <Amount value="10"/>
+    </CEffectDamage>
+    <CEffectLaunchMissile id="VoidPrisonLaunchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactEffect value="xukong"/>
+        <AmmoUnit value="VoidPrisonMissileDarkDean"/>
+        <Movers Link="VoidSeekerWeaponMoverDarkDean"/>
+    </CEffectLaunchMissile>
+    <CEffectDamage id="VoidSeekerCallDamageDarkDean">
+        <EditorCategories value=""/>
+        <Amount value="100"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="VoidSeekerCallSearchDarkDean">
+        <ValidatorArray value="Walkable"/>
+        <EditorCategories value=""/>
+        <ImpactLocation Value="TargetPoint"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Dead,Hidden,Invulnerable"/>
+        <AreaArray Radius="2.5"/>
+    </CEffectEnumArea>
+    <CEffectDamage id="VoidSeekerDamageDarkDean">
+        <EditorCategories value=""/>
+        <Kind value="Ranged"/>
+        <Amount value="10"/>
+        <AreaArray Radius="0.6" Fraction="1"/>
+        <SearchFilters value="Air;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectSet id="VoidSeekerGroundBeginDarkDean">
+        <EditorCategories value=""/>
+    </CEffectSet>
+    <CEffectDamage id="VoidSeekerGroundDamageDarkDean">
+        <EditorCategories value=""/>
+        <Kind value="Ranged"/>
+        <Amount value="10"/>
+    </CEffectDamage>
+    <CEffectCreatePersistent id="VoidSeekerGroundLoopDarkDean">
+        <EditorCategories value=""/>
+        <WhichLocation Value="TargetUnit"/>
+        <InitialEffect value="VoidSeekerGroundLaunchDarkDean"/>
+        <PeriodCount value="4"/>
+        <PeriodicEffectArray value="VoidSeekerGroundLaunchDarkDean"/>
+        <PeriodicPeriodArray value="0.125"/>
+    </CEffectCreatePersistent>
+    <CEffectLaunchMissile id="VoidSeekerLaunchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactEffect value="VoidSeekerDamageDarkDean"/>
+        <AmmoUnit value="VoidSeekerMissileDarkDean"/>
+        <Movers Link="VoidSeekerWeaponMoverDarkDean"/>
+    </CEffectLaunchMissile>
+    <CEffectLaunchMissile id="VoidSeekerGroundLaunchDarkDean">
+        <EditorCategories value=""/>
+        <ImpactEffect value="VoidSeekerGroundDamageDarkDean"/>
+        <AmmoUnit value="VoidSeekerMissileGroundDarkDean"/>
+        <Movers Link="VoidSeekerWeaponMoverDarkDean"/>
+    </CEffectLaunchMissile>
+    <CEffectSet id="VoidSeekerVisibleDarkDean">
+        <ValidatorArray value="IsVoidSeekerGround"/>
+        <EditorCategories value=""/>
+    </CEffectSet>
+    <CEffectCreatePersistent id="VoidSeekerWarpBeginLoopDarkDean">
+        <EditorCategories value=""/>
+        <PeriodCount value="2"/>
+        <PeriodicEffectArray value="VoidSeekerWarpSetBuffDarkDean"/>
+        <PeriodicEffectArray value="VoidSeekerWarpDarkDean"/>
+        <PeriodicPeriodArray value="0"/>
+        <PeriodicPeriodArray value="0.5"/>
+    </CEffectCreatePersistent>
+    <CEffectTeleport id="VoidSeekerWarpDarkDean">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Source"/>
+        <TargetLocation Value="TargetPoint"/>
+    </CEffectTeleport>
+    <CEffectApplyBehavior id="VoidSeekerWarpSetBuffDarkDean">
+        <EditorCategories value=""/>
+        <WhichUnit Value="Source"/>
+        <Behavior value="VoidSeekerWarpDarkDean"/>
+    </CEffectApplyBehavior>
+    <CEffectSet id="xukong">
+        <ValidatorArray value="NotMegalith"/>
+        <EditorCategories value=""/>
+        <EffectArray value="VoidPrisonBuffDarkDean"/>
+        <EffectArray value="VoidPrisonBuffAirDarkDean"/>
+    </CEffectSet>
+</Catalog>
