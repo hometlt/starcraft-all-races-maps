@@ -241,7 +241,6 @@ trigger gt_Init05Units;
 trigger gt_Init06MusicSound;
 trigger gt_Init07Environment;
 trigger gt_Init08Difficulties;
-trigger gt_Init09Coop;
 trigger gt_ConstructMissiles;
 trigger gt_GasPing;
 trigger gt_RevealBonusObjectiveQ;
@@ -494,18 +493,7 @@ void gt_Init01LoadData_Init () {
 // Trigger: Init 02 Players
 //--------------------------------------------------------------------------------------------------
 bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    playergroup auto7AA9C5CB_g;
-    int auto7AA9C5CB_p;
-    playergroup auto5169EB00_g;
-    int auto5169EB00_p;
-    // Variable Declarations
-    int lv_playerIterEnemy;
-    int lv_playerIterAlly;
-    // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
+    if (!runActions) {return true;}
     gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
     gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     return true;
@@ -518,15 +506,12 @@ void gt_Init02Players_Init () {
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
+    if (!runActions) {return true;}
     TriggerExecute(gt_Init02Players, true, false);
-    TriggerExecute(gt_Init04Technology, true, false);
+    //TriggerExecute(gt_Init04Technology, true, false);
     TriggerExecute(gt_Init05Units, true, false);
-    TriggerExecute(gt_Init06MusicSound, true, false);
-    TriggerExecute(gt_Init07Environment, true, false);
+    //TriggerExecute(gt_Init06MusicSound, true, false);
+    //TriggerExecute(gt_Init07Environment, true, false);
     TriggerExecute(gt_Init08Difficulties, true, false);
     TriggerExecute(gt_StartGameQ, true, false);
     return true;
@@ -557,6 +542,28 @@ bool gt_Init05Units_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
+    libNtve_gf_ShowHideUnit(UnitFromId(1778431925), false);
+    libNtve_gf_ShowHideUnit(UnitFromId(24340134), false);
+    libNtve_gf_MakeUnitInvulnerable(UnitFromId(1718504127), true);
+    libNtve_gf_MakeUnitInvulnerable(UnitFromId(2069330141), true);
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(20), "GuideArrow");
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(20), "GuideArrow2");
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(14), "GuideArrow");
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(14), "GuideArrow2");
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(31), "GuideArrow");
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(31), "GuideArrow2");
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(33), "GuideArrow");
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(33), "GuideArrow2");
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(36), "GuideArrow");
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(36), "GuideArrow2");
+    UnitSetInfoText(UnitFromId(1384704812), StringToText(""), StringExternal("Param/Value/B8621589"), StringToText(""));
+    UnitSetInfoText(UnitFromId(1443470665), StringToText(""), StringExternal("Param/Value/3D5634BB"), StringToText(""));
+    UnitSetInfoText(UnitFromId(1681205063), StringToText(""), StringExternal("Param/Value/C75A4826"), StringToText(""));
+    UnitSetInfoText(UnitFromId(1716263269), StringToText(""), StringExternal("Param/Value/FB5652F9"), StringToText(""));
+    UnitSetInfoText(UnitFromId(1383694219), StringToText(""), StringExternal("Param/Value/53064278"), StringToText(""));
+    UnitSetInfoText(UnitFromId(986121938), StringToText(""), StringExternal("Param/Value/84E5C4B5"), StringToText(""));
+    UnitSetInfoText(UnitFromId(949741527), StringToText(""), StringExternal("Param/Value/E2ABD9FB"), StringToText(""));
+    UnitSetInfoText(UnitFromId(1042682701), StringToText(""), StringExternal("Param/Value/9534353F"), StringToText(""));
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -592,8 +599,6 @@ void gt_Init07Environment_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
     // Variable Declarations
-    fixed lv_bonusObjectiveLife;
-    fixed lv_mainObjectiveLife;
     // Variable Initialization
     // Actions
     if (!runActions) {
@@ -604,58 +609,6 @@ bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Init08Difficulties_Init () {
     gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
-}
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 09 Coop
-//--------------------------------------------------------------------------------------------------
-bool gt_Init09Coop_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    libNtve_gf_ShowHideUnit(UnitFromId(1778431925), false);
-    libNtve_gf_ShowHideUnit(UnitFromId(24340134), false);
-    libNtve_gf_MakeUnitInvulnerable(UnitFromId(1718504127), true);
-    libNtve_gf_MakeUnitInvulnerable(UnitFromId(2069330141), true);
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(20), "GuideArrow");
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(20), "GuideArrow2");
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(14), "GuideArrow");
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(14), "GuideArrow2");
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(31), "GuideArrow");
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(31), "GuideArrow2");
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(33), "GuideArrow");
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(33), "GuideArrow2");
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(36), "GuideArrow");
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(36), "GuideArrow2");
-    UnitSetInfoText(UnitFromId(1384704812), StringToText(""), StringExternal("Param/Value/B8621589"), StringToText(""));
-    UnitSetInfoText(UnitFromId(1443470665), StringToText(""), StringExternal("Param/Value/3D5634BB"), StringToText(""));
-    UnitSetInfoText(UnitFromId(1681205063), StringToText(""), StringExternal("Param/Value/C75A4826"), StringToText(""));
-    UnitSetInfoText(UnitFromId(1716263269), StringToText(""), StringExternal("Param/Value/FB5652F9"), StringToText(""));
-    UnitSetInfoText(UnitFromId(1383694219), StringToText(""), StringExternal("Param/Value/53064278"), StringToText(""));
-    UnitSetInfoText(UnitFromId(986121938), StringToText(""), StringExternal("Param/Value/84E5C4B5"), StringToText(""));
-    UnitSetInfoText(UnitFromId(949741527), StringToText(""), StringExternal("Param/Value/E2ABD9FB"), StringToText(""));
-    UnitSetInfoText(UnitFromId(1042682701), StringToText(""), StringExternal("Param/Value/9534353F"), StringToText(""));
-    TriggerEnable(gt_BonusObjective1Activate, false);
-    TriggerEnable(gt_BonusObjective2Activate, false);
-    TriggerEnable(gt_Mothership_UnderAttack, false);
-    TriggerEnable(gt_Thrasher_Ping, false);
-    TriggerEnable(gt_Thrasher_Ping2, false);
-    TriggerEnable(gt_Charging_Finish2, false);
-    TriggerEnable(gt_Charging_Finish3, false);
-    TriggerEnable(gt_Charging_Finish4, false);
-    TriggerEnable(gt_DestroyAttackMothershipPing, false);
-    TriggerEnable(gt_DestroyBonusAttackWavePing2, false);
-    TriggerEnable(gt_DestroyAttackMothershipPing3, false);
-    TriggerEnable(gt_DestroyBonusAttackWavePing3, false);
-    TriggerEnable(gt_DestroyBonusAttackWavePing4, false);
-    TriggerEnable(gt_DestroyBonusAttackWavePing5, false);
-    TriggerEnable(gt_DestroyAttackMothershipPing7, false);
-    return true;
-}
-//--------------------------------------------------------------------------------------------------
-void gt_Init09Coop_Init () {
-    gt_Init09Coop = TriggerCreate("gt_Init09Coop_Func");
-    TriggerAddEventMapInit(gt_Init09Coop);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Construct Missiles
@@ -1219,6 +1172,22 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_DestroyAttackWavePing4, false);
     TriggerEnable(gt_DestroyBonusAttackWavePing, false);
     TriggerEnable(gt_DestroyAttackMothershipPing2, false);
+    TriggerEnable(gt_BonusObjective1Activate, false);
+    TriggerEnable(gt_BonusObjective2Activate, false);
+    TriggerEnable(gt_Mothership_UnderAttack, false);
+    TriggerEnable(gt_Thrasher_Ping, false);
+    TriggerEnable(gt_Thrasher_Ping2, false);
+    TriggerEnable(gt_Charging_Finish2, false);
+    TriggerEnable(gt_Charging_Finish3, false);
+    TriggerEnable(gt_Charging_Finish4, false);
+    TriggerEnable(gt_DestroyAttackMothershipPing, false);
+    TriggerEnable(gt_DestroyBonusAttackWavePing2, false);
+    TriggerEnable(gt_DestroyAttackMothershipPing3, false);
+    TriggerEnable(gt_DestroyBonusAttackWavePing3, false);
+    TriggerEnable(gt_DestroyBonusAttackWavePing4, false);
+    TriggerEnable(gt_DestroyBonusAttackWavePing5, false);
+    TriggerEnable(gt_DestroyAttackMothershipPing7, false);
+
     TriggerExecute(gt_Upgrades, true, false);
     Wait(5.0, c_timeGame);
     TextExpressionSetToken("Param/Expression/1FB354BB", "A", IntToText(gv_voidCorruptionObjective));
@@ -4826,7 +4795,6 @@ void InitTriggers () {
     gt_Init06MusicSound_Init();
     gt_Init07Environment_Init();
     gt_Init08Difficulties_Init();
-    gt_Init09Coop_Init();
     gt_ConstructMissiles_Init();
     gt_GasPing_Init();
     gt_RevealBonusObjectiveQ_Init();

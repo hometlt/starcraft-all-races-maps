@@ -489,25 +489,9 @@
             // Trigger: Init 02 Players
             //--------------------------------------------------------------------------------------------------
             bool gt_Init02Players_Func (bool testConds, bool runActions) {
-                playergroup auto7AA9C5CB_g;
-                int auto7AA9C5CB_p;
-                playergroup auto5169EB00_g;
-                int auto5169EB00_p;
-                // Variable Declarations
-                int lv_playerIterEnemy;
-                int lv_playerIterAlly;
-                // Variable Initialization
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                gv_pLAYER_01_USER = PlayerGroupPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), 1);
-                if ((PlayerGroupCount(libCOMI_gf_GetAlliedCommandersPlayers()) &gt; 1)) {
-                    gv_pLAYER_02_USER = PlayerGroupPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), 2);
-                }
-                else {
-                    gv_pLAYER_02_USER = gv_pLAYER_01_USER;
-                }
+                if (!runActions) {return true;}
+                gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+                gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -518,15 +502,12 @@
             // Trigger: Init 03 Loading Complete
             //--------------------------------------------------------------------------------------------------
             bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
+                if (!runActions) {return true;}
                 TriggerExecute(gt_Init02Players, true, false);
-                TriggerExecute(gt_Init04Technology, true, false);
-                TriggerExecute(gt_Init05Units, true, false);
-                TriggerExecute(gt_Init06MusicSound, true, false);
-                TriggerExecute(gt_Init07Environment, true, false);
+                //TriggerExecute(gt_Init04Technology, true, false);
+                //TriggerExecute(gt_Init05Units, true, false);
+                //TriggerExecute(gt_Init06MusicSound, true, false);
+                //TriggerExecute(gt_Init07Environment, true, false);
                 TriggerExecute(gt_Init08Difficulties, true, false);
                 TriggerExecute(gt_StartGameQ, true, false);
                 return true;

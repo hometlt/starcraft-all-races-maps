@@ -865,10 +865,10 @@
             // Constants
             //--------------------------------------------------------------------------------------------------
             const int gv_pLAYER_00_NEUTRAL = 0;
-            const int gv_pLAYER_01_USER = 1;
-            const int gv_pLAYER_02_USER = 2;
-            const int gv_pLAYER_03_ENEMY = 3;
-            const int gv_pLAYER_04_ENEMY = 4;
+            int gv_pLAYER_01_USER = 1;
+            int gv_pLAYER_02_USER = 2;
+            const int gv_pLAYER_03_ENEMY = 6;
+            const int gv_pLAYER_04_ENEMY = 7;
             //--------------------------------------------------------------------------------------------------
             // Global Variables
             //--------------------------------------------------------------------------------------------------
@@ -1269,7 +1269,7 @@
                 UnitGroupAdd(gv_centralcoregroup, UnitFromId(585241055));
                 UnitGroupAdd(gv_centralcoregroup, UnitFromId(1373964785));
                 UnitGroupLoopBegin(gv_centralcoregroup);
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) { 
                     libNtve_gf_MakeUnitInvulnerable(UnitGroupLoopCurrent(), true);
                     UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), &quot;RevealObjectiveUnit&quot;, gv_pLAYER_01_USER, 1);
                     UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), &quot;RevealObjectiveUnit&quot;, gv_pLAYER_02_USER, 1);
@@ -1286,39 +1286,8 @@
             // Trigger: Init 02 Players
             //--------------------------------------------------------------------------------------------------
             bool gt_Init02Players_Func (bool testConds, bool runActions) {
-                playergroup autoE0EF2853_g;
-                int autoE0EF2853_p;
-                playergroup autoB969537F_g;
-                int autoB969537F_p;
-                // Variable Declarations
-                int lv_playerIterEnemy;
-                int lv_playerIterAlly;
-                // Variable Initialization
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-                PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_03_ENEMY);
-                PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_04_ENEMY);
-                libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-                autoE0EF2853_g = gv_enemyGroup; 
-                autoE0EF2853_p = 1;
-                for ( ; autoE0EF2853_p &lt;= PlayerGroupCount(autoE0EF2853_g) ; autoE0EF2853_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p)) ) {
-                    lv_playerIterEnemy = PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p);
-                    PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-                    PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-                    PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-                    PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
-                    autoB969537F_g = libCOMI_gf_HumanPlayers();
-                    autoB969537F_p = 1;
-                    for ( ; autoB969537F_p &lt;= PlayerGroupCount(autoB969537F_g) ; autoB969537F_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoB969537F_g, autoB969537F_p)) ) {
-                        lv_playerIterAlly = PlayerGroupPlayer(autoB969537F_g, autoB969537F_p);
-                        libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-                    }
-                }
-                PlayerSetAlliance(gv_pLAYER_03_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
-                PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_03_ENEMY, true);
+                gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+                gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -1354,7 +1323,6 @@
                 if (!runActions) {
                     return true;
                 }
-                GameTimeOfDaySet(&quot;08:00:00&quot;);
                 VisExploreArea(gv_pLAYER_01_USER, RegionFromId(49), true, false);
                 VisExploreArea(gv_pLAYER_02_USER, RegionFromId(49), true, false);
                 VisRevealerCreate(gv_pLAYER_01_USER, RegionFromId(21));

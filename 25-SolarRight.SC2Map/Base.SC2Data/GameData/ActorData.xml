@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
+    <CActorUnit id="MiningDrone">
+        <On Terms="Effect.GatherSolariteGatherPersistent.Start" Send="TimerSet 0.000000,0.300000 GatherSolarite"/>
+        <On Terms="Effect.GatherSolariteGatherPersistent.Stop" Send="AnimClear GatherSolarite"/>
+        <On Terms="Effect.GatherSolariteGatherPersistent.Stop" Send="TimerKill GatherSolarite"/>
+        <On Terms="AnimDone.*.Complete; AnimName GatherSolarite" Send="TimerSet 0.000000,0.300000 GatherSolarite"/>
+        <On Terms="TimerExpired; TimerName GatherSolarite" Send="AnimPlay GatherSolarite Work NonLooping"/>
+        <On Terms="TimerExpired; TimerName GatherSolarite" Send="Create SCVGatherSound"/>
+    </CActorUnit>
     <CActorDoodad id="QhadanTempleInlayPowerUp">
         <Aliases value="_EditorHelper"/>
         <Aliases value="_CreepEngulfable"/>

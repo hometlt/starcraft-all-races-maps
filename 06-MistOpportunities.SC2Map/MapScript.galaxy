@@ -21,277 +21,147 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_03_Player01Enemy = 8;
-const int gv_pLAYER_04_Player02Enemy = 9;
-const int gv_pLAYER_00_TERRAZINE = 0;
-const int gv_pLAYER_06_ESCORT = 6;
-const int gv_tERRAZINENODESMAX = 11;
+const int gv_pLAYER_TERRAZINE = 0;
+const int gv_pLAYER_ESCORT = 6;
 const int gv_wAVESLIMIT = 5;
+const int gv_tERRAZINENODESMAX = 11;
 
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
-int gv_pLAYER_01_USER;
-int gv_pLAYER_02_USER;
-string gv_mapMusicTrack;
-int gv_leaderboardBonusScoreFinal;
-int gv_leaderboardBonusScoreFinal2;
-int gv_leaderboardBotScoreFinal;
-unit[12] gv_leaderboardBots;
-int gv_leaderboardBotCount;
 unit gv_terrazineCollection;
 unitgroup gv_activeHarvesters;
-point gv_escortBotBirth;
-fixed gv_escortHoldoutDuration;
-point gv_escortDeathPoint;
-int gv_escortLife;
-bool gv_firstBotBool;
 unit[gv_tERRAZINENODESMAX + 1] gv_terrazineNodes;
-timer gv_startBonusObjective1;
-timer gv_startBonusObjective2;
-timer gv_whalesExpireTimer1;
-timer gv_whalesExpireTimer2;
-int gv_whalesPing2;
-int gv_whalesPing;
-unit gv_bonusObjective_WhalePrison2;
-unit gv_bonusObjective_WhalePrison1;
-int gv_whalePrisonLife;
-int gv_whichWhale;
-fixed gv_scoreScreen_HarvesterDamage;
-point gv_pLAYER03_ATTACKWAYPOINT;
-point gv_pLAYER04_ATTACKWAYPOINT;
-point gv_wave02_RampAttack;
-point gv_wave04_ExpoAttack;
-string gv_hybridMajor;
-string gv_hybridMinor;
-int gv_objectiveDestroyZergBase;
-int gv_wavesCompleted;
+point gv_escortBotBirth;
+point gv_escortDeathPoint;
 int gv_botsDestroyedLimit;
 int gv_botsDestroyed;
-int gv_objectiveDestroyZergBase2;
-int gv_objectiveRescueStalkers;
-int gv_objectiveRescueStalkers2;
+int gv_wavesCompleted;
+fixed gv_escortHoldoutDuration;
+int gv_escortLife;
+bool gv_firstBotBool;
+fixed gv_scoreScreen_HarvesterDamage;
+unit[12] gv_leaderboardBots;
+int gv_leaderboardBotCount;
+int gv_leaderboardBotScoreFinal;
+int gv_whichWhale;
+timer gv_startBonusObjective1;
+timer gv_whalesExpireTimer1;
+int gv_whalesPing1;
+unit gv_whalePrison1;
+timer gv_startBonusObjective2;
+timer gv_whalesExpireTimer2;
+int gv_whalesPing2;
+unit gv_whalePrison2;
+int gv_leaderboardBonusScoreFinal;
+int gv_leaderboardBonusScoreFinal2;
 
 void InitGlobals () {
-    gv_pLAYER_01_USER = 1;
-    gv_pLAYER_02_USER = 2;
     gv_terrazineCollection = UnitFromId(13);
     gv_activeHarvesters = UnitGroupEmpty();
     gv_escortBotBirth = PointFromId(48);
     gv_startBonusObjective1 = TimerCreate();
-    gv_startBonusObjective2 = TimerCreate();
     gv_whalesExpireTimer1 = TimerCreate();
+    gv_whalesPing1 = c_invalidPingId;
+    gv_whalePrison1 = UnitFromId(2006);
+    gv_startBonusObjective2 = TimerCreate();
     gv_whalesExpireTimer2 = TimerCreate();
     gv_whalesPing2 = c_invalidPingId;
-    gv_whalesPing = c_invalidPingId;
-    gv_bonusObjective_WhalePrison2 = UnitFromId(2668);
-    gv_bonusObjective_WhalePrison1 = UnitFromId(2006);
-    gv_pLAYER03_ATTACKWAYPOINT = PointFromId(127);
-    gv_pLAYER04_ATTACKWAYPOINT = PointFromId(152);
-    gv_objectiveDestroyZergBase = c_invalidObjectiveId;
-    gv_objectiveDestroyZergBase2 = c_invalidObjectiveId;
-    gv_objectiveRescueStalkers = c_invalidObjectiveId;
-    gv_objectiveRescueStalkers2 = c_invalidObjectiveId;
+    gv_whalePrison2 = UnitFromId(2668);
 }
 
 //--------------------------------------------------------------------------------------------------
 // Global Function Declarations
 //--------------------------------------------------------------------------------------------------
-unit gf_LowestVitalityUnitfromUnitGroup (unitgroup lp_canidates);
-void gf_InitializeEscortPathDisplay (int lp_path);
-point gf_DropLocation (int lp_waveIndex, int lp_firstLocation, int lp_lastLocation);
+void gf_EscortWaveatTime (fixed lp_time, trigger lp_escortWave);
 void gf_CreateEscortUnit (point lp_parkingPoint, unit lp_destination);
 void gf_SendEscortUnit (unit lp_escortUnit, unit lp_terrazineNode);
 void gf_TerrazineNodeWaveStart (unit lp_terrazineNode);
-void gf_EscortWaveatTime (fixed lp_time, trigger lp_escortWave);
 void gf_BotUnderAttack (unit lp_bot);
-bool gf_AnyAlliedUnitNearby ();
-void gf_AttackWaveatTime (fixed lp_time, trigger lp_aIAttackWave);
 
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
-trigger gt_Init01LoadData;
-trigger gt_Init02LoadingComplete;
-trigger gt_Init03Players;
-trigger gt_Init05Units;
-trigger gt_Init08Difficulties;
-trigger gt_Init09AI;
-trigger gt_StartGameQ;
+trigger gt_MistOpportunitiesInitialize;
+trigger gt_EscortWavesInitialize;
+trigger gt_EscortWavesStart;
 trigger gt_MissionProgression;
 trigger gt_Escort1Node1;
 trigger gt_Escort2Node23;
 trigger gt_Escort3Node45;
 trigger gt_Escort4Node678;
 trigger gt_Escort5Node91011;
+trigger gt_ObjectiveDontLetBotsDieUpdate;
+trigger gt_ObjectiveCollectTerrazineCanistersUpdate;
 trigger gt_EscortIsDeadIncrement;
-trigger gt_CollectTerrazineVOWarningWave1Q;
-trigger gt_CollectTerrazineVOWarningWave2Q;
-trigger gt_CollectTerrazineVOWarningWave3Q;
-trigger gt_CollectTerrazineVOWarningWave4Q;
-trigger gt_CollectTerrazineVOWarningWave5Q;
-trigger gt_EscortBotsFirstBotDepartingQ;
-trigger gt_EscortBotsBotsDepartingGenericQ;
-trigger gt_EscortBotsReturningSwitchVO;
-trigger gt_EscortBotsFirstBotReturningQ;
-trigger gt_EscortBotsBotsReturningGenericQ;
-trigger gt_EscortBotsSuccessfulDeliveryQ;
-trigger gt_EscortHasDiedVOQ;
+trigger gt_ObjectiveWaveCycle1;
+trigger gt_ObjectiveWaveCycle2;
+trigger gt_ObjectiveWaveCycle3;
+trigger gt_ObjectiveWaveCycle4;
+trigger gt_ObjectiveWaveCycle5;
 trigger gt_ProgresstoVictoryQ;
-trigger gt_EscortBotsBotsUnderAttackQ;
+trigger gt_EscortHarassDropPodVOQ;
+trigger gt_ScoreScreenHarvesterDamage;
+trigger gt_LeaderboardBotTracker;
+trigger gt_LeaderboardScoreBot;
+trigger gt_LeaderboardFinalScoreBot;
+trigger gt_DefeatTerrazineHarvestersDestroyed;
+trigger gt_DefeatFanfareTerrazineHarvestersDestroyed;
+trigger gt_VictoryCollectTerrazineCompleted;
+trigger gt_VictoryFanfareCollectTerrazineCompleted;
+trigger gt_SafeTheWhalesInitialize;
 trigger gt_ObjectiveSavetheWhalesInitializationWhale1;
 trigger gt_ObjectiveSavetheWhalesTimerUpdateWhale1;
 trigger gt_ObjectiveSavetheWhalesVOWarning1Whale1;
 trigger gt_ObjectiveSavetheWhalesVOWarningFinalWhale1;
-trigger gt_ObjectiveSavetheWhalesProgressCheckWhale1;
 trigger gt_WhaleLifeCheckWhale1;
 trigger gt_WhaleTimerExpireWhale1;
 trigger gt_ObjectiveSavetheWhalesInitializationWhale2;
 trigger gt_ObjectiveSavetheWhalesTimerUpdateWhale2;
 trigger gt_ObjectiveSavetheWhalesVOWarning1Whale2;
 trigger gt_ObjectiveSavetheWhalesVOWarningFinalWhale2;
-trigger gt_ObjectiveSavetheWhalesProgressCheckWhale2;
 trigger gt_WhaleLifeCheckWhale2;
 trigger gt_WhaleTimerExpireWhale2;
-trigger gt_ObjectiveSavetheWhaleVOWhale1StartQ;
-trigger gt_ObjectiveSavetheWhaleVOWhale1FailedQ;
-trigger gt_ObjectiveSavetheWhaleVOWhale1CompleteQ;
-trigger gt_ObjectiveSavetheWhaleVOWhale2StartQ;
-trigger gt_ObjectiveSavetheWhaleVOWhale2FailedQ;
-trigger gt_ObjectiveSavetheWhaleVOWhale2CompleteQ;
-trigger gt_DefeatPrimaryObjectiveFailed;
-trigger gt_VictoryCollectTerrazineCanistersCompleted;
-trigger gt_VictorySequence;
-trigger gt_VictoryFanfareQ;
-trigger gt_DefeatFanfare;
-trigger gt_ScoreScreenHarvesterDamage;
-trigger gt_EnemyAttackingQ;
-trigger gt_ObjectiveWaveCycle1;
-trigger gt_ObjectiveWaveCycle2;
-trigger gt_ObjectiveWaveCycle3;
-trigger gt_ObjectiveWaveCycle4;
-trigger gt_ObjectiveWaveCycle5;
-trigger gt_EscortHarassWave1StartingVOQ;
-trigger gt_EscortHarassWave2StartingVOQ;
-trigger gt_EscortHarassWave3StartingVOQ;
-trigger gt_EscortHarassWave4StartingVOQ;
-trigger gt_EscortHarassWave5StartingVOQ;
-trigger gt_EscortHarassDropPodVOQ;
-trigger gt_AttackWave01;
-trigger gt_AttackWave02;
-trigger gt_AttackWave03ExpoAttack;
-trigger gt_AttackWave04OppositeExpoAttack;
-trigger gt_AttackWave05;
-trigger gt_AttackWave06;
-trigger gt_RunAttackWaves;
-trigger gt_SetupHybridTypes;
-trigger gt_ObjectiveCollectTerrazineCanistersCreate;
-trigger gt_ObjectiveCollectTerrazineCanistersComplete;
-trigger gt_ObjectiveCollectTerrazineCanistersUpdate;
-trigger gt_ObjectiveCollectTerrazineCanistersFailed;
-trigger gt_ObjectiveDontLetBotsDieCreate;
-trigger gt_ObjectiveDontLetBotsDieUpdate;
-trigger gt_ObjectiveSavetheWhalesCreateWhale1;
-trigger gt_ObjectiveSavetheWhalesCompleteWhale1;
-trigger gt_ObjectiveSavetheWhalesFailedWhale1;
-trigger gt_ObjectiveSavetheWhalesUpdateWhale1;
-trigger gt_ObjectiveSavetheWhalesCreateWhale2;
-trigger gt_ObjectiveSavetheWhalesCompleteWhale2;
-trigger gt_ObjectiveSavetheWhalesFailedWhale2;
-trigger gt_ObjectiveSavetheWhalesUpdateWhale2;
+trigger gt_LeaderboardScoreWhales;
+trigger gt_LeaderboardFinalScoreWhales;
 
 //--------------------------------------------------------------------------------------------------
 // Global Functions
 //--------------------------------------------------------------------------------------------------
-unit gf_LowestVitalityUnitfromUnitGroup (unitgroup lp_canidates) {
-    // Variable Declarations
-    fixed lv_vitality_Test;
-    fixed lv_vitality_Least;
-    unit lv_vitality_LeastCanidate;
-    unit lv_canidateIter;
+trigger auto_gf_EscortWaveatTime_Trigger = null;
+fixed auto_gf_EscortWaveatTime_lp_time;
+trigger auto_gf_EscortWaveatTime_lp_escortWave;
 
-    // Automatic Variable Declarations
-    unitgroup auto085695FD_g;
-    int auto085695FD_u;
+void gf_EscortWaveatTime (fixed lp_time, trigger lp_escortWave) {
+    auto_gf_EscortWaveatTime_lp_time = lp_time;
+    auto_gf_EscortWaveatTime_lp_escortWave = lp_escortWave;
 
-    // Variable Initialization
-    lv_vitality_Least = 524287.0;
-
-    // Implementation
-    auto085695FD_g = lp_canidates;
-    auto085695FD_u = UnitGroupCount(auto085695FD_g, c_unitCountAll);
-    for (;; auto085695FD_u -= 1) {
-        lv_canidateIter = UnitGroupUnitFromEnd(auto085695FD_g, auto085695FD_u);
-        if (lv_canidateIter == null) { break; }
-        lv_vitality_Test = UnitGetPropertyFixed(lv_canidateIter, c_unitPropVitality, c_unitPropCurrent);
-        if ((lv_vitality_Test < lv_vitality_Least)) {
-            lv_vitality_Least = lv_vitality_Test;
-            lv_vitality_LeastCanidate = lv_canidateIter;
-        }
-
+    if (auto_gf_EscortWaveatTime_Trigger == null) {
+        auto_gf_EscortWaveatTime_Trigger = TriggerCreate("auto_gf_EscortWaveatTime_TriggerFunc");
     }
-    return lv_vitality_LeastCanidate;
+
+    TriggerExecute(auto_gf_EscortWaveatTime_Trigger, false, false);
 }
 
-void gf_InitializeEscortPathDisplay (int lp_path) {
+bool auto_gf_EscortWaveatTime_TriggerFunc (bool testConds, bool runActions) {
+    fixed lp_time = auto_gf_EscortWaveatTime_lp_time;
+    trigger lp_escortWave = auto_gf_EscortWaveatTime_lp_escortWave;
+
     // Variable Declarations
-    string lv_stepIconAsModel;
-    string lv_stepIconAsImage;
+    fixed lv_attackWaveVariance;
 
     // Automatic Variable Declarations
     // Variable Initialization
 
     // Implementation
-    lv_stepIconAsModel = "Assets\\Units\\Test\\InvisibleUnit\\InvisibleUnit.m3";
-    lv_stepIconAsImage = lv_stepIconAsModel;
-    PathSetStepModel(lp_path, c_pathLocationWorld, lv_stepIconAsImage);
-    PathSetColor(lp_path, c_pathLocationAll, Color(100.00, 100.00, 100.00));
-    PathSetVisible(lp_path, c_pathLocationMinimap, false);
-    PathSetMinimumLinearDistance(lp_path, 0.0);
-    if ((libCOMI_gf_MutatorIsEnabled("BlackFog") == true)) {
-        PathSetVisible(lp_path, c_pathLocationAll, false);
+    while (!((lp_time <= GameGetMissionTime()))) {
+        Wait(0.3, c_timeAI);
+    }
+    if ((libCOMI_gf_GameIsOver() == false)) {
+        TriggerExecute(lp_escortWave, true, false);
     }
 
-}
-
-point gf_DropLocation (int lp_waveIndex, int lp_firstLocation, int lp_lastLocation) {
-    // Variable Declarations
-    int lv_waveDropIter;
-    int[8] lv_possibleDropLocations;
-    int lv_dropLocationCount;
-    int lv_dropLocationIndex;
-    int lv_testDropLocation;
-    point lv_testPoint;
-    int lv_tempLocationIndex;
-
-    // Automatic Variable Declarations
-    int auto50B4EAF5_ae;
-    const int auto50B4EAF5_ai = 1;
-
-    // Variable Initialization
-
-    // Implementation
-    auto50B4EAF5_ae = lp_lastLocation;
-    lv_waveDropIter = lp_firstLocation;
-    for ( ; ( (auto50B4EAF5_ai >= 0 && lv_waveDropIter <= auto50B4EAF5_ae) || (auto50B4EAF5_ai < 0 && lv_waveDropIter >= auto50B4EAF5_ae) ) ; lv_waveDropIter += auto50B4EAF5_ai ) {
-        lv_dropLocationCount += 1;
-        lv_possibleDropLocations[lv_dropLocationCount] = lv_waveDropIter;
-    }
-    while ((lv_dropLocationCount > 0)) {
-        lv_dropLocationIndex = RandomInt(1, lv_dropLocationCount);
-        lv_testDropLocation = lv_possibleDropLocations[lv_dropLocationIndex];
-        lv_testPoint = PointFromName(("Wave" + IntToString(lp_waveIndex) + "_Pt" + IntToString(lv_testDropLocation)));
-        if ((UnitGroupCount(UnitGroupAlliance(gv_pLAYER_03_Player01Enemy, c_unitAllianceEnemy, RegionCircle(lv_testPoint, 5.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) == 0)) {
-            return lv_testPoint;
-        }
-        else {
-            lv_tempLocationIndex = lv_possibleDropLocations[lv_dropLocationCount];
-            lv_possibleDropLocations[lv_dropLocationCount] = lv_possibleDropLocations[lv_dropLocationIndex];
-            lv_possibleDropLocations[lv_dropLocationIndex] = lv_tempLocationIndex;
-            lv_dropLocationCount -= 1;
-        }
-    }
-    return PointFromName(("Wave" + IntToString(lp_waveIndex) + "_Pt" + IntToString(RandomInt(lp_firstLocation, lp_lastLocation))));
+    return true;
 }
 
 void gf_CreateEscortUnit (point lp_parkingPoint, unit lp_destination) {
@@ -299,7 +169,7 @@ void gf_CreateEscortUnit (point lp_parkingPoint, unit lp_destination) {
     fixed autoFCD327C9_at;
 
     // Implementation
-    UnitCreate(1, "TerrazineHarvester", 0, gv_pLAYER_06_ESCORT, PointFromId(48), 134.96);
+    UnitCreate(1, "TerrazineHarvester", 0, gv_pLAYER_ESCORT, PointFromId(48), 134.96);
     UnitGroupAdd(gv_activeHarvesters, UnitLastCreated());
     UnitStatusBarOverride(UnitLastCreated(), c_unitStatusGroupAll);
     UnitSetPropertyFixed(UnitLastCreated(), c_unitPropLifeMax, gv_escortLife);
@@ -432,7 +302,13 @@ bool auto_gf_SendEscortUnit_TriggerFunc (bool testConds, bool runActions) {
         UnitAbilityEnable(lp_escortUnit, "move", true);
     }
     lv_escortBotPath = PathLastCreated();
-    TriggerExecute(gt_EscortBotsReturningSwitchVO, true, false);
+    if ((gv_firstBotBool == true)) {
+        gv_firstBotBool = false;
+        libCOMI_gf_DefferedTransmission("BotReturnFirstBE", 0.0, 20.0);
+    }
+    else {
+        libCOMI_gf_DefferedTransmission("BotReturnRepeatBE", 0.0, 60.0);
+    }
     while ((UnitIsAlive(lp_escortUnit) == true) && (libNtve_gf_UnitInRegion(lp_escortUnit, RegionCircle(PointFromId(48), 0.5)) == false)) {
         lv_nextPathPoint = null;
         lv_nextPathPoint = PointFromName(("Path" + IntToString(lv_nodeIndex) + "_" + IntToString(lv_pathIndex)));
@@ -465,7 +341,7 @@ bool auto_gf_SendEscortUnit_TriggerFunc (bool testConds, bool runActions) {
     UnitRemove(lp_escortUnit);
     libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_escortUnit, 1));
     if ((gv_wavesCompleted <= 3)) {
-        TriggerExecute(gt_EscortBotsSuccessfulDeliveryQ, true, false);
+        libCOMI_gf_DefferedTransmission("BotDeliveryBE", 0.0, 30.0);
     }
 
     return true;
@@ -488,10 +364,14 @@ bool auto_gf_TerrazineNodeWaveStart_TriggerFunc (bool testConds, bool runActions
     unit lp_terrazineNode = auto_gf_TerrazineNodeWaveStart_lp_terrazineNode;
 
     // Variable Declarations
-    revealer lv_revealer_P1;
-    revealer lv_revealer_P2;
+    revealer[16] lv_revealers;
 
     // Automatic Variable Declarations
+    playergroup auto8664A294_g;
+    int auto8664A294_var;
+    playergroup autoF5E20B19_g;
+    int autoF5E20B19_var;
+
     // Variable Initialization
 
     // Implementation
@@ -499,51 +379,24 @@ bool auto_gf_TerrazineNodeWaveStart_TriggerFunc (bool testConds, bool runActions
     libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingAlert", UnitGetPosition(lp_terrazineNode), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 45.0);
     PingSetRotation(PingLastCreated(), 270.0);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/AEC4E5B6"));
-    libCOMI_gf_CreateRevealerCoop(gv_pLAYER_01_USER, RegionCircle(UnitGetPosition(lp_terrazineNode), 5.0));
-    lv_revealer_P1 = VisRevealerLastCreated();
-    libCOMI_gf_CreateRevealerCoop(gv_pLAYER_02_USER, RegionCircle(UnitGetPosition(lp_terrazineNode), 5.0));
-    lv_revealer_P2 = VisRevealerLastCreated();
+    auto8664A294_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    auto8664A294_var = -1;
+    while (true) {
+        auto8664A294_var = PlayerGroupNextPlayer(auto8664A294_g, auto8664A294_var);
+        if (auto8664A294_var < 0) { break; }
+        libCOMI_gf_CreateRevealerCoop(auto8664A294_var, RegionCircle(UnitGetPosition(lp_terrazineNode), 5.0));
+        lv_revealers[auto8664A294_var] = VisRevealerLastCreated();
+    }
     while (!((UnitGetType(lp_terrazineNode) == "TerrazineNodeOff"))) {
         Wait(1.0, c_timeGame);
     }
-    libCOMI_gf_DestroyRevealerCoop(lv_revealer_P1);
-    libCOMI_gf_DestroyRevealerCoop(lv_revealer_P2);
-    return true;
-}
-
-trigger auto_gf_EscortWaveatTime_Trigger = null;
-fixed auto_gf_EscortWaveatTime_lp_time;
-trigger auto_gf_EscortWaveatTime_lp_escortWave;
-
-void gf_EscortWaveatTime (fixed lp_time, trigger lp_escortWave) {
-    auto_gf_EscortWaveatTime_lp_time = lp_time;
-    auto_gf_EscortWaveatTime_lp_escortWave = lp_escortWave;
-
-    if (auto_gf_EscortWaveatTime_Trigger == null) {
-        auto_gf_EscortWaveatTime_Trigger = TriggerCreate("auto_gf_EscortWaveatTime_TriggerFunc");
+    autoF5E20B19_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    autoF5E20B19_var = -1;
+    while (true) {
+        autoF5E20B19_var = PlayerGroupNextPlayer(autoF5E20B19_g, autoF5E20B19_var);
+        if (autoF5E20B19_var < 0) { break; }
+        libCOMI_gf_DestroyRevealerCoop(lv_revealers[autoF5E20B19_var]);
     }
-
-    TriggerExecute(auto_gf_EscortWaveatTime_Trigger, false, false);
-}
-
-bool auto_gf_EscortWaveatTime_TriggerFunc (bool testConds, bool runActions) {
-    fixed lp_time = auto_gf_EscortWaveatTime_lp_time;
-    trigger lp_escortWave = auto_gf_EscortWaveatTime_lp_escortWave;
-
-    // Variable Declarations
-    fixed lv_attackWaveVariance;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-
-    // Implementation
-    while (!((lp_time <= GameGetMissionTime()))) {
-        Wait(0.3, c_timeAI);
-    }
-    if ((libCOMI_gf_GameIsOver() == false)) {
-        TriggerExecute(lp_escortWave, true, false);
-    }
-
     return true;
 }
 
@@ -580,7 +433,7 @@ bool auto_gf_BotUnderAttack_TriggerFunc (bool testConds, bool runActions) {
                 libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingAlert", UnitGetPosition(lp_bot), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 15.0);
                 PingSetUnit(PingLastCreated(), lp_bot);
                 TimerStart(lv_underAttackCooldown, 20.0, false, c_timeGame);
-                TriggerExecute(gt_EscortBotsBotsUnderAttackQ, true, false);
+                libCOMI_gf_DefferedTransmission("BotUnderAttackBE", 0.0, 15.0);
             }
 
         }
@@ -593,156 +446,68 @@ bool auto_gf_BotUnderAttack_TriggerFunc (bool testConds, bool runActions) {
     return true;
 }
 
-bool gf_AnyAlliedUnitNearby () {
-    // Automatic Variable Declarations
-    playergroup autoA269252F_g;
-    int autoA269252F_var;
-
-    // Implementation
-    autoA269252F_g = libCOMI_gf_GetAlliedCommandersPlayers();
-    autoA269252F_var = -1;
-    while (true) {
-        autoA269252F_var = PlayerGroupNextPlayer(autoA269252F_g, autoA269252F_var);
-        if (autoA269252F_var < 0) { break; }
-        if ((UnitGroupCount(UnitGroup(null, autoA269252F_var, RegionFromId(17), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 1), c_unitCountAlive) > 0)) {
-            return true;
-        }
-
-    }
-    return false;
-}
-
-trigger auto_gf_AttackWaveatTime_Trigger = null;
-fixed auto_gf_AttackWaveatTime_lp_time;
-trigger auto_gf_AttackWaveatTime_lp_aIAttackWave;
-
-void gf_AttackWaveatTime (fixed lp_time, trigger lp_aIAttackWave) {
-    auto_gf_AttackWaveatTime_lp_time = lp_time;
-    auto_gf_AttackWaveatTime_lp_aIAttackWave = lp_aIAttackWave;
-
-    if (auto_gf_AttackWaveatTime_Trigger == null) {
-        auto_gf_AttackWaveatTime_Trigger = TriggerCreate("auto_gf_AttackWaveatTime_TriggerFunc");
-    }
-
-    TriggerExecute(auto_gf_AttackWaveatTime_Trigger, false, false);
-}
-
-bool auto_gf_AttackWaveatTime_TriggerFunc (bool testConds, bool runActions) {
-    fixed lp_time = auto_gf_AttackWaveatTime_lp_time;
-    trigger lp_aIAttackWave = auto_gf_AttackWaveatTime_lp_aIAttackWave;
-
+//--------------------------------------------------------------------------------------------------
+// Trigger: Mist Opportunities - Initialize
+//--------------------------------------------------------------------------------------------------
+bool gt_MistOpportunitiesInitialize_Func (bool testConds, bool runActions) {
     // Variable Declarations
-    fixed lv_attackWaveVariance;
+    int lv_regionIter;
+    point lv_harvestLocation;
 
     // Automatic Variable Declarations
     // Variable Initialization
 
-    // Implementation
-    while (!((lp_time <= GameGetMissionTime()))) {
-        Wait(0.3, c_timeAI);
-    }
-    if ((libCOMI_gf_GameIsOver() == false)) {
-        TriggerExecute(lp_aIAttackWave, true, false);
-    }
-
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 01 Load Data
-//--------------------------------------------------------------------------------------------------
-bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
     }
 
-    libCOMI_gf_LoadCoopMission("AC_BelshirEscort", gt_Init02LoadingComplete);
+    TriggerExecute(gt_EscortWavesInitialize, true, false);
+    TriggerExecute(gt_SafeTheWhalesInitialize, true, false);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_Init01LoadData_Init () {
-    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
-    TriggerAddEventMapInit(gt_Init01LoadData);
+void gt_MistOpportunitiesInitialize_Init () {
+    gt_MistOpportunitiesInitialize = TriggerCreate("gt_MistOpportunitiesInitialize_Func");
+    TriggerAddEventGeneric(gt_MistOpportunitiesInitialize, libCOMI_gv_COOP_MISSION_STARTED_EVENT);
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Init 02 Loading Complete
+// Trigger: Escort Waves - Initialize
 //--------------------------------------------------------------------------------------------------
-bool gt_Init02LoadingComplete_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_Init03Players, true, false);
-    TriggerExecute(gt_Init05Units, true, false);
-    TriggerExecute(gt_Init08Difficulties, true, false);
-    TriggerExecute(gt_Init09AI, true, false);
-    TriggerExecute(gt_StartGameQ, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init02LoadingComplete_Init () {
-    gt_Init02LoadingComplete = TriggerCreate("gt_Init02LoadingComplete_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 03 Players
-//--------------------------------------------------------------------------------------------------
-bool gt_Init03Players_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
-    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
-    TechTreeUpgradeAddLevel(gv_pLAYER_06_ESCORT, "CoopNPCPlayer", 1);
-    TechTreeUpgradeAddLevel(gv_pLAYER_00_TERRAZINE, "CoopNPCPlayer", 1);
-    PlayerScoreValueSetFromFixed(gv_pLAYER_01_USER, "BelshirEscortHarvesterDamage", 0.0);
-    PlayerScoreValueSetFromFixed(gv_pLAYER_02_USER, "BelshirEscortHarvesterDamage", 0.0);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init03Players_Init () {
-    gt_Init03Players = TriggerCreate("gt_Init03Players_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 05 Units
-//--------------------------------------------------------------------------------------------------
-bool gt_Init05Units_Func (bool testConds, bool runActions) {
+bool gt_EscortWavesInitialize_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_regionIter;
     point lv_harvestLocation;
-    unitgroup lv_rocksBig;
-    unitgroup lv_rocksSmall;
 
     // Automatic Variable Declarations
+    playergroup auto692900FE_g;
+    int auto692900FE_var;
     const int autoD1AE9D36_ae = gv_tERRAZINENODESMAX;
     const int autoD1AE9D36_ai = 1;
 
     // Variable Initialization
-    lv_rocksBig = UnitGroupEmpty();
-    lv_rocksSmall = UnitGroupEmpty();
 
     // Actions
     if (!runActions) {
         return true;
     }
 
+    TechTreeUpgradeAddLevel(gv_pLAYER_ESCORT, "CoopNPCPlayer", 1);
+    TechTreeUpgradeAddLevel(gv_pLAYER_TERRAZINE, "CoopNPCPlayer", 1);
+    auto692900FE_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    auto692900FE_var = -1;
+    while (true) {
+        auto692900FE_var = PlayerGroupNextPlayer(auto692900FE_g, auto692900FE_var);
+        if (auto692900FE_var < 0) { break; }
+        PlayerScoreValueSetFromFixed(auto692900FE_var, "BelshirEscortHarvesterDamage", 0.0);
+    }
     lv_regionIter = 1;
     for ( ; ( (autoD1AE9D36_ai >= 0 && lv_regionIter <= autoD1AE9D36_ae) || (autoD1AE9D36_ai < 0 && lv_regionIter >= autoD1AE9D36_ae) ) ; lv_regionIter += autoD1AE9D36_ai ) {
-        gv_terrazineNodes[lv_regionIter] = UnitGroupUnit(UnitGroup("TerrazineNodeOff", gv_pLAYER_00_TERRAZINE, RegionFromName(("Terrazine Node " + IntToString(lv_regionIter))), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1);
-        UnitSetState(UnitGroupUnit(UnitGroup("TerrazineNodeOff", gv_pLAYER_00_TERRAZINE, RegionFromName(("Terrazine Node " + IntToString(lv_regionIter))), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1), c_unitStateSelectable, false);
-        libCOMI_gf_SetUnitInfoTextCampaign(UnitGroupUnit(UnitGroup("TerrazineNodeOff", gv_pLAYER_00_TERRAZINE, RegionFromName(("Terrazine Node " + IntToString(lv_regionIter))), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1), null, StringExternal("Param/Value/7CD11163"), null);
+        gv_terrazineNodes[lv_regionIter] = UnitGroupUnit(UnitGroup("TerrazineNodeOff", gv_pLAYER_TERRAZINE, RegionFromName(("Terrazine Node " + IntToString(lv_regionIter))), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1);
+        UnitSetState(UnitGroupUnit(UnitGroup("TerrazineNodeOff", gv_pLAYER_TERRAZINE, RegionFromName(("Terrazine Node " + IntToString(lv_regionIter))), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1), c_unitStateSelectable, false);
+        libCOMI_gf_SetUnitInfoTextCampaign(UnitGroupUnit(UnitGroup("TerrazineNodeOff", gv_pLAYER_TERRAZINE, RegionFromName(("Terrazine Node " + IntToString(lv_regionIter))), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1), null, StringExternal("Param/Value/7CD11163"), null);
         lv_harvestLocation = PointFromName(("Terrazine Node Harvest Spot " + IntToString(lv_regionIter)));
         if ((DistanceBetweenPoints(UnitGetPosition(gv_terrazineNodes[lv_regionIter]), lv_harvestLocation) > 4.0)) {
             PointSet(lv_harvestLocation, PointWithOffsetPolar(UnitGetPosition(gv_terrazineNodes[lv_regionIter]), 3.8, AngleBetweenPoints(UnitGetPosition(gv_terrazineNodes[lv_regionIter]), lv_harvestLocation)));
@@ -756,73 +521,26 @@ bool gt_Init05Units_Func (bool testConds, bool runActions) {
     UnitSetState(gv_terrazineCollection, c_unitStateTargetable, false);
     UnitSetState(gv_terrazineCollection, c_unitStateInvulnerable, true);
     UnitSetState(gv_terrazineCollection, c_unitStateSelectable, false);
-    libCOMI_gf_SetUnitInfoTextCampaign(gv_bonusObjective_WhalePrison1, null, StringExternal("Param/Value/7D59FA49"), null);
-    libCOMI_gf_SetUnitInfoTextCampaign(gv_bonusObjective_WhalePrison2, null, StringExternal("Param/Value/383EDDD0"), null);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init05Units_Init () {
-    gt_Init05Units = TriggerCreate("gt_Init05Units_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 08 Difficulties
-//--------------------------------------------------------------------------------------------------
-bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
     gv_escortLife = libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 1500, 1500, 1250, 1000, 0, 0);
     gv_escortHoldoutDuration = 60.0;
-    gv_whalePrisonLife = libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 4000, 4000, 6000, 8000, 0, 0);
     gv_botsDestroyedLimit = libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 3, 3, 3, 2, 0, 0);
-    UnitSetPropertyFixed(gv_bonusObjective_WhalePrison1, c_unitPropLifeMax, gv_whalePrisonLife);
-    UnitSetPropertyFixed(gv_bonusObjective_WhalePrison1, c_unitPropLifePercent, 100.0);
-    UnitSetPropertyFixed(gv_bonusObjective_WhalePrison2, c_unitPropLifeMax, gv_whalePrisonLife);
-    UnitSetPropertyFixed(gv_bonusObjective_WhalePrison2, c_unitPropLifePercent, 100.0);
+    TriggerExecute(gt_EscortWavesStart, true, false);
+    TriggerExecute(gt_LeaderboardScoreBot, true, false);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_Init08Difficulties_Init () {
-    gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
+void gt_EscortWavesInitialize_Init () {
+    gt_EscortWavesInitialize = TriggerCreate("gt_EscortWavesInitialize_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Init 09 AI
+// Trigger: Escort Waves Start
 //--------------------------------------------------------------------------------------------------
-bool gt_Init09AI_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_missionMechanicPlayer;
-
+bool gt_EscortWavesStart_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libNtve_gf_SetTacticalAIThink(gv_pLAYER_04_Player02Enemy, "VoidThrasher", "VoidThrasherAIThink", false);
-    TriggerExecute(gt_SetupHybridTypes, true, false);
-    TriggerExecute(gt_RunAttackWaves, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init09AI_Init () {
-    gt_Init09AI = TriggerCreate("gt_Init09AI_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Start Game Q
-//--------------------------------------------------------------------------------------------------
-bool gt_StartGameQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
+    playergroup autoE0CAA4FF_g;
+    int autoE0CAA4FF_var;
     int autoF0FE8B35_val;
 
     // Actions
@@ -833,36 +551,38 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     SoundtrackStop(PlayerGroupAll(), c_soundtrackCategoryAmbience, true);
     SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryAmbience, "Ambience_AC_BelShir", c_soundtrackCueAny, c_soundtrackIndexAny, false);
     TriggerExecute(gt_MissionProgression, true, false);
-    TriggerEnable(gt_ObjectiveSavetheWhalesInitializationWhale1, true);
-    TriggerEnable(gt_ObjectiveSavetheWhalesInitializationWhale2, true);
     Wait(7.0, c_timeReal);
     TriggerQueueEnter();
-    TriggerExecute(gt_ObjectiveCollectTerrazineCanistersCreate, true, true);
-    TriggerExecute(gt_ObjectiveDontLetBotsDieCreate, true, true);
-    VisRevealArea(gv_pLAYER_01_USER, RegionFromId(25), 0.0, false);
-    VisRevealArea(gv_pLAYER_02_USER, RegionFromId(25), 0.0, false);
+    libCOMI_gf_ObjectiveCreate("AC_BelshirEscort_Primary01", 1, true);
+    libCOMI_gf_SetObjectiveRequiredCountCampaign("AC_BelshirEscort_Primary02", gv_botsDestroyedLimit);
+    libCOMI_gf_ObjectiveCreate("AC_BelshirEscort_Primary02", 1, true);
+    autoE0CAA4FF_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    autoE0CAA4FF_var = -1;
+    while (true) {
+        autoE0CAA4FF_var = PlayerGroupNextPlayer(autoE0CAA4FF_g, autoE0CAA4FF_var);
+        if (autoE0CAA4FF_var < 0) { break; }
+        VisRevealArea(autoE0CAA4FF_var, RegionFromId(25), 0.0, false);
+    }
     Wait(2.0, c_timeReal);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     autoF0FE8B35_val = RandomInt(1, 3);
     if (autoF0FE8B35_val == 1) {
-        libCOMI_gf_SendMissionTransmission("Intro1BE", true, -1);
+        libCOMI_gf_DefferedTransmission("Intro1BE", 0.0, 0.0);
     }
     else if (autoF0FE8B35_val == 2) {
-        libCOMI_gf_SendMissionTransmission("Intro2BE", true, -1);
+        libCOMI_gf_DefferedTransmission("Intro2BE", 0.0, 0.0);
     }
     else if (autoF0FE8B35_val == 3) {
-        libCOMI_gf_SendMissionTransmission("Intro3BE", true, -1);
+        libCOMI_gf_DefferedTransmission("Intro3BE", 0.0, 0.0);
     }
     else {
     }
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     TriggerQueueExit();
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_StartGameQ_Init () {
-    gt_StartGameQ = TriggerCreate("gt_StartGameQ_Func");
+void gt_EscortWavesStart_Init () {
+    gt_EscortWavesStart = TriggerCreate("gt_EscortWavesStart_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -875,19 +595,13 @@ bool gt_MissionProgression_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    gf_AttackWaveatTime((3.0 * 60.0), gt_AttackWave01);
     gf_EscortWaveatTime((3.5 * 60.0), gt_Escort1Node1);
-    gf_AttackWaveatTime((5.5 * 60.0), gt_AttackWave02);
     gf_EscortWaveatTime((6.75 * 60.0), gt_Escort2Node23);
-    gf_AttackWaveatTime((10.0 * 60.0), gt_AttackWave03ExpoAttack);
     TimerStart(gv_startBonusObjective1, (11.3 * 60.0), false, c_timeAI);
     gf_EscortWaveatTime((11.0 * 60.0), gt_Escort3Node45);
-    gf_AttackWaveatTime((15.5 * 60.0), gt_AttackWave04OppositeExpoAttack);
     gf_EscortWaveatTime((17.0 * 60.0), gt_Escort4Node678);
-    gf_AttackWaveatTime((21.25 * 60.0), gt_AttackWave05);
     TimerStart(gv_startBonusObjective2, (23.15 * 60.0), false, c_timeAI);
     gf_EscortWaveatTime((23.65 * 60.0), gt_Escort5Node91011);
-    gf_AttackWaveatTime((28.1 * 60.0), gt_AttackWave06);
     return true;
 }
 
@@ -905,6 +619,8 @@ bool gt_Escort1Node1_Func (bool testConds, bool runActions) {
     unitgroup lv_waveHarvesters;
 
     // Automatic Variable Declarations
+    int autoDD7C7A5B_val;
+
     // Variable Initialization
     lv_waveHarvesters = UnitGroupEmpty();
 
@@ -913,7 +629,7 @@ bool gt_Escort1Node1_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerExecute(gt_CollectTerrazineVOWarningWave1Q, true, false);
+    libCOMI_gf_DefferedTransmission("Geyser1BE", 0.0, 20.0);
     Wait(3.0, c_timeGame);
     gv_firstBotBool = true;
     gf_TerrazineNodeWaveStart(gv_terrazineNodes[1]);
@@ -922,7 +638,7 @@ bool gt_Escort1Node1_Func (bool testConds, bool runActions) {
     UnitGroupAdd(lv_waveHarvesters, UnitLastCreated());
     lv_escortBot1 = UnitLastCreated();
     Wait(20.0, c_timeGame);
-    TriggerExecute(gt_EscortBotsFirstBotDepartingQ, true, false);
+    libCOMI_gf_DefferedTransmission("BotDepartFirstBE", 0.0, 20.0);
     gf_SendEscortUnit(lv_escortBot1, gv_terrazineNodes[1]);
     TriggerExecute(gt_ObjectiveWaveCycle1, true, false);
     while (!((UnitGroupCount(lv_waveHarvesters, c_unitCountAlive) == 0))) {
@@ -930,6 +646,18 @@ bool gt_Escort1Node1_Func (bool testConds, bool runActions) {
     }
     gv_wavesCompleted += 1;
     TriggerExecute(gt_ProgresstoVictoryQ, true, false);
+    autoDD7C7A5B_val = gv_wavesCompleted;
+    if (autoDD7C7A5B_val == 2) {
+        libCOMI_gf_DefferedTransmission("ProgressFirstBE", 0.0, 30.0);
+    }
+    else if (autoDD7C7A5B_val == 3) {
+        libCOMI_gf_DefferedTransmission("ProgressSecondBE", 0.0, 30.0);
+    }
+    else if (autoDD7C7A5B_val == 4) {
+        libCOMI_gf_DefferedTransmission("ProgressThirdBE", 0.0, 30.0);
+    }
+    else {
+    }
     TriggerExecute(gt_ObjectiveCollectTerrazineCanistersUpdate, true, false);
     libCOMI_gf_SetMissionEffort(10.0);
     return true;
@@ -958,7 +686,7 @@ bool gt_Escort2Node23_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerExecute(gt_CollectTerrazineVOWarningWave2Q, true, false);
+    libCOMI_gf_DefferedTransmission("Geyser2BE", 0.0, 20.0);
     Wait(3.0, c_timeGame);
     gf_TerrazineNodeWaveStart(gv_terrazineNodes[2]);
     gf_TerrazineNodeWaveStart(gv_terrazineNodes[3]);
@@ -970,7 +698,7 @@ bool gt_Escort2Node23_Func (bool testConds, bool runActions) {
     UnitGroupAdd(lv_waveHarvesters, UnitLastCreated());
     lv_escortBot2 = UnitLastCreated();
     Wait(20.0, c_timeGame);
-    TriggerExecute(gt_EscortBotsBotsDepartingGenericQ, true, false);
+    libCOMI_gf_DefferedTransmission("BotDepartRepeatBE", 0.0, 20.0);
     gf_SendEscortUnit(lv_escortBot1, gv_terrazineNodes[2]);
     Wait(3.0, c_timeGame);
     gf_SendEscortUnit(lv_escortBot2, gv_terrazineNodes[3]);
@@ -1008,7 +736,7 @@ bool gt_Escort3Node45_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerExecute(gt_CollectTerrazineVOWarningWave3Q, true, false);
+    libCOMI_gf_DefferedTransmission("Geyser3BE", 0.0, 20.0);
     Wait(3.0, c_timeGame);
     gf_TerrazineNodeWaveStart(gv_terrazineNodes[4]);
     gf_TerrazineNodeWaveStart(gv_terrazineNodes[5]);
@@ -1020,7 +748,7 @@ bool gt_Escort3Node45_Func (bool testConds, bool runActions) {
     UnitGroupAdd(lv_waveHarvesters, UnitLastCreated());
     lv_escortBotRight = UnitLastCreated();
     Wait(20.0, c_timeGame);
-    TriggerExecute(gt_EscortBotsBotsDepartingGenericQ, true, false);
+    libCOMI_gf_DefferedTransmission("BotDepartRepeatBE", 0.0, 20.0);
     gf_SendEscortUnit(lv_escortBotRight, gv_terrazineNodes[5]);
     Wait(2.0, c_timeGame);
     gf_SendEscortUnit(lv_escortBotLeft, gv_terrazineNodes[4]);
@@ -1065,7 +793,7 @@ bool gt_Escort4Node678_Func (bool testConds, bool runActions) {
     lv_terrazineNode_Left = gv_terrazineNodes[6];
     lv_terrazineNode_Center = gv_terrazineNodes[7];
     lv_terrazineNode_Right = gv_terrazineNodes[8];
-    TriggerExecute(gt_CollectTerrazineVOWarningWave4Q, true, false);
+    libCOMI_gf_DefferedTransmission("Geyser4BE", 0.0, 20.0);
     Wait(3.0, c_timeGame);
     gf_TerrazineNodeWaveStart(lv_terrazineNode_Left);
     gf_TerrazineNodeWaveStart(lv_terrazineNode_Center);
@@ -1081,7 +809,7 @@ bool gt_Escort4Node678_Func (bool testConds, bool runActions) {
     UnitGroupAdd(lv_waveHarvesters, UnitLastCreated());
     lv_escortBot_Right = UnitLastCreated();
     Wait(20.0, c_timeGame);
-    TriggerExecute(gt_EscortBotsBotsDepartingGenericQ, true, false);
+    libCOMI_gf_DefferedTransmission("BotDepartRepeatBE", 0.0, 20.0);
     gf_SendEscortUnit(lv_escortBot_Left, lv_terrazineNode_Left);
     Wait(2.0, c_timeGame);
     gf_SendEscortUnit(lv_escortBot_Center, lv_terrazineNode_Center);
@@ -1128,7 +856,7 @@ bool gt_Escort5Node91011_Func (bool testConds, bool runActions) {
     lv_terrazineNode_Left = gv_terrazineNodes[9];
     lv_terrazineNode_Center = gv_terrazineNodes[11];
     lv_terrazineNode_Right = gv_terrazineNodes[10];
-    TriggerExecute(gt_CollectTerrazineVOWarningWave5Q, true, false);
+    libCOMI_gf_DefferedTransmission("Geyser5BE", 0.0, 20.0);
     Wait(3.0, c_timeGame);
     gf_TerrazineNodeWaveStart(lv_terrazineNode_Left);
     gf_TerrazineNodeWaveStart(lv_terrazineNode_Right);
@@ -1144,7 +872,7 @@ bool gt_Escort5Node91011_Func (bool testConds, bool runActions) {
     UnitGroupAdd(lv_waveHarvesters, UnitLastCreated());
     lv_escortBot_Right = UnitLastCreated();
     Wait(20.0, c_timeGame);
-    TriggerExecute(gt_EscortBotsBotsDepartingGenericQ, true, false);
+    libCOMI_gf_DefferedTransmission("BotDepartRepeatBE", 0.0, 20.0);
     gf_SendEscortUnit(lv_escortBot_Right, lv_terrazineNode_Right);
     Wait(2.0, c_timeGame);
     gf_SendEscortUnit(lv_escortBot_Center, lv_terrazineNode_Center);
@@ -1159,7 +887,7 @@ bool gt_Escort5Node91011_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_ObjectiveCollectTerrazineCanistersUpdate, true, false);
     if ((gv_wavesCompleted >= gv_wAVESLIMIT)) {
         TransmissionClearAll();
-        TriggerExecute(gt_VictoryCollectTerrazineCanistersCompleted, true, false);
+        TriggerExecute(gt_VictoryCollectTerrazineCompleted, true, false);
     }
 
     return true;
@@ -1168,6 +896,44 @@ bool gt_Escort5Node91011_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Escort5Node91011_Init () {
     gt_Escort5Node91011 = TriggerCreate("gt_Escort5Node91011_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective Don't Let Bots Die Update
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDontLetBotsDieUpdate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_SetMissionObjectiveProgress("AC_BelshirEscort_Primary02", gv_botsDestroyed);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDontLetBotsDieUpdate_Init () {
+    gt_ObjectiveDontLetBotsDieUpdate = TriggerCreate("gt_ObjectiveDontLetBotsDieUpdate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective Collect Terrazine Canisters Update
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveCollectTerrazineCanistersUpdate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_SetMissionObjectiveProgress("AC_BelshirEscort_Primary01", gv_wavesCompleted);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveCollectTerrazineCanistersUpdate_Init () {
+    gt_ObjectiveCollectTerrazineCanistersUpdate = TriggerCreate("gt_ObjectiveCollectTerrazineCanistersUpdate_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1190,11 +956,16 @@ bool gt_EscortIsDeadIncrement_Func (bool testConds, bool runActions) {
     gv_botsDestroyed += 1;
     TriggerExecute(gt_ObjectiveDontLetBotsDieUpdate, true, false);
     if ((gv_botsDestroyed < gv_botsDestroyedLimit)) {
-        TriggerExecute(gt_EscortHasDiedVOQ, true, false);
+        if (((gv_botsDestroyedLimit - gv_botsDestroyed) > 1)) {
+            libCOMI_gf_DefferedTransmission("FailureFirstBE", 0.0, 30.0);
+        }
+        else {
+            libCOMI_gf_DefferedTransmission("FailureSecondBE", 0.0, 30.0);
+        }
     }
 
     if ((gv_botsDestroyed >= gv_botsDestroyedLimit)) {
-        TriggerExecute(gt_DefeatPrimaryObjectiveFailed, true, false);
+        TriggerExecute(gt_DefeatTerrazineHarvestersDestroyed, true, false);
     }
 
     return true;
@@ -1206,459 +977,341 @@ void gt_EscortIsDeadIncrement_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Collect Terrazine - VO Warning - Wave 1 Q
+// Trigger: Objective Wave Cycle 1
 //--------------------------------------------------------------------------------------------------
-bool gt_CollectTerrazineVOWarningWave1Q_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
+bool gt_ObjectiveWaveCycle1_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_aWIndex;
+    unit lv_aWTarget;
+    string lv_aWSpawns;
+    int lv_aWSize;
+    int lv_aWTech;
 
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
+    // Automatic Variable Declarations
+    const int auto18445654_n = 2;
+    int auto18445654_i;
+    unitgroup auto2CBF6837_g;
+    int auto2CBF6837_u;
+    unit auto2CBF6837_var;
+
+    // Variable Initialization
+    lv_aWIndex = 1;
+    lv_aWSpawns = libCOMI_gf_SpawnsRange(11, 12);
+    lv_aWSize = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+    lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__1Early;
 
     // Actions
     if (!runActions) {
         return true;
     }
 
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("Geyser1BE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
+    Wait(20.0, c_timeGame);
+    libCOMI_gf_DefferedTransmission("BotEnemyInboundBE", 5.0, 20.0);
+    for (auto18445654_i = 1; auto18445654_i <= auto18445654_n; auto18445654_i += 1) {
+        auto2CBF6837_g = gv_activeHarvesters;
+        auto2CBF6837_u = UnitGroupCount(auto2CBF6837_g, c_unitCountAll);
+        for (;; auto2CBF6837_u -= 1) {
+            auto2CBF6837_var = UnitGroupUnitFromEnd(auto2CBF6837_g, auto2CBF6837_u);
+            if (auto2CBF6837_var == null) { break; }
+            lv_aWTarget = auto2CBF6837_var;
+            libCOMI_gf_CustomAttackWave(lv_aWSpawns, lv_aWTarget, lv_aWSize, lv_aWTech, libCOMI_ge_CM_CoopAI_WaveAttackTargetType_Objective);
+        }
+        Wait(25.0, c_timeGame);
+    }
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_CollectTerrazineVOWarningWave1Q_Init () {
-    gt_CollectTerrazineVOWarningWave1Q = TriggerCreate("gt_CollectTerrazineVOWarningWave1Q_Func");
+void gt_ObjectiveWaveCycle1_Init () {
+    gt_ObjectiveWaveCycle1 = TriggerCreate("gt_ObjectiveWaveCycle1_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Collect Terrazine - VO Warning - Wave 2 Q
+// Trigger: Objective Wave Cycle 2
 //--------------------------------------------------------------------------------------------------
-bool gt_CollectTerrazineVOWarningWave2Q_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
+bool gt_ObjectiveWaveCycle2_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_escortIndex;
+    int lv_aWIndex;
+    unit lv_aWTarget;
+    string lv_aWSpawns;
+    int lv_aWSize;
+    int lv_aWTech;
 
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
+    // Automatic Variable Declarations
+    const int auto4E78B323_ae = 4;
+    const int auto4E78B323_ai = 1;
+    int autoBDE9C81F_val;
+
+    // Variable Initialization
+    lv_aWSpawns = libCOMI_gf_SpawnsRange(21, 27);
+    lv_aWSize = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+    lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
 
     // Actions
     if (!runActions) {
         return true;
     }
 
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("Geyser2BE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
+    Wait(15.0, c_timeGame);
+    libCOMI_gf_DefferedTransmission("BotEnemyInboundBE", 5.0, 20.0);
+    lv_aWIndex = 1;
+    for ( ; ( (auto4E78B323_ai >= 0 && lv_aWIndex <= auto4E78B323_ae) || (auto4E78B323_ai < 0 && lv_aWIndex >= auto4E78B323_ae) ) ; lv_aWIndex += auto4E78B323_ai ) {
+        if (lv_escortIndex >= UnitGroupCount(gv_activeHarvesters, c_unitCountAlive)) {
+            lv_escortIndex = 1;
+        }
+        else {
+            lv_escortIndex = lv_escortIndex + 1;
+        }
+        lv_aWTarget = UnitGroupUnit(gv_activeHarvesters, lv_escortIndex);
+        autoBDE9C81F_val = lv_aWIndex;
+        if (autoBDE9C81F_val == 1) {
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(21, 23);
+            lv_aWSize = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+            lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+        }
+        else if (autoBDE9C81F_val == 2) {
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(21, 23);
+            lv_aWSize = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+            lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
+        }
+        else if (autoBDE9C81F_val == 3) {
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(24, 27);
+            lv_aWSize = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
+            lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+        }
+        else if (autoBDE9C81F_val == 4) {
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(24, 27);
+            lv_aWSize = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+            lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
+        }
+        else {
+        }
+        libCOMI_gf_CustomAttackWave(lv_aWSpawns, lv_aWTarget, lv_aWSize, lv_aWTech, libCOMI_ge_CM_CoopAI_WaveAttackTargetType_Objective);
+        Wait(20.0, c_timeGame);
+    }
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_CollectTerrazineVOWarningWave2Q_Init () {
-    gt_CollectTerrazineVOWarningWave2Q = TriggerCreate("gt_CollectTerrazineVOWarningWave2Q_Func");
+void gt_ObjectiveWaveCycle2_Init () {
+    gt_ObjectiveWaveCycle2 = TriggerCreate("gt_ObjectiveWaveCycle2_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Collect Terrazine - VO Warning - Wave 3 Q
+// Trigger: Objective Wave Cycle 3
 //--------------------------------------------------------------------------------------------------
-bool gt_CollectTerrazineVOWarningWave3Q_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
+bool gt_ObjectiveWaveCycle3_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_escortIndex;
+    int lv_aWIndex;
+    unit lv_aWTarget;
+    string lv_aWSpawns;
+    int lv_aWSize;
+    int lv_aWTech;
 
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
+    // Automatic Variable Declarations
+    const int autoEBFDF11C_ae = 6;
+    const int autoEBFDF11C_ai = 1;
+    int auto0EC5CA80_val;
+
+    // Variable Initialization
+    lv_aWSpawns = libCOMI_gf_SpawnsRange(31, 37);
+    lv_aWSize = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
+    lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
 
     // Actions
     if (!runActions) {
         return true;
     }
 
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("Geyser3BE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
+    Wait(10.0, c_timeGame);
+    libCOMI_gf_DefferedTransmission("BotEnemyInboundBE", 5.0, 20.0);
+    lv_aWIndex = 1;
+    for ( ; ( (autoEBFDF11C_ai >= 0 && lv_aWIndex <= autoEBFDF11C_ae) || (autoEBFDF11C_ai < 0 && lv_aWIndex >= autoEBFDF11C_ae) ) ; lv_aWIndex += autoEBFDF11C_ai ) {
+        if (lv_escortIndex >= UnitGroupCount(gv_activeHarvesters, c_unitCountAlive)) {
+            lv_escortIndex = 1;
+        }
+        else {
+            lv_escortIndex = lv_escortIndex + 1;
+        }
+        lv_aWTarget = UnitGroupUnit(gv_activeHarvesters, lv_escortIndex);
+        auto0EC5CA80_val = lv_aWIndex;
+        if (auto0EC5CA80_val == 1) {
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(31, 33);
+        }
+        else if (auto0EC5CA80_val == 2) {
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(31, 33);
+        }
+        else if (auto0EC5CA80_val == 3) {
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(33, 36);
+        }
+        else if (auto0EC5CA80_val == 4) {
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(33, 36);
+        }
+        else if (auto0EC5CA80_val == 5) {
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(33, 36);
+        }
+        else if (auto0EC5CA80_val == 6) {
+            lv_aWSpawns = libCOMI_gf_SpawnsSingle(37);
+        }
+        else {
+        }
+        libCOMI_gf_CustomAttackWave(lv_aWSpawns, lv_aWTarget, lv_aWSize, lv_aWTech, libCOMI_ge_CM_CoopAI_WaveAttackTargetType_Objective);
+        Wait(20.0, c_timeGame);
+    }
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_CollectTerrazineVOWarningWave3Q_Init () {
-    gt_CollectTerrazineVOWarningWave3Q = TriggerCreate("gt_CollectTerrazineVOWarningWave3Q_Func");
+void gt_ObjectiveWaveCycle3_Init () {
+    gt_ObjectiveWaveCycle3 = TriggerCreate("gt_ObjectiveWaveCycle3_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Collect Terrazine - VO Warning - Wave 4 Q
+// Trigger: Objective Wave Cycle 4
 //--------------------------------------------------------------------------------------------------
-bool gt_CollectTerrazineVOWarningWave4Q_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
+bool gt_ObjectiveWaveCycle4_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_escortIndex;
+    int lv_aWIndex;
+    unit lv_aWTarget;
+    string lv_aWSpawns;
+    int lv_aWSize;
+    int lv_aWTech;
 
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
+    // Automatic Variable Declarations
+    const int autoDC0098A0_ae = 6;
+    const int autoDC0098A0_ai = 1;
+    point autoB78892D5_val;
+
+    // Variable Initialization
+    lv_aWSpawns = libCOMI_gf_SpawnsRange(41, 47);
+    lv_aWSize = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+    lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
 
     // Actions
     if (!runActions) {
         return true;
     }
 
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("Geyser4BE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
+    Wait(18.0, c_timeGame);
+    libCOMI_gf_DefferedTransmission("BotEnemyInboundBE", 5.0, 20.0);
+    lv_aWIndex = 1;
+    for ( ; ( (autoDC0098A0_ai >= 0 && lv_aWIndex <= autoDC0098A0_ae) || (autoDC0098A0_ai < 0 && lv_aWIndex >= autoDC0098A0_ae) ) ; lv_aWIndex += autoDC0098A0_ai ) {
+        if (lv_escortIndex >= UnitGroupCount(gv_activeHarvesters, c_unitCountAlive)) {
+            lv_escortIndex = 1;
+        }
+        else {
+            lv_escortIndex = lv_escortIndex + 1;
+        }
+        lv_aWTarget = UnitGroupUnit(gv_activeHarvesters, lv_escortIndex);
+        autoB78892D5_val = libHots_gf_PointStoredForUnit(lv_aWTarget, 1);
+        if (autoB78892D5_val == PointFromId(2650)) {
+            if ((RandomInt(1, 3) == 1)) {
+                lv_aWSpawns = libCOMI_gf_SpawnsSingle(45);
+                lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+            }
+            else {
+                lv_aWSpawns = libCOMI_gf_SpawnsRange(46, 47);
+                lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
+            }
+        }
+        else {
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(41, 45);
+            lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
+        }
+        libCOMI_gf_CustomAttackWave(lv_aWSpawns, lv_aWTarget, lv_aWSize, lv_aWTech, libCOMI_ge_CM_CoopAI_WaveAttackTargetType_Objective);
+        if ((lv_aWIndex == 3)) {
+            continue;
+        }
+        else {
+            Wait(30.0, c_timeGame);
+        }
+    }
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_CollectTerrazineVOWarningWave4Q_Init () {
-    gt_CollectTerrazineVOWarningWave4Q = TriggerCreate("gt_CollectTerrazineVOWarningWave4Q_Func");
+void gt_ObjectiveWaveCycle4_Init () {
+    gt_ObjectiveWaveCycle4 = TriggerCreate("gt_ObjectiveWaveCycle4_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Collect Terrazine - VO Warning - Wave 5 Q
+// Trigger: Objective Wave Cycle 5
 //--------------------------------------------------------------------------------------------------
-bool gt_CollectTerrazineVOWarningWave5Q_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
+bool gt_ObjectiveWaveCycle5_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_escortIndex;
+    int lv_aWIndex;
+    unit lv_aWTarget;
+    string lv_aWSpawns;
+    int lv_aWSize;
+    int lv_aWTech;
 
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
+    // Automatic Variable Declarations
+    const int auto2490E01E_ae = 9;
+    const int auto2490E01E_ai = 1;
+    point auto26C0B08F_val;
+
+    // Variable Initialization
+    lv_aWSpawns = libCOMI_gf_SpawnsRange(51, 57);
+    lv_aWSize = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
+    lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
 
     // Actions
     if (!runActions) {
         return true;
     }
 
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("Geyser5BE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_CollectTerrazineVOWarningWave5Q_Init () {
-    gt_CollectTerrazineVOWarningWave5Q = TriggerCreate("gt_CollectTerrazineVOWarningWave5Q_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Bots - First Bot Departing Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortBotsFirstBotDepartingQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
+    Wait(10.0, c_timeGame);
+    libCOMI_gf_DefferedTransmission("BotEnemyInboundBE", 5.0, 20.0);
+    lv_aWIndex = 1;
+    for ( ; ( (auto2490E01E_ai >= 0 && lv_aWIndex <= auto2490E01E_ae) || (auto2490E01E_ai < 0 && lv_aWIndex >= auto2490E01E_ae) ) ; lv_aWIndex += auto2490E01E_ai ) {
+        if ((lv_aWIndex > 4)) {
+            lv_aWSize = libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
+            lv_aWTech = libCOMI_ge_CoopAITechLevelBuckets__5Late;
         }
 
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
+        if ((lv_aWIndex > 3) && (libCOMI_gf_GetMissionDifficulty() != 1) && (libCOMI_gf_GetMissionDifficulty() != 2) && (ModI(lv_aWIndex, 2) == 0)) {
+            lv_aWTarget = libCOMI_gf_LowestVitalityUnitfromUnitGroup(UnitGroupEmpty());
+            lv_aWSpawns = libCOMI_gf_SpawnsRange(51, 57);
         }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BotDepartFirstBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortBotsFirstBotDepartingQ_Init () {
-    gt_EscortBotsFirstBotDepartingQ = TriggerCreate("gt_EscortBotsFirstBotDepartingQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Bots - Bots Departing Generic Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortBotsBotsDepartingGenericQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
+        else {
+            if (lv_escortIndex >= UnitGroupCount(gv_activeHarvesters, c_unitCountAlive)) {
+                lv_escortIndex = 1;
+            }
+            else {
+                lv_escortIndex = lv_escortIndex + 1;
+            }
+            lv_aWTarget = UnitGroupUnit(gv_activeHarvesters, lv_escortIndex);
+            auto26C0B08F_val = libHots_gf_PointStoredForUnit(lv_aWTarget, 1);
+            if (auto26C0B08F_val == PointFromId(2656)) {
+                lv_aWSpawns = libCOMI_gf_SpawnsRange(51, 53);
+            }
+            else if (auto26C0B08F_val == PointFromId(2657)) {
+                lv_aWSpawns = libCOMI_gf_SpawnsRange(53, 55);
+            }
+            else if (auto26C0B08F_val == PointFromId(2658)) {
+                lv_aWSpawns = libCOMI_gf_SpawnsSingle(57);
+            }
+            else {
+            }
         }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
+        libCOMI_gf_CustomAttackWave(lv_aWSpawns, lv_aWTarget, lv_aWSize, lv_aWTech, libCOMI_ge_CM_CoopAI_WaveAttackTargetType_Objective);
+        if ((lv_aWIndex <= 4)) {
+            Wait(15.0, c_timeGame);
         }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BotDepartRepeatBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortBotsBotsDepartingGenericQ_Init () {
-    gt_EscortBotsBotsDepartingGenericQ = TriggerCreate("gt_EscortBotsBotsDepartingGenericQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Bots - Returning Switch VO
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortBotsReturningSwitchVO_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
+        else {
+            Wait(30.0, c_timeGame);
         }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    if ((gv_firstBotBool == true)) {
-        gv_firstBotBool = false;
-        TriggerExecute(gt_EscortBotsFirstBotReturningQ, true, false);
-    }
-    else {
-        TriggerExecute(gt_EscortBotsBotsReturningGenericQ, true, false);
-    }
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortBotsReturningSwitchVO_Init () {
-    gt_EscortBotsReturningSwitchVO = TriggerCreate("gt_EscortBotsReturningSwitchVO_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Bots - First Bot Returning Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortBotsFirstBotReturningQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BotReturnFirstBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortBotsFirstBotReturningQ_Init () {
-    gt_EscortBotsFirstBotReturningQ = TriggerCreate("gt_EscortBotsFirstBotReturningQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Bots - Bots Returning Generic Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortBotsBotsReturningGenericQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BotReturnRepeatBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(60.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortBotsBotsReturningGenericQ_Init () {
-    gt_EscortBotsBotsReturningGenericQ = TriggerCreate("gt_EscortBotsBotsReturningGenericQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Bots - Successful Delivery Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortBotsSuccessfulDeliveryQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BotDeliveryBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(30.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortBotsSuccessfulDeliveryQ_Init () {
-    gt_EscortBotsSuccessfulDeliveryQ = TriggerCreate("gt_EscortBotsSuccessfulDeliveryQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Has Died VO Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortHasDiedVOQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    if (((gv_botsDestroyedLimit - gv_botsDestroyed) > 1)) {
-        TriggerQueueEnter();
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-        libCOMI_gf_SendMissionTransmission("FailureFirstBE", true, -1);
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-        TriggerQueueExit();
-        Wait(30.0, c_timeAI);
-        TriggerEnable(TriggerGetCurrent(), true);
-    }
-    else {
-        TriggerQueueEnter();
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-        libCOMI_gf_SendMissionTransmission("FailureSecondBE", true, -1);
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-        TriggerQueueExit();
-        Wait(30.0, c_timeAI);
-        TriggerEnable(TriggerGetCurrent(), true);
     }
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_EscortHasDiedVOQ_Init () {
-    gt_EscortHasDiedVOQ = TriggerCreate("gt_EscortHasDiedVOQ_Func");
+void gt_ObjectiveWaveCycle5_Init () {
+    gt_ObjectiveWaveCycle5 = TriggerCreate("gt_ObjectiveWaveCycle5_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1684,37 +1337,17 @@ bool gt_ProgresstoVictoryQ_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerEnable(TriggerGetCurrent(), false);
     autoF157A73B_val = gv_wavesCompleted;
     if (autoF157A73B_val == 2) {
-        TriggerQueueEnter();
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-        libCOMI_gf_SendMissionTransmission("ProgressFirstBE", true, -1);
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-        TriggerQueueExit();
-        Wait(30.0, c_timeAI);
-        TriggerEnable(TriggerGetCurrent(), true);
+        libCOMI_gf_DefferedTransmission("ProgressFirstBE", 0.0, 30.0);
     }
     else if (autoF157A73B_val == 3) {
-        TriggerQueueEnter();
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-        libCOMI_gf_SendMissionTransmission("ProgressSecondBE", true, -1);
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-        TriggerQueueExit();
-        Wait(30.0, c_timeAI);
-        TriggerEnable(TriggerGetCurrent(), true);
+        libCOMI_gf_DefferedTransmission("ProgressSecondBE", 0.0, 30.0);
     }
     else if (autoF157A73B_val == 4) {
-        TriggerQueueEnter();
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-        libCOMI_gf_SendMissionTransmission("ProgressThirdBE", true, -1);
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-        TriggerQueueExit();
-        Wait(30.0, c_timeAI);
-        TriggerEnable(TriggerGetCurrent(), true);
+        libCOMI_gf_DefferedTransmission("ProgressThirdBE", 0.0, 30.0);
     }
     else {
-        TriggerEnable(TriggerGetCurrent(), true);
     }
     return true;
 }
@@ -1725,15 +1358,224 @@ void gt_ProgresstoVictoryQ_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Escort Bots - Bots Under Attack Q
+// Trigger: Escort Harass Drop Pod VO Q
 //--------------------------------------------------------------------------------------------------
-bool gt_EscortBotsBotsUnderAttackQ_Func (bool testConds, bool runActions) {
+bool gt_EscortHarassDropPodVOQ_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    string auto19205CD3_val;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto19205CD3_val = libCOMI_gf_GetPlayerRaceVO(PlayerGroupPlayer(libCOMI_gf_GetEnemyAIPlayers(), 1));
+    if (auto19205CD3_val == "Prot") {
+        libCOMI_gf_DefferedTransmission("BotWarpProtossBE", 5.0, 20.0);
+    }
+    else if (auto19205CD3_val == "Terr") {
+        libCOMI_gf_DefferedTransmission("BotDropTerranBE", 5.0, 20.0);
+    }
+    else if (auto19205CD3_val == "Zerg") {
+        libCOMI_gf_DefferedTransmission("BotDropZergBE", 5.0, 20.0);
+    }
+    else {
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_EscortHarassDropPodVOQ_Init () {
+    gt_EscortHarassDropPodVOQ = TriggerCreate("gt_EscortHarassDropPodVOQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: ScoreScreen - Harvester Damage
+//--------------------------------------------------------------------------------------------------
+bool gt_ScoreScreenHarvesterDamage_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    playergroup auto808BEDD7_g;
+    int auto808BEDD7_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_ESCORT))) {
+            return false;
+        }
+
+        if (!((UnitGetType(EventUnit()) == "TerrazineHarvester"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_scoreScreen_HarvesterDamage += EventUnitDamageAmount();
+    auto808BEDD7_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    auto808BEDD7_var = -1;
+    while (true) {
+        auto808BEDD7_var = PlayerGroupNextPlayer(auto808BEDD7_g, auto808BEDD7_var);
+        if (auto808BEDD7_var < 0) { break; }
+        PlayerScoreValueSetFromFixed(auto808BEDD7_var, "BelshirEscortHarvesterDamage", gv_scoreScreen_HarvesterDamage);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ScoreScreenHarvesterDamage_Init () {
+    gt_ScoreScreenHarvesterDamage = TriggerCreate("gt_ScoreScreenHarvesterDamage_Func");
+    TriggerAddEventUnitDamaged(gt_ScoreScreenHarvesterDamage, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Leaderboard Bot Tracker
+//--------------------------------------------------------------------------------------------------
+bool gt_LeaderboardBotTracker_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnitCreatedUnit()) == "TerrazineHarvester"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((UnitFilterMatch(EventUnitCreatedUnit(), 1, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32)))) == true)) {
+        gv_leaderboardBotCount += 1;
+        gv_leaderboardBots[gv_leaderboardBotCount] = EventUnitCreatedUnit();
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_LeaderboardBotTracker_Init () {
+    gt_LeaderboardBotTracker = TriggerCreate("gt_LeaderboardBotTracker_Func");
+    TriggerAddEventUnitCreated(gt_LeaderboardBotTracker, null, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Leaderboard Score Bot
+//--------------------------------------------------------------------------------------------------
+bool gt_LeaderboardScoreBot_Func (bool testConds, bool runActions) {
+    int init_i;
+
     // Variable Declarations
-    fixed lv_missionTimeTransmissionRequested;
+    int lv_botObjectiveScoreMax;
+    int lv_botCounter;
+    fixed[12] lv_botHealth;
+    fixed lv_botHealthCombined;
+    int lv_botScoreBase;
+    fixed lv_botScore;
+    bool lv_showDebugWindow;
 
     // Automatic Variable Declarations
-    // Variable Initialization
+    const int auto378D09EC_ae = 11;
+    const int auto378D09EC_ai = 1;
 
+    // Variable Initialization
+    lv_botObjectiveScoreMax = 100000;
+    for (init_i = 0; init_i <= 11; init_i += 1) {
+        lv_botHealth[init_i] = 100.0;
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_showDebugWindow = GameCheatsEnabled(c_gameCheatCategoryDevelopment);
+    if ((lv_showDebugWindow == true)) {
+        DialogCreate(350, 250, c_anchorBottomLeft, 0, 375, true);
+        DialogSetVisible(DialogLastCreated(), PlayerGroupAll(), true);
+    }
+
+    lv_botScoreBase = (lv_botObjectiveScoreMax / 100);
+    while ((libCOMI_gf_GameIsOver() == false)) {
+        lv_botHealthCombined = 0.0;
+        lv_botCounter = 1;
+        for ( ; ( (auto378D09EC_ai >= 0 && lv_botCounter <= auto378D09EC_ae) || (auto378D09EC_ai < 0 && lv_botCounter >= auto378D09EC_ae) ) ; lv_botCounter += auto378D09EC_ai ) {
+            if ((UnitIsAlive(gv_leaderboardBots[lv_botCounter]) == true)) {
+                lv_botHealth[lv_botCounter] = UnitGetPropertyFixed(gv_leaderboardBots[lv_botCounter], c_unitPropLifePercent, c_unitPropCurrent);
+                lv_botHealthCombined += lv_botHealth[lv_botCounter];
+            }
+            else {
+                lv_botHealthCombined += lv_botHealth[lv_botCounter];
+            }
+        }
+        lv_botHealthCombined = (lv_botHealthCombined / 11.0);
+        lv_botScore = (IntToFixed(lv_botScoreBase) * lv_botHealthCombined);
+        if ((lv_showDebugWindow == true)) {
+            TextExpressionSetToken("Param/Expression/0B1DFDF7", "C", FixedToText(lv_botScore, 0));
+            DialogSetTitle(DialogLastCreated(), TextExpressionAssemble("Param/Expression/0B1DFDF7"));
+        }
+
+        gv_leaderboardBotScoreFinal = FixedToInt(lv_botScore);
+        Wait(0.0625, c_timeGame);
+    }
+    if ((lv_showDebugWindow == true)) {
+        while (!((PlayerScoreValueGetAsFixed(1, "TotalMissionScore") > 0.0))) {
+            Wait(1.0, c_timeGame);
+        }
+        TextExpressionSetToken("Param/Expression/AD96A702", "D", FixedToText(PlayerScoreValueGetAsInt(1, "TotalMissionScore"), c_fixedPrecisionAny));
+        TextExpressionSetToken("Param/Expression/AD96A702", "OriginalText", DialogGetTitle(DialogLastCreated()));
+        DialogSetTitle(DialogLastCreated(), TextExpressionAssemble("Param/Expression/AD96A702"));
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_LeaderboardScoreBot_Init () {
+    gt_LeaderboardScoreBot = TriggerCreate("gt_LeaderboardScoreBot_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Leaderboard Final Score Bot
+//--------------------------------------------------------------------------------------------------
+bool gt_LeaderboardFinalScoreBot_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    playergroup auto441EAAFD_g;
+    int auto441EAAFD_var;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_leaderboardBotScoreFinal = libCOMI_gf_ObjectiveFinalScoreChecker(gv_leaderboardBotScoreFinal, "AC_BelshirEscort_Primary02", 1, true);
+    auto441EAAFD_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    auto441EAAFD_var = -1;
+    while (true) {
+        auto441EAAFD_var = PlayerGroupNextPlayer(auto441EAAFD_g, auto441EAAFD_var);
+        if (auto441EAAFD_var < 0) { break; }
+        libCOMI_gf_SetMissionScore("MSHarvestingBotLifeRemaining", gv_leaderboardBotScoreFinal, auto441EAAFD_var);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_LeaderboardFinalScoreBot_Init () {
+    gt_LeaderboardFinalScoreBot = TriggerCreate("gt_LeaderboardFinalScoreBot_Func");
+    TriggerAddEventGeneric(gt_LeaderboardFinalScoreBot, libCOMI_gv_COOP_MISSION_STARTED_EVENT2);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat - Terrazine Harvesters Destroyed
+//--------------------------------------------------------------------------------------------------
+bool gt_DefeatTerrazineHarvestersDestroyed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -1751,23 +1593,128 @@ bool gt_EscortBotsBotsUnderAttackQ_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    lv_missionTimeTransmissionRequested = GameGetMissionTime();
-    TriggerQueueEnter();
-    if (((GameGetMissionTime() - lv_missionTimeTransmissionRequested) < 10.0)) {
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-        libCOMI_gf_SendMissionTransmission("BotUnderAttackBE", true, -1);
-        libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    }
-
-    TriggerQueueExit();
-    Wait(15.0, c_timeGame);
-    TriggerEnable(TriggerGetCurrent(), true);
+    TriggerEnable(gt_MissionProgression, false);
+    TriggerEnable(gt_EscortIsDeadIncrement, false);
+    libCOMI_gf_ObjectiveFailed("AC_BelshirEscort_Primary01", 1, true);
+    libCOMI_gf_RunMissionVictorySequence2(gt_DefeatFanfareTerrazineHarvestersDestroyed, c_gameOverDefeat);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_EscortBotsBotsUnderAttackQ_Init () {
-    gt_EscortBotsBotsUnderAttackQ = TriggerCreate("gt_EscortBotsBotsUnderAttackQ_Func");
+void gt_DefeatTerrazineHarvestersDestroyed_Init () {
+    gt_DefeatTerrazineHarvestersDestroyed = TriggerCreate("gt_DefeatTerrazineHarvestersDestroyed_Func");
+    TriggerAddEventChatMessage(gt_DefeatTerrazineHarvestersDestroyed, c_playerAny, "-cheatlose", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Defeat Fanfare - Terrazine Harvesters Destroyed
+//--------------------------------------------------------------------------------------------------
+bool gt_DefeatFanfareTerrazineHarvestersDestroyed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_SendMissionTransmission("DefeatBE", false, -1);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/03FFDB51"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(gv_escortDeathPoint, 1.5);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DefeatFanfareTerrazineHarvestersDestroyed_Init () {
+    gt_DefeatFanfareTerrazineHarvestersDestroyed = TriggerCreate("gt_DefeatFanfareTerrazineHarvestersDestroyed_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory - Collect Terrazine Completed
+//--------------------------------------------------------------------------------------------------
+bool gt_VictoryCollectTerrazineCompleted_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerEnable(gt_EscortIsDeadIncrement, false);
+    TriggerEnable(gt_MissionProgression, false);
+    libCOMI_gf_ObjectiveComplete("AC_BelshirEscort_Primary01", 1, true);
+    libCOMI_gf_ObjectiveComplete("AC_BelshirEscort_Primary02", 1, true);
+    libCOMI_gf_RunMissionVictorySequence2(gt_VictoryFanfareCollectTerrazineCompleted, c_gameOverVictory);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictoryCollectTerrazineCompleted_Init () {
+    gt_VictoryCollectTerrazineCompleted = TriggerCreate("gt_VictoryCollectTerrazineCompleted_Func");
+    TriggerAddEventChatMessage(gt_VictoryCollectTerrazineCompleted, c_playerAny, "-cheatwin", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Victory Fanfare - Collect Terrazine Completed
+//--------------------------------------------------------------------------------------------------
+bool gt_VictoryFanfareCollectTerrazineCompleted_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_SendVictoryTransmission("VictoryBE");
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/B271D53B"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(PointFromId(48), 2.0);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VictoryFanfareCollectTerrazineCompleted_Init () {
+    gt_VictoryFanfareCollectTerrazineCompleted = TriggerCreate("gt_VictoryFanfareCollectTerrazineCompleted_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Safe The Whales - Initialize
+//--------------------------------------------------------------------------------------------------
+bool gt_SafeTheWhalesInitialize_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_whalePrisonLife;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCOMI_gf_SetUnitInfoTextCampaign(gv_whalePrison1, null, StringExternal("Param/Value/7D59FA49"), null);
+    libCOMI_gf_SetUnitInfoTextCampaign(gv_whalePrison2, null, StringExternal("Param/Value/383EDDD0"), null);
+    lv_whalePrisonLife = libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 4000, 4000, 6000, 8000, 0, 0);
+    UnitSetPropertyFixed(gv_whalePrison1, c_unitPropLifeMax, lv_whalePrisonLife);
+    UnitSetPropertyFixed(gv_whalePrison1, c_unitPropLifePercent, 100.0);
+    UnitSetPropertyFixed(gv_whalePrison2, c_unitPropLifeMax, lv_whalePrisonLife);
+    UnitSetPropertyFixed(gv_whalePrison2, c_unitPropLifePercent, 100.0);
+    TriggerEnable(gt_ObjectiveSavetheWhalesInitializationWhale1, true);
+    TriggerEnable(gt_ObjectiveSavetheWhalesInitializationWhale2, true);
+    TriggerExecute(gt_LeaderboardScoreWhales, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SafeTheWhalesInitialize_Init () {
+    gt_SafeTheWhalesInitialize = TriggerCreate("gt_SafeTheWhalesInitialize_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1785,7 +1732,7 @@ bool gt_ObjectiveSavetheWhalesInitializationWhale1_Func (bool testConds, bool ru
             return false;
         }
 
-        if (!(((TimerGetRemaining(gv_startBonusObjective1) <= 0.0) || gf_AnyAlliedUnitNearby()))) {
+        if (!(((TimerGetRemaining(gv_startBonusObjective1) <= 0.0) || libCOMI_gf_AnyAllyUnitNearby(RegionFromId(17))))) {
             return false;
         }
     }
@@ -1797,16 +1744,16 @@ bool gt_ObjectiveSavetheWhalesInitializationWhale1_Func (bool testConds, bool ru
 
     TriggerEnable(TriggerGetCurrent(), false);
     gv_whichWhale += 1;
-    TriggerExecute(gt_ObjectiveSavetheWhalesCreateWhale1, true, false);
+    libCOMI_gf_ObjectiveCreate("AC_BelshirEscort_Bonus01", 1, true);
     if ((gv_whichWhale < 2)) {
-        TriggerExecute(gt_ObjectiveSavetheWhaleVOWhale1StartQ, true, false);
+        libCOMI_gf_DefferedTransmission("BonusLocatedFirstBE", 0.0, 20.0);
     }
     else {
-        TriggerExecute(gt_ObjectiveSavetheWhaleVOWhale2StartQ, true, false);
+        libCOMI_gf_DefferedTransmission("BonusLocatedRepeatBE", 0.0, 20.0);
     }
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, PointFromId(247), StringExternal("Param/Value/FBBDA45C"));
-    gv_whalesPing = PingLastCreated();
-    libNtve_gf_SendActorMessageToUnit(gv_bonusObjective_WhalePrison1, "Signal WorkStart");
+    gv_whalesPing1 = PingLastCreated();
+    libNtve_gf_SendActorMessageToUnit(gv_whalePrison1, "Signal WorkStart");
     TriggerExecute(gt_ObjectiveSavetheWhalesTimerUpdateWhale1, true, false);
     TriggerEnable(gt_WhaleLifeCheckWhale1, true);
     TriggerEnable(gt_WhaleTimerExpireWhale1, true);
@@ -1833,14 +1780,15 @@ bool gt_ObjectiveSavetheWhalesTimerUpdateWhale1_Func (bool testConds, bool runAc
     Wait(6.0, c_timeGame);
     TimerStart(gv_whalesExpireTimer1, 240.0, false, c_timeAI);
     TriggerEnable(gt_ObjectiveSavetheWhalesVOWarning1Whale1, true);
-    while ((TimerGetRemaining(gv_whalesExpireTimer1) > 0.0) && (UnitIsAlive(gv_bonusObjective_WhalePrison1) == true)) {
-        if (((AIGetTime() - AILastAttack(gv_bonusObjective_WhalePrison1)) < 3.0)) {
+    while ((TimerGetRemaining(gv_whalesExpireTimer1) > 0.0) && (UnitIsAlive(gv_whalePrison1) == true)) {
+        if (((AIGetTime() - AILastAttack(gv_whalePrison1)) < 3.0)) {
             TimerPause(gv_whalesExpireTimer1, true);
         }
         else {
             TimerPause(gv_whalesExpireTimer1, false);
         }
-        TriggerExecute(gt_ObjectiveSavetheWhalesUpdateWhale1, true, false);
+        TextExpressionSetToken("Param/Expression/275DADAB", "coloredTime", TextWithColor(TextTimeFormat(StringToText("<mintotal/>:<sec2/>"), FixedToInt(TimerGetRemaining(gv_whalesExpireTimer1))), Color(100.00, 100.00, 0.00)));
+        libCOMI_gf_ObjectiveUpdate("AC_BelshirEscort_Bonus01", 1, TextExpressionAssemble("Param/Expression/275DADAB"));
         Wait(1.0, c_timeGame);
     }
     return true;
@@ -1870,7 +1818,7 @@ bool gt_ObjectiveSavetheWhalesVOWarning1Whale1_Func (bool testConds, bool runAct
             return false;
         }
 
-        if (!((UnitIsAlive(gv_bonusObjective_WhalePrison1) == true))) {
+        if (!((UnitIsAlive(gv_whalePrison1) == true))) {
             return false;
         }
     }
@@ -1881,11 +1829,7 @@ bool gt_ObjectiveSavetheWhalesVOWarning1Whale1_Func (bool testConds, bool runAct
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BonusExpireFirstBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
+    libCOMI_gf_DefferedTransmission("BonusExpireFirstBE", 0.0, 0.0);
     TriggerEnable(gt_ObjectiveSavetheWhalesVOWarningFinalWhale1, true);
     return true;
 }
@@ -1916,7 +1860,7 @@ bool gt_ObjectiveSavetheWhalesVOWarningFinalWhale1_Func (bool testConds, bool ru
             return false;
         }
 
-        if (!((UnitIsAlive(gv_bonusObjective_WhalePrison1) == true))) {
+        if (!((UnitIsAlive(gv_whalePrison1) == true))) {
             return false;
         }
     }
@@ -1927,11 +1871,7 @@ bool gt_ObjectiveSavetheWhalesVOWarningFinalWhale1_Func (bool testConds, bool ru
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BonusExpireRepeatBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
+    libCOMI_gf_DefferedTransmission("BonusExpireRepeatBE", 0.0, 0.0);
     return true;
 }
 
@@ -1940,50 +1880,6 @@ void gt_ObjectiveSavetheWhalesVOWarningFinalWhale1_Init () {
     gt_ObjectiveSavetheWhalesVOWarningFinalWhale1 = TriggerCreate("gt_ObjectiveSavetheWhalesVOWarningFinalWhale1_Func");
     TriggerEnable(gt_ObjectiveSavetheWhalesVOWarningFinalWhale1, false);
     TriggerAddEventTimePeriodic(gt_ObjectiveSavetheWhalesVOWarningFinalWhale1, 1.0, c_timeGame);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whales Progress Check - Whale 1
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhalesProgressCheckWhale1_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveSavetheWhalesCreateWhale1, true, false);
-    if ((TimerGetRemaining(gv_whalesExpireTimer1) == 0.0) && (UnitIsAlive(gv_bonusObjective_WhalePrison1) == true)) {
-        TriggerExecute(gt_ObjectiveSavetheWhalesFailedWhale1, true, false);
-        TriggerExecute(gt_ObjectiveSavetheWhaleVOWhale1FailedQ, true, false);
-        UnitCreateEffectUnit(gv_bonusObjective_WhalePrison1, "COOPTerrazineTankTimeoutDeath", gv_bonusObjective_WhalePrison1);
-        libCOMI_gf_DestroyPingCoop(gv_whalesPing);
-        TriggerEnable(gt_WhaleLifeCheckWhale1, false);
-        TriggerEnable(gt_WhaleTimerExpireWhale1, false);
-    }
-
-    if ((TimerGetRemaining(gv_whalesExpireTimer1) != 0.0) && (UnitIsAlive(gv_bonusObjective_WhalePrison1) == false)) {
-        TriggerExecute(gt_ObjectiveSavetheWhalesCompleteWhale1, true, false);
-        TriggerExecute(gt_ObjectiveSavetheWhaleVOWhale1CompleteQ, true, false);
-        libCOMI_gf_DestroyPingCoop(gv_whalesPing);
-        TriggerEnable(gt_WhaleLifeCheckWhale1, false);
-        TriggerEnable(gt_WhaleTimerExpireWhale1, false);
-    }
-
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhalesProgressCheckWhale1_Init () {
-    gt_ObjectiveSavetheWhalesProgressCheckWhale1 = TriggerCreate("gt_ObjectiveSavetheWhalesProgressCheckWhale1_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2007,7 +1903,11 @@ bool gt_WhaleLifeCheckWhale1_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerExecute(gt_ObjectiveSavetheWhalesProgressCheckWhale1, true, false);
+    TriggerEnable(gt_WhaleLifeCheckWhale1, false);
+    TriggerEnable(gt_WhaleTimerExpireWhale1, false);
+    libCOMI_gf_DestroyPingCoop(gv_whalesPing1);
+    libCOMI_gf_ObjectiveComplete("AC_BelshirEscort_Bonus01", 1, true);
+    libCOMI_gf_DefferedTransmission("BonusCompleteBE", 0.0, 20.0);
     return true;
 }
 
@@ -2015,7 +1915,7 @@ bool gt_WhaleLifeCheckWhale1_Func (bool testConds, bool runActions) {
 void gt_WhaleLifeCheckWhale1_Init () {
     gt_WhaleLifeCheckWhale1 = TriggerCreate("gt_WhaleLifeCheckWhale1_Func");
     TriggerEnable(gt_WhaleLifeCheckWhale1, false);
-    TriggerAddEventUnitDied(gt_WhaleLifeCheckWhale1, UnitRefFromVariable("gv_bonusObjective_WhalePrison1"));
+    TriggerAddEventUnitDied(gt_WhaleLifeCheckWhale1, UnitRefFromVariable("gv_whalePrison1"));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2033,7 +1933,7 @@ bool gt_WhaleTimerExpireWhale1_Func (bool testConds, bool runActions) {
             return false;
         }
 
-        if (!((UnitIsAlive(gv_bonusObjective_WhalePrison1) == true))) {
+        if (!((UnitIsAlive(gv_whalePrison1) == true))) {
             return false;
         }
     }
@@ -2043,7 +1943,12 @@ bool gt_WhaleTimerExpireWhale1_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerExecute(gt_ObjectiveSavetheWhalesProgressCheckWhale1, true, false);
+    TriggerEnable(gt_WhaleLifeCheckWhale1, false);
+    TriggerEnable(gt_WhaleTimerExpireWhale1, false);
+    libCOMI_gf_DestroyPingCoop(gv_whalesPing1);
+    libCOMI_gf_ObjectiveFailed("AC_BelshirEscort_Bonus01", 1, true);
+    libCOMI_gf_DefferedTransmission("BonusLostBE", 0.0, 20.0);
+    UnitCreateEffectUnit(gv_whalePrison1, "COOPTerrazineTankTimeoutDeath", gv_whalePrison1);
     return true;
 }
 
@@ -2069,7 +1974,7 @@ bool gt_ObjectiveSavetheWhalesInitializationWhale2_Func (bool testConds, bool ru
             return false;
         }
 
-        if (!(((TimerGetRemaining(gv_startBonusObjective2) <= 0.0) || (UnitGroupCount(UnitGroup(null, gv_pLAYER_01_USER, RegionFromId(15), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 1), c_unitCountAlive) > 0) || (UnitGroupCount(UnitGroup(null, gv_pLAYER_02_USER, RegionFromId(15), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterMapBoss - 32))), 1), c_unitCountAlive) > 0)))) {
+        if (!(((TimerGetRemaining(gv_startBonusObjective2) <= 0.0) || libCOMI_gf_AnyAllyUnitNearby(RegionFromId(15))))) {
             return false;
         }
     }
@@ -2081,16 +1986,16 @@ bool gt_ObjectiveSavetheWhalesInitializationWhale2_Func (bool testConds, bool ru
 
     TriggerEnable(TriggerGetCurrent(), false);
     gv_whichWhale += 1;
-    TriggerExecute(gt_ObjectiveSavetheWhalesCreateWhale2, true, false);
+    libCOMI_gf_ObjectiveCreate("AC_BelshirEscort_Bonus02", 1, true);
     if ((gv_whichWhale < 2)) {
-        TriggerExecute(gt_ObjectiveSavetheWhaleVOWhale1StartQ, true, false);
+        libCOMI_gf_DefferedTransmission("BonusLocatedFirstBE", 0.0, 20.0);
     }
     else {
-        TriggerExecute(gt_ObjectiveSavetheWhaleVOWhale2StartQ, true, false);
+        libCOMI_gf_DefferedTransmission("BonusLocatedRepeatBE", 0.0, 20.0);
     }
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, PointFromId(209), StringExternal("Param/Value/7D4ACEAA"));
     gv_whalesPing2 = PingLastCreated();
-    libNtve_gf_SendActorMessageToUnit(gv_bonusObjective_WhalePrison2, "Signal WorkStart");
+    libNtve_gf_SendActorMessageToUnit(gv_whalePrison2, "Signal WorkStart");
     TriggerExecute(gt_ObjectiveSavetheWhalesTimerUpdateWhale2, true, false);
     TriggerEnable(gt_WhaleLifeCheckWhale2, true);
     TriggerEnable(gt_WhaleTimerExpireWhale2, true);
@@ -2117,14 +2022,15 @@ bool gt_ObjectiveSavetheWhalesTimerUpdateWhale2_Func (bool testConds, bool runAc
     Wait(6.0, c_timeGame);
     TimerStart(gv_whalesExpireTimer2, 240.0, false, c_timeAI);
     TriggerEnable(gt_ObjectiveSavetheWhalesVOWarning1Whale2, true);
-    while ((TimerGetRemaining(gv_whalesExpireTimer2) > 0.0) && (UnitIsAlive(gv_bonusObjective_WhalePrison2) == true)) {
-        if (((AIGetTime() - AILastAttack(gv_bonusObjective_WhalePrison2)) < 3.0)) {
+    while ((TimerGetRemaining(gv_whalesExpireTimer2) > 0.0) && (UnitIsAlive(gv_whalePrison2) == true)) {
+        if (((AIGetTime() - AILastAttack(gv_whalePrison2)) < 3.0)) {
             TimerPause(gv_whalesExpireTimer2, true);
         }
         else {
             TimerPause(gv_whalesExpireTimer2, false);
         }
-        TriggerExecute(gt_ObjectiveSavetheWhalesUpdateWhale2, true, false);
+        TextExpressionSetToken("Param/Expression/588B9543", "coloredTime", TextWithColor(TextTimeFormat(StringToText("<mintotal/>:<sec2/>"), FixedToInt(TimerGetRemaining(gv_whalesExpireTimer2))), Color(100.00, 100.00, 0.00)));
+        libCOMI_gf_ObjectiveUpdate("AC_BelshirEscort_Bonus02", 1, TextExpressionAssemble("Param/Expression/588B9543"));
         Wait(1.0, c_timeGame);
     }
     return true;
@@ -2154,7 +2060,7 @@ bool gt_ObjectiveSavetheWhalesVOWarning1Whale2_Func (bool testConds, bool runAct
             return false;
         }
 
-        if (!((UnitIsAlive(gv_bonusObjective_WhalePrison2) == true))) {
+        if (!((UnitIsAlive(gv_whalePrison2) == true))) {
             return false;
         }
     }
@@ -2165,11 +2071,7 @@ bool gt_ObjectiveSavetheWhalesVOWarning1Whale2_Func (bool testConds, bool runAct
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BonusExpireFirstBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
+    libCOMI_gf_DefferedTransmission("BonusExpireFirstBE", 0.0, 0.0);
     TriggerEnable(gt_ObjectiveSavetheWhalesVOWarningFinalWhale2, true);
     return true;
 }
@@ -2200,7 +2102,7 @@ bool gt_ObjectiveSavetheWhalesVOWarningFinalWhale2_Func (bool testConds, bool ru
             return false;
         }
 
-        if (!((UnitIsAlive(gv_bonusObjective_WhalePrison2) == true))) {
+        if (!((UnitIsAlive(gv_whalePrison2) == true))) {
             return false;
         }
     }
@@ -2211,11 +2113,7 @@ bool gt_ObjectiveSavetheWhalesVOWarningFinalWhale2_Func (bool testConds, bool ru
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BonusExpireRepeatBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
+    libCOMI_gf_DefferedTransmission("BonusExpireRepeatBE", 0.0, 0.0);
     return true;
 }
 
@@ -2224,50 +2122,6 @@ void gt_ObjectiveSavetheWhalesVOWarningFinalWhale2_Init () {
     gt_ObjectiveSavetheWhalesVOWarningFinalWhale2 = TriggerCreate("gt_ObjectiveSavetheWhalesVOWarningFinalWhale2_Func");
     TriggerEnable(gt_ObjectiveSavetheWhalesVOWarningFinalWhale2, false);
     TriggerAddEventTimePeriodic(gt_ObjectiveSavetheWhalesVOWarningFinalWhale2, 1.0, c_timeGame);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whales Progress Check - Whale 2
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhalesProgressCheckWhale2_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveSavetheWhalesCreateWhale1, true, false);
-    if ((TimerGetRemaining(gv_whalesExpireTimer2) == 0.0) && (UnitIsAlive(gv_bonusObjective_WhalePrison2) == true)) {
-        TriggerExecute(gt_ObjectiveSavetheWhalesFailedWhale2, true, false);
-        TriggerExecute(gt_ObjectiveSavetheWhaleVOWhale2FailedQ, true, false);
-        UnitCreateEffectUnit(gv_bonusObjective_WhalePrison2, "COOPTerrazineTankTimeoutDeath", gv_bonusObjective_WhalePrison2);
-        libCOMI_gf_DestroyPingCoop(gv_whalesPing2);
-        TriggerEnable(gt_WhaleLifeCheckWhale2, false);
-        TriggerEnable(gt_WhaleTimerExpireWhale2, false);
-    }
-
-    if ((TimerGetRemaining(gv_whalesExpireTimer2) != 0.0) && (UnitIsAlive(gv_bonusObjective_WhalePrison2) == false)) {
-        TriggerExecute(gt_ObjectiveSavetheWhalesCompleteWhale2, true, false);
-        TriggerExecute(gt_ObjectiveSavetheWhaleVOWhale2CompleteQ, true, false);
-        libCOMI_gf_DestroyPingCoop(gv_whalesPing2);
-        TriggerEnable(gt_WhaleLifeCheckWhale2, false);
-        TriggerEnable(gt_WhaleTimerExpireWhale2, false);
-    }
-
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhalesProgressCheckWhale2_Init () {
-    gt_ObjectiveSavetheWhalesProgressCheckWhale2 = TriggerCreate("gt_ObjectiveSavetheWhalesProgressCheckWhale2_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2291,7 +2145,11 @@ bool gt_WhaleLifeCheckWhale2_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerExecute(gt_ObjectiveSavetheWhalesProgressCheckWhale2, true, false);
+    TriggerEnable(gt_WhaleLifeCheckWhale2, false);
+    TriggerEnable(gt_WhaleTimerExpireWhale2, false);
+    libCOMI_gf_DestroyPingCoop(gv_whalesPing2);
+    libCOMI_gf_ObjectiveComplete("AC_BelshirEscort_Bonus02", 1, true);
+    libCOMI_gf_DefferedTransmission("BonusCompleteBE", 0.0, 20.0);
     return true;
 }
 
@@ -2299,7 +2157,7 @@ bool gt_WhaleLifeCheckWhale2_Func (bool testConds, bool runActions) {
 void gt_WhaleLifeCheckWhale2_Init () {
     gt_WhaleLifeCheckWhale2 = TriggerCreate("gt_WhaleLifeCheckWhale2_Func");
     TriggerEnable(gt_WhaleLifeCheckWhale2, false);
-    TriggerAddEventUnitDied(gt_WhaleLifeCheckWhale2, UnitRefFromVariable("gv_bonusObjective_WhalePrison2"));
+    TriggerAddEventUnitDied(gt_WhaleLifeCheckWhale2, UnitRefFromVariable("gv_whalePrison2"));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2317,7 +2175,7 @@ bool gt_WhaleTimerExpireWhale2_Func (bool testConds, bool runActions) {
             return false;
         }
 
-        if (!((UnitIsAlive(gv_bonusObjective_WhalePrison2) == true))) {
+        if (!((UnitIsAlive(gv_whalePrison2) == true))) {
             return false;
         }
     }
@@ -2327,7 +2185,12 @@ bool gt_WhaleTimerExpireWhale2_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerExecute(gt_ObjectiveSavetheWhalesProgressCheckWhale2, true, false);
+    TriggerEnable(gt_WhaleLifeCheckWhale2, false);
+    TriggerEnable(gt_WhaleTimerExpireWhale2, false);
+    libCOMI_gf_DestroyPingCoop(gv_whalesPing2);
+    libCOMI_gf_ObjectiveFailed("AC_BelshirEscort_Bonus02", 1, true);
+    libCOMI_gf_DefferedTransmission("BonusLostBE", 0.0, 20.0);
+    UnitCreateEffectUnit(gv_whalePrison2, "COOPTerrazineTankTimeoutDeath", gv_whalePrison2);
     return true;
 }
 
@@ -2339,1854 +2202,150 @@ void gt_WhaleTimerExpireWhale2_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whale VO - Whale 1 Start Q
+// Trigger: Leaderboard Score Whales
 //--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhaleVOWhale1StartQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BonusLocatedFirstBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhaleVOWhale1StartQ_Init () {
-    gt_ObjectiveSavetheWhaleVOWhale1StartQ = TriggerCreate("gt_ObjectiveSavetheWhaleVOWhale1StartQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whale VO - Whale 1 Failed Q
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhaleVOWhale1FailedQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BonusLostBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhaleVOWhale1FailedQ_Init () {
-    gt_ObjectiveSavetheWhaleVOWhale1FailedQ = TriggerCreate("gt_ObjectiveSavetheWhaleVOWhale1FailedQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whale VO - Whale 1 Complete Q
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhaleVOWhale1CompleteQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BonusCompleteBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhaleVOWhale1CompleteQ_Init () {
-    gt_ObjectiveSavetheWhaleVOWhale1CompleteQ = TriggerCreate("gt_ObjectiveSavetheWhaleVOWhale1CompleteQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whale VO - Whale 2 Start Q
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhaleVOWhale2StartQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BonusLocatedRepeatBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhaleVOWhale2StartQ_Init () {
-    gt_ObjectiveSavetheWhaleVOWhale2StartQ = TriggerCreate("gt_ObjectiveSavetheWhaleVOWhale2StartQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whale VO - Whale 2 Failed Q
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhaleVOWhale2FailedQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BonusLostBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhaleVOWhale2FailedQ_Init () {
-    gt_ObjectiveSavetheWhaleVOWhale2FailedQ = TriggerCreate("gt_ObjectiveSavetheWhaleVOWhale2FailedQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whale VO - Whale 2 Complete Q
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhaleVOWhale2CompleteQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BonusCompleteBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhaleVOWhale2CompleteQ_Init () {
-    gt_ObjectiveSavetheWhaleVOWhale2CompleteQ = TriggerCreate("gt_ObjectiveSavetheWhaleVOWhale2CompleteQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Defeat Primary Objective Failed
-//--------------------------------------------------------------------------------------------------
-bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerEnable(gt_MissionProgression, false);
-    TriggerEnable(gt_EscortIsDeadIncrement, false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    libCOMI_gf_SendMissionTransmission("DefeatBE", false, -1);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-    TriggerExecute(gt_ObjectiveCollectTerrazineCanistersFailed, true, false);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/03FFDB51"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraPan(gv_pLAYER_01_USER, gv_escortDeathPoint, 1.5, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, gv_escortDeathPoint, 1.5, -1, 10.0, false);
-    libCOMI_gf_WaitForMissionTransmission();
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(libCOMI_gt_Defeat, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_DefeatPrimaryObjectiveFailed_Init () {
-    gt_DefeatPrimaryObjectiveFailed = TriggerCreate("gt_DefeatPrimaryObjectiveFailed_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Collect Terrazine Canisters Completed
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryCollectTerrazineCanistersCompleted_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerEnable(gt_EscortIsDeadIncrement, false);
-    TriggerExecute(gt_VictorySequence, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryCollectTerrazineCanistersCompleted_Init () {
-    gt_VictoryCollectTerrazineCanistersCompleted = TriggerCreate("gt_VictoryCollectTerrazineCanistersCompleted_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Sequence
-//--------------------------------------------------------------------------------------------------
-bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerEnable(gt_MissionProgression, false);
-    TriggerEnable(gt_EscortIsDeadIncrement, false);
-    ObjectiveSetState(gv_objectiveDestroyZergBase, c_objectiveStateCompleted);
-    ObjectiveSetState(gv_objectiveDestroyZergBase2, c_objectiveStateCompleted);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-    Wait(2.0, c_timeReal);
-    TriggerExecute(gt_ObjectiveCollectTerrazineCanistersComplete, true, true);
-    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictorySequence_Init () {
-    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Fanfare Q
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TransmissionClearAll();
-    TriggerQueueEnter();
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
-    libCOMI_gf_SendVictoryTransmission("VictoryBE");
-    UnitPauseAll(true);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_01_USER, PointFromId(48), 2.0, -1, 10.0, false);
-    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, PointFromId(48), 2.0, -1, 10.0, false);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/B271D53B"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(libCOMI_gt_Victory, true, false);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryFanfareQ_Init () {
-    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Defeat Fanfare
-//--------------------------------------------------------------------------------------------------
-bool gt_DefeatFanfare_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_DefeatFanfare_Init () {
-    gt_DefeatFanfare = TriggerCreate("gt_DefeatFanfare_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: ScoreScreen - Harvester Damage
-//--------------------------------------------------------------------------------------------------
-bool gt_ScoreScreenHarvesterDamage_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_06_ESCORT))) {
-            return false;
-        }
-
-        if (!((UnitGetType(EventUnit()) == "TerrazineHarvester"))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    gv_scoreScreen_HarvesterDamage += EventUnitDamageAmount();
-    PlayerScoreValueSetFromFixed(gv_pLAYER_01_USER, "BelshirEscortHarvesterDamage", gv_scoreScreen_HarvesterDamage);
-    PlayerScoreValueSetFromFixed(gv_pLAYER_02_USER, "BelshirEscortHarvesterDamage", gv_scoreScreen_HarvesterDamage);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ScoreScreenHarvesterDamage_Init () {
-    gt_ScoreScreenHarvesterDamage = TriggerCreate("gt_ScoreScreenHarvesterDamage_Func");
-    TriggerAddEventUnitDamaged(gt_ScoreScreenHarvesterDamage, null, c_unitDamageTypeAny, c_unitDamageEither, null);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Enemy Attacking Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("AttackWave", true, RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER));
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EnemyAttackingQ_Init () {
-    gt_EnemyAttackingQ = TriggerCreate("gt_EnemyAttackingQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Wave Cycle 1
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveWaveCycle1_Func (bool testConds, bool runActions) {
+bool gt_LeaderboardScoreWhales_Func (bool testConds, bool runActions) {
     // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
-    int lv_randomPointInt;
-
-    // Automatic Variable Declarations
-    const int auto18445654_n = 2;
-    int auto18445654_i;
-    unitgroup auto2CBF6837_g;
-    int auto2CBF6837_u;
-    unit auto2CBF6837_var;
-
-    // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    Wait(20.0, c_timeGame);
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-    TriggerExecute(gt_EscortHarassWave1StartingVOQ, true, false);
-    for (auto18445654_i = 1; auto18445654_i <= auto18445654_n; auto18445654_i += 1) {
-        auto2CBF6837_g = gv_activeHarvesters;
-        auto2CBF6837_u = UnitGroupCount(auto2CBF6837_g, c_unitCountAll);
-        for (;; auto2CBF6837_u -= 1) {
-            auto2CBF6837_var = UnitGroupUnitFromEnd(auto2CBF6837_g, auto2CBF6837_u);
-            if (auto2CBF6837_var == null) { break; }
-            lv_attackWaveSpawnLocation = gf_DropLocation(1, 1, 2);
-            AIAttackWaveSetTargetUnit(gv_pLAYER_03_Player01Enemy, auto2CBF6837_var);
-            AIAttackWaveSetTargetUnit(gv_pLAYER_04_Player02Enemy, auto2CBF6837_var);
-            libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-            libCOMI_gf_SendAttackWaveusingCoopAttackForceWaveAttackTargetType(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true, libCOMI_ge_CM_CoopAI_WaveAttackTargetType_Objective);
-        }
-        Wait(25.0, c_timeGame);
-    }
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveWaveCycle1_Init () {
-    gt_ObjectiveWaveCycle1 = TriggerCreate("gt_ObjectiveWaveCycle1_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Wave Cycle 2
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveWaveCycle2_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
-    int lv_randomPointInt;
-    int lv_escortIndex;
-    unit lv_attackTarget;
-    int lv_attackWaveIndex;
-
-    // Automatic Variable Declarations
-    const int auto4E78B323_ae = 4;
-    const int auto4E78B323_ai = 1;
-
-    // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    Wait(15.0, c_timeGame);
-    TriggerExecute(gt_EscortHarassWave2StartingVOQ, true, false);
-    lv_attackWaveIndex = 1;
-    for ( ; ( (auto4E78B323_ai >= 0 && lv_attackWaveIndex <= auto4E78B323_ae) || (auto4E78B323_ai < 0 && lv_attackWaveIndex >= auto4E78B323_ae) ) ; lv_attackWaveIndex += auto4E78B323_ai ) {
-        if (lv_escortIndex >= UnitGroupCount(gv_activeHarvesters, c_unitCountAlive)) {
-            lv_escortIndex = 1;
-        }
-        else {
-            lv_escortIndex = lv_escortIndex + 1;
-        }
-        lv_attackTarget = UnitGroupUnit(gv_activeHarvesters, lv_escortIndex);
-        if ((lv_attackWaveIndex < 2)) {
-            lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
-            lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
-            lv_attackWaveSpawnLocation = gf_DropLocation(2, 1, 3);
-        }
-        else {
-            if ((lv_attackWaveIndex == 4)) {
-                lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
-                lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
-            }
-
-            lv_attackWaveSpawnLocation = gf_DropLocation(2, 4, 7);
-        }
-        AIAttackWaveSetTargetUnit(gv_pLAYER_03_Player01Enemy, lv_attackTarget);
-        AIAttackWaveSetTargetUnit(gv_pLAYER_04_Player02Enemy, lv_attackTarget);
-        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-        libCOMI_gf_SendAttackWaveusingCoopAttackForceWaveAttackTargetType(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true, libCOMI_ge_CM_CoopAI_WaveAttackTargetType_Objective);
-        Wait(20.0, c_timeGame);
-    }
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveWaveCycle2_Init () {
-    gt_ObjectiveWaveCycle2 = TriggerCreate("gt_ObjectiveWaveCycle2_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Wave Cycle 3
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveWaveCycle3_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
-    int lv_randomPointInt;
-    int lv_escortIndex;
-    unit lv_attackTarget;
-    unitgroup lv_attackGroup;
-    int lv_attackWaveIndex;
-
-    // Automatic Variable Declarations
-    const int autoEBFDF11C_ae = 6;
-    const int autoEBFDF11C_ai = 1;
-    const int auto26858478_ae = gv_pLAYER_04_Player02Enemy;
-    int auto26858478_var;
-
-    // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-    lv_attackGroup = UnitGroupEmpty();
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    Wait(10.0, c_timeGame);
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
-    TriggerExecute(gt_EscortHarassWave3StartingVOQ, true, false);
-    lv_attackWaveIndex = 1;
-    for ( ; ( (autoEBFDF11C_ai >= 0 && lv_attackWaveIndex <= autoEBFDF11C_ae) || (autoEBFDF11C_ai < 0 && lv_attackWaveIndex >= autoEBFDF11C_ae) ) ; lv_attackWaveIndex += autoEBFDF11C_ai ) {
-        if (lv_escortIndex >= UnitGroupCount(gv_activeHarvesters, c_unitCountAlive)) {
-            lv_escortIndex = 1;
-        }
-        else {
-            lv_escortIndex = lv_escortIndex + 1;
-        }
-        lv_attackTarget = UnitGroupUnit(gv_activeHarvesters, lv_escortIndex);
-        if ((lv_attackWaveIndex <= 2)) {
-            lv_attackWaveSpawnLocation = gf_DropLocation(3, 1, 3);
-        }
-        else {
-            if ((lv_attackWaveIndex != 6)) {
-                lv_attackWaveSpawnLocation = gf_DropLocation(3, 3, 6);
-            }
-            else {
-                lv_attackWaveSpawnLocation = gf_DropLocation(3, 7, 7);
-            }
-        }
-        AIAttackWaveSetTargetUnit(gv_pLAYER_03_Player01Enemy, lv_attackTarget);
-        AIAttackWaveSetTargetUnit(gv_pLAYER_04_Player02Enemy, lv_attackTarget);
-        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-        lv_attackGroup = libCOMI_gf_LastCreatedCoopAttackForce();
-        if ((lv_attackWaveIndex > 5)) {
-            auto26858478_var = gv_pLAYER_03_Player01Enemy;
-            for ( ; auto26858478_var <= auto26858478_ae; auto26858478_var += 1 ) {
-                UnitCreate(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(auto26858478_var), 0, 0, 1, 1, 0, 0), gv_hybridMinor, 0, auto26858478_var, lv_attackWaveSpawnLocation, 270.0);
-                UnitGroupAddUnitGroup(lv_attackGroup, UnitLastCreatedGroup());
-            }
-        }
-
-        libCOMI_gf_SendAttackWaveusingCoopAttackForceWaveAttackTargetType(lv_attackGroup, 0, true, libCOMI_ge_CM_CoopAI_WaveAttackTargetType_Objective);
-        Wait(20.0, c_timeGame);
-    }
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveWaveCycle3_Init () {
-    gt_ObjectiveWaveCycle3 = TriggerCreate("gt_ObjectiveWaveCycle3_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Wave Cycle 4
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveWaveCycle4_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
-    unitgroup lv_activeBots;
-    int lv_randomPointInt;
-    int lv_escortIndex;
-    unit lv_attackTarget;
-    int lv_attackWaveIndex;
-
-    // Automatic Variable Declarations
-    const int autoDC0098A0_ae = 6;
-    const int autoDC0098A0_ai = 1;
-    point autoB78892D5_val;
-
-    // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-    lv_activeBots = UnitGroupEmpty();
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    Wait(18.0, c_timeGame);
-    TriggerExecute(gt_EscortHarassWave4StartingVOQ, true, false);
-    lv_attackWaveIndex = 1;
-    for ( ; ( (autoDC0098A0_ai >= 0 && lv_attackWaveIndex <= autoDC0098A0_ae) || (autoDC0098A0_ai < 0 && lv_attackWaveIndex >= autoDC0098A0_ae) ) ; lv_attackWaveIndex += autoDC0098A0_ai ) {
-        lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
-        lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
-        if (lv_escortIndex >= UnitGroupCount(gv_activeHarvesters, c_unitCountAlive)) {
-            lv_escortIndex = 1;
-        }
-        else {
-            lv_escortIndex = lv_escortIndex + 1;
-        }
-        lv_attackTarget = UnitGroupUnit(gv_activeHarvesters, lv_escortIndex);
-        autoB78892D5_val = libHots_gf_PointStoredForUnit(lv_attackTarget, 1);
-        if (autoB78892D5_val == PointFromId(2650)) {
-            lv_attackWaveSpawnLocation = gf_DropLocation(4, 5, 7);
-            if ((lv_attackWaveSpawnLocation == PointFromId(111))) {
-                lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-            }
-
-        }
-        else {
-            lv_attackWaveSpawnLocation = gf_DropLocation(4, 1, 5);
-        }
-        AIAttackWaveSetTargetUnit(gv_pLAYER_03_Player01Enemy, lv_attackTarget);
-        AIAttackWaveSetTargetUnit(gv_pLAYER_04_Player02Enemy, lv_attackTarget);
-        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-        libCOMI_gf_SendAttackWaveusingCoopAttackForceWaveAttackTargetType(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true, libCOMI_ge_CM_CoopAI_WaveAttackTargetType_Objective);
-        if ((lv_attackWaveIndex == 3)) {
-            continue;
-        }
-        else {
-            Wait(30.0, c_timeGame);
-        }
-    }
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveWaveCycle4_Init () {
-    gt_ObjectiveWaveCycle4 = TriggerCreate("gt_ObjectiveWaveCycle4_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Wave Cycle 5
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveWaveCycle5_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
-    int lv_randomPointInt;
-    int lv_escortIndex;
-    unit lv_attackTarget;
-    int lv_attackWaveIndex;
-
-    // Automatic Variable Declarations
-    const int auto2490E01E_ae = 9;
-    const int auto2490E01E_ai = 1;
-    point auto26C0B08F_val;
-
-    // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    Wait(10.0, c_timeGame);
-    TriggerExecute(gt_EscortHarassWave5StartingVOQ, true, false);
-    lv_attackWaveIndex = 1;
-    for ( ; ( (auto2490E01E_ai >= 0 && lv_attackWaveIndex <= auto2490E01E_ae) || (auto2490E01E_ai < 0 && lv_attackWaveIndex >= auto2490E01E_ae) ) ; lv_attackWaveIndex += auto2490E01E_ai ) {
-        if ((lv_attackWaveIndex <= 4)) {
-            lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
-            lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
-        }
-        else {
-            lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
-            lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__5Late;
-        }
-        if ((lv_attackWaveIndex > 3) && (libCOMI_gf_GetMissionDifficulty() != 1) && (libCOMI_gf_GetMissionDifficulty() != 2) && (ModI(lv_attackWaveIndex, 2) == 0)) {
-            lv_attackTarget = gf_LowestVitalityUnitfromUnitGroup(gv_activeHarvesters);
-            lv_attackWaveSpawnLocation = gf_DropLocation(5, 1, 7);
-        }
-        else {
-            if (lv_escortIndex >= UnitGroupCount(gv_activeHarvesters, c_unitCountAlive)) {
-                lv_escortIndex = 1;
-            }
-            else {
-                lv_escortIndex = lv_escortIndex + 1;
-            }
-            lv_attackTarget = UnitGroupUnit(gv_activeHarvesters, lv_escortIndex);
-            auto26C0B08F_val = libHots_gf_PointStoredForUnit(lv_attackTarget, 1);
-            if (auto26C0B08F_val == PointFromId(2656)) {
-                lv_attackWaveSpawnLocation = gf_DropLocation(5, 1, 3);
-            }
-            else if (auto26C0B08F_val == PointFromId(2657)) {
-                lv_attackWaveSpawnLocation = gf_DropLocation(5, 3, 5);
-            }
-            else if (auto26C0B08F_val == PointFromId(2658)) {
-                lv_attackWaveSpawnLocation = gf_DropLocation(5, 7, 7);
-            }
-            else {
-            }
-        }
-        AIAttackWaveSetTargetUnit(gv_pLAYER_03_Player01Enemy, lv_attackTarget);
-        AIAttackWaveSetTargetUnit(gv_pLAYER_04_Player02Enemy, lv_attackTarget);
-        libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-        libCOMI_gf_SendAttackWaveusingCoopAttackForceWaveAttackTargetType(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true, libCOMI_ge_CM_CoopAI_WaveAttackTargetType_Objective);
-        if ((lv_attackWaveIndex <= 4)) {
-            Wait(15.0, c_timeGame);
-        }
-        else {
-            Wait(30.0, c_timeGame);
-        }
-    }
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveWaveCycle5_Init () {
-    gt_ObjectiveWaveCycle5 = TriggerCreate("gt_ObjectiveWaveCycle5_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Harass Wave 1 - Starting VO Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortHarassWave1StartingVOQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    Wait(5.0, c_timeGame);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BotEnemyInboundBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortHarassWave1StartingVOQ_Init () {
-    gt_EscortHarassWave1StartingVOQ = TriggerCreate("gt_EscortHarassWave1StartingVOQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Harass Wave 2 - Starting VO Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortHarassWave2StartingVOQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    Wait(5.0, c_timeGame);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BotEnemyInboundBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortHarassWave2StartingVOQ_Init () {
-    gt_EscortHarassWave2StartingVOQ = TriggerCreate("gt_EscortHarassWave2StartingVOQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Harass Wave 3 - Starting VO Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortHarassWave3StartingVOQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    Wait(5.0, c_timeGame);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BotEnemyInboundBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortHarassWave3StartingVOQ_Init () {
-    gt_EscortHarassWave3StartingVOQ = TriggerCreate("gt_EscortHarassWave3StartingVOQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Harass Wave 4 - Starting VO Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortHarassWave4StartingVOQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    Wait(5.0, c_timeGame);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BotEnemyInboundBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortHarassWave4StartingVOQ_Init () {
-    gt_EscortHarassWave4StartingVOQ = TriggerCreate("gt_EscortHarassWave4StartingVOQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Harass Wave 5 - Starting VO Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortHarassWave5StartingVOQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    Wait(5.0, c_timeGame);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("BotEnemyInboundBE", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortHarassWave5StartingVOQ_Init () {
-    gt_EscortHarassWave5StartingVOQ = TriggerCreate("gt_EscortHarassWave5StartingVOQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Escort Harass Drop Pod VO Q
-//--------------------------------------------------------------------------------------------------
-bool gt_EscortHarassDropPodVOQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    string auto19205CD3_val;
-
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    auto19205CD3_val = PlayerRace(gv_pLAYER_03_Player01Enemy);
-    if (auto19205CD3_val == "Prot") {
-        libCOMI_gf_SendMissionTransmission("BotWarpProtossBE", true, -1);
-    }
-    else if (auto19205CD3_val == "Terr") {
-        libCOMI_gf_SendMissionTransmission("BotDropTerranBE", true, -1);
-    }
-    else if (auto19205CD3_val == "Zerg") {
-        libCOMI_gf_SendMissionTransmission("BotDropZergBE", true, -1);
-    }
-    else {
-    }
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    Wait(20.0, c_timeAI);
-    TriggerEnable(TriggerGetCurrent(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EscortHarassDropPodVOQ_Init () {
-    gt_EscortHarassDropPodVOQ = TriggerCreate("gt_EscortHarassDropPodVOQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Attack Wave 01
-//--------------------------------------------------------------------------------------------------
-bool gt_AttackWave01_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
+    int lv_bonusScoreMax1;
+    int lv_bonusScoreMax2;
+    int lv_bonusObjectiveParTime;
+    fixed lv_bonusScore1;
+    fixed lv_bonusScore2;
+    bool lv_showDebugWindow;
 
     // Automatic Variable Declarations
     // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
+    lv_bonusScoreMax1 = 75000;
+    lv_bonusScoreMax2 = 75000;
+    lv_bonusObjectiveParTime = 20;
 
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GetMissionDifficulty() != 1))) {
-            return false;
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_showDebugWindow = GameCheatsEnabled(c_gameCheatCategoryDevelopment);
+    if ((lv_showDebugWindow == true)) {
+        DialogCreate(350, 250, c_anchorBottomLeft, 0, 375, true);
+        DialogSetVisible(DialogLastCreated(), PlayerGroupAll(), true);
+    }
+
+    lv_bonusScore1 = lv_bonusScoreMax1;
+    lv_bonusScore2 = lv_bonusScoreMax2;
+    while ((libCOMI_gf_GameIsOver() == false)) {
+        if ((UnitIsAlive(gv_whalePrison1) == true)) {
+            lv_bonusScore1 -= libCOMI_gf_LeaderboardObjectDurationModifierValue(lv_bonusScoreMax1, lv_bonusObjectiveParTime);
         }
 
-        if (!((libCOMI_gf_GetMissionDifficulty() != 2))) {
-            return false;
+        if ((UnitIsAlive(gv_whalePrison2) == true)) {
+            lv_bonusScore2 -= libCOMI_gf_LeaderboardObjectDurationModifierValue(lv_bonusScoreMax2, lv_bonusObjectiveParTime);
         }
-    }
 
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    AIAttackWaveSetTargetPoint(gv_pLAYER_03_Player01Enemy, PlayerStartLocation(gv_pLAYER_01_USER));
-    AIAttackWaveSetTargetPoint(gv_pLAYER_04_Player02Enemy, PlayerStartLocation(gv_pLAYER_02_USER));
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-    lv_attackWaveSpawnLocation = PointFromId(611);
-    TriggerExecute(gt_EnemyAttackingQ, true, false);
-    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-    if ((RandomFixed(0.0, 100.0) <= 50.0)) {
-        libCOMI_gf_AddAttackForceWaypoint(gv_pLAYER03_ATTACKWAYPOINT, false);
-        gv_wave02_RampAttack = gv_pLAYER04_ATTACKWAYPOINT;
-    }
-    else {
-        libCOMI_gf_AddAttackForceWaypoint(gv_pLAYER04_ATTACKWAYPOINT, false);
-        gv_wave02_RampAttack = gv_pLAYER03_ATTACKWAYPOINT;
-    }
-    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_AttackWave01_Init () {
-    gt_AttackWave01 = TriggerCreate("gt_AttackWave01_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Attack Wave 02
-//--------------------------------------------------------------------------------------------------
-bool gt_AttackWave02_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
-    unitgroup lv_attackGroup;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-    lv_attackGroup = UnitGroupEmpty();
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    AIAttackWaveSetTargetPoint(gv_pLAYER_03_Player01Enemy, PlayerStartLocation(gv_pLAYER_01_USER));
-    AIAttackWaveSetTargetPoint(gv_pLAYER_04_Player02Enemy, PlayerStartLocation(gv_pLAYER_02_USER));
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
-    lv_attackWaveSpawnLocation = PointFromId(614);
-    TriggerExecute(gt_EnemyAttackingQ, true, false);
-    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-    libCOMI_gf_AddAttackForceWaypoint(gv_wave02_RampAttack, false);
-    lv_attackGroup = libCOMI_gf_LastCreatedCoopAttackForce();
-    libCOMI_gf_SendAttackWaveusingCoopAttackForce(lv_attackGroup, 0, true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_AttackWave02_Init () {
-    gt_AttackWave02 = TriggerCreate("gt_AttackWave02_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Attack Wave 03 - Expo Attack
-//--------------------------------------------------------------------------------------------------
-bool gt_AttackWave03ExpoAttack_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
-    int lv_numberOfUnitsExpoLeft;
-    int lv_numberOfUnitsExpoRight;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    AIAttackWaveSetTargetPoint(gv_pLAYER_03_Player01Enemy, PlayerStartLocation(gv_pLAYER_01_USER));
-    AIAttackWaveSetTargetPoint(gv_pLAYER_04_Player02Enemy, PlayerStartLocation(gv_pLAYER_02_USER));
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
-    lv_attackWaveSpawnLocation = PointFromId(614);
-    lv_numberOfUnitsExpoLeft = UnitGroupCount(UnitGroupAlliance(gv_pLAYER_03_Player01Enemy, c_unitAllianceEnemy, RegionFromId(18), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
-    lv_numberOfUnitsExpoRight = UnitGroupCount(UnitGroupAlliance(gv_pLAYER_03_Player01Enemy, c_unitAllianceEnemy, RegionFromId(20), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
-    TriggerExecute(gt_EnemyAttackingQ, true, false);
-    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-    if ((lv_numberOfUnitsExpoLeft == 0) && (lv_numberOfUnitsExpoRight == 0)) {
-        if ((RandomFixed(0.0, 100.0) <= 50.0)) {
-            libCOMI_gf_AddAttackForceWaypoint(PointFromId(96), false);
-            gv_wave04_ExpoAttack = PointFromId(1177);
+        if ((lv_showDebugWindow == true)) {
+            TextExpressionSetToken("Param/Expression/7C1CFE70", "A", FixedToText(lv_bonusScore1, 0));
+            TextExpressionSetToken("Param/Expression/7C1CFE70", "B", FixedToText(lv_bonusScore2, 0));
+            DialogSetTitle(DialogLastCreated(), TextExpressionAssemble("Param/Expression/7C1CFE70"));
         }
-        else {
-            libCOMI_gf_AddAttackForceWaypoint(PointFromId(1177), false);
-            gv_wave04_ExpoAttack = PointFromId(96);
+
+        gv_leaderboardBonusScoreFinal = FixedToInt(lv_bonusScore1);
+        gv_leaderboardBonusScoreFinal2 = FixedToInt(lv_bonusScore2);
+        Wait(0.0625, c_timeGame);
+    }
+    if ((lv_showDebugWindow == true)) {
+        while (!((PlayerScoreValueGetAsFixed(1, "TotalMissionScore") > 0.0))) {
+            Wait(1.0, c_timeGame);
         }
+        TextExpressionSetToken("Param/Expression/1F73B057", "D", FixedToText(PlayerScoreValueGetAsInt(1, "TotalMissionScore"), c_fixedPrecisionAny));
+        TextExpressionSetToken("Param/Expression/1F73B057", "OriginalText", DialogGetTitle(DialogLastCreated()));
+        DialogSetTitle(DialogLastCreated(), TextExpressionAssemble("Param/Expression/1F73B057"));
     }
-    else if ((lv_numberOfUnitsExpoLeft > lv_numberOfUnitsExpoRight)) {
-        libCOMI_gf_AddAttackForceWaypoint(PointFromId(96), false);
-        gv_wave04_ExpoAttack = PointFromId(1177);
-    }
-    else if (true) {
-        libCOMI_gf_AddAttackForceWaypoint(PointFromId(1177), false);
-        gv_wave04_ExpoAttack = PointFromId(96);
-    }
-    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
+
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_AttackWave03ExpoAttack_Init () {
-    gt_AttackWave03ExpoAttack = TriggerCreate("gt_AttackWave03ExpoAttack_Func");
+void gt_LeaderboardScoreWhales_Init () {
+    gt_LeaderboardScoreWhales = TriggerCreate("gt_LeaderboardScoreWhales_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Attack Wave 04 - Opposite Expo Attack
+// Trigger: Leaderboard Final Score Whales
 //--------------------------------------------------------------------------------------------------
-bool gt_AttackWave04OppositeExpoAttack_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
-    unitgroup lv_attackGroup;
-    int lv_numberOfUnitsExpoLeft;
-    int lv_numberOfUnitsExpoRight;
-
+bool gt_LeaderboardFinalScoreWhales_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
-    const int autoD804C900_ae = gv_pLAYER_04_Player02Enemy;
-    int autoD804C900_var;
-
-    // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-    lv_attackGroup = UnitGroupEmpty();
+    playergroup autoBB731A3B_g;
+    int autoBB731A3B_var;
 
     // Actions
     if (!runActions) {
         return true;
     }
 
-    AIAttackWaveSetTargetPoint(gv_pLAYER_03_Player01Enemy, PlayerStartLocation(gv_pLAYER_01_USER));
-    AIAttackWaveSetTargetPoint(gv_pLAYER_04_Player02Enemy, PlayerStartLocation(gv_pLAYER_02_USER));
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
-    lv_attackWaveSpawnLocation = PointFromId(611);
-    lv_numberOfUnitsExpoLeft = UnitGroupCount(UnitGroupAlliance(gv_pLAYER_03_Player01Enemy, c_unitAllianceEnemy, RegionFromId(18), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
-    lv_numberOfUnitsExpoRight = UnitGroupCount(UnitGroupAlliance(gv_pLAYER_03_Player01Enemy, c_unitAllianceEnemy, RegionFromId(20), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
-    TriggerExecute(gt_EnemyAttackingQ, true, false);
-    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-    lv_attackGroup = libCOMI_gf_LastCreatedCoopAttackForce();
-    autoD804C900_var = gv_pLAYER_03_Player01Enemy;
-    for ( ; autoD804C900_var <= autoD804C900_ae; autoD804C900_var += 1 ) {
-        UnitCreate(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(autoD804C900_var), 1, 1, 1, 2, 0, 0), gv_hybridMinor, 0, autoD804C900_var, lv_attackWaveSpawnLocation, 270.0);
-        UnitGroupAddUnitGroup(lv_attackGroup, UnitLastCreatedGroup());
-        UnitCreate(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(autoD804C900_var), 0, 0, 1, 1, 0, 0), gv_hybridMajor, 0, autoD804C900_var, lv_attackWaveSpawnLocation, 270.0);
-        UnitGroupAddUnitGroup(lv_attackGroup, UnitLastCreatedGroup());
-    }
-    libCOMI_gf_AddAttackForceWaypoint(gv_wave04_ExpoAttack, false);
-    libCOMI_gf_SendAttackWaveusingCoopAttackForce(lv_attackGroup, 0, true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_AttackWave04OppositeExpoAttack_Init () {
-    gt_AttackWave04OppositeExpoAttack = TriggerCreate("gt_AttackWave04OppositeExpoAttack_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Attack Wave 05
-//--------------------------------------------------------------------------------------------------
-bool gt_AttackWave05_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    AIAttackWaveSetTargetPlayer(gv_pLAYER_03_Player01Enemy, libCOMI_gf_HumanPlayers());
-    AIAttackWaveSetTargetPlayer(gv_pLAYER_04_Player02Enemy, libCOMI_gf_HumanPlayers());
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__5Late;
-    lv_attackWaveSpawnLocation = PointFromId(614);
-    TriggerExecute(gt_EnemyAttackingQ, true, false);
-    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-    libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_AttackWave05_Init () {
-    gt_AttackWave05 = TriggerCreate("gt_AttackWave05_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Attack Wave 06
-//--------------------------------------------------------------------------------------------------
-bool gt_AttackWave06_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_resourceAmount;
-    int lv_techLevel;
-    point lv_attackWaveSpawnLocation;
-    unitgroup lv_attackGroup;
-
-    // Automatic Variable Declarations
-    const int auto8894DC89_ae = gv_pLAYER_04_Player02Enemy;
-    int auto8894DC89_var;
-
-    // Variable Initialization
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-    lv_attackGroup = UnitGroupEmpty();
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    AIAttackWaveSetTargetPoint(gv_pLAYER_03_Player01Enemy, PlayerStartLocation(gv_pLAYER_01_USER));
-    AIAttackWaveSetTargetPoint(gv_pLAYER_04_Player02Enemy, PlayerStartLocation(gv_pLAYER_02_USER));
-    lv_resourceAmount = libCOMI_ge_CoopAIAttackWaveBuckets__6Larger;
-    lv_techLevel = libCOMI_ge_CoopAITechLevelBuckets_TechLevel06;
-    lv_attackWaveSpawnLocation = PointFromId(614);
-    TriggerExecute(gt_EnemyAttackingQ, true, false);
-    libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_Player01Enemy, gv_pLAYER_04_Player02Enemy, lv_resourceAmount, lv_techLevel, lv_attackWaveSpawnLocation, true);
-    libCOMI_gf_AddAttackForceWaypoint(gv_pLAYER03_ATTACKWAYPOINT, false);
-    lv_attackGroup = libCOMI_gf_LastCreatedCoopAttackForce();
-    auto8894DC89_var = gv_pLAYER_03_Player01Enemy;
-    for ( ; auto8894DC89_var <= auto8894DC89_ae; auto8894DC89_var += 1 ) {
-        UnitCreate(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(auto8894DC89_var), 2, 2, 2, 2, 0, 0), gv_hybridMinor, 0, auto8894DC89_var, lv_attackWaveSpawnLocation, 270.0);
-        UnitGroupAddUnitGroup(lv_attackGroup, UnitLastCreatedGroup());
-        UnitCreate(libCOMI_gf_DifficultyValueInt2(libCOMI_gf_DifficultyLevelForPlayerCoop(auto8894DC89_var), 0, 0, 1, 1, 0, 0), gv_hybridMajor, 0, auto8894DC89_var, lv_attackWaveSpawnLocation, 270.0);
-        UnitGroupAddUnitGroup(lv_attackGroup, UnitLastCreatedGroup());
-    }
-    libCOMI_gf_SendAttackWaveusingCoopAttackForce(lv_attackGroup, 0, true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_AttackWave06_Init () {
-    gt_AttackWave06 = TriggerCreate("gt_AttackWave06_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Run Attack Waves
-//--------------------------------------------------------------------------------------------------
-bool gt_RunAttackWaves_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_RunAttackWaves_Init () {
-    gt_RunAttackWaves = TriggerCreate("gt_RunAttackWaves_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Setup Hybrid Types
-//--------------------------------------------------------------------------------------------------
-bool gt_SetupHybridTypes_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    string autoCBBA073F_val;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    autoCBBA073F_val = PlayerRace(gv_pLAYER_03_Player01Enemy);
-    if (autoCBBA073F_val == "Prot") {
-        gv_hybridMajor = "HybridBehemoth";
-        gv_hybridMinor = "HybridDestroyer";
-    }
-    else if (autoCBBA073F_val == "Terr") {
-        gv_hybridMajor = "HybridDominatorVoid";
-        gv_hybridMinor = "HybridReaver";
-    }
-    else if (autoCBBA073F_val == "Zerg") {
-        gv_hybridMajor = "HybridDominatorVoid";
-        gv_hybridMinor = "HybridNemesis";
-    }
-    else {
+    gv_leaderboardBonusScoreFinal = libCOMI_gf_ObjectiveFinalScoreChecker(gv_leaderboardBonusScoreFinal, "AC_BelshirEscort_Bonus01", 1, true);
+    gv_leaderboardBonusScoreFinal2 = libCOMI_gf_ObjectiveFinalScoreChecker(gv_leaderboardBonusScoreFinal2, "AC_BelshirEscort_Bonus02", 1, true);
+    autoBB731A3B_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    autoBB731A3B_var = -1;
+    while (true) {
+        autoBB731A3B_var = PlayerGroupNextPlayer(autoBB731A3B_g, autoBB731A3B_var);
+        if (autoBB731A3B_var < 0) { break; }
+        libCOMI_gf_SetMissionScore("MSBonusSpeed", gv_leaderboardBonusScoreFinal, autoBB731A3B_var);
+        libCOMI_gf_SetMissionScore("MSBonusSpeed2", gv_leaderboardBonusScoreFinal2, autoBB731A3B_var);
     }
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_SetupHybridTypes_Init () {
-    gt_SetupHybridTypes = TriggerCreate("gt_SetupHybridTypes_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Collect Terrazine Canisters Create
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveCollectTerrazineCanistersCreate_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_CreateObjectiveCampaign("AC_BelshirEscort_Primary01");
-    gv_objectiveDestroyZergBase = ObjectiveLastCreated();
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveCollectTerrazineCanistersCreate_Init () {
-    gt_ObjectiveCollectTerrazineCanistersCreate = TriggerCreate("gt_ObjectiveCollectTerrazineCanistersCreate_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Collect Terrazine Canisters Complete
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveCollectTerrazineCanistersComplete_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveCollectTerrazineCanistersCreate, true, false);
-    libCOMI_gf_ZS_SetMissionObjectiveState("AC_BelshirEscort_Primary01", libCOMI_ge_MissionObjectiveState_Completed);
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveCollectTerrazineCanistersComplete_Init () {
-    gt_ObjectiveCollectTerrazineCanistersComplete = TriggerCreate("gt_ObjectiveCollectTerrazineCanistersComplete_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Collect Terrazine Canisters Update
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveCollectTerrazineCanistersUpdate_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_ObjectiveCollectTerrazineCanistersCreate, true, false);
-    libCOMI_gf_SetMissionObjectiveProgress("AC_BelshirEscort_Primary01", gv_wavesCompleted);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveCollectTerrazineCanistersUpdate_Init () {
-    gt_ObjectiveCollectTerrazineCanistersUpdate = TriggerCreate("gt_ObjectiveCollectTerrazineCanistersUpdate_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Collect Terrazine Canisters Failed
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveCollectTerrazineCanistersFailed_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveCollectTerrazineCanistersCreate, true, false);
-    libCOMI_gf_ZS_SetMissionObjectiveState("AC_BelshirEscort_Primary01", libCOMI_ge_MissionObjectiveState_Failed);
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveCollectTerrazineCanistersFailed_Init () {
-    gt_ObjectiveCollectTerrazineCanistersFailed = TriggerCreate("gt_ObjectiveCollectTerrazineCanistersFailed_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Don't Let Bots Die Create
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveDontLetBotsDieCreate_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_SetObjectiveRequiredCountCampaign("AC_BelshirEscort_Primary02", gv_botsDestroyedLimit);
-    libCOMI_gf_CreateObjectiveCampaign("AC_BelshirEscort_Primary02");
-    gv_objectiveDestroyZergBase2 = ObjectiveLastCreated();
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveDontLetBotsDieCreate_Init () {
-    gt_ObjectiveDontLetBotsDieCreate = TriggerCreate("gt_ObjectiveDontLetBotsDieCreate_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Don't Let Bots Die Update
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveDontLetBotsDieUpdate_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_ObjectiveDontLetBotsDieCreate, true, false);
-    libCOMI_gf_SetMissionObjectiveProgress("AC_BelshirEscort_Primary02", gv_botsDestroyed);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveDontLetBotsDieUpdate_Init () {
-    gt_ObjectiveDontLetBotsDieUpdate = TriggerCreate("gt_ObjectiveDontLetBotsDieUpdate_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whales Create - Whale 1
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhalesCreateWhale1_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_CreateObjectiveCampaign("AC_BelshirEscort_Bonus01");
-    gv_objectiveRescueStalkers = ObjectiveLastCreated();
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhalesCreateWhale1_Init () {
-    gt_ObjectiveSavetheWhalesCreateWhale1 = TriggerCreate("gt_ObjectiveSavetheWhalesCreateWhale1_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whales Complete - Whale 1
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhalesCompleteWhale1_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveSavetheWhalesCreateWhale1, true, false);
-    libCOMI_gf_ZS_SetMissionObjectiveState("AC_BelshirEscort_Bonus01", libCOMI_ge_MissionObjectiveState_Completed);
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhalesCompleteWhale1_Init () {
-    gt_ObjectiveSavetheWhalesCompleteWhale1 = TriggerCreate("gt_ObjectiveSavetheWhalesCompleteWhale1_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whales Failed - Whale 1
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhalesFailedWhale1_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveSavetheWhalesCreateWhale1, true, false);
-    libCOMI_gf_ZS_SetMissionObjectiveState("AC_BelshirEscort_Bonus01", libCOMI_ge_MissionObjectiveState_Failed);
-    libCOMI_gf_SetMissionObjectiveCustomText("AC_BelshirEscort_Bonus01", StringToText(""));
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhalesFailedWhale1_Init () {
-    gt_ObjectiveSavetheWhalesFailedWhale1 = TriggerCreate("gt_ObjectiveSavetheWhalesFailedWhale1_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whales Update - Whale 1
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhalesUpdateWhale1_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_ObjectiveSavetheWhalesCreateWhale1, true, false);
-    TextExpressionSetToken("Param/Expression/01CD09CE", "coloredTime", TextWithColor(TextTimeFormat(StringToText("<mintotal/>:<sec2/>"), FixedToInt(TimerGetRemaining(gv_whalesExpireTimer1))), Color(100.00, 100.00, 0.00)));
-    libCOMI_gf_SetMissionObjectiveCustomText("AC_BelshirEscort_Bonus01", TextExpressionAssemble("Param/Expression/01CD09CE"));
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhalesUpdateWhale1_Init () {
-    gt_ObjectiveSavetheWhalesUpdateWhale1 = TriggerCreate("gt_ObjectiveSavetheWhalesUpdateWhale1_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whales Create - Whale 2
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhalesCreateWhale2_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_CreateObjectiveCampaign("AC_BelshirEscort_Bonus02");
-    gv_objectiveRescueStalkers2 = ObjectiveLastCreated();
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhalesCreateWhale2_Init () {
-    gt_ObjectiveSavetheWhalesCreateWhale2 = TriggerCreate("gt_ObjectiveSavetheWhalesCreateWhale2_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whales Complete - Whale 2
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhalesCompleteWhale2_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveSavetheWhalesCreateWhale2, true, false);
-    libCOMI_gf_ZS_SetMissionObjectiveState("AC_BelshirEscort_Bonus02", libCOMI_ge_MissionObjectiveState_Completed);
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhalesCompleteWhale2_Init () {
-    gt_ObjectiveSavetheWhalesCompleteWhale2 = TriggerCreate("gt_ObjectiveSavetheWhalesCompleteWhale2_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whales Failed - Whale 2
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhalesFailedWhale2_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveSavetheWhalesCreateWhale2, true, false);
-    libCOMI_gf_ZS_SetMissionObjectiveState("AC_BelshirEscort_Bonus02", libCOMI_ge_MissionObjectiveState_Failed);
-    libCOMI_gf_SetMissionObjectiveCustomText("AC_BelshirEscort_Bonus02", StringToText(""));
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhalesFailedWhale2_Init () {
-    gt_ObjectiveSavetheWhalesFailedWhale2 = TriggerCreate("gt_ObjectiveSavetheWhalesFailedWhale2_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective Save the Whales Update - Whale 2
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveSavetheWhalesUpdateWhale2_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_ObjectiveSavetheWhalesCreateWhale2, true, false);
-    TextExpressionSetToken("Param/Expression/EC25D6DF", "coloredTime", TextWithColor(TextTimeFormat(StringToText("<mintotal/>:<sec2/>"), FixedToInt(TimerGetRemaining(gv_whalesExpireTimer2))), Color(100.00, 100.00, 0.00)));
-    libCOMI_gf_SetMissionObjectiveCustomText("AC_BelshirEscort_Bonus02", TextExpressionAssemble("Param/Expression/EC25D6DF"));
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveSavetheWhalesUpdateWhale2_Init () {
-    gt_ObjectiveSavetheWhalesUpdateWhale2 = TriggerCreate("gt_ObjectiveSavetheWhalesUpdateWhale2_Func");
+void gt_LeaderboardFinalScoreWhales_Init () {
+    gt_LeaderboardFinalScoreWhales = TriggerCreate("gt_LeaderboardFinalScoreWhales_Func");
+    TriggerAddEventGeneric(gt_LeaderboardFinalScoreWhales, libCOMI_gv_COOP_MISSION_STARTED_EVENT2);
 }
 
 //--------------------------------------------------------------------------------------------------
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
-    gt_Init01LoadData_Init();
-    gt_Init02LoadingComplete_Init();
-    gt_Init03Players_Init();
-    gt_Init05Units_Init();
-    gt_Init08Difficulties_Init();
-    gt_Init09AI_Init();
-    gt_StartGameQ_Init();
+    gt_MistOpportunitiesInitialize_Init();
+    gt_EscortWavesInitialize_Init();
+    gt_EscortWavesStart_Init();
     gt_MissionProgression_Init();
     gt_Escort1Node1_Init();
     gt_Escort2Node23_Init();
     gt_Escort3Node45_Init();
     gt_Escort4Node678_Init();
     gt_Escort5Node91011_Init();
+    gt_ObjectiveDontLetBotsDieUpdate_Init();
+    gt_ObjectiveCollectTerrazineCanistersUpdate_Init();
     gt_EscortIsDeadIncrement_Init();
-    gt_CollectTerrazineVOWarningWave1Q_Init();
-    gt_CollectTerrazineVOWarningWave2Q_Init();
-    gt_CollectTerrazineVOWarningWave3Q_Init();
-    gt_CollectTerrazineVOWarningWave4Q_Init();
-    gt_CollectTerrazineVOWarningWave5Q_Init();
-    gt_EscortBotsFirstBotDepartingQ_Init();
-    gt_EscortBotsBotsDepartingGenericQ_Init();
-    gt_EscortBotsReturningSwitchVO_Init();
-    gt_EscortBotsFirstBotReturningQ_Init();
-    gt_EscortBotsBotsReturningGenericQ_Init();
-    gt_EscortBotsSuccessfulDeliveryQ_Init();
-    gt_EscortHasDiedVOQ_Init();
+    gt_ObjectiveWaveCycle1_Init();
+    gt_ObjectiveWaveCycle2_Init();
+    gt_ObjectiveWaveCycle3_Init();
+    gt_ObjectiveWaveCycle4_Init();
+    gt_ObjectiveWaveCycle5_Init();
     gt_ProgresstoVictoryQ_Init();
-    gt_EscortBotsBotsUnderAttackQ_Init();
+    gt_EscortHarassDropPodVOQ_Init();
+    gt_ScoreScreenHarvesterDamage_Init();
+    gt_LeaderboardBotTracker_Init();
+    gt_LeaderboardScoreBot_Init();
+    gt_LeaderboardFinalScoreBot_Init();
+    gt_DefeatTerrazineHarvestersDestroyed_Init();
+    gt_DefeatFanfareTerrazineHarvestersDestroyed_Init();
+    gt_VictoryCollectTerrazineCompleted_Init();
+    gt_VictoryFanfareCollectTerrazineCompleted_Init();
+    gt_SafeTheWhalesInitialize_Init();
     gt_ObjectiveSavetheWhalesInitializationWhale1_Init();
     gt_ObjectiveSavetheWhalesTimerUpdateWhale1_Init();
     gt_ObjectiveSavetheWhalesVOWarning1Whale1_Init();
     gt_ObjectiveSavetheWhalesVOWarningFinalWhale1_Init();
-    gt_ObjectiveSavetheWhalesProgressCheckWhale1_Init();
     gt_WhaleLifeCheckWhale1_Init();
     gt_WhaleTimerExpireWhale1_Init();
     gt_ObjectiveSavetheWhalesInitializationWhale2_Init();
     gt_ObjectiveSavetheWhalesTimerUpdateWhale2_Init();
     gt_ObjectiveSavetheWhalesVOWarning1Whale2_Init();
     gt_ObjectiveSavetheWhalesVOWarningFinalWhale2_Init();
-    gt_ObjectiveSavetheWhalesProgressCheckWhale2_Init();
     gt_WhaleLifeCheckWhale2_Init();
     gt_WhaleTimerExpireWhale2_Init();
-    gt_ObjectiveSavetheWhaleVOWhale1StartQ_Init();
-    gt_ObjectiveSavetheWhaleVOWhale1FailedQ_Init();
-    gt_ObjectiveSavetheWhaleVOWhale1CompleteQ_Init();
-    gt_ObjectiveSavetheWhaleVOWhale2StartQ_Init();
-    gt_ObjectiveSavetheWhaleVOWhale2FailedQ_Init();
-    gt_ObjectiveSavetheWhaleVOWhale2CompleteQ_Init();
-    gt_DefeatPrimaryObjectiveFailed_Init();
-    gt_VictoryCollectTerrazineCanistersCompleted_Init();
-    gt_VictorySequence_Init();
-    gt_VictoryFanfareQ_Init();
-    gt_DefeatFanfare_Init();
-    gt_ScoreScreenHarvesterDamage_Init();
-    gt_EnemyAttackingQ_Init();
-    gt_ObjectiveWaveCycle1_Init();
-    gt_ObjectiveWaveCycle2_Init();
-    gt_ObjectiveWaveCycle3_Init();
-    gt_ObjectiveWaveCycle4_Init();
-    gt_ObjectiveWaveCycle5_Init();
-    gt_EscortHarassWave1StartingVOQ_Init();
-    gt_EscortHarassWave2StartingVOQ_Init();
-    gt_EscortHarassWave3StartingVOQ_Init();
-    gt_EscortHarassWave4StartingVOQ_Init();
-    gt_EscortHarassWave5StartingVOQ_Init();
-    gt_EscortHarassDropPodVOQ_Init();
-    gt_AttackWave01_Init();
-    gt_AttackWave02_Init();
-    gt_AttackWave03ExpoAttack_Init();
-    gt_AttackWave04OppositeExpoAttack_Init();
-    gt_AttackWave05_Init();
-    gt_AttackWave06_Init();
-    gt_RunAttackWaves_Init();
-    gt_SetupHybridTypes_Init();
-    gt_ObjectiveCollectTerrazineCanistersCreate_Init();
-    gt_ObjectiveCollectTerrazineCanistersComplete_Init();
-    gt_ObjectiveCollectTerrazineCanistersUpdate_Init();
-    gt_ObjectiveCollectTerrazineCanistersFailed_Init();
-    gt_ObjectiveDontLetBotsDieCreate_Init();
-    gt_ObjectiveDontLetBotsDieUpdate_Init();
-    gt_ObjectiveSavetheWhalesCreateWhale1_Init();
-    gt_ObjectiveSavetheWhalesCompleteWhale1_Init();
-    gt_ObjectiveSavetheWhalesFailedWhale1_Init();
-    gt_ObjectiveSavetheWhalesUpdateWhale1_Init();
-    gt_ObjectiveSavetheWhalesCreateWhale2_Init();
-    gt_ObjectiveSavetheWhalesCompleteWhale2_Init();
-    gt_ObjectiveSavetheWhalesFailedWhale2_Init();
-    gt_ObjectiveSavetheWhalesUpdateWhale2_Init();
+    gt_LeaderboardScoreWhales_Init();
+    gt_LeaderboardFinalScoreWhales_Init();
 }
 
 //--------------------------------------------------------------------------------------------------

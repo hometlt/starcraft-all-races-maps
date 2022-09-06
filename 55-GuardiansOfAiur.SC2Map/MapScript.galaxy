@@ -19,7 +19,6 @@ include "TriggerLibs/natives"
 //==================================================================================================
 include "TriggerLibs/NativeLib"
 include "LibCOMI"
-
 //--------------------------------------------------------------------------------------------------
 // Library Initialization
 //--------------------------------------------------------------------------------------------------
@@ -27,16 +26,14 @@ void InitLibs () {
     libNtve_InitLib();
     libCOMI_InitLib();
 }
-
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
+int gv_pLAYER_01_USER = 1;
+int gv_pLAYER_02_USER = 2;
 const int gv_pLAYER_03_ENEMY = 3;
 const int gv_pLAYER_04_ENEMY = 4;
 const int gv_aiur = 5;
-
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
@@ -70,10 +67,8 @@ unit gv_target_Kraith;
 int gv_int_Amount_impaler;
 int gv_sP_Random_int;
 timer gv_timer;
-
 void InitGlobals () {
     int init_i;
-
     gv_enemyGroup = PlayerGroupEmpty();
     for (init_i = 0; init_i <= 5; init_i += 1) {
         gv_aiurTroop_front[init_i] = UnitGroupEmpty();
@@ -88,13 +83,11 @@ void InitGlobals () {
     gv_sP_Random_int = 30;
     gv_timer = TimerCreate();
 }
-
 //--------------------------------------------------------------------------------------------------
 // Global Function Declarations
 //--------------------------------------------------------------------------------------------------
 void gf_RunMissionEvent (trigger lp_missionEventTrigger, fixed lp_missionEventTime);
 unit gf_DropUnit (string lp_unitType, point lp_loc, int lp_player);
-
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
@@ -223,29 +216,23 @@ trigger gt_Timerexpired;
 trigger gt_Aiurlast;
 trigger gt_mis;
 trigger gt_mis3;
-
 //--------------------------------------------------------------------------------------------------
 // Global Functions
 //--------------------------------------------------------------------------------------------------
 trigger auto_gf_RunMissionEvent_Trigger = null;
 trigger auto_gf_RunMissionEvent_lp_missionEventTrigger;
 fixed auto_gf_RunMissionEvent_lp_missionEventTime;
-
 void gf_RunMissionEvent (trigger lp_missionEventTrigger, fixed lp_missionEventTime) {
     auto_gf_RunMissionEvent_lp_missionEventTrigger = lp_missionEventTrigger;
     auto_gf_RunMissionEvent_lp_missionEventTime = lp_missionEventTime;
-
     if (auto_gf_RunMissionEvent_Trigger == null) {
         auto_gf_RunMissionEvent_Trigger = TriggerCreate("auto_gf_RunMissionEvent_TriggerFunc");
     }
-
     TriggerExecute(auto_gf_RunMissionEvent_Trigger, false, false);
 }
-
 bool auto_gf_RunMissionEvent_TriggerFunc (bool testConds, bool runActions) {
     trigger lp_missionEventTrigger = auto_gf_RunMissionEvent_lp_missionEventTrigger;
     fixed lp_missionEventTime = auto_gf_RunMissionEvent_lp_missionEventTime;
-
     // Implementation
     while (!((GameGetMissionTime() >= lp_missionEventTime))) {
         Wait(0.5, c_timeAI);
@@ -253,10 +240,8 @@ bool auto_gf_RunMissionEvent_TriggerFunc (bool testConds, bool runActions) {
     if ((libCOMI_gf_GameIsOver() == false)) {
         TriggerExecute(lp_missionEventTrigger, true, false);
     }
-
     return true;
 }
-
 unit gf_DropUnit (string lp_unitType, point lp_loc, int lp_player) {
     // Implementation
     libNtve_gf_UnitCreateFacingPoint(1, "HotSHunter", 0, gv_aiur, PointFromId(1489733719), RegionRandomPoint(RegionEntireMap()));
@@ -264,112 +249,28 @@ unit gf_DropUnit (string lp_unitType, point lp_loc, int lp_player) {
     UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), lp_loc), c_orderQueueReplace);
     return UnitLastCreated();
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 01 Load Data
 //--------------------------------------------------------------------------------------------------
 bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    playergroup auto0B258D10_g;
-    int auto0B258D10_p;
-    string auto834F8A5E_val;
-
-    // Variable Declarations
-    int lv_indexPlayer;
-
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    auto0B258D10_g = libCOMI_gf_HumanPlayers();
-    auto0B258D10_p = 1;
-    for ( ; auto0B258D10_p <= PlayerGroupCount(auto0B258D10_g) ; auto0B258D10_p += BoolToInt(lv_indexPlayer == PlayerGroupPlayer(auto0B258D10_g, auto0B258D10_p)) ) {
-        lv_indexPlayer = PlayerGroupPlayer(auto0B258D10_g, auto0B258D10_p);
-        auto834F8A5E_val = GameAttributePlayerValue("[bnet:local/0.0/358167]1", lv_indexPlayer);
-        if (auto834F8A5E_val == "0003") {
-            PlayerSetCommander(lv_indexPlayer, "Artanis");
-        }
-        else if (auto834F8A5E_val == "0002") {
-            PlayerSetCommander(lv_indexPlayer, "Kerrigan");
-        }
-        else if (auto834F8A5E_val == "0001") {
-            PlayerSetCommander(lv_indexPlayer, "Raynor");
-        }
-        else {
-            if ((lv_indexPlayer == 1)) {
-                PlayerSetCommander(lv_indexPlayer, "Raynor");
-            }
-            else {
-                PlayerSetCommander(lv_indexPlayer, "Artanis");
-            }
-        }
-    }
-    libCOMI_gf_EnableArcadeContestMode();
-    TriggerExecute(gt_Init02Players, true, false);
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init01LoadData_Init () {
     gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
     TriggerAddEventMapInit(gt_Init01LoadData);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 02 Players
 //--------------------------------------------------------------------------------------------------
 bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    playergroup autoE0EF2853_g;
-    int autoE0EF2853_p;
-    playergroup autoB969537F_g;
-    int autoB969537F_p;
-
-    // Variable Declarations
-    int lv_playerIterEnemy;
-    int lv_playerIterAlly;
-
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libNtve_gf_SetAlliance(1, 5, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    libNtve_gf_SetAlliance(2, 5, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_03_ENEMY);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_04_ENEMY);
-    libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    autoE0EF2853_g = gv_enemyGroup; 
-    autoE0EF2853_p = 1;
-    for ( ; autoE0EF2853_p <= PlayerGroupCount(autoE0EF2853_g) ; autoE0EF2853_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p)) ) {
-        lv_playerIterEnemy = PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-        PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
-        autoB969537F_g = libCOMI_gf_HumanPlayers();
-        autoB969537F_p = 1;
-        for ( ; autoB969537F_p <= PlayerGroupCount(autoB969537F_g) ; autoB969537F_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoB969537F_g, autoB969537F_p)) ) {
-            lv_playerIterAlly = PlayerGroupPlayer(autoB969537F_g, autoB969537F_p);
-            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-        }
-    }
-    PlayerSetAlliance(gv_pLAYER_03_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
-    PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_03_ENEMY, true);
-    libCOMI_gf_SetAlliedCommandersstartingResources();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init02Players_Init () {
     gt_Init02Players = TriggerCreate("gt_Init02Players_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
@@ -378,92 +279,60 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     TriggerExecute(gt_Init04Technology, true, false);
-    libCOMI_gf_PurchaseStorymodeTech();
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
     TriggerExecute(gt_Init07Environment, true, false);
     TriggerExecute(gt_Init08Difficulties, true, false);
-    libCOMI_gf_PlayMapIntroZoom(true);
     TriggerExecute(gt_StartGameQ, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init03LoadingComplete_Init () {
     gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 04 Technology
 //--------------------------------------------------------------------------------------------------
 bool gt_Init04Technology_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init04Technology_Init () {
     gt_Init04Technology = TriggerCreate("gt_Init04Technology_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 05 Units
 //--------------------------------------------------------------------------------------------------
 bool gt_Init05Units_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_01_USER);
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_02_USER);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init05Units_Init () {
     gt_Init05Units = TriggerCreate("gt_Init05Units_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 06 Music/Sound
 //--------------------------------------------------------------------------------------------------
 bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init06MusicSound_Init () {
     gt_Init06MusicSound = TriggerCreate("gt_Init06MusicSound_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 07 Environment
 //--------------------------------------------------------------------------------------------------
 bool gt_Init07Environment_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    GameTimeOfDaySet("08:00:00");
-    VisExploreArea(gv_pLAYER_01_USER, RegionFromId(49), true, false);
-    VisExploreArea(gv_pLAYER_02_USER, RegionFromId(49), true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init07Environment_Init () {
     gt_Init07Environment = TriggerCreate("gt_Init07Environment_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 08 Difficulties
 //--------------------------------------------------------------------------------------------------
@@ -471,28 +340,21 @@ bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
     // Variable Declarations
     fixed lv_bonusObjectiveLife;
     fixed lv_mainObjectiveLife;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_01_USER) == 4)) {
     }
-
     if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_02_USER) == 4)) {
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init08Difficulties_Init () {
     gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Debug - Can't Fail
 //--------------------------------------------------------------------------------------------------
@@ -502,49 +364,39 @@ bool gt_DebugCantFail_Func (bool testConds, bool runActions) {
         if (!((GameCheatsEnabled(c_gameCheatCategoryPublic) == true))) {
             return false;
         }
-
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     PlayerModifyPropertyFixed(gv_pLAYER_01_USER, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 0.0);
     PlayerModifyPropertyFixed(gv_pLAYER_02_USER, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 0.0);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_DebugCantFail_Init () {
     gt_DebugCantFail = TriggerCreate("gt_DebugCantFail_Func");
     TriggerAddEventChatMessage(gt_DebugCantFail, c_playerAny, "cantfail", false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Create creepTumor
 //--------------------------------------------------------------------------------------------------
 bool gt_CreatecreepTumor_Func (bool testConds, bool runActions) {
     int auto84C00AB6_ae;
     int auto84C00AB6_ai;
-
     // Variable Declarations
     int lv_intA;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto84C00AB6_ae = 4;
     auto84C00AB6_ai = 1;
     lv_intA = 0;
@@ -554,13 +406,11 @@ bool gt_CreatecreepTumor_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_CreatecreepTumor_Init () {
     gt_CreatecreepTumor = TriggerCreate("gt_CreatecreepTumor_Func");
     TriggerAddEventTimePeriodic(gt_CreatecreepTumor, 30.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Create TumorQueen
 //--------------------------------------------------------------------------------------------------
@@ -568,15 +418,12 @@ bool gt_CreateTumorQueen_Func (bool testConds, bool runActions) {
     // Variable Declarations
     unitgroup lv_creeptumor_Queen_Group;
     int lv_intA;
-
     // Variable Initialization
     lv_creeptumor_Queen_Group = UnitGroup("QueenCoop", gv_pLAYER_03_ENEMY, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     UnitGroupLoopBegin(lv_creeptumor_Queen_Group);
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         gv_tumorQueen_Array[lv_intA] = UnitGroupLoopCurrent();
@@ -586,13 +433,11 @@ bool gt_CreateTumorQueen_Func (bool testConds, bool runActions) {
     UnitGroupLoopEnd();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_CreateTumorQueen_Init () {
     gt_CreateTumorQueen = TriggerCreate("gt_CreateTumorQueen_Func");
     TriggerAddEventMapInit(gt_CreateTumorQueen);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aiur UPGRADE 1
 //--------------------------------------------------------------------------------------------------
@@ -601,7 +446,6 @@ bool gt_AiurUPGRADE1_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "VoidZealotShadowCharge", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "VoidZealotWhirlwind", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossAirWeaponsLevel1", 1);
@@ -609,12 +453,10 @@ bool gt_AiurUPGRADE1_Func (bool testConds, bool runActions) {
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossGroundWeaponsLevel1", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AiurUPGRADE1_Init () {
     gt_AiurUPGRADE1 = TriggerCreate("gt_AiurUPGRADE1_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aiur UPGRADE 2
 //--------------------------------------------------------------------------------------------------
@@ -623,17 +465,14 @@ bool gt_AiurUPGRADE2_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossShieldsLevel1", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossGroundArmorsLevel1", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AiurUPGRADE2_Init () {
     gt_AiurUPGRADE2 = TriggerCreate("gt_AiurUPGRADE2_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aiur UPGRADE 3
 //--------------------------------------------------------------------------------------------------
@@ -642,18 +481,15 @@ bool gt_AiurUPGRADE3_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "HiddenProtossAirWeaponsLevel2", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossAirWeaponsLevel2", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossGroundWeaponsLevel2", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AiurUPGRADE3_Init () {
     gt_AiurUPGRADE3 = TriggerCreate("gt_AiurUPGRADE3_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aiur UPGRADE 4
 //--------------------------------------------------------------------------------------------------
@@ -662,17 +498,14 @@ bool gt_AiurUPGRADE4_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossShieldsLevel2", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossGroundArmorsLevel2", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AiurUPGRADE4_Init () {
     gt_AiurUPGRADE4 = TriggerCreate("gt_AiurUPGRADE4_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aiur UPGRADE 5
 //--------------------------------------------------------------------------------------------------
@@ -681,18 +514,15 @@ bool gt_AiurUPGRADE5_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossAirWeaponsLevel3", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "HiddenProtossAirWeaponsLevel3", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossGroundWeaponsLevel3", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AiurUPGRADE5_Init () {
     gt_AiurUPGRADE5 = TriggerCreate("gt_AiurUPGRADE5_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aiur UPGRADE 6
 //--------------------------------------------------------------------------------------------------
@@ -701,37 +531,30 @@ bool gt_AiurUPGRADE6_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossShieldsLevel3", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_aiur, "ProtossGroundArmorsLevel3", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AiurUPGRADE6_Init () {
     gt_AiurUPGRADE6 = TriggerCreate("gt_AiurUPGRADE6_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_left 1
 //--------------------------------------------------------------------------------------------------
 bool gt_Reinf_left1_Func (bool testConds, bool runActions) {
     int auto271B056C_ae;
     int auto271B056C_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1463419626)) == true) && (UnitIsAlive(UnitFromId(743881928)) == true)) {
         lv_loc = PointFromId(1612437240);
     }
@@ -749,34 +572,28 @@ bool gt_Reinf_left1_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_left1_Init () {
     gt_Reinf_left1 = TriggerCreate("gt_Reinf_left1_Func");
     TriggerEnable(gt_Reinf_left1, false);
     TriggerAddEventTimeElapsed(gt_Reinf_left1, (360 + RandomInt(-20, 20)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_right 1
 //--------------------------------------------------------------------------------------------------
 bool gt_Reinf_right1_Func (bool testConds, bool runActions) {
     int auto331A66D3_ae;
     int auto331A66D3_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1399493320)) == true) && (UnitIsAlive(UnitFromId(1037642355)) == true)) {
         lv_loc = PointFromId(884139750);
     }
@@ -794,34 +611,28 @@ bool gt_Reinf_right1_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_right1_Init () {
     gt_Reinf_right1 = TriggerCreate("gt_Reinf_right1_Func");
     TriggerEnable(gt_Reinf_right1, false);
     TriggerAddEventTimeElapsed(gt_Reinf_right1, (360 + RandomInt(-20, 20)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_front 1
 //--------------------------------------------------------------------------------------------------
 bool gt_Reinf_front1_Func (bool testConds, bool runActions) {
     int auto1AE19E9B_ae;
     int auto1AE19E9B_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1905587400)) == true) && (UnitIsAlive(UnitFromId(717216778)) == true)) {
         lv_loc = PointFromId(2062624615);
     }
@@ -839,14 +650,12 @@ bool gt_Reinf_front1_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_front1_Init () {
     gt_Reinf_front1 = TriggerCreate("gt_Reinf_front1_Func");
     TriggerEnable(gt_Reinf_front1, false);
     TriggerAddEventTimeElapsed(gt_Reinf_front1, (360 + RandomInt(-20, 20)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_left 2
 //--------------------------------------------------------------------------------------------------
@@ -855,20 +664,16 @@ bool gt_Reinf_left2_Func (bool testConds, bool runActions) {
     int auto9E2DF276_ai;
     int auto4B408D28_ae;
     int auto4B408D28_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1463419626)) == true) && (UnitIsAlive(UnitFromId(743881928)) == true)) {
         lv_loc = PointFromId(1612437240);
     }
@@ -893,13 +698,11 @@ bool gt_Reinf_left2_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_left2_Init () {
     gt_Reinf_left2 = TriggerCreate("gt_Reinf_left2_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_left2, (440 + RandomInt(-20, 20)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_right 2
 //--------------------------------------------------------------------------------------------------
@@ -908,20 +711,16 @@ bool gt_Reinf_right2_Func (bool testConds, bool runActions) {
     int auto814FD473_ai;
     int auto2EFF60D8_ae;
     int auto2EFF60D8_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1399493320)) == true) && (UnitIsAlive(UnitFromId(1037642355)) == true)) {
         lv_loc = PointFromId(884139750);
     }
@@ -946,13 +745,11 @@ bool gt_Reinf_right2_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_right2_Init () {
     gt_Reinf_right2 = TriggerCreate("gt_Reinf_right2_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_right2, (440 + RandomInt(-20, 20)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_front 2
 //--------------------------------------------------------------------------------------------------
@@ -961,20 +758,16 @@ bool gt_Reinf_front2_Func (bool testConds, bool runActions) {
     int autoA6414A06_ai;
     int auto2A7EA674_ae;
     int auto2A7EA674_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1905587400)) == true) && (UnitIsAlive(UnitFromId(717216778)) == true)) {
         lv_loc = PointFromId(2062624615);
     }
@@ -999,33 +792,27 @@ bool gt_Reinf_front2_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_front2_Init () {
     gt_Reinf_front2 = TriggerCreate("gt_Reinf_front2_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_front2, (440 + RandomInt(-20, 20)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_front 3 boss 1
 //--------------------------------------------------------------------------------------------------
 bool gt_Reinf_front3boss1_Func (bool testConds, bool runActions) {
     int auto5B734EAF_ae;
     int auto5B734EAF_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1905587400)) == true) && (UnitIsAlive(UnitFromId(717216778)) == true)) {
         lv_loc = PointFromId(2062624615);
     }
@@ -1048,13 +835,11 @@ bool gt_Reinf_front3boss1_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendTransmissionCampaignPlaceHolder(UnitFromId(349), "ArtanisPortrait", StringExternal("Param/Value/AD172536"), StringExternal("Param/Value/08C9A7DB"), 5.0, false, libCOMI_ge_MissionTransmissionPortraitOptioins_HidePortraitAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_front3boss1_Init () {
     gt_Reinf_front3boss1 = TriggerCreate("gt_Reinf_front3boss1_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_front3boss1, (650 + RandomInt(-20, 20)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_left 4
 //--------------------------------------------------------------------------------------------------
@@ -1069,20 +854,16 @@ bool gt_Reinf_left4_Func (bool testConds, bool runActions) {
     int autoB6408045_ai;
     int auto852B0D46_ae;
     int auto852B0D46_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1463419626)) == true) && (UnitIsAlive(UnitFromId(743881928)) == true)) {
         lv_loc = PointFromId(1612437240);
     }
@@ -1128,13 +909,11 @@ bool gt_Reinf_left4_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_left4_Init () {
     gt_Reinf_left4 = TriggerCreate("gt_Reinf_left4_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_left4, (900 + RandomInt(-20, 20)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_right 4
 //--------------------------------------------------------------------------------------------------
@@ -1149,20 +928,16 @@ bool gt_Reinf_right4_Func (bool testConds, bool runActions) {
     int auto773DC9EF_ai;
     int auto822696FF_ae;
     int auto822696FF_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1399493320)) == true) && (UnitIsAlive(UnitFromId(1037642355)) == true)) {
         lv_loc = PointFromId(884139750);
     }
@@ -1208,13 +983,11 @@ bool gt_Reinf_right4_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_right4_Init () {
     gt_Reinf_right4 = TriggerCreate("gt_Reinf_right4_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_right4, (900 + RandomInt(-20, 20)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_front 4
 //--------------------------------------------------------------------------------------------------
@@ -1229,20 +1002,16 @@ bool gt_Reinf_front4_Func (bool testConds, bool runActions) {
     int auto7643ECC4_ai;
     int auto9E188D06_ae;
     int auto9E188D06_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1905587400)) == true) && (UnitIsAlive(UnitFromId(717216778)) == true)) {
         lv_loc = PointFromId(2062624615);
     }
@@ -1288,33 +1057,27 @@ bool gt_Reinf_front4_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_front4_Init () {
     gt_Reinf_front4 = TriggerCreate("gt_Reinf_front4_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_front4, (900 + RandomInt(-20, 20)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_front 5 boss 2
 //--------------------------------------------------------------------------------------------------
 bool gt_Reinf_front5boss2_Func (bool testConds, bool runActions) {
     int autoB14AD16A_ae;
     int autoB14AD16A_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1905587400)) == true) && (UnitIsAlive(UnitFromId(717216778)) == true)) {
         lv_loc = PointFromId(2062624615);
     }
@@ -1338,45 +1101,37 @@ bool gt_Reinf_front5boss2_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendTransmissionCampaignPlaceHolder(UnitFromId(349), "ArtanisPortrait", StringExternal("Param/Value/A321EB05"), StringExternal("Param/Value/799D4D26"), 5.0, false, libCOMI_ge_MissionTransmissionPortraitOptioins_HidePortraitAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_front5boss2_Init () {
     gt_Reinf_front5boss2 = TriggerCreate("gt_Reinf_front5boss2_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_front5boss2, (1180 + RandomInt(0, 0)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: UrunSquad_Patrol
 //--------------------------------------------------------------------------------------------------
 bool gt_UrunSquad_Patrol_Func (bool testConds, bool runActions) {
     unitgroup auto2DAD8BB8_g;
     int auto2DAD8BB8_u;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
     unit lv_u;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Conditions
     if (testConds) {
         if (!(((UnitGetType(EventUnit()) == "Mutalisk") || (UnitGetType(EventUnit()) == "GuardianMP") || (UnitGetType(EventUnit()) == "BroodLord")))) {
             return false;
         }
-
         if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_03_ENEMY))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1905587400)) == true) && (UnitIsAlive(UnitFromId(717216778)) == true)) {
         lv_loc = PointFromId(2062624615);
     }
@@ -1395,7 +1150,6 @@ bool gt_UrunSquad_Patrol_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_UrunSquad_Patrol, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_UrunSquad_Patrol_Init () {
     gt_UrunSquad_Patrol = TriggerCreate("gt_UrunSquad_Patrol_Func");
@@ -1403,7 +1157,6 @@ void gt_UrunSquad_Patrol_Init () {
     TriggerAddEventUnitRegion(gt_UrunSquad_Patrol, null, RegionFromId(2), true);
     TriggerAddEventUnitRegion(gt_UrunSquad_Patrol, null, RegionFromId(5), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_left 6
 //--------------------------------------------------------------------------------------------------
@@ -1418,20 +1171,16 @@ bool gt_Reinf_left6_Func (bool testConds, bool runActions) {
     int auto7F5EA49D_ai;
     int autoE82D09D9_ae;
     int autoE82D09D9_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1463419626)) == true) && (UnitIsAlive(UnitFromId(743881928)) == true)) {
         lv_loc = PointFromId(1612437240);
     }
@@ -1477,13 +1226,11 @@ bool gt_Reinf_left6_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_left6_Init () {
     gt_Reinf_left6 = TriggerCreate("gt_Reinf_left6_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_left6, (1260 + RandomInt(0, 0)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_right 6
 //--------------------------------------------------------------------------------------------------
@@ -1498,20 +1245,16 @@ bool gt_Reinf_right6_Func (bool testConds, bool runActions) {
     int auto4C1EC80E_ai;
     int auto8B53313F_ae;
     int auto8B53313F_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1399493320)) == true) && (UnitIsAlive(UnitFromId(1037642355)) == true)) {
         lv_loc = PointFromId(884139750);
     }
@@ -1557,13 +1300,11 @@ bool gt_Reinf_right6_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_right6_Init () {
     gt_Reinf_right6 = TriggerCreate("gt_Reinf_right6_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_right6, (1270 + RandomInt(0, 0)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_front 6
 //--------------------------------------------------------------------------------------------------
@@ -1578,20 +1319,16 @@ bool gt_Reinf_front6_Func (bool testConds, bool runActions) {
     int auto606756CA_ai;
     int autoD3ABDE5C_ae;
     int autoD3ABDE5C_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1905587400)) == true) && (UnitIsAlive(UnitFromId(717216778)) == true)) {
         lv_loc = PointFromId(2062624615);
     }
@@ -1637,33 +1374,27 @@ bool gt_Reinf_front6_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), lv_loc), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_front6_Init () {
     gt_Reinf_front6 = TriggerCreate("gt_Reinf_front6_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_front6, (1250 + RandomInt(0, 0)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinf_front last boss
 //--------------------------------------------------------------------------------------------------
 bool gt_Reinf_frontlastboss_Func (bool testConds, bool runActions) {
     int auto309DD9A5_ae;
     int auto309DD9A5_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
     point lv_loc;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(UnitFromId(1905587400)) == true) && (UnitIsAlive(UnitFromId(717216778)) == true)) {
         lv_loc = PointFromId(2062624615);
     }
@@ -1689,13 +1420,11 @@ bool gt_Reinf_frontlastboss_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendTransmissionCampaignPlaceHolder(UnitFromId(349), "HighTemplarPortrait", StringExternal("Param/Value/E6F6552E"), StringExternal("Param/Value/250177D2"), 5.0, true, libCOMI_ge_MissionTransmissionPortraitOptioins_HidePortraitAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Reinf_frontlastboss_Init () {
     gt_Reinf_frontlastboss = TriggerCreate("gt_Reinf_frontlastboss_Func");
     TriggerAddEventTimeElapsed(gt_Reinf_frontlastboss, (1390 + RandomInt(0, 0)), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Templar Gen
 //--------------------------------------------------------------------------------------------------
@@ -1706,20 +1435,16 @@ bool gt_TemplarGen_Func (bool testConds, bool runActions) {
     int autoCE8D2905_u;
     unitgroup auto7FC59E06_g;
     int auto7FC59E06_u;
-
     // Variable Declarations
     int lv_intA;
     unitgroup lv_group;
     unit lv_u;
-
     // Variable Initialization
     lv_group = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv_archonMergeLoc[1] = PointFromId(1662835249);
     gv_archonMergeLoc[2] = PointFromId(1728851977);
     gv_archonMergeLoc[3] = PointFromId(93378261);
@@ -1777,12 +1502,10 @@ bool gt_TemplarGen_Func (bool testConds, bool runActions) {
     UnitIssueOrder(gv_archon, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(2062624615)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_TemplarGen_Init () {
     gt_TemplarGen = TriggerCreate("gt_TemplarGen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Templar die
 //--------------------------------------------------------------------------------------------------
@@ -1793,23 +1516,19 @@ bool gt_Templardie_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv_templars = (gv_templars - 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Templardie_Init () {
     gt_Templardie = TriggerCreate("gt_Templardie_Func");
     TriggerEnable(gt_Templardie, false);
     TriggerAddEventUnitDied(gt_Templardie, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Archon Generate
 //--------------------------------------------------------------------------------------------------
@@ -1818,36 +1537,30 @@ bool gt_ArchonGenerate_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     gv_archon_Energe = (gv_archon_Energe + (gv_templars * 30));
     gv_shieldRate = UnitGetPropertyFixed(gv_archon, c_unitPropShieldsPercent, c_unitPropCurrent);
     UnitSetPropertyFixed(gv_archon, c_unitPropShields, gv_archon_Energe);
     UnitSetScale(gv_archon, (100.0 + (gv_shieldRate * 2.0)), (100.0 + (gv_shieldRate * 2.0)), (100.0 + (gv_shieldRate * 2.0)));
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ArchonGenerate_Init () {
     gt_ArchonGenerate = TriggerCreate("gt_ArchonGenerate_Func");
     TriggerEnable(gt_ArchonGenerate, false);
     TriggerAddEventTimePeriodic(gt_ArchonGenerate, 1.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinforcement Tank
 //--------------------------------------------------------------------------------------------------
 bool gt_ReinforcementTank_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_roll;
-
     // Variable Initialization
     lv_roll = RandomInt(0, 3);
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((lv_roll == 0)) {
         libNtve_gf_UnitCreateFacingPoint(9, "Zealot", 0, gv_aiur, EventUnitTargetPoint(), RegionRandomPoint(RegionPlayableMap()));
     }
@@ -1863,35 +1576,29 @@ bool gt_ReinforcementTank_Func (bool testConds, bool runActions) {
                 if ((lv_roll == 3)) {
                     libNtve_gf_UnitCreateFacingPoint(9, "Zealot", 0, gv_aiur, EventUnitTargetPoint(), RegionRandomPoint(RegionPlayableMap()));
                 }
-
             }
         }
     }
     libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), EventUnitTargetPoint());
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ReinforcementTank_Init () {
     gt_ReinforcementTank = TriggerCreate("gt_ReinforcementTank_Func");
     TriggerAddEventUnitAbility(gt_ReinforcementTank, null, AbilityCommand("reinf_small_melee", 0), c_unitAbilStageComplete, false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinforcement Ranged
 //--------------------------------------------------------------------------------------------------
 bool gt_ReinforcementRanged_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_roll;
-
     // Variable Initialization
     lv_roll = RandomInt(0, 4);
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((lv_roll == 0)) {
         libNtve_gf_UnitCreateFacingPoint(5, "Stalker", 0, gv_aiur, EventUnitTargetPoint(), RegionRandomPoint(RegionPlayableMap()));
     }
@@ -1907,35 +1614,29 @@ bool gt_ReinforcementRanged_Func (bool testConds, bool runActions) {
                 if ((lv_roll == 3)) {
                     libNtve_gf_UnitCreateFacingPoint(5, "Stalker", 0, gv_aiur, EventUnitTargetPoint(), RegionRandomPoint(RegionPlayableMap()));
                 }
-
             }
         }
     }
     libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), EventUnitTargetPoint());
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ReinforcementRanged_Init () {
     gt_ReinforcementRanged = TriggerCreate("gt_ReinforcementRanged_Func");
     TriggerAddEventUnitAbility(gt_ReinforcementRanged, null, AbilityCommand("reinf_small_melee2", 0), c_unitAbilStageComplete, false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Reinforcement Air
 //--------------------------------------------------------------------------------------------------
 bool gt_ReinforcementAir_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_roll;
-
     // Variable Initialization
     lv_roll = RandomInt(0, 4);
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((lv_roll == 0)) {
         libNtve_gf_UnitCreateFacingPoint(4, "Phoenix", 0, gv_aiur, EventUnitTargetPoint(), RegionRandomPoint(RegionPlayableMap()));
     }
@@ -1955,7 +1656,6 @@ bool gt_ReinforcementAir_Func (bool testConds, bool runActions) {
                     if ((lv_roll == 4)) {
                         libNtve_gf_UnitCreateFacingPoint(3, "Scout", 0, gv_aiur, EventUnitTargetPoint(), RegionRandomPoint(RegionPlayableMap()));
                     }
-
                 }
             }
         }
@@ -1963,13 +1663,11 @@ bool gt_ReinforcementAir_Func (bool testConds, bool runActions) {
     libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), EventUnitTargetPoint());
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ReinforcementAir_Init () {
     gt_ReinforcementAir = TriggerCreate("gt_ReinforcementAir_Func");
     TriggerAddEventUnitAbility(gt_ReinforcementAir, null, AbilityCommand("reinf_small_melee22", 0), c_unitAbilStageComplete, false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Main gate destruction
 //--------------------------------------------------------------------------------------------------
@@ -1978,17 +1676,14 @@ bool gt_Maingatedestruction_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     UnitKill(UnitFromId(124398178));
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Maingatedestruction_Init () {
     gt_Maingatedestruction = TriggerCreate("gt_Maingatedestruction_Func");
     TriggerAddEventUnitDied(gt_Maingatedestruction, UnitRefFromUnit(UnitFromId(1411453183)));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: COOP ATTACK
 //--------------------------------------------------------------------------------------------------
@@ -1999,36 +1694,29 @@ bool gt_COOPATTACK_Func (bool testConds, bool runActions) {
     int auto79FD7D4B_u;
     unitgroup autoA2443745_g;
     int autoA2443745_u;
-
     // Variable Declarations
     unitgroup lv_group;
     point lv_loc;
     int lv_intA;
     unit lv_unit;
-
     // Variable Initialization
     lv_group = UnitGroupEmpty();
-
     // Conditions
     if (testConds) {
         if (!((UnitGetOwner(EventUnit()) == gv_aiur))) {
             return false;
         }
-
         if (!((UnitGetOwner(EventUnitDamageSourceUnit()) == gv_pLAYER_03_ENEMY))) {
             return false;
         }
-
         if (!((UnitGetCustomValue(EventUnit(), 0) == 0.0))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_group = UnitGroupSearch(null, EventPlayer(), UnitGetPosition(EventUnit()), 15.0, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     auto5D9BF859_g = lv_group;
     auto5D9BF859_u = 1;
@@ -2037,7 +1725,6 @@ bool gt_COOPATTACK_Func (bool testConds, bool runActions) {
         if (((UnitGetOwner(lv_unit) == gv_pLAYER_03_ENEMY) || (UnitGetCustomValue(lv_unit, 0) == 2.0) || (UnitGetCustomValue(lv_unit, 0) == 1.0) || (UnitGetOwner(lv_unit) != gv_aiur) || (UnitGetType(lv_unit) == "HyperArchon") || (UnitGetType(lv_unit) == "HighArchonTemplar") || ((CliffLevel(UnitGetPosition(lv_unit)) == 3) && (UnitWeaponRange(lv_unit, 1) > 4.0)))) {
             UnitGroupRemove(lv_group, lv_unit);
         }
-
     }
     auto79FD7D4B_g = lv_group;
     auto79FD7D4B_u = 1;
@@ -2057,13 +1744,11 @@ bool gt_COOPATTACK_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_COOPATTACK_Init () {
     gt_COOPATTACK = TriggerCreate("gt_COOPATTACK_Func");
     TriggerAddEventUnitDamaged(gt_COOPATTACK, null, c_unitDamageTypeAny, c_unitDamageEither, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: protoss init
 //--------------------------------------------------------------------------------------------------
@@ -2072,20 +1757,16 @@ bool gt_protossinit_Func (bool testConds, bool runActions) {
     int auto0A8C22E5_ai;
     int auto1A01E201_ae;
     int auto1A01E201_ai;
-
     // Variable Declarations
     unitgroup lv_group;
     int lv_intA;
     unit lv_unit;
-
     // Variable Initialization
     lv_group = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     UnitGroupAdd(lv_group, UnitFromId(1716051855));
     UnitGroupAdd(lv_group, UnitFromId(2143140456));
     UnitGroupAdd(lv_group, UnitFromId(551227743));
@@ -2128,13 +1809,11 @@ bool gt_protossinit_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_protossinit_Init () {
     gt_protossinit = TriggerCreate("gt_protossinit_Func");
     TriggerAddEventMapInit(gt_protossinit);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: TroopSet
 //--------------------------------------------------------------------------------------------------
@@ -2143,18 +1822,14 @@ bool gt_TroopSet_Func (bool testConds, bool runActions) {
     int auto7F2D52D3_ai;
     unitgroup auto797291C4_g;
     int auto797291C4_u;
-
     // Variable Declarations
     int lv_intA;
     unit lv_unit;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv_aiurTroop_front[0] = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", c_playerAny, -1, RegionFromId(23), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv_aiurTroop_front[1] = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", c_playerAny, -1, RegionFromId(24), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv_aiurTroop_front[2] = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", c_playerAny, -1, RegionFromId(1), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
@@ -2169,17 +1844,14 @@ bool gt_TroopSet_Func (bool testConds, bool runActions) {
             if (((UnitGetOwner(lv_unit) != gv_aiur) || ((CliffLevel(UnitGetPosition(lv_unit)) == 3) && (UnitWeaponRange(lv_unit, 1) > 4.0)))) {
                 UnitGroupRemove(gv_aiurTroop_front[lv_intA], lv_unit);
             }
-
         }
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_TroopSet_Init () {
     gt_TroopSet = TriggerCreate("gt_TroopSet_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: TroopAddUnit
 //--------------------------------------------------------------------------------------------------
@@ -2187,31 +1859,25 @@ bool gt_TroopAddUnit_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_intA;
     unit lv_unit;
-
     // Variable Initialization
-
     // Conditions
     if (testConds) {
         if (!((UnitGetOwner(EventUnit()) == gv_aiur))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     UnitGroupAdd(gv_aiurTroop_front[0], EventUnit());
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_TroopAddUnit_Init () {
     gt_TroopAddUnit = TriggerCreate("gt_TroopAddUnit_Func");
     TriggerAddEventUnitRegion(gt_TroopAddUnit, null, RegionFromId(21), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: TroopAddUnit 2
 //--------------------------------------------------------------------------------------------------
@@ -2219,31 +1885,25 @@ bool gt_TroopAddUnit2_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_intA;
     unit lv_unit;
-
     // Variable Initialization
-
     // Conditions
     if (testConds) {
         if (!((UnitGetOwner(EventUnit()) == gv_aiur))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     UnitGroupAdd(gv_aiurTroop_front[1], EventUnit());
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_TroopAddUnit2_Init () {
     gt_TroopAddUnit2 = TriggerCreate("gt_TroopAddUnit2_Func");
     TriggerAddEventUnitRegion(gt_TroopAddUnit2, null, RegionFromId(20), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: TroopAddUnit 3
 //--------------------------------------------------------------------------------------------------
@@ -2251,31 +1911,25 @@ bool gt_TroopAddUnit3_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_intA;
     unit lv_unit;
-
     // Variable Initialization
-
     // Conditions
     if (testConds) {
         if (!((UnitGetOwner(EventUnit()) == gv_aiur))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     UnitGroupAdd(gv_aiurTroop_front[0], EventUnit());
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_TroopAddUnit3_Init () {
     gt_TroopAddUnit3 = TriggerCreate("gt_TroopAddUnit3_Func");
     TriggerAddEventUnitRegion(gt_TroopAddUnit3, null, RegionFromId(22), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Retreat Off
 //--------------------------------------------------------------------------------------------------
@@ -2284,18 +1938,15 @@ bool gt_RetreatOff_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(gt_Rf, false);
     TriggerEnable(gt_Rf2, false);
     TriggerEnable(gt_Rf3, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_RetreatOff_Init () {
     gt_RetreatOff = TriggerCreate("gt_RetreatOff_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Retreat On
 //--------------------------------------------------------------------------------------------------
@@ -2304,18 +1955,15 @@ bool gt_RetreatOn_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(gt_Rf, true);
     TriggerEnable(gt_Rf2, true);
     TriggerEnable(gt_Rf3, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_RetreatOn_Init () {
     gt_RetreatOn = TriggerCreate("gt_RetreatOn_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Rf
 //--------------------------------------------------------------------------------------------------
@@ -2324,28 +1972,23 @@ bool gt_Rf_Func (bool testConds, bool runActions) {
     int auto320EEAED_u;
     unitgroup autoD7BA92A7_g;
     int autoD7BA92A7_u;
-
     // Variable Declarations
     unitgroup lv_group;
     point lv_loc;
     int lv_intA;
     unit lv_unit;
-
     // Variable Initialization
     lv_group = UnitGroupEmpty();
-
     // Conditions
     if (testConds) {
         if (!((UnitGetOwner(EventUnit()) == gv_aiur))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_group = UnitGroupSearch(null, EventPlayer(), UnitGetPosition(EventUnit()), 15.0, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     auto320EEAED_g = lv_group;
     auto320EEAED_u = 1;
@@ -2354,7 +1997,6 @@ bool gt_Rf_Func (bool testConds, bool runActions) {
         if (((UnitGetOwner(lv_unit) != gv_aiur) || ((CliffLevel(UnitGetPosition(lv_unit)) == 3) && (UnitWeaponRange(lv_unit, 1) > 4.0)))) {
             UnitGroupRemove(lv_group, lv_unit);
         }
-
     }
     autoD7BA92A7_g = lv_group;
     autoD7BA92A7_u = 1;
@@ -2364,13 +2006,11 @@ bool gt_Rf_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Rf_Init () {
     gt_Rf = TriggerCreate("gt_Rf_Func");
     TriggerAddEventUnitRegion(gt_Rf, null, RegionFromId(22), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Rf 2
 //--------------------------------------------------------------------------------------------------
@@ -2379,28 +2019,23 @@ bool gt_Rf2_Func (bool testConds, bool runActions) {
     int autoEA1B4030_u;
     unitgroup auto376D6ACB_g;
     int auto376D6ACB_u;
-
     // Variable Declarations
     unitgroup lv_group;
     point lv_loc;
     int lv_intA;
     unit lv_unit;
-
     // Variable Initialization
     lv_group = UnitGroupEmpty();
-
     // Conditions
     if (testConds) {
         if (!((UnitGetOwner(EventUnit()) == gv_aiur))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_group = UnitGroupSearch(null, EventPlayer(), UnitGetPosition(EventUnit()), 15.0, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     autoEA1B4030_g = lv_group;
     autoEA1B4030_u = 1;
@@ -2409,7 +2044,6 @@ bool gt_Rf2_Func (bool testConds, bool runActions) {
         if (((UnitGetOwner(lv_unit) != gv_aiur) || ((CliffLevel(UnitGetPosition(lv_unit)) == 3) && (UnitWeaponRange(lv_unit, 1) > 4.0)))) {
             UnitGroupRemove(lv_group, lv_unit);
         }
-
     }
     auto376D6ACB_g = lv_group;
     auto376D6ACB_u = 1;
@@ -2419,13 +2053,11 @@ bool gt_Rf2_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Rf2_Init () {
     gt_Rf2 = TriggerCreate("gt_Rf2_Func");
     TriggerAddEventUnitRegion(gt_Rf2, null, RegionFromId(20), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Rf 3
 //--------------------------------------------------------------------------------------------------
@@ -2434,28 +2066,23 @@ bool gt_Rf3_Func (bool testConds, bool runActions) {
     int autoCC012C82_u;
     unitgroup autoFFFDC578_g;
     int autoFFFDC578_u;
-
     // Variable Declarations
     unitgroup lv_group;
     point lv_loc;
     int lv_intA;
     unit lv_unit;
-
     // Variable Initialization
     lv_group = UnitGroupEmpty();
-
     // Conditions
     if (testConds) {
         if (!((UnitGetOwner(EventUnit()) == gv_aiur))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_group = UnitGroupSearch(null, EventPlayer(), UnitGetPosition(EventUnit()), 15.0, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     autoCC012C82_g = lv_group;
     autoCC012C82_u = 1;
@@ -2464,7 +2091,6 @@ bool gt_Rf3_Func (bool testConds, bool runActions) {
         if (((UnitGetOwner(lv_unit) != gv_aiur) || ((CliffLevel(UnitGetPosition(lv_unit)) == 3) && (UnitWeaponRange(lv_unit, 1) > 4.0)))) {
             UnitGroupRemove(lv_group, lv_unit);
         }
-
     }
     autoFFFDC578_g = lv_group;
     autoFFFDC578_u = 1;
@@ -2474,13 +2100,11 @@ bool gt_Rf3_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Rf3_Init () {
     gt_Rf3 = TriggerCreate("gt_Rf3_Func");
     TriggerAddEventUnitRegion(gt_Rf3, null, RegionFromId(21), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Zerg init
 //--------------------------------------------------------------------------------------------------
@@ -2489,7 +2113,6 @@ bool gt_Zerginit_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     gv_loc_Hill[1] = PointFromId(1089269429);
     gv_loc_Hill[2] = PointFromId(1699490987);
     gv_loc_Hill[3] = PointFromId(288332602);
@@ -2511,13 +2134,11 @@ bool gt_Zerginit_Func (bool testConds, bool runActions) {
     PlayerModifyPropertyInt(3, c_playerPropVespene, c_playerPropOperSetTo, 2000);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Zerginit_Init () {
     gt_Zerginit = TriggerCreate("gt_Zerginit_Func");
     TriggerAddEventMapInit(gt_Zerginit);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Fminer
 //--------------------------------------------------------------------------------------------------
@@ -2528,28 +2149,23 @@ bool gt_Fminer_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv_mineKill = (gv_mineKill + 1);
     if ((gv_mineKill > 60)) {
         libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "Stimpack2", 1);
         gv_bonusHunterK = (9 + 1);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Fminer_Init () {
     gt_Fminer = TriggerCreate("gt_Fminer_Func");
     TriggerEnable(gt_Fminer, false);
     TriggerAddEventUnitDied(gt_Fminer, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: ?????? ?????? ????????? 003
 //--------------------------------------------------------------------------------------------------
@@ -2558,7 +2174,6 @@ bool gt_ECA09CEBAAA9EC9786EB8A94ED8AB8EBA6ACEAB1B0003_Func (bool testConds, bool
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(2, "Zergling", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(18)), UnitGetPosition(UnitFromId(349)));
     libNtve_gf_UnitCreateFacingPoint(2, "HotSRaptor", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(16)), UnitGetPosition(UnitFromId(349)));
     libNtve_gf_UnitCreateFacingPoint(1, "Hunterling", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(16)), UnitGetPosition(UnitFromId(349)));
@@ -2576,25 +2191,21 @@ bool gt_ECA09CEBAAA9EC9786EB8A94ED8AB8EBA6ACEAB1B0003_Func (bool testConds, bool
     libNtve_gf_UnitCreateFacingPoint(1, "Queen", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(18)), UnitGetPosition(UnitFromId(349)));
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ECA09CEBAAA9EC9786EB8A94ED8AB8EBA6ACEAB1B0003_Init () {
     gt_ECA09CEBAAA9EC9786EB8A94ED8AB8EBA6ACEAB1B0003 = TriggerCreate("gt_ECA09CEBAAA9EC9786EB8A94ED8AB8EBA6ACEAB1B0003_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: ?????? ?????? ????????? 001
 //--------------------------------------------------------------------------------------------------
 bool gt_ECA09CEBAAA9EC9786EB8A94ED8AB8EBA6ACEAB1B0001_Func (bool testConds, bool runActions) {
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ECA09CEBAAA9EC9786EB8A94ED8AB8EBA6ACEAB1B0001_Init () {
     gt_ECA09CEBAAA9EC9786EB8A94ED8AB8EBA6ACEAB1B0001 = TriggerCreate("gt_ECA09CEBAAA9EC9786EB8A94ED8AB8EBA6ACEAB1B0001_Func");
     TriggerAddEventMapInit(gt_ECA09CEBAAA9EC9786EB8A94ED8AB8EBA6ACEAB1B0001);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Wave Starter
 //--------------------------------------------------------------------------------------------------
@@ -2603,7 +2214,6 @@ bool gt_WaveStarter_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     Wait(((60 * 3) + 0.0), c_timeGame);
     libCOMI_gf_SendTransmissionCampaignPlaceHolder(null, null, StringExternal("Param/Value/F22926DB"), StringExternal("Param/Value/5599D0B4"), 5.0, false, libCOMI_ge_MissionTransmissionPortraitOptioins_HidePortraitAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DontPlayCueSound);
     TriggerExecute(gt_AiurUPGRADE1, true, false);
@@ -2706,32 +2316,26 @@ bool gt_WaveStarter_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_wave_front11, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_WaveStarter_Init () {
     gt_WaveStarter = TriggerCreate("gt_WaveStarter_Func");
     TriggerAddEventMapInit(gt_WaveStarter);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_left 1
 //--------------------------------------------------------------------------------------------------
 bool gt_wave_left1_Func (bool testConds, bool runActions) {
     int auto1DF43253_ae;
     int auto1DF43253_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto1DF43253_ae = 5;
     auto1DF43253_ai = 1;
     lv_intA = 1;
@@ -2745,33 +2349,27 @@ bool gt_wave_left1_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_left1_Init () {
     gt_wave_left1 = TriggerCreate("gt_wave_left1_Func");
     TriggerEnable(gt_wave_left1, false);
     TriggerAddEventTimePeriodic(gt_wave_left1, 5.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_right 1
 //--------------------------------------------------------------------------------------------------
 bool gt_wave_right1_Func (bool testConds, bool runActions) {
     int auto08688A8C_ae;
     int auto08688A8C_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto08688A8C_ae = 5;
     auto08688A8C_ai = 1;
     lv_intA = 1;
@@ -2784,33 +2382,27 @@ bool gt_wave_right1_Func (bool testConds, bool runActions) {
     UnitGroupAddUnitGroup(gv_attackForce_Right, lv_attackForce);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_right1_Init () {
     gt_wave_right1 = TriggerCreate("gt_wave_right1_Func");
     TriggerEnable(gt_wave_right1, false);
     TriggerAddEventTimePeriodic(gt_wave_right1, 5.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_front 1
 //--------------------------------------------------------------------------------------------------
 bool gt_wave_front1_Func (bool testConds, bool runActions) {
     int autoDC6C2ABF_ae;
     int autoDC6C2ABF_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     autoDC6C2ABF_ae = 6;
     autoDC6C2ABF_ai = 1;
     lv_intA = 1;
@@ -2823,14 +2415,12 @@ bool gt_wave_front1_Func (bool testConds, bool runActions) {
     UnitGroupAddUnitGroup(gv_attackForce_Front, lv_attackForce);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_front1_Init () {
     gt_wave_front1 = TriggerCreate("gt_wave_front1_Func");
     TriggerEnable(gt_wave_front1, false);
     TriggerAddEventTimePeriodic(gt_wave_front1, 5.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_left 2
 //--------------------------------------------------------------------------------------------------
@@ -2839,19 +2429,15 @@ bool gt_wave_left2_Func (bool testConds, bool runActions) {
     int auto9750D1AA_ai;
     int autoBC5851DB_ae;
     int autoBC5851DB_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto9750D1AA_ae = 2;
     auto9750D1AA_ai = 1;
     lv_intA = 1;
@@ -2875,14 +2461,12 @@ bool gt_wave_left2_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_left2_Init () {
     gt_wave_left2 = TriggerCreate("gt_wave_left2_Func");
     TriggerEnable(gt_wave_left2, false);
     TriggerAddEventTimePeriodic(gt_wave_left2, 5.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_right 2
 //--------------------------------------------------------------------------------------------------
@@ -2891,19 +2475,15 @@ bool gt_wave_right2_Func (bool testConds, bool runActions) {
     int auto4DBCB8E0_ai;
     int autoF96077CD_ae;
     int autoF96077CD_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto4DBCB8E0_ae = 2;
     auto4DBCB8E0_ai = 1;
     lv_intA = 1;
@@ -2927,33 +2507,27 @@ bool gt_wave_right2_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_right2_Init () {
     gt_wave_right2 = TriggerCreate("gt_wave_right2_Func");
     TriggerEnable(gt_wave_right2, false);
     TriggerAddEventTimePeriodic(gt_wave_right2, 5.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_front 2
 //--------------------------------------------------------------------------------------------------
 bool gt_wave_front2_Func (bool testConds, bool runActions) {
     int auto81815BFE_ae;
     int auto81815BFE_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto81815BFE_ae = 4;
     auto81815BFE_ai = 1;
     lv_intA = 1;
@@ -2971,14 +2545,12 @@ bool gt_wave_front2_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_front2_Init () {
     gt_wave_front2 = TriggerCreate("gt_wave_front2_Func");
     TriggerEnable(gt_wave_front2, false);
     TriggerAddEventTimePeriodic(gt_wave_front2, 5.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_left 3
 //--------------------------------------------------------------------------------------------------
@@ -2987,19 +2559,15 @@ bool gt_wave_left3_Func (bool testConds, bool runActions) {
     int auto87DB5032_ai;
     int auto929880FF_ae;
     int auto929880FF_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto87DB5032_ae = 2;
     auto87DB5032_ai = 1;
     lv_intA = 1;
@@ -3030,14 +2598,12 @@ bool gt_wave_left3_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_left3_Init () {
     gt_wave_left3 = TriggerCreate("gt_wave_left3_Func");
     TriggerEnable(gt_wave_left3, false);
     TriggerAddEventTimePeriodic(gt_wave_left3, 5.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_right 3
 //--------------------------------------------------------------------------------------------------
@@ -3046,19 +2612,15 @@ bool gt_wave_right3_Func (bool testConds, bool runActions) {
     int auto99A84AC2_ai;
     int auto9177CBB2_ae;
     int auto9177CBB2_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto99A84AC2_ae = 2;
     auto99A84AC2_ai = 1;
     lv_intA = 1;
@@ -3089,14 +2651,12 @@ bool gt_wave_right3_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_right3_Init () {
     gt_wave_right3 = TriggerCreate("gt_wave_right3_Func");
     TriggerEnable(gt_wave_right3, false);
     TriggerAddEventTimePeriodic(gt_wave_right3, 5.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_front 3
 //--------------------------------------------------------------------------------------------------
@@ -3107,19 +2667,15 @@ bool gt_wave_front3_Func (bool testConds, bool runActions) {
     int autoB03F85AF_ai;
     int autoA11664A8_ae;
     int autoA11664A8_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto292D6478_ae = 2;
     auto292D6478_ai = 1;
     lv_intA = 1;
@@ -3156,20 +2712,17 @@ bool gt_wave_front3_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_front3_Init () {
     gt_wave_front3 = TriggerCreate("gt_wave_front3_Func");
     TriggerEnable(gt_wave_front3, false);
     TriggerAddEventTimePeriodic(gt_wave_front3, 5.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_Boss_front 4
 //--------------------------------------------------------------------------------------------------
 bool gt_wave_Boss_front4_Func (bool testConds, bool runActions) {
     int init_i;
-
     int auto6B150600_ae;
     int auto6B150600_ai;
     int auto149C0E67_ae;
@@ -3180,21 +2733,17 @@ bool gt_wave_Boss_front4_Func (bool testConds, bool runActions) {
     int autoBFC83E57_ai;
     int auto5BFA4842_ae;
     int auto5BFA4842_ai;
-
     // Variable Declarations
     unitgroup[4] lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     for (init_i = 0; init_i <= 3; init_i += 1) {
         lv_attackForce[init_i] = UnitGroupEmpty();
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto6B150600_ae = 14;
     auto6B150600_ai = 1;
     lv_intA = 1;
@@ -3238,13 +2787,11 @@ bool gt_wave_Boss_front4_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_Kraith_gen, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_Boss_front4_Init () {
     gt_wave_Boss_front4 = TriggerCreate("gt_wave_Boss_front4_Func");
     TriggerEnable(gt_wave_Boss_front4, false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_left 5
 //--------------------------------------------------------------------------------------------------
@@ -3255,19 +2802,15 @@ bool gt_wave_left5_Func (bool testConds, bool runActions) {
     int auto8E1C2BE7_ai;
     int autoCE31BFA0_ae;
     int autoCE31BFA0_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto32490643_ae = 12;
     auto32490643_ai = 1;
     lv_intA = 1;
@@ -3304,14 +2847,12 @@ bool gt_wave_left5_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_left5_Init () {
     gt_wave_left5 = TriggerCreate("gt_wave_left5_Func");
     TriggerEnable(gt_wave_left5, false);
     TriggerAddEventTimePeriodic(gt_wave_left5, 10.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_right 5
 //--------------------------------------------------------------------------------------------------
@@ -3322,19 +2863,15 @@ bool gt_wave_right5_Func (bool testConds, bool runActions) {
     int auto00801A7A_ai;
     int autoA802B564_ae;
     int autoA802B564_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto6F53B38F_ae = 12;
     auto6F53B38F_ai = 1;
     lv_intA = 1;
@@ -3371,14 +2908,12 @@ bool gt_wave_right5_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_right5_Init () {
     gt_wave_right5 = TriggerCreate("gt_wave_right5_Func");
     TriggerEnable(gt_wave_right5, false);
     TriggerAddEventTimePeriodic(gt_wave_right5, 10.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_front 5
 //--------------------------------------------------------------------------------------------------
@@ -3391,19 +2926,15 @@ bool gt_wave_front5_Func (bool testConds, bool runActions) {
     int auto4B320447_ai;
     int autoE77CBD43_ae;
     int autoE77CBD43_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto27DD89BE_ae = 12;
     auto27DD89BE_ai = 1;
     lv_intA = 1;
@@ -3446,14 +2977,12 @@ bool gt_wave_front5_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_front5_Init () {
     gt_wave_front5 = TriggerCreate("gt_wave_front5_Func");
     TriggerEnable(gt_wave_front5, false);
     TriggerAddEventTimePeriodic(gt_wave_front5, 10.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_Boss_front 6
 //--------------------------------------------------------------------------------------------------
@@ -3466,19 +2995,15 @@ bool gt_wave_Boss_front6_Func (bool testConds, bool runActions) {
     int autoEAFD521C_ai;
     int auto2E2D57BE_ae;
     int auto2E2D57BE_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto6947EAAC_ae = 15;
     auto6947EAAC_ai = 1;
     lv_intA = 1;
@@ -3524,14 +3049,12 @@ bool gt_wave_Boss_front6_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_Boss_front6_Init () {
     gt_wave_Boss_front6 = TriggerCreate("gt_wave_Boss_front6_Func");
     TriggerEnable(gt_wave_Boss_front6, false);
     TriggerAddEventTimePeriodic(gt_wave_Boss_front6, 6.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_LRF 7
 //--------------------------------------------------------------------------------------------------
@@ -3539,15 +3062,12 @@ bool gt_wave_LRF7_Func (bool testConds, bool runActions) {
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(1, "BroodLord", 0, gv_pLAYER_03_ENEMY, PointFromId(1425450832), UnitGetPosition(UnitFromId(188)));
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1639753716)), c_orderQueueReplace);
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
@@ -3558,14 +3078,12 @@ bool gt_wave_LRF7_Func (bool testConds, bool runActions) {
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_LRF7_Init () {
     gt_wave_LRF7 = TriggerCreate("gt_wave_LRF7_Func");
     TriggerEnable(gt_wave_LRF7, false);
     TriggerAddEventTimePeriodic(gt_wave_LRF7, 12.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_left 7
 //--------------------------------------------------------------------------------------------------
@@ -3576,19 +3094,15 @@ bool gt_wave_left7_Func (bool testConds, bool runActions) {
     int autoFDDCFCEA_ai;
     int autoB9A9B4AA_ae;
     int autoB9A9B4AA_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(1, "Hunterling", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(18)), UnitGetPosition(UnitFromId(349)));
     UnitGroupAdd(lv_attackForce, UnitLastCreated());
     libNtve_gf_UnitCreateFacingPoint(1, "Hunterling", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(18)), UnitGetPosition(UnitFromId(349)));
@@ -3626,14 +3140,12 @@ bool gt_wave_left7_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_left7_Init () {
     gt_wave_left7 = TriggerCreate("gt_wave_left7_Func");
     TriggerEnable(gt_wave_left7, false);
     TriggerAddEventTimePeriodic(gt_wave_left7, 6.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_right 7
 //--------------------------------------------------------------------------------------------------
@@ -3644,19 +3156,15 @@ bool gt_wave_right7_Func (bool testConds, bool runActions) {
     int auto45C75899_ai;
     int autoAEF6CBED_ae;
     int autoAEF6CBED_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(1, "Hunterling", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(19)), UnitGetPosition(UnitFromId(349)));
     UnitGroupAdd(lv_attackForce, UnitLastCreated());
     libNtve_gf_UnitCreateFacingPoint(1, "Hunterling", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(19)), UnitGetPosition(UnitFromId(349)));
@@ -3694,14 +3202,12 @@ bool gt_wave_right7_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_right7_Init () {
     gt_wave_right7 = TriggerCreate("gt_wave_right7_Func");
     TriggerEnable(gt_wave_right7, false);
     TriggerAddEventTimePeriodic(gt_wave_right7, 6.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_front 7
 //--------------------------------------------------------------------------------------------------
@@ -3714,19 +3220,15 @@ bool gt_wave_front7_Func (bool testConds, bool runActions) {
     int auto326F7A0F_ai;
     int autoA6C9A35D_ae;
     int autoA6C9A35D_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto19479A84_ae = 10;
     auto19479A84_ai = 1;
     lv_intA = 1;
@@ -3763,14 +3265,12 @@ bool gt_wave_front7_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_front7_Init () {
     gt_wave_front7 = TriggerCreate("gt_wave_front7_Func");
     TriggerEnable(gt_wave_front7, false);
     TriggerAddEventTimePeriodic(gt_wave_front7, 6.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_left 8
 //--------------------------------------------------------------------------------------------------
@@ -3781,19 +3281,15 @@ bool gt_wave_left8_Func (bool testConds, bool runActions) {
     int autoDEEC6B25_ai;
     int auto680DE363_ae;
     int auto680DE363_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto3C9EF18C_ae = 2;
     auto3C9EF18C_ai = 1;
     lv_intA = 1;
@@ -3823,14 +3319,12 @@ bool gt_wave_left8_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_left8_Init () {
     gt_wave_left8 = TriggerCreate("gt_wave_left8_Func");
     TriggerEnable(gt_wave_left8, false);
     TriggerAddEventTimePeriodic(gt_wave_left8, 8.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_right 8
 //--------------------------------------------------------------------------------------------------
@@ -3841,19 +3335,15 @@ bool gt_wave_right8_Func (bool testConds, bool runActions) {
     int auto0F97850C_ai;
     int autoE80D2D8D_ae;
     int autoE80D2D8D_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     autoA8834D93_ae = 2;
     autoA8834D93_ai = 1;
     lv_intA = 1;
@@ -3883,14 +3373,12 @@ bool gt_wave_right8_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_right8_Init () {
     gt_wave_right8 = TriggerCreate("gt_wave_right8_Func");
     TriggerEnable(gt_wave_right8, false);
     TriggerAddEventTimePeriodic(gt_wave_right8, 8.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_front 8
 //--------------------------------------------------------------------------------------------------
@@ -3901,19 +3389,15 @@ bool gt_wave_front8_Func (bool testConds, bool runActions) {
     int autoD0C7E9D3_ai;
     int auto2566B7C4_ae;
     int auto2566B7C4_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     autoA9D1CDD2_ae = 3;
     autoA9D1CDD2_ai = 1;
     lv_intA = 1;
@@ -3946,14 +3430,12 @@ bool gt_wave_front8_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_front8_Init () {
     gt_wave_front8 = TriggerCreate("gt_wave_front8_Func");
     TriggerEnable(gt_wave_front8, false);
     TriggerAddEventTimePeriodic(gt_wave_front8, 8.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_LRF 9
 //--------------------------------------------------------------------------------------------------
@@ -3961,15 +3443,12 @@ bool gt_wave_LRF9_Func (bool testConds, bool runActions) {
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(1, "Brutalisk", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(18)), UnitGetPosition(UnitFromId(349)));
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1639753716)), c_orderQueueReplace);
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
@@ -3980,14 +3459,12 @@ bool gt_wave_LRF9_Func (bool testConds, bool runActions) {
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_LRF9_Init () {
     gt_wave_LRF9 = TriggerCreate("gt_wave_LRF9_Func");
     TriggerEnable(gt_wave_LRF9, false);
     TriggerAddEventTimePeriodic(gt_wave_LRF9, 14.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_left 9
 //--------------------------------------------------------------------------------------------------
@@ -3998,19 +3475,15 @@ bool gt_wave_left9_Func (bool testConds, bool runActions) {
     int auto936036E2_ai;
     int auto6C5F37CA_ae;
     int auto6C5F37CA_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto10C25455_ae = 2;
     auto10C25455_ai = 1;
     lv_intA = 1;
@@ -4047,14 +3520,12 @@ bool gt_wave_left9_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_left9_Init () {
     gt_wave_left9 = TriggerCreate("gt_wave_left9_Func");
     TriggerEnable(gt_wave_left9, false);
     TriggerAddEventTimePeriodic(gt_wave_left9, 10.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_right 9
 //--------------------------------------------------------------------------------------------------
@@ -4065,19 +3536,15 @@ bool gt_wave_right9_Func (bool testConds, bool runActions) {
     int autoA1B446A9_ai;
     int autoF4E8CFF1_ae;
     int autoF4E8CFF1_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     autoB434A2AE_ae = 2;
     autoB434A2AE_ai = 1;
     lv_intA = 1;
@@ -4114,14 +3581,12 @@ bool gt_wave_right9_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_right9_Init () {
     gt_wave_right9 = TriggerCreate("gt_wave_right9_Func");
     TriggerEnable(gt_wave_right9, false);
     TriggerAddEventTimePeriodic(gt_wave_right9, 10.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_front 9
 //--------------------------------------------------------------------------------------------------
@@ -4132,19 +3597,15 @@ bool gt_wave_front9_Func (bool testConds, bool runActions) {
     int auto5616E507_ai;
     int auto1FA2B0A7_ae;
     int auto1FA2B0A7_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto408B180E_ae = 2;
     auto408B180E_ai = 1;
     lv_intA = 1;
@@ -4179,14 +3640,12 @@ bool gt_wave_front9_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_front9_Init () {
     gt_wave_front9 = TriggerCreate("gt_wave_front9_Func");
     TriggerEnable(gt_wave_front9, false);
     TriggerAddEventTimePeriodic(gt_wave_front9, 10.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_front 10
 //--------------------------------------------------------------------------------------------------
@@ -4197,19 +3656,15 @@ bool gt_wave_front10_Func (bool testConds, bool runActions) {
     int auto8BA57AFE_ai;
     int auto80033297_ae;
     int auto80033297_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto794463F4_ae = 3;
     auto794463F4_ai = 1;
     lv_intA = 1;
@@ -4242,14 +3697,12 @@ bool gt_wave_front10_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_front10_Init () {
     gt_wave_front10 = TriggerCreate("gt_wave_front10_Func");
     TriggerEnable(gt_wave_front10, false);
     TriggerAddEventTimePeriodic(gt_wave_front10, 10.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: wave_front 11
 //--------------------------------------------------------------------------------------------------
@@ -4260,19 +3713,15 @@ bool gt_wave_front11_Func (bool testConds, bool runActions) {
     int autoC41A556A_ai;
     int auto3D538777_ae;
     int auto3D538777_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto421D78FD_ae = 8;
     auto421D78FD_ai = 1;
     lv_intA = 1;
@@ -4307,14 +3756,12 @@ bool gt_wave_front11_Func (bool testConds, bool runActions) {
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_wave_front11_Init () {
     gt_wave_front11 = TriggerCreate("gt_wave_front11_Func");
     TriggerEnable(gt_wave_front11, false);
     TriggerAddEventTimePeriodic(gt_wave_front11, 10.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Boss_dead
 //--------------------------------------------------------------------------------------------------
@@ -4323,11 +3770,9 @@ bool gt_Boss_dead_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_RetreatOn, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Boss_dead_Init () {
     gt_Boss_dead = TriggerCreate("gt_Boss_dead_Func");
@@ -4335,7 +3780,6 @@ void gt_Boss_dead_Init () {
     TriggerAddEventUnitDied(gt_Boss_dead, UnitRefFromVariable("gv_boss_Kraith"));
     TriggerAddEventUnitDied(gt_Boss_dead, UnitRefFromVariable("gv_boss_Brakk"));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Kraith_gen
 //--------------------------------------------------------------------------------------------------
@@ -4344,19 +3788,16 @@ bool gt_Kraith_gen_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_ShowHideUnit(UnitFromId(704225947), true);
     UnitIssueOrder(gv_boss_Kraith, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1551709137)), c_orderQueueReplace);
     TriggerEnable(gt_Kraith_Target_Search, true);
     TriggerEnable(gt_Kraith_Target_move, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Kraith_gen_Init () {
     gt_Kraith_gen = TriggerCreate("gt_Kraith_gen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Kraith_Target_Search
 //--------------------------------------------------------------------------------------------------
@@ -4364,36 +3805,30 @@ bool gt_Kraith_Target_Search_Func (bool testConds, bool runActions) {
     // Variable Declarations
     unitgroup lv_group;
     unit lv_target;
-
     // Variable Initialization
     lv_group = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", gv_aiur, c_unitAllianceAlly, RegionCircle(UnitGetPosition(gv_boss_Kraith), 34.0), UnitFilter(0, 0, (1 << c_targetFilterMissile) | (1 << c_targetFilterCloaked), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     lv_target = UnitGroupClosestToPoint(lv_group, UnitGetPosition(gv_boss_Kraith));
-
     // Conditions
     if (testConds) {
         if (!((UnitGroupCount(lv_group, c_unitCountAlive) > 0))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv_target_Kraith = lv_target;
     UnitIssueOrder(gv_boss_Kraith, OrderTargetingUnit(AbilityCommand("attack", 0), gv_target_Kraith), c_orderQueueReplace);
     TriggerEnable(gt_Kraith_Target_Search, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Kraith_Target_Search_Init () {
     gt_Kraith_Target_Search = TriggerCreate("gt_Kraith_Target_Search_Func");
     TriggerEnable(gt_Kraith_Target_Search, false);
     TriggerAddEventTimePeriodic(gt_Kraith_Target_Search, 0.05, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Kraith_Target_dead
 //--------------------------------------------------------------------------------------------------
@@ -4402,18 +3837,15 @@ bool gt_Kraith_Target_dead_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     UnitIssueOrder(gv_boss_Kraith, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1551709137)), c_orderQueueReplace);
     TriggerEnable(gt_Kraith_Target_Search, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Kraith_Target_dead_Init () {
     gt_Kraith_Target_dead = TriggerCreate("gt_Kraith_Target_dead_Func");
     TriggerAddEventUnitDied(gt_Kraith_Target_dead, UnitRefFromVariable("gv_target_Kraith"));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Kraith_Target_move
 //--------------------------------------------------------------------------------------------------
@@ -4422,19 +3854,16 @@ bool gt_Kraith_Target_move_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     UnitIssueOrder(gv_boss_Kraith, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1551709137)), c_orderQueueReplace);
     TriggerEnable(gt_Kraith_Target_Search, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Kraith_Target_move_Init () {
     gt_Kraith_Target_move = TriggerCreate("gt_Kraith_Target_move_Func");
     TriggerEnable(gt_Kraith_Target_move, false);
     TriggerAddEventTimePeriodic(gt_Kraith_Target_move, 5.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Kraith_dead
 //--------------------------------------------------------------------------------------------------
@@ -4443,18 +3872,15 @@ bool gt_Kraith_dead_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(gt_Kraith_Target_Search, false);
     TriggerEnable(gt_Kraith_Target_move, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Kraith_dead_Init () {
     gt_Kraith_dead = TriggerCreate("gt_Kraith_dead_Func");
     TriggerAddEventUnitDied(gt_Kraith_dead, UnitRefFromVariable("gv_boss_Kraith"));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Kraith_Target_Run
 //--------------------------------------------------------------------------------------------------
@@ -4463,19 +3889,16 @@ bool gt_Kraith_Target_Run_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     UnitIssueOrder(gv_boss_Kraith, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1551709137)), c_orderQueueReplace);
     TriggerEnable(gt_Kraith_Target_Search, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Kraith_Target_Run_Init () {
     gt_Kraith_Target_Run = TriggerCreate("gt_Kraith_Target_Run_Func");
     TriggerEnable(gt_Kraith_Target_Run, false);
     TriggerAddEventUnitRange(gt_Kraith_Target_Run, UnitRefFromVariable("gv_target_Kraith"), UnitFromId(704225947), 37.0, false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Brakk_gen
 //--------------------------------------------------------------------------------------------------
@@ -4484,7 +3907,6 @@ bool gt_Brakk_gen_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(1, "Brakk", 0, gv_pLAYER_03_ENEMY, PointFromId(1585489467), UnitGetPosition(UnitFromId(349)));
     gv_boss_Brakk = UnitLastCreated();
     if ((UnitGroupCount(libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", gv_aiur, -1, RegionCircle(PointFromId(2062624615), 15.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) >= 20)) {
@@ -4497,12 +3919,10 @@ bool gt_Brakk_gen_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Brakk_gen_Init () {
     gt_Brakk_gen = TriggerCreate("gt_Brakk_gen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Spotter_gen
 //--------------------------------------------------------------------------------------------------
@@ -4511,7 +3931,6 @@ bool gt_Spotter_gen_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     if ((RandomInt(1, 100) > 50)) {
         libNtve_gf_UnitCreateFacingPoint(1, "Spotter", 0, gv_pLAYER_03_ENEMY, PointFromId(1425450832), UnitGetPosition(UnitFromId(349)));
     }
@@ -4524,12 +3943,10 @@ bool gt_Spotter_gen_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_Spotter_Zerg_Drop, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Spotter_gen_Init () {
     gt_Spotter_gen = TriggerCreate("gt_Spotter_gen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Spotter_Zerg_Drop
 //--------------------------------------------------------------------------------------------------
@@ -4537,14 +3954,11 @@ bool gt_Spotter_Zerg_Drop_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_roll;
     int lv_intA;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_roll = RandomInt(0, 4);
     if ((lv_roll == 0) && (CliffLevel(UnitGetPosition(gv_boss_Spotter)) != 0)) {
         lv_intA = RandomInt(2, 4);
@@ -4599,14 +4013,12 @@ bool gt_Spotter_Zerg_Drop_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Spotter_Zerg_Drop_Init () {
     gt_Spotter_Zerg_Drop = TriggerCreate("gt_Spotter_Zerg_Drop_Func");
     TriggerEnable(gt_Spotter_Zerg_Drop, false);
     TriggerAddEventTimePeriodic(gt_Spotter_Zerg_Drop, IntToFixed(gv_randomSec_Spotter), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Spotter_move
 //--------------------------------------------------------------------------------------------------
@@ -4615,38 +4027,31 @@ bool gt_Spotter_move_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     UnitIssueOrder(gv_boss_Spotter, OrderTargetingPoint(AbilityCommand("move", 0), RegionRandomPoint(RegionFromId(17))), c_orderQueueAddToEnd);
     UnitIssueOrder(gv_boss_Spotter, OrderTargetingPoint(AbilityCommand("move", 0), RegionRandomPoint(RegionFromId(17))), c_orderQueueAddToEnd);
     UnitIssueOrder(gv_boss_Spotter, OrderTargetingPoint(AbilityCommand("move", 0), RegionRandomPoint(RegionFromId(17))), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Spotter_move_Init () {
     gt_Spotter_move = TriggerCreate("gt_Spotter_move_Func");
     TriggerEnable(gt_Spotter_move, false);
     TriggerAddEventTimePeriodic(gt_Spotter_move, 6.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Spotter_dead
 //--------------------------------------------------------------------------------------------------
 bool gt_Spotter_dead_Func (bool testConds, bool runActions) {
     unitgroup auto63975A6A_g;
     int auto63975A6A_u;
-
     // Variable Declarations
     point lv_loc;
     unit lv_u;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(gt_Spotter_move, false);
     TriggerEnable(gt_Spotter_Zerg_Drop, false);
     TriggerEnable(gt_UrunSquad_Patrol, true);
@@ -4665,30 +4070,24 @@ bool gt_Spotter_dead_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Spotter_dead_Init () {
     gt_Spotter_dead = TriggerCreate("gt_Spotter_dead_Func");
     TriggerAddEventUnitDied(gt_Spotter_dead, UnitRefFromVariable("gv_boss_Spotter"));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Spotter_targetting by urun
 //--------------------------------------------------------------------------------------------------
 bool gt_Spotter_targettingbyurun_Func (bool testConds, bool runActions) {
     unitgroup autoDB71FF78_g;
     int autoDB71FF78_u;
-
     // Variable Declarations
     unit lv_u;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(gt_Spotter_targettingbyurun, false);
     TriggerEnable(gt_UrunSquad_Patrol, false);
     autoDB71FF78_g = gv_squad_Urun;
@@ -4703,13 +4102,11 @@ bool gt_Spotter_targettingbyurun_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendTransmissionCampaignPlaceHolder(UnitFromId(349), "UrunPortrait", StringExternal("Param/Value/CFDC4379"), StringExternal("Param/Value/500854D2"), 3.0, true, libCOMI_ge_MissionTransmissionPortraitOptioins_HidePortraitAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Spotter_targettingbyurun_Init () {
     gt_Spotter_targettingbyurun = TriggerCreate("gt_Spotter_targettingbyurun_Func");
     TriggerAddEventUnitRegion(gt_Spotter_targettingbyurun, UnitRefFromVariable("gv_boss_Spotter"), RegionFromId(17), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Omega_gen
 //--------------------------------------------------------------------------------------------------
@@ -4718,18 +4115,15 @@ bool gt_Omega_gen_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(1, "Omegalisk", 0, gv_pLAYER_03_ENEMY, PointFromId(1534768987), UnitGetPosition(UnitFromId(349)));
     gv_boss_Omega = UnitLastCreated();
     UnitIssueOrder(gv_boss_Omega, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueReplace);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Omega_gen_Init () {
     gt_Omega_gen = TriggerCreate("gt_Omega_gen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Omega_dead
 //--------------------------------------------------------------------------------------------------
@@ -4738,33 +4132,27 @@ bool gt_Omega_dead_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(gt_Timerexpired, false);
     TriggerExecute(gt_Timerexpired, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Omega_dead_Init () {
     gt_Omega_dead = TriggerCreate("gt_Omega_dead_Func");
     TriggerAddEventUnitDied(gt_Omega_dead, UnitRefFromVariable("gv_boss_Omega"));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_Generator
 //--------------------------------------------------------------------------------------------------
 bool gt_SP_Generator_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_roll;
-
     // Variable Initialization
     lv_roll = RandomInt(0, 11);
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv_sP_Random_int = RandomInt(20, 60);
     if ((lv_roll == 0)) {
         TriggerExecute(gt_SP_Guardiangen, true, false);
@@ -4813,7 +4201,6 @@ bool gt_SP_Generator_Func (bool testConds, bool runActions) {
                                                 if ((lv_roll == 11)) {
                                                     TriggerExecute(gt_SP_BroodLordGen, true, false);
                                                 }
-
                                             }
                                         }
                                     }
@@ -4827,14 +4214,12 @@ bool gt_SP_Generator_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_Generator_Init () {
     gt_SP_Generator = TriggerCreate("gt_SP_Generator_Func");
     TriggerEnable(gt_SP_Generator, false);
     TriggerAddEventTimePeriodic(gt_SP_Generator, IntToFixed(gv_sP_Random_int), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_Mutalisk gen
 //--------------------------------------------------------------------------------------------------
@@ -4843,24 +4228,19 @@ bool gt_SP_Mutaliskgen_Func (bool testConds, bool runActions) {
     int auto4A06C7C7_ai;
     int autoE49B5801_ae;
     int autoE49B5801_ai;
-
     // Variable Declarations
     int lv_intA;
-
     // Variable Initialization
-
     // Conditions
     if (testConds) {
         if (!((gv_int_Amount_impaler <= 12))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto4A06C7C7_ae = 12;
     auto4A06C7C7_ai = 1;
     lv_intA = 1;
@@ -4877,12 +4257,10 @@ bool gt_SP_Mutaliskgen_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_Mutaliskgen_Init () {
     gt_SP_Mutaliskgen = TriggerCreate("gt_SP_Mutaliskgen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_Mutalisk only nexus
 //--------------------------------------------------------------------------------------------------
@@ -4891,24 +4269,19 @@ bool gt_SP_Mutaliskonlynexus_Func (bool testConds, bool runActions) {
     int auto930BACDD_ai;
     int auto3A2D7493_ae;
     int auto3A2D7493_ai;
-
     // Variable Declarations
     int lv_intA;
-
     // Variable Initialization
-
     // Conditions
     if (testConds) {
         if (!((gv_int_Amount_impaler <= 12))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto930BACDD_ae = 2;
     auto930BACDD_ai = 1;
     lv_intA = 1;
@@ -4925,12 +4298,10 @@ bool gt_SP_Mutaliskonlynexus_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_Mutaliskonlynexus_Init () {
     gt_SP_Mutaliskonlynexus = TriggerCreate("gt_SP_Mutaliskonlynexus_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_Overseer gen
 //--------------------------------------------------------------------------------------------------
@@ -4938,34 +4309,28 @@ bool gt_SP_Overseergen_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_loc;
     int lv_intB;
-
     // Variable Initialization
     lv_loc = RandomInt(1, 6);
     lv_intB = RandomInt(1, 3);
-
     // Conditions
     if (testConds) {
         if (!((UnitCount("OverseerSiegeMode", gv_pLAYER_03_ENEMY, RegionCircle(gv_loc_Hill[lv_loc], 5.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0) < 1))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(1, "OverseerSiegeMode", 0, gv_pLAYER_03_ENEMY, gv_loc_Hill[lv_loc], UnitGetPosition(UnitFromId(188)));
     libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), gv_loc_Hill[lv_loc]);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_Overseergen_Init () {
     gt_SP_Overseergen = TriggerCreate("gt_SP_Overseergen_Func");
     TriggerEnable(gt_SP_Overseergen, false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_impaler gen
 //--------------------------------------------------------------------------------------------------
@@ -4973,36 +4338,30 @@ bool gt_SP_impalergen_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_intA;
     int lv_intB;
-
     // Variable Initialization
     lv_intA = RandomInt(1, 6);
     lv_intB = RandomInt(1, 3);
-
     // Conditions
     if (testConds) {
         if (!((gv_int_Amount_impaler <= 12))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(lv_intB, "ImpalerBurrowed", 0, gv_pLAYER_03_ENEMY, gv_loc_Hill[lv_intA], UnitGetPosition(UnitFromId(188)));
     libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), gv_loc_Hill[lv_intA]);
     gv_int_Amount_impaler = (gv_int_Amount_impaler + lv_intB);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_impalergen_Init () {
     gt_SP_impalergen = TriggerCreate("gt_SP_impalergen_Func");
     TriggerEnable(gt_SP_impalergen, false);
     TriggerAddEventTimePeriodic(gt_SP_impalergen, 90.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_impaler die
 //--------------------------------------------------------------------------------------------------
@@ -5013,22 +4372,18 @@ bool gt_SP_impalerdie_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv_int_Amount_impaler = (gv_int_Amount_impaler - 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_impalerdie_Init () {
     gt_SP_impalerdie = TriggerCreate("gt_SP_impalerdie_Func");
     TriggerAddEventUnitDied(gt_SP_impalerdie, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_Guardian gen
 //--------------------------------------------------------------------------------------------------
@@ -5036,16 +4391,13 @@ bool gt_SP_Guardiangen_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_intA;
     int lv_intB;
-
     // Variable Initialization
     lv_intA = RandomInt(4, 6);
     lv_intB = RandomInt(1, 3);
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((lv_intB == 1)) {
         libNtve_gf_UnitCreateFacingPoint(lv_intA, "GuardianMP", 0, gv_pLAYER_03_ENEMY, PointFromId(1902952044), UnitGetPosition(UnitFromId(188)));
         libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), PointFromId(1902952044));
@@ -5067,12 +4419,10 @@ bool gt_SP_Guardiangen_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_Guardiangen_Init () {
     gt_SP_Guardiangen = TriggerCreate("gt_SP_Guardiangen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_Hunterling gen
 //--------------------------------------------------------------------------------------------------
@@ -5080,16 +4430,13 @@ bool gt_SP_Hunterlinggen_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_intA;
     int lv_intB;
-
     // Variable Initialization
     lv_intA = RandomInt(8, 16);
     lv_intB = RandomInt(1, 2);
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((lv_intB == 1)) {
         libNtve_gf_UnitCreateFacingPoint((lv_intA / 2), "Hunterling", 0, gv_pLAYER_03_ENEMY, PointFromId(107575343), UnitGetPosition(UnitFromId(349)));
         libNtve_gf_UnitCreateFacingPoint(lv_intA, "HotSRaptor", 0, gv_pLAYER_03_ENEMY, PointFromId(107575343), UnitGetPosition(UnitFromId(349)));
@@ -5106,29 +4453,23 @@ bool gt_SP_Hunterlinggen_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_Hunterlinggen_Init () {
     gt_SP_Hunterlinggen = TriggerCreate("gt_SP_Hunterlinggen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_Zergling Global gen
 //--------------------------------------------------------------------------------------------------
 bool gt_SP_ZerglingGlobalgen_Func (bool testConds, bool runActions) {
     int auto222E84B9_ae;
     int auto222E84B9_ai;
-
     // Variable Declarations
     int lv_intA;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto222E84B9_ae = 2;
     auto222E84B9_ai = 1;
     lv_intA = 1;
@@ -5143,29 +4484,23 @@ bool gt_SP_ZerglingGlobalgen_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_ZerglingGlobalgen_Init () {
     gt_SP_ZerglingGlobalgen = TriggerCreate("gt_SP_ZerglingGlobalgen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_NydusAttacker gen
 //--------------------------------------------------------------------------------------------------
 bool gt_SP_NydusAttackergen_Func (bool testConds, bool runActions) {
     int autoEE7F8718_ae;
     int autoEE7F8718_ai;
-
     // Variable Declarations
     int lv_intA;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     autoEE7F8718_ae = 2;
     autoEE7F8718_ai = 1;
     lv_intA = 1;
@@ -5174,12 +4509,10 @@ bool gt_SP_NydusAttackergen_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_NydusAttackergen_Init () {
     gt_SP_NydusAttackergen = TriggerCreate("gt_SP_NydusAttackergen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_DropZerg
 //--------------------------------------------------------------------------------------------------
@@ -5187,27 +4520,22 @@ bool gt_SP_DropZerg_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_intA;
     unitgroup lv_attackForce;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(6, "HotSRaptor", 0, gv_pLAYER_03_ENEMY, PointFromId(107575343), UnitGetPosition(UnitFromId(349)));
     lv_attackForce = UnitLastCreatedGroup();
     libCOMI_gf_DropPodWarpInUnitGroup(lv_attackForce, RegionRandomPoint(RegionFromId(7)));
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_DropZerg_Init () {
     gt_SP_DropZerg = TriggerCreate("gt_SP_DropZerg_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_DropZerg 2
 //--------------------------------------------------------------------------------------------------
@@ -5215,42 +4543,34 @@ bool gt_SP_DropZerg2_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_intA;
     unitgroup lv_attackForce;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(12, "Baneling", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(16)), UnitGetPosition(UnitFromId(349)));
     lv_attackForce = UnitLastCreatedGroup();
     libCOMI_gf_DropPodWarpInUnitGroup(lv_attackForce, RegionRandomPoint(RegionFromId(7)));
     UnitGroupIssueOrder(lv_attackForce, OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(1551709137)), c_orderQueueAddToEnd);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_DropZerg2_Init () {
     gt_SP_DropZerg2 = TriggerCreate("gt_SP_DropZerg2_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_BroodLord Gen
 //--------------------------------------------------------------------------------------------------
 bool gt_SP_BroodLordGen_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_intB;
-
     // Variable Initialization
     lv_intB = RandomInt(1, 2);
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((lv_intB == 1)) {
         libNtve_gf_UnitCreateFacingPoint(2, "BroodLord", 0, gv_pLAYER_03_ENEMY, PointFromId(1902952044), UnitGetPosition(UnitFromId(188)));
         libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), PointFromId(1902952044));
@@ -5264,29 +4584,23 @@ bool gt_SP_BroodLordGen_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_BroodLordGen_Init () {
     gt_SP_BroodLordGen = TriggerCreate("gt_SP_BroodLordGen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: SP_HotSHunter gen
 //--------------------------------------------------------------------------------------------------
 bool gt_SP_HotSHuntergen_Func (bool testConds, bool runActions) {
     int auto5D14FB42_ae;
     int auto5D14FB42_ai;
-
     // Variable Declarations
     int lv_intA;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     auto5D14FB42_ae = 1;
     auto5D14FB42_ai = 1;
     lv_intA = 1;
@@ -5301,12 +4615,10 @@ bool gt_SP_HotSHuntergen_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SP_HotSHuntergen_Init () {
     gt_SP_HotSHuntergen = TriggerCreate("gt_SP_HotSHuntergen_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: UPGRADE 1
 //--------------------------------------------------------------------------------------------------
@@ -5315,7 +4627,6 @@ bool gt_UPGRADE1_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "CentrificalHooks", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergMeleeWeaponsLevel1", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "SIInfantryWeaponsLevel1", 1);
@@ -5323,12 +4634,10 @@ bool gt_UPGRADE1_Func (bool testConds, bool runActions) {
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "SIInfantryArmorLevel1", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_UPGRADE1_Init () {
     gt_UPGRADE1 = TriggerCreate("gt_UPGRADE1_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: UPGRADE 2
 //--------------------------------------------------------------------------------------------------
@@ -5337,18 +4646,15 @@ bool gt_UPGRADE2_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergFlyerWeaponsLevel1", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergFlyerWeaponsLevel1", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergFlyerArmorsLevel1", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_UPGRADE2_Init () {
     gt_UPGRADE2 = TriggerCreate("gt_UPGRADE2_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: UPGRADE 3
 //--------------------------------------------------------------------------------------------------
@@ -5357,7 +4663,6 @@ bool gt_UPGRADE3_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "zerglingmovementspeed", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "zerglingattackspeed", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergMeleeWeaponsLevel2", 1);
@@ -5368,12 +4673,10 @@ bool gt_UPGRADE3_Func (bool testConds, bool runActions) {
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergMissileWeaponsLevel1", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_UPGRADE3_Init () {
     gt_UPGRADE3 = TriggerCreate("gt_UPGRADE3_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: UPGRADE 4
 //--------------------------------------------------------------------------------------------------
@@ -5382,7 +4685,6 @@ bool gt_UPGRADE4_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "overlordspeed", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "overlordtransport", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "zerglingattackspeed", 1);
@@ -5390,12 +4692,10 @@ bool gt_UPGRADE4_Func (bool testConds, bool runActions) {
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergMissileWeaponsLevel2", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_UPGRADE4_Init () {
     gt_UPGRADE4 = TriggerCreate("gt_UPGRADE4_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: UPGRADE 5
 //--------------------------------------------------------------------------------------------------
@@ -5404,17 +4704,14 @@ bool gt_UPGRADE5_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "SIInfantryWeaponsLevel3", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergMeleeWeaponsLevel3", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_UPGRADE5_Init () {
     gt_UPGRADE5 = TriggerCreate("gt_UPGRADE5_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: UPGRADE 6
 //--------------------------------------------------------------------------------------------------
@@ -5423,18 +4720,15 @@ bool gt_UPGRADE6_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergFlyerWeaponsLevel3", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "SIZergMissileWeaponsLevel3", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergMissileWeaponsLevel3", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_UPGRADE6_Init () {
     gt_UPGRADE6 = TriggerCreate("gt_UPGRADE6_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: UPGRADE 7
 //--------------------------------------------------------------------------------------------------
@@ -5443,18 +4737,15 @@ bool gt_UPGRADE7_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergGroundArmorsLevel3", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "SIInfantryArmorLevel3", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "ZergFlyerArmorsLevel3", 1);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_UPGRADE7_Init () {
     gt_UPGRADE7 = TriggerCreate("gt_UPGRADE7_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Start Game Q
 //--------------------------------------------------------------------------------------------------
@@ -5462,14 +4753,11 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     // Variable Declarations
     region lv_enemyBase;
     region lv_enemyBase2;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/068743D5"), null, PlayerStartLocation(gv_pLAYER_01_USER));
     UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/187E0E6E"), null, PlayerStartLocation(gv_pLAYER_02_USER));
     Wait(7.0, c_timeReal);
@@ -5488,12 +4776,10 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_StartGameQ_Init () {
     gt_StartGameQ = TriggerCreate("gt_StartGameQ_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Main GateWay Destroyed
 //--------------------------------------------------------------------------------------------------
@@ -5502,7 +4788,6 @@ bool gt_MainGateWayDestroyed_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(gt_Timerexpired, false);
     CameraApplyInfo(1, CameraInfoFromId(595917252), 2.0, -1, 10.0, true);
     CameraApplyInfo(2, CameraInfoFromId(595917252), 2.0, -1, 10.0, true);
@@ -5511,32 +4796,26 @@ bool gt_MainGateWayDestroyed_Func (bool testConds, bool runActions) {
     libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_MainGateWayDestroyed_Init () {
     gt_MainGateWayDestroyed = TriggerCreate("gt_MainGateWayDestroyed_Func");
     TriggerAddEventUnitDied(gt_MainGateWayDestroyed, UnitRefFromUnit(UnitFromId(1411453183)));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Timer expired
 //--------------------------------------------------------------------------------------------------
 bool gt_Timerexpired_Func (bool testConds, bool runActions) {
     int autoEB453D9B_ae;
     int autoEB453D9B_ai;
-
     // Variable Declarations
     unitgroup lv_attackForce;
     int lv_intA;
-
     // Variable Initialization
     lv_attackForce = UnitGroupEmpty();
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     autoEB453D9B_ae = 90;
     autoEB453D9B_ai = 1;
     lv_intA = 1;
@@ -5613,37 +4892,30 @@ bool gt_Timerexpired_Func (bool testConds, bool runActions) {
     libCOMI_gf_EndCampaignMission(c_gameOverVictory);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Timerexpired_Init () {
     gt_Timerexpired = TriggerCreate("gt_Timerexpired_Func");
     TriggerAddEventTimer(gt_Timerexpired, gv_timer);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aiur last
 //--------------------------------------------------------------------------------------------------
 bool gt_Aiurlast_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_eCA09CEBAAA9EC9786EB8A94EBB380EC8898001;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_UnitCreateFacingPoint(2, "Carrier", 0, gv_aiur, RegionRandomPoint(RegionFromId(6)), PointFromId(1585489467));
     libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(17)));
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Aiurlast_Init () {
     gt_Aiurlast = TriggerCreate("gt_Aiurlast_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: mis
 //--------------------------------------------------------------------------------------------------
@@ -5652,7 +4924,6 @@ bool gt_mis_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libNtve_gf_ShowHideUnit(UnitFromId(944085571), false);
     libNtve_gf_ShowHideUnit(UnitFromId(414912979), false);
     libNtve_gf_ShowHideUnit(UnitFromId(2014443591), false);
@@ -5667,13 +4938,11 @@ bool gt_mis_Func (bool testConds, bool runActions) {
     libNtve_gf_ShowHideUnit(UnitFromId(341765560), false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_mis_Init () {
     gt_mis = TriggerCreate("gt_mis_Func");
     TriggerAddEventMapInit(gt_mis);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: mis 3
 //--------------------------------------------------------------------------------------------------
@@ -5682,7 +4951,6 @@ bool gt_mis3_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libCOMI_gf_SendTransmissionCampaignPlaceHolder(UnitFromId(349), "ArtanisPortrait", StringExternal("Param/Value/8F415C18"), StringExternal("Param/Value/51DD7961"), 8.0, true, libCOMI_ge_MissionTransmissionPortraitOptioins_HidePortraitAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
     MinimapPing(PlayerGroupAll(), PointFromId(192657022), 6.0, Color(100.00, 100.00, 0.00));
     libNtve_gf_UnitCreateFacingPoint(10, "HotSRaptor", 0, gv_pLAYER_03_ENEMY, RegionRandomPoint(RegionFromId(9)), UnitGetPosition(UnitFromId(349)));
@@ -5729,12 +4997,10 @@ bool gt_mis3_Func (bool testConds, bool runActions) {
     libNtve_gf_ShowHideUnit(UnitFromId(341765560), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_mis3_Init () {
     gt_mis3 = TriggerCreate("gt_mis3_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
@@ -5865,7 +5131,6 @@ void InitTriggers () {
     gt_mis_Init();
     gt_mis3_Init();
 }
-
 //--------------------------------------------------------------------------------------------------
 // Map Initialization
 //--------------------------------------------------------------------------------------------------
