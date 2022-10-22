@@ -192,7 +192,6 @@ point gf_AttackWaveGather ();
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
-trigger gt_Init01LoadData;
 trigger gt_Init03LoadingComplete;
 trigger gt_Init05Units;
 trigger gt_Init07Environment;
@@ -236,10 +235,6 @@ trigger gt_BonusObjectiveAlmostExpiredQ;
 trigger gt_BonusObjectiveFailedQ;
 trigger gt_DefeatShardActivated;
 trigger gt_VictoryDestorytheSpawningRiftsCompleted;
-trigger gt_VictorySequence;
-trigger gt_VictoryFanfareQ;
-trigger gt_Victory;
-trigger gt_Defeat;
 trigger gt_MissionEffortDefeat;
 trigger gt_TipReadyQ;
 trigger gt_AIDangerMapsUsageOn;
@@ -1252,29 +1247,6 @@ point gf_AttackWaveGather () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Init 01 Load Data
-//--------------------------------------------------------------------------------------------------
-bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_PreventSpawningInRegion(RegionFromId(10));
-    libCOMI_gf_PreventSpawningInRegion(RegionFromId(7));
-    libCOMI_gf_PreventSpawningInRegion(RegionFromId(11));
-    libCOMI_gf_LoadCoopMission("AC_KorhalRift", gt_Init03LoadingComplete);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init01LoadData_Init () {
-    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
-    TriggerAddEventMapInit(gt_Init01LoadData);
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
@@ -1284,6 +1256,9 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libCOMI_gf_PreventSpawningInRegion(RegionFromId(10));
+    libCOMI_gf_PreventSpawningInRegion(RegionFromId(7));
+    libCOMI_gf_PreventSpawningInRegion(RegionFromId(11));
     gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
     gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     TriggerExecute(gt_Init05Units, true, false);
@@ -1297,6 +1272,7 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Init03LoadingComplete_Init () {
     gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+    TriggerAddEventGeneric(gt_Init03LoadingComplete, libCOMI_gv_COOP_MISSION_STARTED_EVENT);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2911,12 +2887,13 @@ bool gt_DefeatShardActivated_Func (bool testConds, bool runActions) {
     point lv_l_CameraTarget;
 
     // Automatic Variable Declarations
-    unitgroup autoD6F59BE6_g;
-    int autoD6F59BE6_u;
-    unit autoD6F59BE6_var;
     unitgroup auto185E0386_g;
     int auto185E0386_u;
     unit auto185E0386_var;
+    playergroup auto1D135C70_g;
+    int auto1D135C70_var;
+    playergroup auto4FBA5533_g;
+    int auto4FBA5533_var;
 
     // Variable Initialization
 
@@ -2936,37 +2913,11 @@ bool gt_DefeatShardActivated_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    libCOMI_gf_SendMissionTransmission("DefeatKR", false, -1);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
     TriggerExecute(gt_ObjectiveDestroyVoidShardsFailed, true, false);
     TriggerExecute(gt_ObjectiveDontLetShardActivateFailed, true, false);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/B82B7F8A"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/FF2277CE"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    autoD6F59BE6_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    autoD6F59BE6_u = UnitGroupCount(autoD6F59BE6_g, c_unitCountAll);
-    for (;; autoD6F59BE6_u -= 1) {
-        autoD6F59BE6_var = UnitGroupUnitFromEnd(autoD6F59BE6_g, autoD6F59BE6_u);
-        if (autoD6F59BE6_var == null) { break; }
-        UnitIssueOrder(autoD6F59BE6_var, Order(AbilityCommand("stop", 0)), c_orderQueueReplace);
-    }
-    libNtve_gf_SetAlliance(gv_pLAYER_01_USER, gv_pLAYER_03_ENEMY, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(gv_pLAYER_01_USER, gv_pLAYER_04_ENEMY, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(gv_pLAYER_02_USER, gv_pLAYER_03_ENEMY, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(gv_pLAYER_02_USER, gv_pLAYER_04_ENEMY, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(gv_pLAYER_03_ENEMY, gv_pLAYER_01_USER, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(gv_pLAYER_03_ENEMY, gv_pLAYER_02_USER, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(gv_pLAYER_04_ENEMY, gv_pLAYER_01_USER, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(gv_pLAYER_04_ENEMY, gv_pLAYER_02_USER, libNtve_ge_AllianceSetting_Ally);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+    libCOMI_gf_SendMissionTransmission("DefeatKR", false, -1);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/B548C516"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
     auto185E0386_g = UnitGroup(gv_c_SpawnedVoidShard, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     auto185E0386_u = UnitGroupCount(auto185E0386_g, c_unitCountAll);
     for (;; auto185E0386_u -= 1) {
@@ -2974,25 +2925,31 @@ bool gt_DefeatShardActivated_Func (bool testConds, bool runActions) {
         if (auto185E0386_var == null) { break; }
         UnitSetState(auto185E0386_var, c_unitStateInvulnerable, true);
         lv_l_CameraTarget = UnitGetPosition(auto185E0386_var);
-        VisRevealArea(gv_pLAYER_01_USER, RegionCircle(UnitGetPosition(auto185E0386_var), 10.0), 0.0, false);
-        VisRevealArea(gv_pLAYER_02_USER, RegionCircle(UnitGetPosition(auto185E0386_var), 10.0), 0.0, false);
+        auto1D135C70_g = PlayerGroupAll();
+        auto1D135C70_var = -1;
+        while (true) {
+            auto1D135C70_var = PlayerGroupNextPlayer(auto1D135C70_g, auto1D135C70_var);
+            if (auto1D135C70_var < 0) { break; }
+            VisRevealArea(auto1D135C70_var, RegionCircle(UnitGetPosition(auto185E0386_var), 10.0), 0.0, false);
+        }
         break;
     }
-    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, lv_l_CameraTarget, 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_01_USER, lv_l_CameraTarget, 2.0, -1, 10.0, false);
+    libCOMI_gf_MoveCameraForAllPlayers(lv_l_CameraTarget, 1.5);
     Wait(3.0, c_timeGame);
     PlayerCreateEffectPoint(gv_pLAYER_04_ENEMY, "HeroNukeDamage", lv_l_CameraTarget);
     SoundPlayForPlayer(SoundLink("VoidTendril_Shockwave_FXFire", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     SoundPlayForPlayer(SoundLink("Explosion_Distant_2D", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     SoundPlayForPlayer(SoundLink("Mission_End_2D_Nuke_Explosion", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
-    CameraShake(gv_pLAYER_01_USER, "Massive", "Earthquake", 0.25, 0.0, 5.0);
     SoundPlayForPlayer(SoundLink("pAiur02_Cine_Amon_Quake", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
-    CameraShake(gv_pLAYER_02_USER, "Massive", "Earthquake", 0.25, 0.0, 5.0);
-    Wait(2.0, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Defeat, true, false);
+    auto4FBA5533_g = PlayerGroupAll();
+    auto4FBA5533_var = -1;
+    while (true) {
+        auto4FBA5533_var = PlayerGroupNextPlayer(auto4FBA5533_g, auto4FBA5533_var);
+        if (auto4FBA5533_var < 0) { break; }
+        CameraShake(auto4FBA5533_var, "Massive", "Earthquake", 0.25, 0.0, 5.0);
+    }
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -3023,141 +2980,20 @@ bool gt_VictoryDestorytheSpawningRiftsCompleted_Func (bool testConds, bool runAc
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_VictorySequence, true, false);
+    TriggerExecute(gt_ObjectiveDestroyVoidShardsComplete, true, false);
+    TriggerExecute(gt_ObjectiveDontLetShardActivateComplete, true, false);
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+    libCOMI_gf_SendVictoryTransmission("VictoryKR");
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/A595D12F"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(gv_victorySpawningRiftsComplete, 2.0);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryDestorytheSpawningRiftsCompleted_Init () {
     gt_VictoryDestorytheSpawningRiftsCompleted = TriggerCreate("gt_VictoryDestorytheSpawningRiftsCompleted_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Sequence
-//--------------------------------------------------------------------------------------------------
-bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-    Wait(2.0, c_timeReal);
-    TriggerExecute(gt_ObjectiveDestroyVoidShardsComplete, true, false);
-    TriggerExecute(gt_ObjectiveDontLetShardActivateComplete, true, false);
-    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictorySequence_Init () {
-    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Fanfare Q
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TransmissionClearAll();
-    TriggerQueueEnter();
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
-    libCOMI_gf_SendVictoryTransmission("VictoryKR");
-    UnitPauseAll(true);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_01_USER, gv_victorySpawningRiftsComplete, 2.0, -1, 10.0, false);
-    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, gv_victorySpawningRiftsComplete, 2.0, -1, 10.0, false);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/684A78B4"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/E5C8709E"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Victory, true, false);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryFanfareQ_Init () {
-    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory
-//--------------------------------------------------------------------------------------------------
-bool gt_Victory_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Victory_Init () {
-    gt_Victory = TriggerCreate("gt_Victory_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Defeat
-//--------------------------------------------------------------------------------------------------
-bool gt_Defeat_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Defeat_Init () {
-    gt_Defeat = TriggerCreate("gt_Defeat_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -4940,7 +4776,6 @@ void gt_ObjectiveDestroyPirateShip03Failed_Init () {
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
-    gt_Init01LoadData_Init();
     gt_Init03LoadingComplete_Init();
     gt_Init05Units_Init();
     gt_Init07Environment_Init();
@@ -4984,10 +4819,6 @@ void InitTriggers () {
     gt_BonusObjectiveFailedQ_Init();
     gt_DefeatShardActivated_Init();
     gt_VictoryDestorytheSpawningRiftsCompleted_Init();
-    gt_VictorySequence_Init();
-    gt_VictoryFanfareQ_Init();
-    gt_Victory_Init();
-    gt_Defeat_Init();
     gt_MissionEffortDefeat_Init();
     gt_TipReadyQ_Init();
     gt_AIDangerMapsUsageOn_Init();

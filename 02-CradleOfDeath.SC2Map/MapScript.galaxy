@@ -25,6 +25,9 @@ const int gv_pLAYER_03_ENEMY = 7;
 const int gv_pLAYER_04_ENEMY = 9;
 const int gv_pLAYER_05_ENEMY_DropPods = 10;
 const int gv_pLAYER_06_ENEMY_DropPods = 6;
+const fixed gv_c_MissionFailureReminderDelay = 180.0;
+const fixed gv_c_MissionFailureCriticalDelay = 90.0;
+const int gv_c_PayloadCount = 15;
 const int gv_c_PrimaryObjectiveCount = 5;
 const int gv_c_PrimaryObjectiveNukeRadiusMarker_Count = 5;
 const string gv_c_GateKeepers = "CODXelNagaConstruct";
@@ -37,9 +40,6 @@ const int gv_c_ObjectiveRequiredCount = 4;
 const int gv_c_EasterEggSceneCount = 5;
 const int gv_c_EasterEggMurlocScene = 2;
 const int gv_c_EasterEggCarScene = 4;
-const fixed gv_c_MissionFailureReminderDelay = 180.0;
-const fixed gv_c_MissionFailureCriticalDelay = 90.0;
-const int gv_c_PayloadCount = 15;
 
 //--------------------------------------------------------------------------------------------------
 // Global Structures
@@ -95,6 +95,14 @@ int gv_pLAYER_STONE;
 unitgroup gv_expansionBlockers;
 unitgroup gv_expansionResources;
 unitgroup gv_unitsStartingPaused;
+timer gv_countdownUntilMissionFailure;
+timer gv_missionFailureReminderTimer;
+timer gv_missionFailureCriticalTimer;
+bool[gv_c_PayloadCount + 1] gv_payloadUnderAttack;
+unitgroup gv_allConstructs;
+fixed[6] gv_construct_Life;
+timer[3] gv_bonusObjectiveDelayTimer;
+fixed gv_c_BonusObjectiveDelay;
 int gv_leaderboardBonus01ScoreFinal;
 int gv_leaderboardBonus02ScoreFinal;
 int gv_leaderboardObjectiveScoreFinal;
@@ -154,14 +162,6 @@ int gv_easterEggCutscene;
 bool gv_easterEggActivateReady;
 fixed gv_c_EasterEggDelay;
 timer gv_easterEggTimer;
-timer gv_countdownUntilMissionFailure;
-timer gv_missionFailureReminderTimer;
-timer gv_missionFailureCriticalTimer;
-bool[gv_c_PayloadCount + 1] gv_payloadUnderAttack;
-unitgroup gv_allConstructs;
-fixed[6] gv_construct_Life;
-timer[3] gv_bonusObjectiveDelayTimer;
-fixed gv_c_BonusObjectiveDelay;
 string[gv_c_PrimaryObjectiveCount + 1] gv_objectiveDestroyObjective_Data;
 int[gv_c_PrimaryObjectiveCount + 1] gv_objectiveDestroyObjective_Objective;
 int gv_objectiveDestroyZergBase;
@@ -180,6 +180,14 @@ void InitGlobals () {
     gv_expansionBlockers = UnitGroupEmpty();
     gv_expansionResources = UnitGroupEmpty();
     gv_unitsStartingPaused = UnitGroupEmpty();
+    gv_countdownUntilMissionFailure = TimerCreate();
+    gv_missionFailureReminderTimer = TimerCreate();
+    gv_missionFailureCriticalTimer = TimerCreate();
+    gv_allConstructs = UnitGroupEmpty();
+    for (init_i = 0; init_i <= 2; init_i += 1) {
+        gv_bonusObjectiveDelayTimer[init_i] = TimerCreate();
+    }
+    gv_c_BonusObjectiveDelay = 5.0;
     gv_bombWarningDialogItem = c_invalidDialogControlId;
     gv_nukeBarWidth = 550;
     gv_nukeBarHeight = 59;
@@ -235,14 +243,6 @@ void InitGlobals () {
     gv_easterEggCutscene = c_cutsceneNone;
     gv_c_EasterEggDelay = 0.6;
     gv_easterEggTimer = TimerCreate();
-    gv_countdownUntilMissionFailure = TimerCreate();
-    gv_missionFailureReminderTimer = TimerCreate();
-    gv_missionFailureCriticalTimer = TimerCreate();
-    gv_allConstructs = UnitGroupEmpty();
-    for (init_i = 0; init_i <= 2; init_i += 1) {
-        gv_bonusObjectiveDelayTimer[init_i] = TimerCreate();
-    }
-    gv_c_BonusObjectiveDelay = 5.0;
     for (init_i = 0; init_i <= gv_c_PrimaryObjectiveCount; init_i += 1) {
         gv_objectiveDestroyObjective_Objective[init_i] = c_invalidObjectiveId;
     }
@@ -254,6 +254,9 @@ void InitGlobals () {
 //--------------------------------------------------------------------------------------------------
 // Global Function Declarations
 //--------------------------------------------------------------------------------------------------
+void gf_AttachReticleEffectAndTextTagOnUnitCOD (int lp_type, int lp_size, text lp_text, unit lp_target, string lp_attachPoint);
+color gf_TimerColor (timer lp_timer);
+void gf_CreateExplosionAtPointwithSmoke (int lp_size, int lp_race, point lp_point);
 void gf_LeaderboardPayloadTakesDamage (fixed lp_damageTaken);
 void gf_ActivateandMakeObjectiveCurrent (int lp_currentObjective);
 int gf_ActiveObjective ();
@@ -296,9 +299,6 @@ void gf_DropPodAttackonPayloads (fixed lp_waveTime, int lp_waveCount, int lp_cur
 unit gf_PrioritizedPayloadTarget (int lp_enemyPlayer);
 void gf_CreateDropPodTelegraphed (int lp_player, point lp_location, int lp_resourceBucket, int lp_techLevel);
 void gf_InitalizeEasterEgg ();
-void gf_AttachReticleEffectAndTextTagOnUnitCOD (int lp_type, int lp_size, text lp_text, unit lp_target, string lp_attachPoint);
-color gf_TimerColor (timer lp_timer);
-void gf_CreateExplosionAtPointwithSmoke (int lp_size, int lp_race, point lp_point);
 void gf_ObjectiveDestroyPrimaryObjectiveCreate (int lp_objectiveToCreate);
 void gf_ObjectiveDestroyPrimaryObjectiveComplete (int lp_objectiveToComplete);
 void gf_ObjectiveDestroyPrimaryObjectiveUpdate (int lp_objectiveToUpdate, int lp_progress);
@@ -307,7 +307,6 @@ void gf_ObjectiveDestroyPrimaryObjectiveFailed (int lp_objectiveToFailed);
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
-trigger gt_Init01LoadData;
 trigger gt_Init03LoadingComplete;
 trigger gt_Init05Units;
 trigger gt_Init05bTargetLocations;
@@ -393,15 +392,12 @@ trigger gt_AttackWave08;
 trigger gt_AttackWave09;
 trigger gt_DefeatPrimaryObjectiveFailed;
 trigger gt_VictoryTargetSectorsDestroyedCompleted;
-trigger gt_VictorySequence;
-trigger gt_VictoryFanfareQ;
 trigger gt_VictoryCameraMoveVespene;
 trigger gt_VictoryCameraMoveTerrazine;
 trigger gt_VictoryCameraMoveCannon;
 trigger gt_VictoryTerrazineExplosions01;
 trigger gt_VictoryTerrazineExplosions02;
 trigger gt_VictoryVespeneExplosions01;
-trigger gt_DefeatFanfare;
 trigger gt_EasterEggHornHonkPlay;
 trigger gt_EasterEggMurlocSoundPlay;
 trigger gt_UnitEntersTeleporterRegion;
@@ -426,6 +422,77 @@ trigger gt_ObjectiveDestroyThing02Failed;
 //--------------------------------------------------------------------------------------------------
 // Global Functions
 //--------------------------------------------------------------------------------------------------
+void gf_AttachReticleEffectAndTextTagOnUnitCOD (int lp_type, int lp_size, text lp_text, unit lp_target, string lp_attachPoint) {
+    // Variable Declarations
+    string lv_model;
+    string lv_fontStyle;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_fontStyle = "SwarmReticleZergMainObjective";
+
+    // Implementation
+    lv_model = libCOMI_gf_CM_ReticleModelOfStyle(lp_type, lp_size);
+    if ((lv_model == null)) {
+        return ;
+    }
+
+    libNtve_gf_AttachModelToUnit(lp_target, lv_model, lp_attachPoint);
+    if (((lp_text != null) == false)) {
+        return ;
+    }
+
+    lv_fontStyle = libCOMI_gf_CM_ReticleTextFontOfStyle(lp_type);
+    TextExpressionSetToken("Param/Expression/E9D1A568", "Style", StringToText((lv_fontStyle)));
+    TextExpressionSetToken("Param/Expression/E9D1A568", "A", lp_text);
+    TextTagCreate(TextExpressionAssemble("Param/Expression/E9D1A568"), 24, UnitGetPosition(lp_target), 0.0, true, true, libCOMI_gf_HumanPlayers());
+    TextTagAttachToUnit(TextTagLastCreated(), lp_target, 0.0);
+    TextTagSetFogVisibility(TextTagLastCreated(), c_visTypeFog);
+}
+
+color gf_TimerColor (timer lp_timer) {
+    // Automatic Variable Declarations
+    // Implementation
+    if ((TimerGetRemaining(lp_timer) < (TimerGetDuration(lp_timer) * 0.33))) {
+        return Color(100.00, 0.00, 0.00);
+    }
+    else if ((TimerGetRemaining(lp_timer) < (TimerGetDuration(lp_timer) * 0.66))) {
+        return Color(150*100/255,150*100/255,30*100/255);
+    }
+    return Color(100,100,100);
+}
+
+void gf_CreateExplosionAtPointwithSmoke (int lp_size, int lp_race, point lp_point) {
+    // Variable Declarations
+    string lv_race;
+    string lv_size;
+    actor lv_explosion;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_race = "Terran";
+    lv_size = "Large";
+
+    // Implementation
+    libNtve_gf_CreateActorAtPoint("TriggeredExplosion", lp_point);
+    lv_explosion = libNtve_gf_ActorLastCreated();
+    if ((lp_race == libNtve_ge_ExplosionType_Protoss)) {
+        lv_race = "Protoss";
+    }
+    else {
+        if ((lp_race == libNtve_ge_ExplosionType_Zerg)) {
+            lv_race = "Zerg";
+        }
+
+    }
+    if ((lp_size == libNtve_ge_ExplosionSize_Small)) {
+        lv_size = "Small";
+    }
+
+    ActorSend(lv_explosion, (("Signal " + lv_race + lv_size)));
+    libNtve_gf_CreateActorAtPoint("SmokePillarsTall", lp_point);
+}
+
 void gf_LeaderboardPayloadTakesDamage (fixed lp_damageTaken) {
     // Automatic Variable Declarations
     // Implementation
@@ -2051,77 +2118,6 @@ void gf_InitalizeEasterEgg () {
     gv_easterEggCurrentScene = RandomInt(1, gv_c_EasterEggSceneCount);
 }
 
-void gf_AttachReticleEffectAndTextTagOnUnitCOD (int lp_type, int lp_size, text lp_text, unit lp_target, string lp_attachPoint) {
-    // Variable Declarations
-    string lv_model;
-    string lv_fontStyle;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-    lv_fontStyle = "SwarmReticleZergMainObjective";
-
-    // Implementation
-    lv_model = libCOMI_gf_CM_ReticleModelOfStyle(lp_type, lp_size);
-    if ((lv_model == null)) {
-        return ;
-    }
-
-    libNtve_gf_AttachModelToUnit(lp_target, lv_model, lp_attachPoint);
-    if (((lp_text != null) == false)) {
-        return ;
-    }
-
-    lv_fontStyle = libCOMI_gf_CM_ReticleTextFontOfStyle(lp_type);
-    TextExpressionSetToken("Param/Expression/E9D1A568", "Style", StringToText((lv_fontStyle)));
-    TextExpressionSetToken("Param/Expression/E9D1A568", "A", lp_text);
-    TextTagCreate(TextExpressionAssemble("Param/Expression/E9D1A568"), 24, UnitGetPosition(lp_target), 0.0, true, true, libCOMI_gf_HumanPlayers());
-    TextTagAttachToUnit(TextTagLastCreated(), lp_target, 0.0);
-    TextTagSetFogVisibility(TextTagLastCreated(), c_visTypeFog);
-}
-
-color gf_TimerColor (timer lp_timer) {
-    // Automatic Variable Declarations
-    // Implementation
-    if ((TimerGetRemaining(lp_timer) < (TimerGetDuration(lp_timer) * 0.33))) {
-        return Color(100.00, 0.00, 0.00);
-    }
-    else if ((TimerGetRemaining(lp_timer) < (TimerGetDuration(lp_timer) * 0.66))) {
-        return Color(150*100/255,150*100/255,30*100/255);
-    }
-    return Color(100,100,100);
-}
-
-void gf_CreateExplosionAtPointwithSmoke (int lp_size, int lp_race, point lp_point) {
-    // Variable Declarations
-    string lv_race;
-    string lv_size;
-    actor lv_explosion;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-    lv_race = "Terran";
-    lv_size = "Large";
-
-    // Implementation
-    libNtve_gf_CreateActorAtPoint("TriggeredExplosion", lp_point);
-    lv_explosion = libNtve_gf_ActorLastCreated();
-    if ((lp_race == libNtve_ge_ExplosionType_Protoss)) {
-        lv_race = "Protoss";
-    }
-    else {
-        if ((lp_race == libNtve_ge_ExplosionType_Zerg)) {
-            lv_race = "Zerg";
-        }
-
-    }
-    if ((lp_size == libNtve_ge_ExplosionSize_Small)) {
-        lv_size = "Small";
-    }
-
-    ActorSend(lv_explosion, (("Signal " + lv_race + lv_size)));
-    libNtve_gf_CreateActorAtPoint("SmokePillarsTall", lp_point);
-}
-
 void gf_ObjectiveDestroyPrimaryObjectiveCreate (int lp_objectiveToCreate) {
     // Automatic Variable Declarations
     // Implementation
@@ -2165,26 +2161,6 @@ void gf_ObjectiveDestroyPrimaryObjectiveFailed (int lp_objectiveToFailed) {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Init 01 Load Data
-//--------------------------------------------------------------------------------------------------
-bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_LoadCoopMission("AC_CradleOfDeath", gt_Init03LoadingComplete);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init01LoadData_Init () {
-    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
-    TriggerAddEventMapInit(gt_Init01LoadData);
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
@@ -2223,6 +2199,7 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Init03LoadingComplete_Init () {
     gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+    TriggerAddEventGeneric(gt_Init03LoadingComplete, libCOMI_gv_COOP_MISSION_STARTED_EVENT);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -5847,24 +5824,25 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
     gf_ObjectiveDestroyPrimaryObjectiveFailed(gf_ActiveObjective());
     TriggerExecute(gt_ObjectiveDontLetTimerExpireFailed, true, false);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/F554B7BF"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
     libCOMI_gf_SendMissionTransmission("DefeatCoD", false, -1);
-    TriggerExecute(gt_DefeatFanfare, true, false);
-    libCOMI_gf_WaitForMissionTransmission();
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(libCOMI_gt_Defeat, true, false);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/1C4D9388"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_ApplyCameraForAllPlayers(CameraInfoFromId(602148128), 0.0);
+    libCOMI_gf_ApplyCameraForAllPlayers(CameraInfoFromId(942499523), 6.0);
+    UnitSetFacing(UnitFromId(672745750), 240.0, 0.0);
+    CatalogFieldValueSet(c_gameCatalogUnit, "DesertEnergyCannon", "StationaryTurningRate", UnitGetOwner(UnitFromId(672745750)), "10");
+    CatalogFieldValueSet(c_gameCatalogUnit, "DesertEnergyCannon", "TurningRate", UnitGetOwner(UnitFromId(672745750)), "10");
+    SoundPlayForPlayer(SoundLink("COD_Event_CS_End_Defeat", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(0.01, c_timeGame);
+    UnitIssueOrder(UnitFromId(672745750), OrderTargetingPoint(AbilityCommand("CoopTurnToAbility", 0), PointFromId(1362229481)), c_orderQueueReplace);
+    Wait(2.0, c_timeGame);
+    libNtve_gf_PlayAnimation(libNtve_gf_MainActorofUnit(UnitFromId(672745750)), c_animNameDefault, "Attack", c_animFlagPlayForever, c_animTimeDefault);
+    Wait(0.15, c_timeGame);
+    CinematicFade(false, 2.0, c_fadeStyleExponential, Color(95.69, 95.69, 95.69), 0.0, true);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -5877,7 +5855,19 @@ void gt_DefeatPrimaryObjectiveFailed_Init () {
 // Trigger: Victory Target Sectors Destroyed Completed
 //--------------------------------------------------------------------------------------------------
 bool gt_VictoryTargetSectorsDestroyedCompleted_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unitgroup lv_victoryRemoveUnits;
+
     // Automatic Variable Declarations
+    playergroup autoAC872B8C_g;
+    int autoAC872B8C_var;
+    unitgroup autoE676DE65_g;
+    int autoE676DE65_u;
+    unit autoE676DE65_var;
+
+    // Variable Initialization
+    lv_victoryRemoveUnits = UnitGroupEmpty();
+
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -5895,77 +5885,17 @@ bool gt_VictoryTargetSectorsDestroyedCompleted_Func (bool testConds, bool runAct
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_VictorySequence, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryTargetSectorsDestroyedCompleted_Init () {
-    gt_VictoryTargetSectorsDestroyedCompleted = TriggerCreate("gt_VictoryTargetSectorsDestroyedCompleted_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Sequence
-//--------------------------------------------------------------------------------------------------
-bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_MapEnds, true, false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-    Wait(2.0, c_timeReal);
     TriggerExecute(gt_ObjectiveDontLetTimerExpireComplete, true, true);
-    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictorySequence_Init () {
-    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Fanfare Q
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    unitgroup lv_victoryRemoveUnits;
-
-    // Automatic Variable Declarations
-    unitgroup autoE676DE65_g;
-    int autoE676DE65_u;
-    unit autoE676DE65_var;
-
-    // Variable Initialization
-    lv_victoryRemoveUnits = UnitGroupEmpty();
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TransmissionClearAll();
-    TriggerQueueEnter();
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
     CinematicFade(false, 0.5, c_fadeStyleNormal, Color(0.00, 0.00, 0.00), 0.0, false);
-    UnitGroupAddUnitGroup(lv_victoryRemoveUnits, UnitGroup(null, gv_pLAYER_01_USER, RegionPlayableMap(), UnitFilter(0, 0, 0, (1 << (c_targetFilterDead - 32))), 0));
-    UnitGroupAddUnitGroup(lv_victoryRemoveUnits, UnitGroup(null, gv_pLAYER_02_USER, RegionPlayableMap(), UnitFilter(0, 0, 0, (1 << (c_targetFilterDead - 32))), 0));
+    autoAC872B8C_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    autoAC872B8C_var = -1;
+    while (true) {
+        autoAC872B8C_var = PlayerGroupNextPlayer(autoAC872B8C_g, autoAC872B8C_var);
+        if (autoAC872B8C_var < 0) { break; }
+        UnitGroupAddUnitGroup(lv_victoryRemoveUnits, UnitGroup(null, autoAC872B8C_var, RegionPlayableMap(), UnitFilter(0, 0, 0, (1 << (c_targetFilterDead - 32))), 0));
+    }
     autoE676DE65_g = lv_victoryRemoveUnits;
     autoE676DE65_u = UnitGroupCount(autoE676DE65_g, c_unitCountAll);
     for (;; autoE676DE65_u -= 1) {
@@ -5982,17 +5912,14 @@ bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
     Wait(2.0, c_timeGame);
     libCOMI_gf_SendVictoryTransmission("VictoryCoD");
     libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/D1A7B207"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(libCOMI_gt_Victory, true, false);
-    TriggerQueueExit();
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_VictoryFanfareQ_Init () {
-    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
+void gt_VictoryTargetSectorsDestroyedCompleted_Init () {
+    gt_VictoryTargetSectorsDestroyedCompleted = TriggerCreate("gt_VictoryTargetSectorsDestroyedCompleted_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -6294,49 +6221,6 @@ bool gt_VictoryVespeneExplosions01_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryVespeneExplosions01_Init () {
     gt_VictoryVespeneExplosions01 = TriggerCreate("gt_VictoryVespeneExplosions01_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Defeat Fanfare
-//--------------------------------------------------------------------------------------------------
-bool gt_DefeatFanfare_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_playerIter;
-
-    // Automatic Variable Declarations
-    playergroup auto37097BEA_g;
-
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    UnitSetFacing(UnitFromId(672745750), 240.0, 0.0);
-    auto37097BEA_g = libCOMI_gf_HumanPlayers();
-    lv_playerIter = -1;
-    while (true) {
-        lv_playerIter = PlayerGroupNextPlayer(auto37097BEA_g, lv_playerIter);
-        if (lv_playerIter < 0) { break; }
-        CameraApplyInfo(lv_playerIter, CameraInfoFromId(602148128), 0.0, 0.0, 0.0, true);
-        CameraApplyInfo(lv_playerIter, CameraInfoFromId(942499523), 6.0, -1, 10.0, true);
-    }
-    CatalogFieldValueSet(c_gameCatalogUnit, "DesertEnergyCannon", "StationaryTurningRate", UnitGetOwner(UnitFromId(672745750)), "10");
-    CatalogFieldValueSet(c_gameCatalogUnit, "DesertEnergyCannon", "TurningRate", UnitGetOwner(UnitFromId(672745750)), "10");
-    SoundPlayForPlayer(SoundLink("COD_Event_CS_End_Defeat", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
-    Wait(0.01, c_timeGame);
-    UnitIssueOrder(UnitFromId(672745750), OrderTargetingPoint(AbilityCommand("CoopTurnToAbility", 0), PointFromId(1362229481)), c_orderQueueReplace);
-    Wait(2.0, c_timeGame);
-    libNtve_gf_PlayAnimation(libNtve_gf_MainActorofUnit(UnitFromId(672745750)), c_animNameDefault, "Attack", c_animFlagPlayForever, c_animTimeDefault);
-    Wait(0.15, c_timeGame);
-    CinematicFade(false, 2.0, c_fadeStyleExponential, Color(95.69, 95.69, 95.69), 0.0, true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_DefeatFanfare_Init () {
-    gt_DefeatFanfare = TriggerCreate("gt_DefeatFanfare_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -6837,7 +6721,6 @@ void gt_ObjectiveDestroyThing02Failed_Init () {
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
-    gt_Init01LoadData_Init();
     gt_Init03LoadingComplete_Init();
     gt_Init05Units_Init();
     gt_Init05bTargetLocations_Init();
@@ -6923,15 +6806,12 @@ void InitTriggers () {
     gt_AttackWave09_Init();
     gt_DefeatPrimaryObjectiveFailed_Init();
     gt_VictoryTargetSectorsDestroyedCompleted_Init();
-    gt_VictorySequence_Init();
-    gt_VictoryFanfareQ_Init();
     gt_VictoryCameraMoveVespene_Init();
     gt_VictoryCameraMoveTerrazine_Init();
     gt_VictoryCameraMoveCannon_Init();
     gt_VictoryTerrazineExplosions01_Init();
     gt_VictoryTerrazineExplosions02_Init();
     gt_VictoryVespeneExplosions01_Init();
-    gt_DefeatFanfare_Init();
     gt_EasterEggHornHonkPlay_Init();
     gt_EasterEggMurlocSoundPlay_Init();
     gt_UnitEntersTeleporterRegion_Init();

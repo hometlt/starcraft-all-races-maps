@@ -391,9 +391,8 @@ color gf_TimerColor ();
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
-trigger gt_Init01LoadData;
-trigger gt_Init02Players;
 trigger gt_Init03LoadingComplete;
+trigger gt_Init02Players;
 trigger gt_Init05Units;
 trigger gt_Init08Difficulties;
 trigger gt_StartAI;
@@ -472,12 +471,8 @@ trigger gt_TrainSpawnedQ;
 trigger gt_TrainSpawnedQ2;
 trigger gt_TrainEscapingQ;
 trigger gt_TrainSpawnedQ4;
-trigger gt_Defeat;
 trigger gt_DefeatPrimaryObjectiveFailed;
-trigger gt_Victory;
 trigger gt_VictoryPrimaryObjectiveComplete;
-trigger gt_VictorySequence;
-trigger gt_VictoryFanfareQ;
 trigger gt_SendAttackWavesatTime;
 trigger gt_AttackWave01;
 trigger gt_AttackWave02;
@@ -2477,28 +2472,29 @@ color gf_TimerColor () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Init 01 Load Data
+// Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
-bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_indexPlayer;
-
+bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
-    // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
 
-    libCOMI_gf_LoadCoopMission("AC_PartAndParcel", gt_Init03LoadingComplete);
+    TriggerExecute(gt_Init02Players, true, false);
+    TriggerExecute(gt_Init05Units, true, false);
+    TriggerExecute(gt_Init08Difficulties, true, false);
+    TriggerExecute(gt_StartAI, true, false);
+    TriggerExecute(gt_StartGameQ, true, false);
+    Wait(2.0, c_timeGame);
+    UnitGroupPauseAll(gv_initiallyPausedUnits, true);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_Init01LoadData_Init () {
-    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
-    TriggerAddEventMapInit(gt_Init01LoadData);
+void gt_Init03LoadingComplete_Init () {
+    gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+    TriggerAddEventGeneric(gt_Init03LoadingComplete, libCOMI_gv_COOP_MISSION_STARTED_EVENT);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2536,31 +2532,6 @@ bool gt_Init02Players_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Init02Players_Init () {
     gt_Init02Players = TriggerCreate("gt_Init02Players_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 03 Loading Complete
-//--------------------------------------------------------------------------------------------------
-bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_Init02Players, true, false);
-    TriggerExecute(gt_Init05Units, true, false);
-    TriggerExecute(gt_Init08Difficulties, true, false);
-    TriggerExecute(gt_StartAI, true, false);
-    TriggerExecute(gt_StartGameQ, true, false);
-    Wait(2.0, c_timeGame);
-    UnitGroupPauseAll(gv_initiallyPausedUnits, true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init03LoadingComplete_Init () {
-    gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -6699,34 +6670,6 @@ void gt_TrainSpawnedQ4_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Defeat
-//--------------------------------------------------------------------------------------------------
-bool gt_Defeat_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_Defeat", -1), false, true);
-    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Defeat_Init () {
-    gt_Defeat = TriggerCreate("gt_Defeat_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Defeat Primary Objective Failed
 //--------------------------------------------------------------------------------------------------
 bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
@@ -6747,24 +6690,12 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    libCOMI_gf_SendMissionTransmission("DefeatPnP", true, -1);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/EFBD767A"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraPan(gv_pLAYER_01_USER, UnitGetPosition(gv_boss[gv_bossesSlain]), 1.5, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, UnitGetPosition(gv_boss[gv_bossesSlain]), 1.5, -1, 10.0, false);
-    libCOMI_gf_WaitForMissionTransmission();
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Defeat, true, false);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+    libCOMI_gf_SendMissionTransmission("DefeatPnP", false, -1);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/FF09D24C"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(UnitGetPosition(gv_boss[gv_bossesSlain]), 1.5);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -6772,33 +6703,6 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
 void gt_DefeatPrimaryObjectiveFailed_Init () {
     gt_DefeatPrimaryObjectiveFailed = TriggerCreate("gt_DefeatPrimaryObjectiveFailed_Func");
     TriggerAddEventTimer(gt_DefeatPrimaryObjectiveFailed, gv_preventBossAwaken);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory
-//--------------------------------------------------------------------------------------------------
-bool gt_Victory_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Victory_Init () {
-    gt_Victory = TriggerCreate("gt_Victory_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -6823,82 +6727,21 @@ bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
     TriggerExecute(gt_ObjectiveDestroyBossesComplete, true, true);
     libHots_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
     TriggerExecute(gt_ObjectivePreventBossAwakenComplete, true, true);
-    TriggerExecute(gt_VictorySequence, true, false);
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+    libCOMI_gf_SendVictoryTransmission("VictoryPnP");
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/9AD6AAA1"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(gv_victoryCompletePan, 2.0);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryPrimaryObjectiveComplete_Init () {
     gt_VictoryPrimaryObjectiveComplete = TriggerCreate("gt_VictoryPrimaryObjectiveComplete_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Sequence
-//--------------------------------------------------------------------------------------------------
-bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictorySequence_Init () {
-    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Fanfare Q
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerQueueEnter();
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, false);
-    UnitPauseAll(true);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_01_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
-    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
-    libCOMI_gf_SendVictoryTransmission("VictoryPnP");
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/4254F701"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Victory, true, false);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryFanfareQ_Init () {
-    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -7979,9 +7822,8 @@ void gt_ObjectiveDestroyTrainsFailed_Init () {
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
-    gt_Init01LoadData_Init();
-    gt_Init02Players_Init();
     gt_Init03LoadingComplete_Init();
+    gt_Init02Players_Init();
     gt_Init05Units_Init();
     gt_Init08Difficulties_Init();
     gt_StartAI_Init();
@@ -8060,12 +7902,8 @@ void InitTriggers () {
     gt_TrainSpawnedQ2_Init();
     gt_TrainEscapingQ_Init();
     gt_TrainSpawnedQ4_Init();
-    gt_Defeat_Init();
     gt_DefeatPrimaryObjectiveFailed_Init();
-    gt_Victory_Init();
     gt_VictoryPrimaryObjectiveComplete_Init();
-    gt_VictorySequence_Init();
-    gt_VictoryFanfareQ_Init();
     gt_SendAttackWavesatTime_Init();
     gt_AttackWave01_Init();
     gt_AttackWave02_Init();

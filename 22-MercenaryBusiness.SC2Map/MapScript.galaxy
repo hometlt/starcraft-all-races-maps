@@ -42,6 +42,7 @@ struct gs_AttackWave {
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
+playergroup gv_playerGroup;
 int gv_player01User;
 int gv_player02User;
 int gv_difficulty;
@@ -58,10 +59,8 @@ int gv_availableGasRounds;
 int gv_availableResourceRounds;
 bool gv_transmissionSent;
 int gv_stateDialog;
-int gv_addMineralDialogItemP01;
-int gv_addGasDialogItemP01;
-int gv_addMineralDialogItemP02;
-int gv_addGasDialogItemP02;
+int[6] gv_addMineralDialogItem;
+int[6] gv_addGasDialogItem;
 int gv_stateWindow;
 int gv_mineralCountPlayers;
 int gv_gasCountPlayers;
@@ -129,6 +128,7 @@ unit gv_junkerEast;
 void InitGlobals () {
     int init_i;
 
+    gv_playerGroup = PlayerGroupEmpty();
     gv_player01User = 1;
     gv_player02User = 2;
     gv_difficulty = 2;
@@ -141,10 +141,12 @@ void InitGlobals () {
     gv_availableGasRounds = 2;
     gv_availableResourceRounds = 1;
     gv_stateDialog = c_invalidDialogId;
-    gv_addMineralDialogItemP01 = c_invalidDialogControlId;
-    gv_addGasDialogItemP01 = c_invalidDialogControlId;
-    gv_addMineralDialogItemP02 = c_invalidDialogControlId;
-    gv_addGasDialogItemP02 = c_invalidDialogControlId;
+    for (init_i = 0; init_i <= 5; init_i += 1) {
+        gv_addMineralDialogItem[init_i] = c_invalidDialogControlId;
+    }
+    for (init_i = 0; init_i <= 5; init_i += 1) {
+        gv_addGasDialogItem[init_i] = c_invalidDialogControlId;
+    }
     gv_stateWindow = c_boardNone;
     gv_textPlayersShipmentMinerals = StringExternal("Param/Value/1E32FCDE");
     gv_textPlayersShipmentGas = StringExternal("Param/Value/EEC1BEBC");
@@ -220,12 +222,9 @@ void gf_SendDropAttackWave ();
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
-trigger gt_Init01LoadData;
 trigger gt_Init03LoadingComplete;
 trigger gt_Init05Units;
-trigger gt_Init06MusicSound;
 trigger gt_Init07Environment;
-trigger gt_Init08Difficulties;
 trigger gt_StartAI;
 trigger gt_StartGameQ;
 trigger gt_PickupsGenerate;
@@ -261,12 +260,7 @@ trigger gt_RelicCompleteQ;
 trigger gt_MULEsSpawnQ;
 trigger gt_MiraHanTalkingPortrait;
 trigger gt_DefeatPrimaryObjectiveFailed;
-trigger gt_DefeatBaseDead;
 trigger gt_VictoryPrimaryObjectiveComplete;
-trigger gt_VictorySequence;
-trigger gt_VictoryFanfareQ;
-trigger gt_EndMissionVictory;
-trigger gt_EndMissionDefeat;
 trigger gt_RemoveSCVsonBaseDestroyed;
 trigger gt_SpawnHybridforMainBaseDefence;
 trigger gt_NextAttackWave;
@@ -364,13 +358,12 @@ void gf_CreateWindow () {
     int lv_terranGasDialogItem;
     int lv_protossGasDialogItem;
     int lv_xOffsetP01;
-    int lv_xOffsetP02;
     int lv_xOffsetTerranP01;
-    int lv_xOffsetTerranP02;
 
     // Automatic Variable Declarations
+    playergroup autoF5F7708C_g;
+    int autoF5F7708C_var;
     string auto8FAC7C2A_val;
-    string auto2BA7CA59_val;
 
     // Variable Initialization
     lv_zergMineralDialogItem = c_invalidDialogControlId;
@@ -380,7 +373,6 @@ void gf_CreateWindow () {
     lv_terranGasDialogItem = c_invalidDialogControlId;
     lv_protossGasDialogItem = c_invalidDialogControlId;
     lv_xOffsetP01 = 45;
-    lv_xOffsetP02 = 45;
 
     // Implementation
     gv_mineralCountPlayers = 0;
@@ -405,58 +397,38 @@ void gf_CreateWindow () {
     DialogControlCreateFromTemplate(gv_stateDialog, c_triggerControlTypeButton, "CustomButtonTemplate/TerranButtonTemplate");
     DialogControlSetVisible(DialogControlLastCreated(), PlayerGroupAll(), false);
     lv_terranGasDialogItem = DialogControlLastCreated();
-    auto8FAC7C2A_val = PlayerRace(gv_player01User);
-    if (auto8FAC7C2A_val == "Terr") {
-        gv_addMineralDialogItemP01 = lv_terranMineralDialogItem;
-        gv_addGasDialogItemP01 = lv_terranGasDialogItem;
-        lv_xOffsetP01 = 20;
-        lv_xOffsetTerranP01 = 25;
+    autoF5F7708C_g = gv_playerGroup;
+    autoF5F7708C_var = -1;
+    while (true) {
+        autoF5F7708C_var = PlayerGroupNextPlayer(autoF5F7708C_g, autoF5F7708C_var);
+        if (autoF5F7708C_var < 0) { break; }
+        auto8FAC7C2A_val = PlayerRace(autoF5F7708C_var);
+        if (auto8FAC7C2A_val == "Terr") {
+            gv_addMineralDialogItem[autoF5F7708C_var] = lv_terranMineralDialogItem;
+            gv_addGasDialogItem[autoF5F7708C_var] = lv_terranGasDialogItem;
+            lv_xOffsetP01 = 20;
+            lv_xOffsetTerranP01 = 25;
+        }
+        else if (auto8FAC7C2A_val == "Prot") {
+            gv_addMineralDialogItem[autoF5F7708C_var] = lv_protossMineralDialogItem;
+            gv_addGasDialogItem[autoF5F7708C_var] = lv_protossGasDialogItem;
+        }
+        else {
+            gv_addMineralDialogItem[autoF5F7708C_var] = lv_zergMineralDialogItem;
+            gv_addGasDialogItem[autoF5F7708C_var] = lv_zergGasDialogItem;
+        }
+        DialogControlSetPosition(gv_addMineralDialogItem[autoF5F7708C_var], PlayerGroupSingle(autoF5F7708C_var), c_anchorBottomLeft, lv_xOffsetP01, 17);
+        DialogControlSetPosition(gv_addGasDialogItem[autoF5F7708C_var], PlayerGroupSingle(autoF5F7708C_var), c_anchorBottomLeft, (235 + (lv_xOffsetP01 - lv_xOffsetTerranP01)), 17);
+        libNtve_gf_SetDialogItemText(gv_addMineralDialogItem[autoF5F7708C_var], StringExternal("Param/Value/579D9A38"), PlayerGroupSingle(autoF5F7708C_var));
+        libNtve_gf_SetDialogItemText(gv_addGasDialogItem[autoF5F7708C_var], StringExternal("Param/Value/53D16FE7"), PlayerGroupSingle(autoF5F7708C_var));
+        DialogSetVisible(gv_stateDialog, PlayerGroupSingle(autoF5F7708C_var), true);
+        DialogControlSetVisible(gv_addMineralDialogItem[autoF5F7708C_var], PlayerGroupSingle(autoF5F7708C_var), true);
+        DialogControlSetVisible(gv_addGasDialogItem[autoF5F7708C_var], PlayerGroupSingle(autoF5F7708C_var), true);
+        libNtve_gf_SetDialogItemTooltip(gv_addMineralDialogItem[autoF5F7708C_var], StringExternal("Param/Value/E80D1E52"), libCOMI_gf_HumanPlayers());
+        libNtve_gf_SetDialogItemTooltip(gv_addGasDialogItem[autoF5F7708C_var], StringExternal("Param/Value/EA2F11BD"), libCOMI_gf_HumanPlayers());
+        DialogControlSetEnabled(gv_addMineralDialogItem[autoF5F7708C_var], libCOMI_gf_HumanPlayers(), false);
+        DialogControlSetEnabled(gv_addGasDialogItem[autoF5F7708C_var], libCOMI_gf_HumanPlayers(), false);
     }
-    else if (auto8FAC7C2A_val == "Prot") {
-        gv_addMineralDialogItemP01 = lv_protossMineralDialogItem;
-        gv_addGasDialogItemP01 = lv_protossGasDialogItem;
-    }
-    else {
-        gv_addMineralDialogItemP01 = lv_zergMineralDialogItem;
-        gv_addGasDialogItemP01 = lv_zergGasDialogItem;
-    }
-    auto2BA7CA59_val = PlayerRace(gv_player02User);
-    if (auto2BA7CA59_val == "Terr") {
-        gv_addMineralDialogItemP02 = lv_terranMineralDialogItem;
-        gv_addGasDialogItemP02 = lv_terranGasDialogItem;
-        lv_xOffsetP02 = 20;
-        lv_xOffsetTerranP02 = 25;
-    }
-    else if (auto2BA7CA59_val == "Prot") {
-        gv_addMineralDialogItemP02 = lv_protossMineralDialogItem;
-        gv_addGasDialogItemP02 = lv_protossGasDialogItem;
-    }
-    else {
-        gv_addMineralDialogItemP02 = lv_zergMineralDialogItem;
-        gv_addGasDialogItemP02 = lv_zergGasDialogItem;
-    }
-    DialogControlSetPosition(gv_addMineralDialogItemP01, PlayerGroupSingle(gv_player01User), c_anchorBottomLeft, lv_xOffsetP01, 17);
-    DialogControlSetPosition(gv_addGasDialogItemP01, PlayerGroupSingle(gv_player01User), c_anchorBottomLeft, (235 + (lv_xOffsetP01 - lv_xOffsetTerranP01)), 17);
-    libNtve_gf_SetDialogItemText(gv_addMineralDialogItemP01, StringExternal("Param/Value/579D9A38"), PlayerGroupSingle(gv_player01User));
-    libNtve_gf_SetDialogItemText(gv_addGasDialogItemP01, StringExternal("Param/Value/53D16FE7"), PlayerGroupSingle(gv_player01User));
-    DialogSetVisible(gv_stateDialog, PlayerGroupSingle(gv_player01User), true);
-    DialogControlSetVisible(gv_addMineralDialogItemP01, PlayerGroupSingle(gv_player01User), true);
-    DialogControlSetVisible(gv_addGasDialogItemP01, PlayerGroupSingle(gv_player01User), true);
-    DialogControlSetPosition(gv_addMineralDialogItemP02, PlayerGroupSingle(gv_player02User), c_anchorBottomLeft, lv_xOffsetP02, 17);
-    DialogControlSetPosition(gv_addGasDialogItemP02, PlayerGroupSingle(gv_player02User), c_anchorBottomLeft, (235 + (lv_xOffsetP02 - lv_xOffsetTerranP02)), 17);
-    libNtve_gf_SetDialogItemText(gv_addMineralDialogItemP02, StringExternal("Param/Value/336524A1"), PlayerGroupSingle(gv_player02User));
-    libNtve_gf_SetDialogItemText(gv_addGasDialogItemP02, StringExternal("Param/Value/377D6DDB"), PlayerGroupSingle(gv_player02User));
-    DialogSetVisible(gv_stateDialog, PlayerGroupSingle(gv_player02User), true);
-    DialogControlSetVisible(gv_addMineralDialogItemP02, PlayerGroupSingle(gv_player02User), true);
-    DialogControlSetVisible(gv_addGasDialogItemP02, PlayerGroupSingle(gv_player02User), true);
-    libNtve_gf_SetDialogItemTooltip(gv_addMineralDialogItemP01, StringExternal("Param/Value/E80D1E52"), libCOMI_gf_HumanPlayers());
-    libNtve_gf_SetDialogItemTooltip(gv_addGasDialogItemP01, StringExternal("Param/Value/EA2F11BD"), libCOMI_gf_HumanPlayers());
-    DialogControlSetEnabled(gv_addMineralDialogItemP01, libCOMI_gf_HumanPlayers(), false);
-    DialogControlSetEnabled(gv_addGasDialogItemP01, libCOMI_gf_HumanPlayers(), false);
-    libNtve_gf_SetDialogItemTooltip(gv_addMineralDialogItemP02, StringExternal("Param/Value/A6126FB8"), libCOMI_gf_HumanPlayers());
-    libNtve_gf_SetDialogItemTooltip(gv_addGasDialogItemP02, StringExternal("Param/Value/A127D13A"), libCOMI_gf_HumanPlayers());
-    DialogControlSetEnabled(gv_addMineralDialogItemP02, libCOMI_gf_HumanPlayers(), false);
-    DialogControlSetEnabled(gv_addGasDialogItemP02, libCOMI_gf_HumanPlayers(), false);
     BoardCreate(1, 4, StringToText(""), Color(0.00, 100.00, 0.00));
     gv_stateWindow = BoardLastCreated();
     BoardSetAnchor(gv_stateWindow, c_anchorTopRight, 0, 40);
@@ -512,12 +484,12 @@ void gf_SetupMULEsSpawn () {
     // Implementation
     lv_indexSpawn = 0;
     for ( ; ( (auto95E3FF95_ai >= 0 && lv_indexSpawn <= auto95E3FF95_ae) || (auto95E3FF95_ai < 0 && lv_indexSpawn >= auto95E3FF95_ae) ) ; lv_indexSpawn += auto95E3FF95_ai ) {
-        lv_spawnPoint = PointFromName(("MULEs Spawn Point P0" + IntToString(gv_player03AI) + " " + IntToString((lv_indexSpawn + 1))));
+        lv_spawnPoint = PointFromName(("MULEs Spawn Point P0" + IntToString(3) + " " + IntToString((lv_indexSpawn + 1))));
         if ((lv_spawnPoint != null)) {
             gv_mULEsSpawnPoints[0][lv_indexSpawn] = lv_spawnPoint;
         }
 
-        lv_spawnPoint = PointFromName(("MULEs Spawn Point P0" + IntToString(gv_player04AI) + " " + IntToString((lv_indexSpawn + 1))));
+        lv_spawnPoint = PointFromName(("MULEs Spawn Point P0" + IntToString(4) + " " + IntToString((lv_indexSpawn + 1))));
         if ((lv_spawnPoint != null)) {
             gv_mULEsSpawnPoints[1][lv_indexSpawn] = lv_spawnPoint;
         }
@@ -527,11 +499,18 @@ void gf_SetupMULEsSpawn () {
 
 void gf_ShowPickupArea (region lp_region) {
     // Automatic Variable Declarations
+    playergroup autoDF002451_g;
+    int autoDF002451_var;
+
     // Implementation
-    VisRevealArea(gv_player01User, lp_region, 1.5, false);
-    VisRevealArea(gv_player02User, lp_region, 1.5, false);
-    UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/FA831738"), null, RegionGetCenter(lp_region));
-    UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/36289E32"), null, RegionGetCenter(lp_region));
+    autoDF002451_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    autoDF002451_var = -1;
+    while (true) {
+        autoDF002451_var = PlayerGroupNextPlayer(autoDF002451_g, autoDF002451_var);
+        if (autoDF002451_var < 0) { break; }
+        VisRevealArea(autoDF002451_var, lp_region, 1.5, false);
+        UIAlertPoint("Trigger", autoDF002451_var, StringExternal("Param/Value/FA831738"), null, RegionGetCenter(lp_region));
+    }
 }
 
 void gf_ShowBonusObjective (unit lp_unit, region lp_region, int lp_indexBonusObjective, point lp_dropPodPoint) {
@@ -540,6 +519,9 @@ void gf_ShowBonusObjective (unit lp_unit, region lp_region, int lp_indexBonusObj
     fixed lv_transportAngle;
 
     // Automatic Variable Declarations
+    playergroup auto2CE6C14C_g;
+    int auto2CE6C14C_var;
+
     // Variable Initialization
 
     // Implementation
@@ -559,10 +541,14 @@ void gf_ShowBonusObjective (unit lp_unit, region lp_region, int lp_indexBonusObj
     Wait(1.0, c_timeGame);
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, RegionGetCenter(lp_region), StringExternal("Param/Value/F2B218FC"));
     gv_bonusObjectiveMarkers[lp_indexBonusObjective] = PingLastCreated();
-    VisRevealArea(gv_player01User, lp_region, 3.0, false);
-    VisRevealArea(gv_player02User, lp_region, 3.0, false);
-    UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/0FFBA317"), null, RegionGetCenter(lp_region));
-    UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/3B4E7EF0"), null, RegionGetCenter(lp_region));
+    auto2CE6C14C_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    auto2CE6C14C_var = -1;
+    while (true) {
+        auto2CE6C14C_var = PlayerGroupNextPlayer(auto2CE6C14C_g, auto2CE6C14C_var);
+        if (auto2CE6C14C_var < 0) { break; }
+        VisRevealArea(auto2CE6C14C_var, lp_region, 3.0, false);
+        UIAlertPoint("Trigger", auto2CE6C14C_var, StringExternal("Param/Value/0FFBA317"), null, RegionGetCenter(lp_region));
+    }
 }
 
 void gf_ShowSCVs (unitgroup lp_sCVsGroup) {
@@ -694,12 +680,12 @@ void gf_SetupAttackWaveSpawns () {
     // Implementation
     lv_indexSpawn = 0;
     for ( ; ( (auto67D2A20B_ai >= 0 && lv_indexSpawn <= auto67D2A20B_ae) || (auto67D2A20B_ai < 0 && lv_indexSpawn >= auto67D2A20B_ae) ) ; lv_indexSpawn += auto67D2A20B_ai ) {
-        lv_spawnRegion = RegionFromName(("Attack Wave Spawn P0" + IntToString(gv_player03AI) + " " + IntToString((lv_indexSpawn + 1))));
+        lv_spawnRegion = RegionFromName(("Attack Wave Spawn P0" + IntToString(3) + " " + IntToString((lv_indexSpawn + 1))));
         if ((lv_spawnRegion != null)) {
             gv_attackWaveSpawnRegions[0][lv_indexSpawn] = lv_spawnRegion;
         }
 
-        lv_spawnRegion = RegionFromName(("Attack Wave Spawn P0" + IntToString(gv_player04AI) + " " + IntToString((lv_indexSpawn + 1))));
+        lv_spawnRegion = RegionFromName(("Attack Wave Spawn P0" + IntToString(4) + " " + IntToString((lv_indexSpawn + 1))));
         if ((lv_spawnRegion != null)) {
             gv_attackWaveSpawnRegions[1][lv_indexSpawn] = lv_spawnRegion;
         }
@@ -721,6 +707,7 @@ void gf_SetupAttackWaveTargets () {
     // Implementation
     lv_indexTarget = 0;
     for ( ; ( (autoBCCAB24F_ai >= 0 && lv_indexTarget <= autoBCCAB24F_ae) || (autoBCCAB24F_ai < 0 && lv_indexTarget >= autoBCCAB24F_ae) ) ; lv_indexTarget += autoBCCAB24F_ai ) {
+        lv_targetRegion = RegionFromName(("Resources " + IntToString((lv_indexTarget + 1))));
         if ((lv_targetRegion != null)) {
             gv_attackWaveTargetRegions[lv_indexTarget] = lv_targetRegion;
         }
@@ -856,6 +843,8 @@ bool auto_gf_SendMajorAttackWave_TriggerFunc (bool testConds, bool runActions) {
     text lv_pingTooltip;
 
     // Automatic Variable Declarations
+    playergroup auto7810BEAB_g;
+    int auto7810BEAB_var;
     int auto80D5C9E4_val;
     int auto59BE322E_val;
 
@@ -920,8 +909,13 @@ bool auto_gf_SendMajorAttackWave_TriggerFunc (bool testConds, bool runActions) {
             lv_pingTooltip = StringExternal("Param/Value/D4E18F90");
             TriggerExecute(gt_MajorWaveMercenariesQ, true, false);
             Wait(16.0, c_timeGame);
-            UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/2D3184D2"), null, PointFromId(1010974628));
-            UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/FA71FEC2"), null, PointFromId(1010974628));
+            auto7810BEAB_g = libCOMI_gf_GetAlliedCommandersPlayers();
+            auto7810BEAB_var = -1;
+            while (true) {
+                auto7810BEAB_var = PlayerGroupNextPlayer(auto7810BEAB_g, auto7810BEAB_var);
+                if (auto7810BEAB_var < 0) { break; }
+                UIAlertPoint("Trigger", auto7810BEAB_var, StringExternal("Param/Value/2D3184D2"), null, PointFromId(1010974628));
+            }
             auto80D5C9E4_val = gv_difficulty;
             if (auto80D5C9E4_val == 1) {
                 UnitCreate(8, "WarPig", 0, gv_player03AI, PointFromId(1010974628), 270.0);
@@ -1029,6 +1023,11 @@ bool auto_gf_SendDropAttackWave_TriggerFunc (bool testConds, bool runActions) {
     int lv_ping;
 
     // Automatic Variable Declarations
+    playergroup auto33BFEFEB_g;
+    int auto33BFEFEB_var;
+    playergroup autoD2826D46_g;
+    int autoD2826D46_var;
+
     // Variable Initialization
     lv_ping = c_invalidPingId;
 
@@ -1041,8 +1040,13 @@ bool auto_gf_SendDropAttackWave_TriggerFunc (bool testConds, bool runActions) {
         libCOMI_gf_CreatePingCoop(libCOMI_gf_HumanPlayers(), "PingBaseAttack", lv_targetPoint, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 20.0);
         lv_ping = PingLastCreated();
         PingSetTooltip(lv_ping, StringExternal("Param/Value/6BF11BD7"));
-        UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/D5D5AF4E"), null, lv_targetPoint);
-        UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/B311AA77"), null, lv_targetPoint);
+        auto33BFEFEB_g = libCOMI_gf_GetAlliedCommandersPlayers();
+        auto33BFEFEB_var = -1;
+        while (true) {
+            auto33BFEFEB_var = PlayerGroupNextPlayer(auto33BFEFEB_g, auto33BFEFEB_var);
+            if (auto33BFEFEB_var < 0) { break; }
+            UIAlertPoint("Trigger", auto33BFEFEB_var, StringExternal("Param/Value/D5D5AF4E"), null, lv_targetPoint);
+        }
         Wait(17.5, c_timeGame);
         libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_player03AI, gv_player04AI, libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest, libCOMI_ge_CoopAITechLevelBuckets__1Early, RegionRandomPoint(RegionCircle(lv_targetPoint, 7.5)), true);
         libCOMI_gf_AddAttackForceWaypoint(lv_targetPoint, false);
@@ -1051,38 +1055,18 @@ bool auto_gf_SendDropAttackWave_TriggerFunc (bool testConds, bool runActions) {
         lv_targetPoint = RegionRandomPoint(lv_mainBaseTargets[RandomInt(0, 1)]);
         libCOMI_gf_CreatePingCoop(libCOMI_gf_HumanPlayers(), "PingBaseAttack", lv_targetPoint, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 14.0);
         PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/0F4B9524"));
-        UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/1E6F4FB5"), null, lv_targetPoint);
-        UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/2D702C2B"), null, lv_targetPoint);
+        autoD2826D46_g = libCOMI_gf_GetAlliedCommandersPlayers();
+        autoD2826D46_var = -1;
+        while (true) {
+            autoD2826D46_var = PlayerGroupNextPlayer(autoD2826D46_g, autoD2826D46_var);
+            if (autoD2826D46_var < 0) { break; }
+            UIAlertPoint("Trigger", autoD2826D46_var, StringExternal("Param/Value/1E6F4FB5"), null, lv_targetPoint);
+        }
         Wait(17.5, c_timeGame);
         libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_player03AI, gv_player04AI, libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest, libCOMI_ge_CoopAITechLevelBuckets__1Early, lv_targetPoint, true);
     }
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, false);
     return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 01 Load Data
-//--------------------------------------------------------------------------------------------------
-bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_indexPlayer;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init01LoadData_Init () {
-    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
-    TriggerAddEventMapInit(gt_Init01LoadData);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1097,10 +1081,10 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
 
     gv_player01User = libCOMI_gf_GetRolePlayer(1);
     gv_player02User = libCOMI_gf_GetRolePlayer(2);
+    libNtve_gf_AddPlayerGroupToPlayerGroup(libCOMI_gf_GetHumanPlayers(), gv_playerGroup);
+    libNtve_gf_AddPlayerGroupToPlayerGroup(libCOMI_gf_GetAlliedCommandersPlayers(), gv_playerGroup);
     TriggerExecute(gt_Init05Units, true, true);
-    TriggerExecute(gt_Init06MusicSound, true, false);
     TriggerExecute(gt_Init07Environment, true, false);
-    TriggerExecute(gt_Init08Difficulties, true, false);
     TriggerExecute(gt_StartAI, true, false);
     TriggerExecute(gt_StartGameQ, true, false);
     return true;
@@ -1109,6 +1093,7 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Init03LoadingComplete_Init () {
     gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+    TriggerAddEventGeneric(gt_Init03LoadingComplete, libCOMI_gv_COOP_MISSION_STARTED_EVENT);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1187,51 +1172,32 @@ void gt_Init05Units_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Init 06 Music/Sound
-//--------------------------------------------------------------------------------------------------
-bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, "THorner02MusicIntro", c_soundtrackCueAny, c_soundtrackIndexAny, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init06MusicSound_Init () {
-    gt_Init06MusicSound = TriggerCreate("gt_Init06MusicSound_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Init 07 Environment
 //--------------------------------------------------------------------------------------------------
 bool gt_Init07Environment_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
+    playergroup autoEC235A9C_g;
+    int autoEC235A9C_var;
+
     // Actions
     if (!runActions) {
         return true;
     }
 
-    GameTimeOfDaySet("08:00:00");
-    libLbty_gf_AutoRevealRegion(RegionFromId(26), RegionFromId(30), gv_player01User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(27), RegionFromId(31), gv_player01User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(28), RegionFromId(32), gv_player01User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(29), RegionFromId(33), gv_player01User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(26), RegionFromId(30), gv_player02User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(27), RegionFromId(31), gv_player02User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(28), RegionFromId(32), gv_player02User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(29), RegionFromId(33), gv_player02User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(58), gv_player01User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(58), gv_player02User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(59), gv_player01User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(59), gv_player02User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(60), gv_player01User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(60), gv_player02User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(61), gv_player01User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(61), gv_player02User);
+    autoEC235A9C_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    autoEC235A9C_var = -1;
+    while (true) {
+        autoEC235A9C_var = PlayerGroupNextPlayer(autoEC235A9C_g, autoEC235A9C_var);
+        if (autoEC235A9C_var < 0) { break; }
+        libLbty_gf_AutoRevealRegion(RegionFromId(26), RegionFromId(30), autoEC235A9C_var);
+        libLbty_gf_AutoRevealRegion(RegionFromId(27), RegionFromId(31), autoEC235A9C_var);
+        libLbty_gf_AutoRevealRegion(RegionFromId(28), RegionFromId(32), autoEC235A9C_var);
+        libLbty_gf_AutoRevealRegion(RegionFromId(29), RegionFromId(33), autoEC235A9C_var);
+        libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(58), autoEC235A9C_var);
+        libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(59), autoEC235A9C_var);
+        libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(60), autoEC235A9C_var);
+        libLbty_gf_AutoRevealRegion(RegionFromId(62), RegionFromId(61), autoEC235A9C_var);
+    }
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(1668060666), true);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(380259798), true);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(303717300), true);
@@ -1244,36 +1210,6 @@ bool gt_Init07Environment_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Init07Environment_Init () {
     gt_Init07Environment = TriggerCreate("gt_Init07Environment_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 08 Difficulties
-//--------------------------------------------------------------------------------------------------
-bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    int auto9E9AC1ED_val;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    gv_difficulty = libCOMI_gf_DifficultyLevelForPlayerCoop(gv_player03AI);
-    PlayerSetDifficulty(gv_player01User, gv_difficulty);
-    PlayerSetDifficulty(gv_player02User, gv_difficulty);
-    PlayerSetDifficulty(gv_player04AI, gv_difficulty);
-    auto9E9AC1ED_val = libCOMI_gf_DifficultyLevelForPlayerCoop(gv_player03AI);
-    if (auto9E9AC1ED_val == 1) {
-    }
-    else {
-        gv_roundLimitToLose = 1;
-    }
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init08Difficulties_Init () {
-    gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1318,6 +1254,8 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
 
     // Automatic Variable Declarations
     int auto3F260790_val;
+    playergroup auto13711040_g;
+    int auto13711040_var;
 
     // Variable Initialization
     lv_flashingDialogItemP01 = c_invalidDialogControlId;
@@ -1330,7 +1268,6 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
 
     TriggerEnable(gt_VictoryPrimaryObjectiveComplete, true);
     TriggerEnable(gt_DefeatPrimaryObjectiveFailed, true);
-    TriggerEnable(gt_DefeatBaseDead, true);
     HelpPanelAddTip(libCOMI_gf_HumanPlayers(), libNtve_gf_FormatTipTitle(StringExternal("Param/Value/2327CC54"), libNtve_ge_TipType_NormalTip), StringExternal("Param/Value/B0164CA6"), StringExternal("Param/Value/4C8BBCB1"), "Assets\\Textures\\btn-tips-mercenarycontract.dds");
     Wait(10.0, c_timeGame);
     TriggerQueueEnter();
@@ -1353,7 +1290,7 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     Wait(1.0, c_timeGame);
     gf_MiraHanTransmission(StringExternal("Param/Value/D85AEDDF"), SoundLink("HanIntro01", -1));
     Wait(3.0, c_timeGame);
-    if (((PlayerCommander(gv_player01User) == "Raynor") || (PlayerCommander(gv_player02User) == "Raynor"))) {
+    if ((PlayerGroupCount(libCOMI_gf_PlayersOfCommanderInaTeam("Raynor", 1)) > 0)) {
         gf_MiraHanTransmission(StringExternal("Param/Value/865AD830"), SoundLink("HanIntro02A", -1));
     }
     else {
@@ -1361,7 +1298,7 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     }
     Wait(1.0, c_timeGame);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("MiraResponse", true, RandomInt(gv_player01User, gv_player02User));
+    libCOMI_gf_SendMissionTransmission("MiraResponse", true, gv_player01User);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     Wait(12.0, c_timeGame);
     TriggerEnable(gt_MarkerResourcesShow, true);
@@ -1372,7 +1309,7 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     gf_MiraHanTransmission(StringExternal("Param/Value/87C88C24"), SoundLink("HanIntro03", -1));
     Wait(0.5, c_timeGame);
     TriggerExecute(gt_MarkerRevealerShow, true, false);
-    if (((PlayerCommander(gv_player01User) == "Raynor") || (PlayerCommander(gv_player02User) == "Raynor"))) {
+    if ((PlayerGroupCount(libCOMI_gf_PlayersOfCommanderInaTeam("Raynor", 1)) > 0)) {
         gf_MiraHanTransmission(StringExternal("Param/Value/1354046C"), SoundLink("HanIntro04A", -1));
     }
     else {
@@ -1415,8 +1352,13 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_WindowUpdate, true);
     TriggerEnable(gt_ResourceUpdateAmon, true);
     TriggerEnable(gt_ResourceUpdatePlayers, true);
-    DialogControlSetEnabled(gv_addMineralDialogItemP01, libCOMI_gf_HumanPlayers(), true);
-    DialogControlSetEnabled(gv_addMineralDialogItemP02, libCOMI_gf_HumanPlayers(), true);
+    auto13711040_g = libCOMI_gf_GetHumanPlayers();
+    auto13711040_var = -1;
+    while (true) {
+        auto13711040_var = PlayerGroupNextPlayer(auto13711040_g, auto13711040_var);
+        if (auto13711040_var < 0) { break; }
+        DialogControlSetEnabled(gv_addMineralDialogItem[auto13711040_var], libCOMI_gf_HumanPlayers(), true);
+    }
     TriggerExecute(gt_FlashAddResourcesDialogItems, true, false);
     TriggerQueueExit();
     return true;
@@ -1583,13 +1525,12 @@ void gt_PickupsGenerate_Init () {
 bool gt_PickupsCollect_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_textTag;
-    string lv_mineralIconP01;
     string lv_mineralIconP02;
-    string lv_gasIconP01;
     string lv_gasIconP02;
 
     // Automatic Variable Declarations
-    string auto3B33A18A_val;
+    playergroup autoE7A65B1C_g;
+    int autoE7A65B1C_var;
     string auto0C4D9F41_val;
     string auto4353B788_val;
 
@@ -1606,7 +1547,7 @@ bool gt_PickupsCollect_Func (bool testConds, bool runActions) {
             return false;
         }
 
-        if (!(((UnitGetOwner(EventUnitTargetUnit()) == gv_player01User) || (UnitGetOwner(EventUnitTargetUnit()) == gv_player02User)))) {
+        if (!((PlayerGroupHasPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), UnitGetOwner(EventUnitTargetUnit())) == true))) {
             return false;
         }
     }
@@ -1616,57 +1557,47 @@ bool gt_PickupsCollect_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    auto3B33A18A_val = PlayerRace(gv_player01User);
-    if (auto3B33A18A_val == "Terr") {
-        lv_mineralIconP01 = "Assets\\Textures\\icon-mineral-terran.dds";
-        lv_gasIconP01 = "Assets\\Textures\\icon-gas-terran.dds";
-    }
-    else if (auto3B33A18A_val == "Prot") {
-        lv_mineralIconP01 = "Assets\\Textures\\icon-mineral-protoss.dds";
-        lv_gasIconP01 = "Assets\\Textures\\icon-gas-protoss.dds";
-    }
-    else {
-        lv_mineralIconP01 = "Assets\\Textures\\icon-mineral-zerg.dds";
-        lv_gasIconP01 = "Assets\\Textures\\icon-gas-zerg.dds";
-    }
-    auto0C4D9F41_val = PlayerRace(gv_player02User);
-    if (auto0C4D9F41_val == "Terr") {
-        lv_mineralIconP02 = "Assets\\Textures\\icon-mineral-terran.dds";
-        lv_gasIconP02 = "Assets\\Textures\\icon-gas-terran.dds";
-    }
-    else if (auto0C4D9F41_val == "Prot") {
-        lv_mineralIconP02 = "Assets\\Textures\\icon-mineral-protoss.dds";
-        lv_gasIconP02 = "Assets\\Textures\\icon-gas-protoss.dds";
-    }
-    else {
-        lv_mineralIconP02 = "Assets\\Textures\\icon-mineral-zerg.dds";
-        lv_gasIconP02 = "Assets\\Textures\\icon-gas-zerg.dds";
-    }
-    auto4353B788_val = UnitGetType(EventUnit());
-    if (auto4353B788_val == "ScrapSalvage1x1") {
-        libCOMI_gf_DestroyCacheAndGivePlayerResources(EventUnit(), libCOMI_ge_CacheResourceType_Mineral, 25, lv_mineralIconP01, null, gv_player01User);
-        libCOMI_gf_DestroyCacheAndGivePlayerResources(EventUnit(), libCOMI_ge_CacheResourceType_Mineral, 25, lv_mineralIconP02, null, gv_player02User);
-    }
-    else if (auto4353B788_val == "ScrapSalvage2x2") {
-        libCOMI_gf_DestroyCacheAndGivePlayerResources(EventUnit(), libCOMI_ge_CacheResourceType_Mineral, 50, lv_mineralIconP01, null, gv_player01User);
-        libCOMI_gf_DestroyCacheAndGivePlayerResources(EventUnit(), libCOMI_ge_CacheResourceType_Mineral, 50, lv_mineralIconP02, null, gv_player02User);
-    }
-    else if (auto4353B788_val == "PalletGas") {
-        libCOMI_gf_DestroyCacheAndGivePlayerResources(EventUnit(), libCOMI_ge_CacheResourceType_Vespene, 50, lv_gasIconP01, null, gv_player01User);
-        libCOMI_gf_DestroyCacheAndGivePlayerResources(EventUnit(), libCOMI_ge_CacheResourceType_Vespene, 50, lv_gasIconP02, null, gv_player02User);
-    }
-    else if (auto4353B788_val == "ProtossRelic") {
-        TextTagDestroy(gv_relicReticleText);
-        ActorScopeKill(ActorScopeFromActor(gv_relicReticleActor));
-        SoundPlay(SoundLink("UI_ResourcePickup", 0), PlayerGroupAll(), 100.0, 0.0);
-        TextTagCreate(StringExternal("Param/Value/6224739E"), 24, UnitGetPosition(EventUnit()), 1.0, true, false, libCOMI_gf_HumanPlayers());
-        lv_textTag = TextTagLastCreated();
-        TextTagSetVelocity(lv_textTag, 0.5, 90.0);
-        TextTagSetTime(lv_textTag, c_textTagTimeDuration, 3.0);
-        UnitKill(EventUnit());
-        TriggerExecute(gt_BonusObjectivePickup, true, false);
-    }
-    else {
+    autoE7A65B1C_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    autoE7A65B1C_var = -1;
+    while (true) {
+        autoE7A65B1C_var = PlayerGroupNextPlayer(autoE7A65B1C_g, autoE7A65B1C_var);
+        if (autoE7A65B1C_var < 0) { break; }
+        auto0C4D9F41_val = PlayerRace(autoE7A65B1C_var);
+        if (auto0C4D9F41_val == "Zerg") {
+            lv_mineralIconP02 = "Assets\\Textures\\icon-mineral-zerg.dds";
+            lv_gasIconP02 = "Assets\\Textures\\icon-gas-zerg.dds";
+        }
+        else if (auto0C4D9F41_val == "Prot") {
+            lv_mineralIconP02 = "Assets\\Textures\\icon-mineral-protoss.dds";
+            lv_gasIconP02 = "Assets\\Textures\\icon-gas-protoss.dds";
+        }
+        else {
+            lv_mineralIconP02 = "Assets\\Textures\\icon-mineral-terran.dds";
+            lv_gasIconP02 = "Assets\\Textures\\icon-gas-terran.dds";
+        }
+        auto4353B788_val = UnitGetType(EventUnit());
+        if (auto4353B788_val == "ScrapSalvage1x1") {
+            libCOMI_gf_DestroyCacheAndGivePlayerResources(EventUnit(), libCOMI_ge_CacheResourceType_Mineral, 25, lv_mineralIconP02, null, autoE7A65B1C_var);
+        }
+        else if (auto4353B788_val == "ScrapSalvage2x2") {
+            libCOMI_gf_DestroyCacheAndGivePlayerResources(EventUnit(), libCOMI_ge_CacheResourceType_Mineral, 50, lv_mineralIconP02, null, autoE7A65B1C_var);
+        }
+        else if (auto4353B788_val == "PalletGas") {
+            libCOMI_gf_DestroyCacheAndGivePlayerResources(EventUnit(), libCOMI_ge_CacheResourceType_Vespene, 50, lv_gasIconP02, null, autoE7A65B1C_var);
+        }
+        else if (auto4353B788_val == "ProtossRelic") {
+            TextTagDestroy(gv_relicReticleText);
+            ActorScopeKill(ActorScopeFromActor(gv_relicReticleActor));
+            SoundPlay(SoundLink("UI_ResourcePickup", 0), PlayerGroupAll(), 100.0, 0.0);
+            TextTagCreate(StringExternal("Param/Value/6224739E"), 24, UnitGetPosition(EventUnit()), 1.0, true, false, libCOMI_gf_HumanPlayers());
+            lv_textTag = TextTagLastCreated();
+            TextTagSetVelocity(lv_textTag, 0.5, 90.0);
+            TextTagSetTime(lv_textTag, c_textTagTimeDuration, 3.0);
+            UnitKill(EventUnit());
+            TriggerExecute(gt_BonusObjectivePickup, true, false);
+        }
+        else {
+        }
     }
     return true;
 }
@@ -1682,38 +1613,38 @@ void gt_PickupsCollect_Init () {
 // Trigger: Flash Add Resources Dialog Items
 //--------------------------------------------------------------------------------------------------
 bool gt_FlashAddResourcesDialogItems_Func (bool testConds, bool runActions) {
+    int init_i;
+
     // Variable Declarations
     int lv_index;
-    int lv_flashingDialogItemP01;
-    int lv_flashingDialogItemP02;
+    int[6] lv_flashingDialogItem;
     string lv_imageP01;
-    string lv_imageP02;
     int lv_sizeXP01;
     int lv_sizeYP01;
-    int lv_sizeXP02;
-    int lv_sizeYP02;
     int lv_offsetXP01;
     int lv_offsetYP01;
-    int lv_offsetXP02;
-    int lv_offsetYP02;
 
     // Automatic Variable Declarations
+    playergroup auto225DC44A_g;
+    int auto225DC44A_var;
     string auto8A1BB355_val;
-    string auto6B409206_val;
     const int autoECEE85D8_ae = 12;
     const int autoECEE85D8_ai = 1;
+    playergroup auto823F9834_g;
+    int auto823F9834_var;
+    playergroup auto50279081_g;
+    int auto50279081_var;
+    playergroup auto3E07E7E6_g;
+    int auto3E07E7E6_var;
 
     // Variable Initialization
-    lv_flashingDialogItemP01 = c_invalidDialogControlId;
-    lv_flashingDialogItemP02 = c_invalidDialogControlId;
+    for (init_i = 0; init_i <= 5; init_i += 1) {
+        lv_flashingDialogItem[init_i] = c_invalidDialogControlId;
+    }
     lv_sizeXP01 = 205;
     lv_sizeYP01 = 80;
-    lv_sizeXP02 = 205;
-    lv_sizeYP02 = 80;
     lv_offsetXP01 = 43;
     lv_offsetYP01 = 4;
-    lv_offsetXP02 = 43;
-    lv_offsetYP02 = 4;
 
     // Conditions
     if (testConds) {
@@ -1731,53 +1662,56 @@ bool gt_FlashAddResourcesDialogItems_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    auto8A1BB355_val = PlayerRace(gv_player01User);
-    if (auto8A1BB355_val == "Terr") {
-        lv_imageP01 = "Assets\\Textures\\ui_options_selectonbutton_anim_terran.dds";
-        lv_offsetXP01 = 48;
-        lv_offsetYP01 = 11;
-        lv_sizeXP01 = 225;
-        lv_sizeYP01 = 76;
+    auto225DC44A_g = libCOMI_gf_GetHumanPlayers();
+    auto225DC44A_var = -1;
+    while (true) {
+        auto225DC44A_var = PlayerGroupNextPlayer(auto225DC44A_g, auto225DC44A_var);
+        if (auto225DC44A_var < 0) { break; }
+        auto8A1BB355_val = PlayerRace(auto225DC44A_var);
+        if (auto8A1BB355_val == "Terr") {
+            lv_imageP01 = "Assets\\Textures\\ui_options_selectonbutton_anim_terran.dds";
+            lv_offsetXP01 = 48;
+            lv_offsetYP01 = 11;
+            lv_sizeXP01 = 225;
+            lv_sizeYP01 = 76;
+        }
+        else if (auto8A1BB355_val == "Prot") {
+            lv_imageP01 = "ui_options_selectonbutton_anim_protoss.dds";
+        }
+        else {
+            lv_imageP01 = "ui_options_selectonbutton_anim_zerg.dds";
+        }
+        libNtve_gf_CreateDialogItemImage(gv_stateDialog, lv_sizeXP01, lv_sizeYP01, DialogControlGetAnchor(gv_addMineralDialogItem[auto225DC44A_var], auto225DC44A_var), lv_offsetXP01, lv_offsetYP01, StringToText(""), lv_imageP01, c_triggerImageTypeBorder, true, Color(100,100,100), c_triggerBlendModeNormal);
+        lv_flashingDialogItem[auto225DC44A_var] = DialogControlLastCreated();
+        DialogControlSetVisible(lv_flashingDialogItem[auto225DC44A_var], PlayerGroupAll(), false);
+        DialogControlSetVisible(lv_flashingDialogItem[auto225DC44A_var], PlayerGroupSingle(auto225DC44A_var), true);
     }
-    else if (auto8A1BB355_val == "Prot") {
-        lv_imageP01 = "ui_options_selectonbutton_anim_protoss.dds";
-    }
-    else {
-        lv_imageP01 = "ui_options_selectonbutton_anim_zerg.dds";
-    }
-    auto6B409206_val = PlayerRace(gv_player02User);
-    if (auto6B409206_val == "Terr") {
-        lv_imageP02 = "Assets\\Textures\\ui_options_selectonbutton_anim_terran.dds";
-        lv_offsetXP02 = 48;
-        lv_offsetYP02 = 11;
-        lv_sizeXP02 = 225;
-        lv_sizeYP02 = 76;
-    }
-    else if (auto6B409206_val == "Prot") {
-        lv_imageP02 = "ui_options_selectonbutton_anim_protoss.dds";
-    }
-    else {
-        lv_imageP02 = "ui_options_selectonbutton_anim_zerg.dds";
-    }
-    libNtve_gf_CreateDialogItemImage(gv_stateDialog, lv_sizeXP01, lv_sizeYP01, DialogControlGetAnchor(gv_addMineralDialogItemP01, gv_player01User), lv_offsetXP01, lv_offsetYP01, StringToText(""), lv_imageP01, c_triggerImageTypeBorder, true, Color(100,100,100), c_triggerBlendModeNormal);
-    lv_flashingDialogItemP01 = DialogControlLastCreated();
-    libNtve_gf_CreateDialogItemImage(gv_stateDialog, lv_sizeXP02, lv_sizeYP02, DialogControlGetAnchor(gv_addMineralDialogItemP02, gv_player02User), lv_offsetXP02, lv_offsetYP02, StringToText(""), lv_imageP02, c_triggerImageTypeBorder, true, Color(100,100,100), c_triggerBlendModeNormal);
-    lv_flashingDialogItemP02 = DialogControlLastCreated();
-    DialogControlSetVisible(lv_flashingDialogItemP01, PlayerGroupAll(), false);
-    DialogControlSetVisible(lv_flashingDialogItemP02, PlayerGroupAll(), false);
-    DialogControlSetVisible(lv_flashingDialogItemP01, PlayerGroupSingle(gv_player01User), true);
-    DialogControlSetVisible(lv_flashingDialogItemP02, PlayerGroupSingle(gv_player02User), true);
     lv_index = 0;
     for ( ; ( (autoECEE85D8_ai >= 0 && lv_index <= autoECEE85D8_ae) || (autoECEE85D8_ai < 0 && lv_index >= autoECEE85D8_ae) ) ; lv_index += autoECEE85D8_ai ) {
-        DialogControlFadeTransparency(lv_flashingDialogItemP01, PlayerGroupSingle(gv_player01User), 0.2, 0.0);
-        DialogControlFadeTransparency(lv_flashingDialogItemP02, PlayerGroupSingle(gv_player02User), 0.2, 0.0);
+        auto823F9834_g = libCOMI_gf_GetAlliedCommandersPlayers();
+        auto823F9834_var = -1;
+        while (true) {
+            auto823F9834_var = PlayerGroupNextPlayer(auto823F9834_g, auto823F9834_var);
+            if (auto823F9834_var < 0) { break; }
+            DialogControlFadeTransparency(lv_flashingDialogItem[auto823F9834_var], PlayerGroupSingle(auto823F9834_var), 0.2, 0.0);
+        }
         Wait(0.5, c_timeGame);
-        DialogControlFadeTransparency(lv_flashingDialogItemP01, PlayerGroupSingle(gv_player01User), 0.2, 100.0);
-        DialogControlFadeTransparency(lv_flashingDialogItemP02, PlayerGroupSingle(gv_player02User), 0.2, 100.0);
+        auto50279081_g = libCOMI_gf_GetAlliedCommandersPlayers();
+        auto50279081_var = -1;
+        while (true) {
+            auto50279081_var = PlayerGroupNextPlayer(auto50279081_g, auto50279081_var);
+            if (auto50279081_var < 0) { break; }
+            DialogControlFadeTransparency(lv_flashingDialogItem[auto50279081_var], PlayerGroupSingle(auto50279081_var), 0.2, 100.0);
+        }
         Wait(0.5, c_timeGame);
     }
-    DialogControlDestroy(lv_flashingDialogItemP01);
-    DialogControlDestroy(lv_flashingDialogItemP02);
+    auto3E07E7E6_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    auto3E07E7E6_var = -1;
+    while (true) {
+        auto3E07E7E6_var = PlayerGroupNextPlayer(auto3E07E7E6_g, auto3E07E7E6_var);
+        if (auto3E07E7E6_var < 0) { break; }
+        DialogControlDestroy(lv_flashingDialogItem[auto3E07E7E6_var]);
+    }
     return true;
 }
 
@@ -2023,6 +1957,8 @@ bool gt_RoundExpire_Func (bool testConds, bool runActions) {
     int lv_indexAnimation;
 
     // Automatic Variable Declarations
+    playergroup autoC15F22A2_g;
+    int autoC15F22A2_var;
     int auto3F36F463_val;
     int auto193D30C8_val;
     int auto45E6BE0D_val;
@@ -2034,6 +1970,12 @@ bool gt_RoundExpire_Func (bool testConds, bool runActions) {
     int auto00E6FBD5_val;
     const int autoA726635A_ae = 100;
     const int autoA726635A_ai = 1;
+    playergroup auto911DD0A7_g;
+    int auto911DD0A7_var;
+    playergroup auto6D07C19D_g;
+    int auto6D07C19D_var;
+    playergroup autoC5FE9A9E_g;
+    int autoC5FE9A9E_var;
     int auto63015F9F_val;
 
     // Variable Initialization
@@ -2061,10 +2003,14 @@ bool gt_RoundExpire_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_EventDispatcher, false);
     TriggerEnable(gt_WindowUpdate, false);
     TriggerEnable(gt_ResourceUpdateAmon, false);
-    DialogControlSetEnabled(gv_addMineralDialogItemP01, libCOMI_gf_HumanPlayers(), false);
-    DialogControlSetEnabled(gv_addGasDialogItemP01, libCOMI_gf_HumanPlayers(), false);
-    DialogControlSetEnabled(gv_addMineralDialogItemP02, libCOMI_gf_HumanPlayers(), false);
-    DialogControlSetEnabled(gv_addGasDialogItemP02, libCOMI_gf_HumanPlayers(), false);
+    autoC15F22A2_g = libCOMI_gf_GetHumanPlayers();
+    autoC15F22A2_var = -1;
+    while (true) {
+        autoC15F22A2_var = PlayerGroupNextPlayer(autoC15F22A2_g, autoC15F22A2_var);
+        if (autoC15F22A2_var < 0) { break; }
+        DialogControlSetEnabled(gv_addMineralDialogItem[autoC15F22A2_var], libCOMI_gf_HumanPlayers(), false);
+        DialogControlSetEnabled(gv_addGasDialogItem[autoC15F22A2_var], libCOMI_gf_HumanPlayers(), false);
+    }
     if ((gv_roundType != 2)) {
         if ((gv_mineralCountAmon > gv_mineralCountPlayers)) {
             lv_playersWonMinerals = false;
@@ -2342,17 +2288,32 @@ bool gt_RoundExpire_Func (bool testConds, bool runActions) {
             TriggerEnable(gt_WindowUpdate, true);
             TriggerEnable(gt_ResourceUpdateAmon, true);
             if (((gv_roundType == 0) || (gv_roundType == 1))) {
-                DialogControlSetEnabled(gv_addMineralDialogItemP01, libCOMI_gf_HumanPlayers(), true);
-                DialogControlSetEnabled(gv_addMineralDialogItemP02, libCOMI_gf_HumanPlayers(), true);
+                auto6D07C19D_g = libCOMI_gf_GetHumanPlayers();
+                auto6D07C19D_var = -1;
+                while (true) {
+                    auto6D07C19D_var = PlayerGroupNextPlayer(auto6D07C19D_g, auto6D07C19D_var);
+                    if (auto6D07C19D_var < 0) { break; }
+                    DialogControlSetEnabled(gv_addMineralDialogItem[auto6D07C19D_var], libCOMI_gf_HumanPlayers(), true);
+                }
                 if ((gv_roundType == 0)) {
-                    DialogControlSetEnabled(gv_addGasDialogItemP01, libCOMI_gf_HumanPlayers(), true);
-                    DialogControlSetEnabled(gv_addGasDialogItemP02, libCOMI_gf_HumanPlayers(), true);
+                    autoC5FE9A9E_g = libCOMI_gf_GetHumanPlayers();
+                    autoC5FE9A9E_var = -1;
+                    while (true) {
+                        autoC5FE9A9E_var = PlayerGroupNextPlayer(autoC5FE9A9E_g, autoC5FE9A9E_var);
+                        if (autoC5FE9A9E_var < 0) { break; }
+                        DialogControlSetEnabled(gv_addGasDialogItem[autoC5FE9A9E_var], libCOMI_gf_HumanPlayers(), true);
+                    }
                 }
 
             }
             else {
-                DialogControlSetEnabled(gv_addGasDialogItemP01, libCOMI_gf_HumanPlayers(), true);
-                DialogControlSetEnabled(gv_addGasDialogItemP02, libCOMI_gf_HumanPlayers(), true);
+                auto911DD0A7_g = libCOMI_gf_GetHumanPlayers();
+                auto911DD0A7_var = -1;
+                while (true) {
+                    auto911DD0A7_var = PlayerGroupNextPlayer(auto911DD0A7_g, auto911DD0A7_var);
+                    if (auto911DD0A7_var < 0) { break; }
+                    DialogControlSetEnabled(gv_addGasDialogItem[auto911DD0A7_var], libCOMI_gf_HumanPlayers(), true);
+                }
             }
             auto63015F9F_val = gv_roundCurrent;
             if (auto63015F9F_val == 2) {
@@ -2549,7 +2510,7 @@ bool gt_ResourceUpdatePlayers_Func (bool testConds, bool runActions) {
             return false;
         }
 
-        if (!(((EventDialogControl() == gv_addMineralDialogItemP01) || (EventDialogControl() == gv_addGasDialogItemP01) || (EventDialogControl() == gv_addMineralDialogItemP02) || (EventDialogControl() == gv_addGasDialogItemP02)))) {
+        if (!(((EventDialogControl() == gv_addMineralDialogItem[1]) || (EventDialogControl() == gv_addGasDialogItem[1]) || (EventDialogControl() == gv_addMineralDialogItem[2]) || (EventDialogControl() == gv_addGasDialogItem[2]) || (EventDialogControl() == gv_addMineralDialogItem[3]) || (EventDialogControl() == gv_addGasDialogItem[3]) || (EventDialogControl() == gv_addMineralDialogItem[4]) || (EventDialogControl() == gv_addGasDialogItem[4]) || (EventDialogControl() == gv_addMineralDialogItem[5]) || (EventDialogControl() == gv_addGasDialogItem[5])))) {
             return false;
         }
     }
@@ -2559,9 +2520,14 @@ bool gt_ResourceUpdatePlayers_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    if (((EventDialogControl() == gv_addMineralDialogItemP01) || (EventDialogControl() == gv_addMineralDialogItemP02))) {
+    if (((EventDialogControl() == gv_addMineralDialogItem[1]) || (EventDialogControl() == gv_addMineralDialogItem[2]) || (EventDialogControl() == gv_addMineralDialogItem[3]) || (EventDialogControl() == gv_addMineralDialogItem[4]) || (EventDialogControl() == gv_addMineralDialogItem[5]))) {
         if ((PlayerGetPropertyInt(EventPlayer(), c_playerPropMinerals) >= 100)) {
-            gv_mineralCountPlayers += 100;
+            if ((PlayerGroupHasPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), EventPlayer()) == true)) {
+                gv_mineralCountPlayers += 100;
+            }
+            else {
+                gv_mineralCountAmon += 100;
+            }
             PlayerModifyPropertyInt(EventPlayer(), c_playerPropMinerals, c_playerPropOperSubtract, 100);
         }
         else {
@@ -2569,9 +2535,14 @@ bool gt_ResourceUpdatePlayers_Func (bool testConds, bool runActions) {
         }
     }
 
-    if (((EventDialogControl() == gv_addGasDialogItemP01) || (EventDialogControl() == gv_addGasDialogItemP02))) {
+    if (((EventDialogControl() == gv_addGasDialogItem[1]) || (EventDialogControl() == gv_addGasDialogItem[2]) || (EventDialogControl() == gv_addGasDialogItem[3]) || (EventDialogControl() == gv_addGasDialogItem[4]) || (EventDialogControl() == gv_addGasDialogItem[5]))) {
         if ((PlayerGetPropertyInt(EventPlayer(), c_playerPropVespene) >= 50)) {
-            gv_gasCountPlayers += 50;
+            if ((PlayerGroupHasPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), EventPlayer()) == true)) {
+                gv_gasCountPlayers += 50;
+            }
+            else {
+                gv_gasCountAmon += 50;
+            }
             PlayerModifyPropertyInt(EventPlayer(), c_playerPropVespene, c_playerPropOperSubtract, 50);
         }
         else {
@@ -2706,6 +2677,8 @@ bool gt_MULEsNext_Func (bool testConds, bool runActions) {
     int lv_ping;
 
     // Automatic Variable Declarations
+    playergroup auto64EB09AF_g;
+    int auto64EB09AF_var;
     int autoF92308F9_val;
     unitgroup auto18F4F41C_g;
     int auto18F4F41C_u;
@@ -2754,10 +2727,14 @@ bool gt_MULEsNext_Func (bool testConds, bool runActions) {
         lv_ping = PingLastCreated();
         PingSetTooltip(lv_ping, StringExternal("Param/Value/0D26B0EE"));
         Wait(2.5, c_timeGame);
-        VisRevealArea(gv_player01User, RegionCircle(lv_spawnPoint, 7.5), 7.5, false);
-        VisRevealArea(gv_player02User, RegionCircle(lv_spawnPoint, 7.5), 7.5, false);
-        UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/669B7882"), null, lv_spawnPoint);
-        UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/EF452B5C"), null, lv_spawnPoint);
+        auto64EB09AF_g = libCOMI_gf_GetAlliedCommandersPlayers();
+        auto64EB09AF_var = -1;
+        while (true) {
+            auto64EB09AF_var = PlayerGroupNextPlayer(auto64EB09AF_g, auto64EB09AF_var);
+            if (auto64EB09AF_var < 0) { break; }
+            VisRevealArea(auto64EB09AF_var, RegionCircle(lv_spawnPoint, 7.5), 7.5, false);
+            UIAlertPoint("Trigger", auto64EB09AF_var, StringExternal("Param/Value/669B7882"), null, lv_spawnPoint);
+        }
         autoF92308F9_val = gv_difficulty;
         if (autoF92308F9_val == 1) {
             libNtve_gf_CreateUnitsWithDefaultFacing(5, "MULE", 0, lv_aIPlayer, lv_spawnPoint);
@@ -2809,6 +2786,11 @@ void gt_MULEsNext_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_MarkerResourcesShow_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
+    playergroup autoBCB54DEC_g;
+    int autoBCB54DEC_var;
+    playergroup auto11482A66_g;
+    int auto11482A66_var;
+
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -2835,10 +2817,14 @@ bool gt_MarkerResourcesShow_Func (bool testConds, bool runActions) {
             PingSetTooltip(gv_resourceMarkersUp, StringExternal("Param/Value/5B418E99"));
             PingSetScale(gv_resourceMarkersUp, 0.6);
             gv_resourceMarkerAvailableUp = false;
-            VisRevealArea(gv_player01User, RegionFromId(2), 3.0, false);
-            VisRevealArea(gv_player02User, RegionFromId(2), 3.0, false);
-            UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/3B475B22"), null, RegionGetCenter(RegionFromId(2)));
-            UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/874662A0"), null, RegionGetCenter(RegionFromId(2)));
+            autoBCB54DEC_g = libCOMI_gf_GetAlliedCommandersPlayers();
+            autoBCB54DEC_var = -1;
+            while (true) {
+                autoBCB54DEC_var = PlayerGroupNextPlayer(autoBCB54DEC_g, autoBCB54DEC_var);
+                if (autoBCB54DEC_var < 0) { break; }
+                VisRevealArea(autoBCB54DEC_var, RegionFromId(2), 3.0, false);
+                UIAlertPoint("Trigger", autoBCB54DEC_var, StringExternal("Param/Value/3B475B22"), null, RegionGetCenter(RegionFromId(2)));
+            }
             Wait(1.5, c_timeGame);
         }
 
@@ -2849,10 +2835,14 @@ bool gt_MarkerResourcesShow_Func (bool testConds, bool runActions) {
             PingSetTooltip(gv_resourceMarkersLeft, StringExternal("Param/Value/9E53DEA8"));
             PingSetScale(gv_resourceMarkersLeft, 0.6);
             gv_resourceMarkerAvailableLeft = false;
-            VisRevealArea(gv_player01User, RegionFromId(1), 3.0, false);
-            VisRevealArea(gv_player02User, RegionFromId(1), 3.0, false);
-            UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/4667A53D"), null, RegionGetCenter(RegionFromId(1)));
-            UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/95A8A653"), null, RegionGetCenter(RegionFromId(1)));
+            auto11482A66_g = libCOMI_gf_GetAlliedCommandersPlayers();
+            auto11482A66_var = -1;
+            while (true) {
+                auto11482A66_var = PlayerGroupNextPlayer(auto11482A66_g, auto11482A66_var);
+                if (auto11482A66_var < 0) { break; }
+                VisRevealArea(auto11482A66_var, RegionFromId(1), 3.0, false);
+                UIAlertPoint("Trigger", auto11482A66_var, StringExternal("Param/Value/E25154F8"), null, RegionGetCenter(RegionFromId(1)));
+            }
         }
 
     }
@@ -2989,6 +2979,15 @@ void gt_MarkerRevealerShow_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_MarkerEnemyBasesShow_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
+    playergroup autoD15A8B7C_g;
+    int autoD15A8B7C_var;
+    playergroup autoA0B35B96_g;
+    int autoA0B35B96_var;
+    playergroup auto0D1A4B6B_g;
+    int auto0D1A4B6B_var;
+    playergroup autoAFD16039_g;
+    int autoAFD16039_var;
+
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -3011,10 +3010,14 @@ bool gt_MarkerEnemyBasesShow_Func (bool testConds, bool runActions) {
         gv_enemyBaseMarkerMainAvailable = false;
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, RegionGetCenter(RegionFromId(34)), StringExternal("Param/Value/75D4206E"));
         gv_enemyBaseMarkerMain = PingLastCreated();
-        VisRevealArea(gv_player01User, RegionFromId(34), 3.0, false);
-        VisRevealArea(gv_player02User, RegionFromId(34), 3.0, false);
-        UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/FBC5659A"), null, RegionGetCenter(RegionFromId(34)));
-        UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/DD597B14"), null, RegionGetCenter(RegionFromId(34)));
+        autoD15A8B7C_g = libCOMI_gf_GetAlliedCommandersPlayers();
+        autoD15A8B7C_var = -1;
+        while (true) {
+            autoD15A8B7C_var = PlayerGroupNextPlayer(autoD15A8B7C_g, autoD15A8B7C_var);
+            if (autoD15A8B7C_var < 0) { break; }
+            VisRevealArea(autoD15A8B7C_var, RegionFromId(34), 3.0, false);
+            UIAlertPoint("Trigger", autoD15A8B7C_var, StringExternal("Param/Value/FBC5659A"), null, RegionGetCenter(RegionFromId(34)));
+        }
         Wait(1.5, c_timeGame);
     }
 
@@ -3022,10 +3025,14 @@ bool gt_MarkerEnemyBasesShow_Func (bool testConds, bool runActions) {
         gv_enemyBaseMarkerCentralAvailable = false;
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, RegionGetCenter(RegionFromId(65)), StringExternal("Param/Value/A2FFAAAB"));
         gv_enemyBaseMarkerCentral = PingLastCreated();
-        VisRevealArea(gv_player01User, RegionFromId(65), 3.0, false);
-        VisRevealArea(gv_player02User, RegionFromId(65), 3.0, false);
-        UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/7DFDC613"), null, RegionGetCenter(RegionFromId(65)));
-        UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/6C794CB0"), null, RegionGetCenter(RegionFromId(65)));
+        autoA0B35B96_g = libCOMI_gf_GetAlliedCommandersPlayers();
+        autoA0B35B96_var = -1;
+        while (true) {
+            autoA0B35B96_var = PlayerGroupNextPlayer(autoA0B35B96_g, autoA0B35B96_var);
+            if (autoA0B35B96_var < 0) { break; }
+            VisRevealArea(autoA0B35B96_var, RegionFromId(65), 3.0, false);
+            UIAlertPoint("Trigger", autoA0B35B96_var, StringExternal("Param/Value/7DFDC613"), null, RegionGetCenter(RegionFromId(65)));
+        }
         Wait(1.5, c_timeGame);
     }
 
@@ -3033,10 +3040,14 @@ bool gt_MarkerEnemyBasesShow_Func (bool testConds, bool runActions) {
         gv_enemyBaseMarkerSideP03Available = false;
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, RegionGetCenter(RegionFromId(64)), StringExternal("Param/Value/C856B7EA"));
         gv_enemyBaseMarkerSideP03 = PingLastCreated();
-        VisRevealArea(gv_player01User, RegionFromId(64), 3.0, false);
-        VisRevealArea(gv_player02User, RegionFromId(64), 3.0, false);
-        UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/CE04F9D3"), null, RegionGetCenter(RegionFromId(64)));
-        UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/D8B99702"), null, RegionGetCenter(RegionFromId(64)));
+        auto0D1A4B6B_g = libCOMI_gf_GetAlliedCommandersPlayers();
+        auto0D1A4B6B_var = -1;
+        while (true) {
+            auto0D1A4B6B_var = PlayerGroupNextPlayer(auto0D1A4B6B_g, auto0D1A4B6B_var);
+            if (auto0D1A4B6B_var < 0) { break; }
+            VisRevealArea(auto0D1A4B6B_var, RegionFromId(64), 3.0, false);
+            UIAlertPoint("Trigger", auto0D1A4B6B_var, StringExternal("Param/Value/CE04F9D3"), null, RegionGetCenter(RegionFromId(64)));
+        }
         Wait(1.5, c_timeGame);
     }
 
@@ -3044,10 +3055,14 @@ bool gt_MarkerEnemyBasesShow_Func (bool testConds, bool runActions) {
         gv_enemyBaseMarkerSideP04Available = false;
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, RegionGetCenter(RegionFromId(63)), StringExternal("Param/Value/B6873ABA"));
         gv_enemyBaseMarkerSideP04 = PingLastCreated();
-        VisRevealArea(gv_player01User, RegionFromId(63), 3.0, false);
-        VisRevealArea(gv_player02User, RegionFromId(63), 3.0, false);
-        UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/37589E56"), null, RegionGetCenter(RegionFromId(63)));
-        UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/277347E5"), null, RegionGetCenter(RegionFromId(63)));
+        autoAFD16039_g = libCOMI_gf_GetAlliedCommandersPlayers();
+        autoAFD16039_var = -1;
+        while (true) {
+            autoAFD16039_var = PlayerGroupNextPlayer(autoAFD16039_g, autoAFD16039_var);
+            if (autoAFD16039_var < 0) { break; }
+            VisRevealArea(autoAFD16039_var, RegionFromId(63), 3.0, false);
+            UIAlertPoint("Trigger", autoAFD16039_var, StringExternal("Param/Value/37589E56"), null, RegionGetCenter(RegionFromId(63)));
+        }
     }
 
     return true;
@@ -3076,7 +3091,7 @@ bool gt_MarkerRemove_Func (bool testConds, bool runActions) {
             return false;
         }
 
-        if (!(((UnitGetOwner(EventUnit()) == gv_player01User) || (UnitGetOwner(EventUnit()) == gv_player02User)))) {
+        if (!((PlayerGroupHasPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), UnitGetOwner(EventUnit())) == true))) {
             return false;
         }
     }
@@ -3175,6 +3190,9 @@ void gt_MarkerRemove_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_EnemyBuildingsRevealer_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
+    playergroup auto3DD5BAD3_g;
+    int auto3DD5BAD3_var;
+
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -3185,7 +3203,7 @@ bool gt_EnemyBuildingsRevealer_Func (bool testConds, bool runActions) {
             return false;
         }
 
-        if (!(((UnitGetOwner(EventUnit()) == gv_player01User) || (UnitGetOwner(EventUnit()) == gv_player02User)))) {
+        if (!((PlayerGroupHasPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), UnitGetOwner(EventUnit())) == true))) {
             return false;
         }
     }
@@ -3196,8 +3214,13 @@ bool gt_EnemyBuildingsRevealer_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libLbty_gf_AutoRevealRegion(RegionFromId(68), RegionFromId(45), gv_player01User);
-    libLbty_gf_AutoRevealRegion(RegionFromId(68), RegionFromId(45), gv_player02User);
+    auto3DD5BAD3_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    auto3DD5BAD3_var = -1;
+    while (true) {
+        auto3DD5BAD3_var = PlayerGroupNextPlayer(auto3DD5BAD3_g, auto3DD5BAD3_var);
+        if (auto3DD5BAD3_var < 0) { break; }
+        libLbty_gf_AutoRevealRegion(RegionFromId(68), RegionFromId(45), auto3DD5BAD3_var);
+    }
     SoundPlayForPlayer(SoundLink("UI_PingAdvanced_OnMyWay", -1), c_maxPlayers, PlayerGroupAll(), 75.0, 0.0);
     HelpPanelAddTip(libCOMI_gf_HumanPlayers(), libNtve_gf_FormatTipTitle(StringExternal("Param/Value/3D7C596E"), libNtve_ge_TipType_NormalTip), StringExternal("Param/Value/ED399312"), StringExternal("Param/Value/89C68181"), "Assets\\Textures\\ui_btn_generic_exclemation_red.dds");
     if ((UnitIsAlive(UnitFromId(1229370550)) == true)) {
@@ -3314,8 +3337,14 @@ bool gt_BonusObjectiveDrop_Func (bool testConds, bool runActions) {
 
     // Automatic Variable Declarations
     unit auto728AE066_val;
+    playergroup auto618D9074_g;
+    int auto618D9074_var;
     int auto9FF2D60F_val;
+    playergroup autoB5AE62C8_g;
+    int autoB5AE62C8_var;
     int auto72120619_val;
+    playergroup auto02319AAC_g;
+    int auto02319AAC_var;
     int auto879C8AED_val;
 
     // Variable Initialization
@@ -3351,8 +3380,13 @@ bool gt_BonusObjectiveDrop_Func (bool testConds, bool runActions) {
             libCOMI_gf_CreatePingCoop(libCOMI_gf_HumanPlayers(), "PingBaseAttack", lv_currentDropPodPoint, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 6.5);
             lv_ping = PingLastCreated();
             PingSetTooltip(lv_ping, StringExternal("Param/Value/060CCBE1"));
-            UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/7CA1E20F"), null, lv_currentDropPodPoint);
-            UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/4C53DFF7"), null, lv_currentDropPodPoint);
+            auto618D9074_g = libCOMI_gf_GetAlliedCommandersPlayers();
+            auto618D9074_var = -1;
+            while (true) {
+                auto618D9074_var = PlayerGroupNextPlayer(auto618D9074_g, auto618D9074_var);
+                if (auto618D9074_var < 0) { break; }
+                UIAlertPoint("Trigger", auto618D9074_var, StringExternal("Param/Value/7CA1E20F"), null, lv_currentDropPodPoint);
+            }
             Wait(5.0, c_timeGame);
             auto9FF2D60F_val = gv_difficulty;
             if (auto9FF2D60F_val == 1) {
@@ -3398,8 +3432,13 @@ bool gt_BonusObjectiveDrop_Func (bool testConds, bool runActions) {
             libCOMI_gf_CreatePingCoop(libCOMI_gf_HumanPlayers(), "PingBaseAttack", lv_currentDropPodPoint, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 5.0);
             lv_ping = PingLastCreated();
             PingSetTooltip(lv_ping, StringExternal("Param/Value/AEDBC2B2"));
-            UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/2A50DBA7"), null, lv_currentDropPodPoint);
-            UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/082240D9"), null, lv_currentDropPodPoint);
+            autoB5AE62C8_g = libCOMI_gf_GetAlliedCommandersPlayers();
+            autoB5AE62C8_var = -1;
+            while (true) {
+                autoB5AE62C8_var = PlayerGroupNextPlayer(autoB5AE62C8_g, autoB5AE62C8_var);
+                if (autoB5AE62C8_var < 0) { break; }
+                UIAlertPoint("Trigger", autoB5AE62C8_var, StringExternal("Param/Value/2A50DBA7"), null, lv_currentDropPodPoint);
+            }
             Wait(5.0, c_timeGame);
             auto72120619_val = gv_difficulty;
             if (auto72120619_val == 1) {
@@ -3445,8 +3484,13 @@ bool gt_BonusObjectiveDrop_Func (bool testConds, bool runActions) {
             libCOMI_gf_CreatePingCoop(libCOMI_gf_HumanPlayers(), "PingBaseAttack", lv_currentDropPodPoint, ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 5.0);
             lv_ping = PingLastCreated();
             PingSetTooltip(lv_ping, StringExternal("Param/Value/EDC51E4E"));
-            UIAlertPoint("Trigger", gv_player01User, StringExternal("Param/Value/DFC38665"), null, lv_currentDropPodPoint);
-            UIAlertPoint("Trigger", gv_player02User, StringExternal("Param/Value/D44A0260"), null, lv_currentDropPodPoint);
+            auto02319AAC_g = libCOMI_gf_GetAlliedCommandersPlayers();
+            auto02319AAC_var = -1;
+            while (true) {
+                auto02319AAC_var = PlayerGroupNextPlayer(auto02319AAC_g, auto02319AAC_var);
+                if (auto02319AAC_var < 0) { break; }
+                UIAlertPoint("Trigger", auto02319AAC_var, StringExternal("Param/Value/DFC38665"), null, lv_currentDropPodPoint);
+            }
             Wait(5.0, c_timeGame);
             auto879C8AED_val = gv_difficulty;
             if (auto879C8AED_val == 1) {
@@ -3662,7 +3706,7 @@ bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
     Wait(1.5, c_timeGame);
     if (((RandomInt(0, 100) < 55) || (gv_attackWaveCounter == 1))) {
         libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-        libCOMI_gf_SendMissionTransmission("AttackWave", true, RandomInt(gv_player01User, gv_player02User));
+        libCOMI_gf_SendMissionTransmission("AttackWave", true, gv_player01User);
     }
 
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
@@ -4107,7 +4151,7 @@ bool gt_RelicMarkerQ_Func (bool testConds, bool runActions) {
     TriggerQueueEnter();
     auto2B71510B_val = gv_bonusObjectiveCounter;
     if (auto2B71510B_val == 1) {
-        if (((PlayerCommander(gv_player01User) == "Raynor") || (PlayerCommander(gv_player02User) == "Raynor"))) {
+        if ((PlayerGroupCount(libCOMI_gf_PlayersOfCommanderInaTeam("Raynor", 1)) > 0)) {
             gf_MiraHanTransmission(StringExternal("Param/Value/7F4B0B8E"), SoundLink("HanBonusA01A", -1));
         }
         else {
@@ -4244,10 +4288,6 @@ void gt_MiraHanTalkingPortrait_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
-    unitgroup autoD4C1DE9F_g;
-    int autoD4C1DE9F_u;
-    unit autoD4C1DE9F_var;
-
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -4265,7 +4305,6 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerEnable(gt_DefeatBaseDead, false);
     TriggerEnable(gt_DefeatPrimaryObjectiveFailed, false);
     TriggerEnable(gt_RoundExpire, false);
     TriggerEnable(gt_ResourceUpdateAmon, false);
@@ -4283,38 +4322,17 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_JunkerEastSpawn, false);
     TriggerEnable(gt_JunkerWestSpawn, false);
     TriggerEnable(gt_SuperCraneActivation, false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
     TriggerExecute(gt_ObjectiveRoundsFailed, true, false);
     Wait(2.5, c_timeReal);
-    DialogSetVisible(gv_stateDialog, libCOMI_gf_HumanPlayers(), false);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-    autoD4C1DE9F_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    autoD4C1DE9F_u = UnitGroupCount(autoD4C1DE9F_g, c_unitCountAll);
-    for (;; autoD4C1DE9F_u -= 1) {
-        autoD4C1DE9F_var = UnitGroupUnitFromEnd(autoD4C1DE9F_g, autoD4C1DE9F_u);
-        if (autoD4C1DE9F_var == null) { break; }
-        libNtve_gf_MakeUnitInvulnerable(autoD4C1DE9F_var, true);
-    }
-    UnitPauseAll(true);
-    CameraLockInput(gv_player01User, true);
-    CameraLockInput(gv_player02User, true);
-    UnitClearSelection(gv_player01User);
-    UnitClearSelection(gv_player02User);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraPan(gv_player01User, PointFromId(1234543775), 1.5, -1, 10.0, false);
-    CameraPan(gv_player02User, PointFromId(1234543775), 1.5, -1, 10.0, false);
-    Wait(1.5, c_timeGame);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/79462FB3"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+    libCOMI_gf_MoveCameraForAllPlayers(PointFromId(1234543775), 1.5);
     Wait(1.5, c_timeGame);
     gf_MiraHanTransmission(StringExternal("Param/Value/5219F4EB"), SoundLink("HanOutroDefeat", -1));
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/79462FB3"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    Wait(1.5, c_timeGame);
     Wait(1.0, c_timeGame);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(4.0, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_EndMissionDefeat, true, false);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -4322,123 +4340,6 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
 void gt_DefeatPrimaryObjectiveFailed_Init () {
     gt_DefeatPrimaryObjectiveFailed = TriggerCreate("gt_DefeatPrimaryObjectiveFailed_Func");
     TriggerEnable(gt_DefeatPrimaryObjectiveFailed, false);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Defeat Base Dead
-//--------------------------------------------------------------------------------------------------
-bool gt_DefeatBaseDead_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    point lv_cameraTarget;
-
-    // Automatic Variable Declarations
-    unitgroup auto945CCC2A_g;
-    int auto945CCC2A_u;
-    unit auto945CCC2A_var;
-
-    // Variable Initialization
-
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-
-        if (!(libCOMI_gf_DefeatAnyPlayerBaseDead())) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerEnable(gt_DefeatBaseDead, false);
-    TriggerEnable(gt_DefeatPrimaryObjectiveFailed, false);
-    TriggerEnable(gt_RoundExpire, false);
-    TriggerEnable(gt_ResourceUpdateAmon, false);
-    TriggerEnable(gt_WindowUpdate, false);
-    TriggerEnable(gt_MarkerResourcesShow, false);
-    TriggerEnable(gt_MarkerRemove, false);
-    TriggerEnable(gt_NextAttackWave, false);
-    TriggerEnable(gt_UpdateMajorAttackWavePing, false);
-    TriggerEnable(gt_RemoveSCVsonBaseDestroyed, false);
-    TriggerEnable(gt_SpawnHybridforMainBaseDefence, false);
-    TriggerEnable(gt_BonusObjectiveNext, false);
-    TriggerEnable(gt_BonusObjectiveRelic, false);
-    TriggerEnable(gt_BonusObjectiveDrop, false);
-    TriggerEnable(gt_PickupsGenerate, false);
-    TriggerEnable(gt_BonusObjectivePickup, false);
-    TriggerEnable(gt_JunkerEastSpawn, false);
-    TriggerEnable(gt_JunkerWestSpawn, false);
-    TriggerEnable(gt_SuperCraneActivation, false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    TriggerExecute(gt_ObjectiveHarvestFailed, true, false);
-    Wait(2.5, c_timeReal);
-    DialogSetVisible(gv_stateDialog, libCOMI_gf_HumanPlayers(), false);
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
-    auto945CCC2A_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto945CCC2A_u = UnitGroupCount(auto945CCC2A_g, c_unitCountAll);
-    for (;; auto945CCC2A_u -= 1) {
-        auto945CCC2A_var = UnitGroupUnitFromEnd(auto945CCC2A_g, auto945CCC2A_u);
-        if (auto945CCC2A_var == null) { break; }
-        libNtve_gf_MakeUnitInvulnerable(auto945CCC2A_var, true);
-    }
-    UnitPauseAll(true);
-    CameraLockInput(gv_player01User, true);
-    CameraLockInput(gv_player02User, true);
-    UnitClearSelection(gv_player01User);
-    UnitClearSelection(gv_player02User);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    if ((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_player01User, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true)) {
-        lv_cameraTarget = PlayerStartLocation(gv_player01User);
-    }
-    else {
-        lv_cameraTarget = PlayerStartLocation(gv_player02User);
-    }
-    if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_player01User)) == false)) {
-        CameraApplyInfo(gv_player01User, CameraInfoDefault(), 2.0, -1, 10.0, false);
-        CameraPan(gv_player01User, lv_cameraTarget, 2.0, -1, 10.0, false);
-    }
-
-    if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_player02User)) == false)) {
-        CameraApplyInfo(gv_player02User, CameraInfoDefault(), 2.0, -1, 10.0, false);
-        CameraPan(gv_player02User, lv_cameraTarget, 2.0, -1, 10.0, false);
-    }
-
-    Wait(1.5, c_timeGame);
-    if ((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_player01User, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true)) {
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_player01User), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/ECC9A1C1"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_player02User), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/8740BA5D"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    }
-    else {
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_player02User), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/DB8104B8"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_player01User), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/3B69CF92"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    }
-    Wait(1.5, c_timeGame);
-    gf_MiraHanTransmission(StringExternal("Param/Value/12899DF3"), SoundLink("HanOutroDefeat", -1));
-    Wait(1.0, c_timeGame);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(4.0, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_EndMissionDefeat, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_DefeatBaseDead_Init () {
-    gt_DefeatBaseDead = TriggerCreate("gt_DefeatBaseDead_Func");
-    TriggerEnable(gt_DefeatBaseDead, false);
-    TriggerAddEventUnitDied(gt_DefeatBaseDead, null);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -4463,7 +4364,6 @@ bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerEnable(gt_DefeatBaseDead, false);
     TriggerEnable(gt_DefeatPrimaryObjectiveFailed, false);
     TriggerEnable(gt_RoundExpire, false);
     TriggerEnable(gt_ResourceUpdateAmon, false);
@@ -4481,7 +4381,29 @@ bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_JunkerEastSpawn, false);
     TriggerEnable(gt_JunkerWestSpawn, false);
     TriggerEnable(gt_SuperCraneActivation, false);
-    TriggerExecute(gt_VictorySequence, true, false);
+    TriggerExecute(gt_ObjectiveHarvestComplete, true, false);
+    TriggerExecute(gt_ObjectiveRoundsComplete, true, false);
+    DialogSetVisible(gv_stateDialog, libCOMI_gf_HumanPlayers(), false);
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+    Wait(1.5, c_timeGame);
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+    libCOMI_gf_SendMissionTransmission("PrimaryObjectiveVictory", true, gv_player01User);
+    Wait(1.0, c_timeReal);
+    libCOMI_gf_SendMissionTransmission("Victory", true, gv_player01User);
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+    Wait(2.0, c_timeReal);
+    libCOMI_gf_MoveCameraForAllPlayers(PointFromId(1234543775), 1.5);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/52D63292"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    Wait(1.0, c_timeGame);
+    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, "THorner02MusicOutro", c_soundtrackCueAny, c_soundtrackIndexAny, false);
+    if ((PlayerGroupCount(libCOMI_gf_PlayersOfCommanderInaTeam("Raynor", 1)) > 0)) {
+        gf_MiraHanTransmission(StringExternal("Param/Value/A93AB4BC"), SoundLink("HanOutroVictoryA", -1));
+    }
+    else {
+        gf_MiraHanTransmission(StringExternal("Param/Value/835F4608"), SoundLink("HanOutroVictory", -1));
+    }
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
@@ -4489,163 +4411,6 @@ bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
 void gt_VictoryPrimaryObjectiveComplete_Init () {
     gt_VictoryPrimaryObjectiveComplete = TriggerCreate("gt_VictoryPrimaryObjectiveComplete_Func");
     TriggerEnable(gt_VictoryPrimaryObjectiveComplete, false);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Sequence
-//--------------------------------------------------------------------------------------------------
-bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-    Wait(2.0, c_timeReal);
-    TriggerExecute(gt_ObjectiveHarvestComplete, true, false);
-    TriggerExecute(gt_ObjectiveRoundsComplete, true, false);
-    Wait(2.0, c_timeReal);
-    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictorySequence_Init () {
-    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Fanfare Q
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    unitgroup auto8E62DC13_g;
-    int auto8E62DC13_u;
-    unit auto8E62DC13_var;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TransmissionClearAll();
-    TriggerQueueEnter();
-    Wait(1.5, c_timeGame);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("PrimaryObjectiveVictory", true, RandomInt(gv_player01User, gv_player02User));
-    Wait(1.0, c_timeReal);
-    libCOMI_gf_SendMissionTransmission("Victory", true, RandomInt(gv_player01User, gv_player02User));
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    Wait(2.0, c_timeReal);
-    DialogSetVisible(gv_stateDialog, libCOMI_gf_HumanPlayers(), false);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-    UnitPauseAll(true);
-    auto8E62DC13_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto8E62DC13_u = UnitGroupCount(auto8E62DC13_g, c_unitCountAll);
-    for (;; auto8E62DC13_u -= 1) {
-        auto8E62DC13_var = UnitGroupUnitFromEnd(auto8E62DC13_g, auto8E62DC13_u);
-        if (auto8E62DC13_var == null) { break; }
-        libNtve_gf_MakeUnitInvulnerable(auto8E62DC13_var, true);
-    }
-    CameraLockInput(gv_player01User, true);
-    CameraLockInput(gv_player02User, true);
-    UnitClearSelection(gv_player01User);
-    UnitClearSelection(gv_player02User);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraApplyInfo(gv_player01User, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_player01User, PointFromId(1234543775), 2.0, -1, 10.0, false);
-    CameraApplyInfo(gv_player02User, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_player02User, PointFromId(1234543775), 2.0, -1, 10.0, false);
-    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, "THorner02MusicOutro", c_soundtrackCueAny, c_soundtrackIndexAny, false);
-    Wait(1.0, c_timeGame);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_player01User), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/684A78B4"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_player02User), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/E5C8709E"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    Wait(1.5, c_timeGame);
-    if (((PlayerCommander(gv_player01User) == "Raynor") || (PlayerCommander(gv_player02User) == "Raynor"))) {
-        gf_MiraHanTransmission(StringExternal("Param/Value/A93AB4BC"), SoundLink("HanOutroVictoryA", -1));
-    }
-    else {
-        gf_MiraHanTransmission(StringExternal("Param/Value/835F4608"), SoundLink("HanOutroVictory", -1));
-    }
-    Wait(1.0, c_timeGame);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(4.0, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_EndMissionVictory, true, false);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryFanfareQ_Init () {
-    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: End Mission Victory
-//--------------------------------------------------------------------------------------------------
-bool gt_EndMissionVictory_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EndMissionVictory_Init () {
-    gt_EndMissionVictory = TriggerCreate("gt_EndMissionVictory_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: End Mission Defeat
-//--------------------------------------------------------------------------------------------------
-bool gt_EndMissionDefeat_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_EndMissionDefeat_Init () {
-    gt_EndMissionDefeat = TriggerCreate("gt_EndMissionDefeat_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -4718,11 +4483,11 @@ bool gt_SpawnHybridforMainBaseDefence_Func (bool testConds, bool runActions) {
             return false;
         }
 
-        if (!(((UnitGetOwner(EventUnit()) == gv_player01User) || (UnitGetOwner(EventUnit()) == gv_player02User)))) {
+        if (!((PlayerGroupHasPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), UnitGetOwner(EventUnit())) == true))) {
             return false;
         }
 
-        if (!(((UnitGroupCount(UnitGroup(null, gv_player01User, RegionFromId(34), UnitFilter(0, 0, (1 << c_targetFilterWorker) | (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) > 12) || (UnitGroupCount(UnitGroup(null, gv_player02User, RegionFromId(34), UnitFilter(0, 0, (1 << c_targetFilterWorker) | (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) > 12)))) {
+        if (!((UnitGroupCount(UnitGroupAlliance(gv_player01User, c_unitAllianceAlly, RegionFromId(34), UnitFilter(0, 0, (1 << c_targetFilterWorker) | (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) > 12))) {
             return false;
         }
     }
@@ -5691,12 +5456,9 @@ void gt_JunkerEastDespawn_Init () {
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
-    gt_Init01LoadData_Init();
     gt_Init03LoadingComplete_Init();
     gt_Init05Units_Init();
-    gt_Init06MusicSound_Init();
     gt_Init07Environment_Init();
-    gt_Init08Difficulties_Init();
     gt_StartAI_Init();
     gt_StartGameQ_Init();
     gt_PickupsGenerate_Init();
@@ -5732,12 +5494,7 @@ void InitTriggers () {
     gt_MULEsSpawnQ_Init();
     gt_MiraHanTalkingPortrait_Init();
     gt_DefeatPrimaryObjectiveFailed_Init();
-    gt_DefeatBaseDead_Init();
     gt_VictoryPrimaryObjectiveComplete_Init();
-    gt_VictorySequence_Init();
-    gt_VictoryFanfareQ_Init();
-    gt_EndMissionVictory_Init();
-    gt_EndMissionDefeat_Init();
     gt_RemoveSCVsonBaseDestroyed_Init();
     gt_SpawnHybridforMainBaseDefence_Init();
     gt_NextAttackWave_Init();

@@ -150,6 +150,7 @@ void InitGlobals () {
 //--------------------------------------------------------------------------------------------------
 // Global Function Declarations
 //--------------------------------------------------------------------------------------------------
+void gf_DelayAttackandEscortWaves (fixed lp_delayTime);
 fixed gf_AttackWaveMissionTime ();
 void gf_EscortWaveatTime (fixed lp_time, trigger lp_aIEscortWave);
 void gf_EscortWaveSetup (int lp_player, region lp_regionToWarpIn);
@@ -179,7 +180,6 @@ unitgroup gf_GetPushingUnitsNearAmonsChampion (int lp_count);
 fixed gf_TugOfWarGetSpeed (int lp_state);
 void gf_HybridSuperPusherFXLogic (unit lp_superPusher);
 bool gf_HybridcanSuperPush (unit lp_hybrid);
-void gf_DelayAttackandEscortWaves (fixed lp_delayTime);
 
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
@@ -187,8 +187,7 @@ void gf_DelayAttackandEscortWaves (fixed lp_delayTime);
 trigger gt_Initialization;
 trigger gt_Beetles;
 trigger gt_Watchers;
-trigger gt_Init09AI;
-trigger gt_PickFirstAttackWaveTargetRNG;
+trigger gt_AI;
 trigger gt_PickFirstAttackWaveTarget;
 trigger gt_RunAIWaves;
 trigger gt_EscortWaveTransmissionQ;
@@ -272,14 +271,12 @@ trigger gt_RevealFinalBaseQ;
 trigger gt_TugOfWarFailed;
 trigger gt_TugOfWarDefeatFanfare;
 trigger gt_TugOfWarCompleted;
-trigger gt_TugOfWarVictoryFanfare;
 trigger gt_ObjectiveKillAmonsChampionCreate;
 trigger gt_ObjectiveKillAmonsChampionComplete;
 trigger gt_ObjectiveKillAmonsChampionFailed;
 trigger gt_ObjectiveJinaraMustSurviveCreate;
 trigger gt_ObjectiveJinaraMustSurviveComplete;
 trigger gt_ObjectiveJinaraMustSurviveFailed;
-trigger gt_UntitledTrigger001;
 
 //--------------------------------------------------------------------------------------------------
 // Global Presets
@@ -288,6 +285,30 @@ trigger gt_UntitledTrigger001;
 //--------------------------------------------------------------------------------------------------
 // Global Functions
 //--------------------------------------------------------------------------------------------------
+trigger auto_gf_DelayAttackandEscortWaves_Trigger = null;
+fixed auto_gf_DelayAttackandEscortWaves_lp_delayTime;
+
+void gf_DelayAttackandEscortWaves (fixed lp_delayTime) {
+    auto_gf_DelayAttackandEscortWaves_lp_delayTime = lp_delayTime;
+
+    if (auto_gf_DelayAttackandEscortWaves_Trigger == null) {
+        auto_gf_DelayAttackandEscortWaves_Trigger = TriggerCreate("auto_gf_DelayAttackandEscortWaves_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_DelayAttackandEscortWaves_Trigger, false, false);
+}
+
+bool auto_gf_DelayAttackandEscortWaves_TriggerFunc (bool testConds, bool runActions) {
+    fixed lp_delayTime = auto_gf_DelayAttackandEscortWaves_lp_delayTime;
+
+    // Automatic Variable Declarations
+    // Implementation
+    TimerPause(gv_attackWaveTime, true);
+    Wait(lp_delayTime, c_timeAI);
+    TimerPause(gv_attackWaveTime, false);
+    return true;
+}
+
 fixed gf_AttackWaveMissionTime () {
     // Automatic Variable Declarations
     // Implementation
@@ -1345,30 +1366,6 @@ bool gf_HybridcanSuperPush (unit lp_hybrid) {
     }
 }
 
-trigger auto_gf_DelayAttackandEscortWaves_Trigger = null;
-fixed auto_gf_DelayAttackandEscortWaves_lp_delayTime;
-
-void gf_DelayAttackandEscortWaves (fixed lp_delayTime) {
-    auto_gf_DelayAttackandEscortWaves_lp_delayTime = lp_delayTime;
-
-    if (auto_gf_DelayAttackandEscortWaves_Trigger == null) {
-        auto_gf_DelayAttackandEscortWaves_Trigger = TriggerCreate("auto_gf_DelayAttackandEscortWaves_TriggerFunc");
-    }
-
-    TriggerExecute(auto_gf_DelayAttackandEscortWaves_Trigger, false, false);
-}
-
-bool auto_gf_DelayAttackandEscortWaves_TriggerFunc (bool testConds, bool runActions) {
-    fixed lp_delayTime = auto_gf_DelayAttackandEscortWaves_lp_delayTime;
-
-    // Automatic Variable Declarations
-    // Implementation
-    TimerPause(gv_attackWaveTime, true);
-    Wait(lp_delayTime, c_timeAI);
-    TimerPause(gv_attackWaveTime, false);
-    return true;
-}
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Initialization
 //--------------------------------------------------------------------------------------------------
@@ -1383,6 +1380,7 @@ bool gt_Initialization_Func (bool testConds, bool runActions) {
     gf_ObjectiveSlaynElementals();
     TriggerExecute(gt_Beetles, true, false);
     TriggerExecute(gt_Watchers, true, false);
+    TriggerExecute(gt_AI, true, false);
     return true;
 }
 
@@ -1456,9 +1454,9 @@ void gt_Watchers_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Init 09 AI
+// Trigger: AI
 //--------------------------------------------------------------------------------------------------
-bool gt_Init09AI_Func (bool testConds, bool runActions) {
+bool gt_AI_Func (bool testConds, bool runActions) {
     // Variable Declarations
     playergroup lv_tacticalAIUsers;
 
@@ -1471,44 +1469,25 @@ bool gt_Init09AI_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TimerStart(gv_attackWaveTime, 86400.0, false, c_timeAI);
-    PlayerGroupAdd(gv_attackWavePlayers, gv_pLAYER_03_EnemyP01);
-    PlayerGroupAdd(gv_attackWavePlayers, gv_pLAYER_04_EnemyP02);
-    PlayerGroupAdd(gv_escortWavePlayers, gv_pLAYER_05_EnemyP01);
-    PlayerGroupAdd(gv_escortWavePlayers, gv_pLAYER_06_EnemyP02);
-    TriggerExecute(gt_SetupHybridPusherHybridTypesRNG, true, false);
-    TriggerExecute(gt_PickFirstAttackWaveTargetRNG, true, false);
-    TriggerExecute(gt_RunAIWaves, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init09AI_Init () {
-    gt_Init09AI = TriggerCreate("gt_Init09AI_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Pick First Attack Wave Target RNG
-//--------------------------------------------------------------------------------------------------
-bool gt_PickFirstAttackWaveTargetRNG_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
     if ((RandomInt(0, 1) == 1)) {
         gv_attackWave_Player01First = false;
     }
     else {
         gv_attackWave_Player01First = true;
     }
+    TimerStart(gv_attackWaveTime, 86400.0, false, c_timeAI);
+    PlayerGroupAdd(gv_attackWavePlayers, gv_pLAYER_03_EnemyP01);
+    PlayerGroupAdd(gv_attackWavePlayers, gv_pLAYER_04_EnemyP02);
+    PlayerGroupAdd(gv_escortWavePlayers, gv_pLAYER_05_EnemyP01);
+    PlayerGroupAdd(gv_escortWavePlayers, gv_pLAYER_06_EnemyP02);
+    TriggerExecute(gt_SetupHybridPusherHybridTypesRNG, true, false);
+    TriggerExecute(gt_RunAIWaves, true, false);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_PickFirstAttackWaveTargetRNG_Init () {
-    gt_PickFirstAttackWaveTargetRNG = TriggerCreate("gt_PickFirstAttackWaveTargetRNG_Func");
+void gt_AI_Init () {
+    gt_AI = TriggerCreate("gt_AI_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -5350,7 +5329,17 @@ bool gt_TugOfWarFailed_Func (bool testConds, bool runActions) {
     TriggerStop(gt_TugOfWarController);
     UnitIssueOrder(gv_jinara, Order(AbilityCommand("PitAlarakFightDummyAbilityCancel", 0)), c_orderQueueReplace);
     UnitIssueOrder(gv_amonsChampion, Order(AbilityCommand("PitMalashFightDummyAbilityCancel", 0)), c_orderQueueReplace);
-    libCOMI_gf_RunMissionVictorySequence2(gt_TugOfWarDefeatFanfare, c_gameOverDefeat);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+    libCOMI_gf_MoveCameraForAllPlayers(PointFromId(860), 1.5);
+    libCOMI_gf_SendMissionTransmission("DefeatCoA", false, -1);
+    SoundPlayForPlayer(SoundLink("Event_Taldarim02_PitDeath_Explosion", 0), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(1.75, c_timeGame);
+    UnitIssueOrder(gv_amonsChampion, OrderTargetingUnit(AbilityCommand("PitMalashKillAlarak", 0), gv_jinara), c_orderQueueReplace);
+    TriggerExecute(gt_ObjectiveJinaraMustSurviveFailed, true, false);
+    libCOMI_gf_DisplayCampaignMessage(PlayerGroupAll(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/F46A1648"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    Wait(1.5, c_timeGame);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -5365,19 +5354,6 @@ void gt_TugOfWarFailed_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_TugOfWarDefeatFanfare_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_MoveCameraForAllPlayers(PointFromId(860), 1.5);
-    libCOMI_gf_SendMissionTransmission("DefeatCoA", false, -1);
-    SoundPlayForPlayer(SoundLink("Event_Taldarim02_PitDeath_Explosion", 0), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
-    Wait(1.75, c_timeGame);
-    UnitIssueOrder(gv_amonsChampion, OrderTargetingUnit(AbilityCommand("PitMalashKillAlarak", 0), gv_jinara), c_orderQueueReplace);
-    TriggerExecute(gt_ObjectiveJinaraMustSurviveFailed, true, false);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupAll(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/F46A1648"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    Wait(1.5, c_timeGame);
     return true;
 }
 
@@ -5414,26 +5390,7 @@ bool gt_TugOfWarCompleted_Func (bool testConds, bool runActions) {
     UnitIssueOrder(gv_jinara, Order(AbilityCommand("PitAlarakFightDummyAbilityCancel", 0)), c_orderQueueReplace);
     UnitIssueOrder(gv_amonsChampion, Order(AbilityCommand("PitMalashFightDummyAbilityCancel", 0)), c_orderQueueReplace);
     TriggerExecute(gt_ObjectiveJinaraMustSurviveComplete, true, true);
-    libCOMI_gf_RunMissionVictorySequence2(gt_TugOfWarVictoryFanfare, c_gameOverVictory);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_TugOfWarCompleted_Init () {
-    gt_TugOfWarCompleted = TriggerCreate("gt_TugOfWarCompleted_Func");
-    TriggerAddEventUnitRegion(gt_TugOfWarCompleted, UnitRefFromVariable("gv_amonsChampion"), RegionFromId(19), true);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Tug Of War - Victory Fanfare
-//--------------------------------------------------------------------------------------------------
-bool gt_TugOfWarVictoryFanfare_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
     libCOMI_gf_SendVictoryTransmission("VictoryCoA");
     libCOMI_gf_MoveCameraForAllPlayers(PointFromId(882), 1.5);
     libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/3223D936"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
@@ -5443,12 +5400,15 @@ bool gt_TugOfWarVictoryFanfare_Func (bool testConds, bool runActions) {
     UnitIssueOrder(gv_jinara, OrderTargetingUnit(AbilityCommand("PitAlarakKillMalash", 0), gv_amonsChampion), c_orderQueueReplace);
     TriggerExecute(gt_ObjectiveKillAmonsChampionComplete, true, true);
     Wait(5.0, c_timeGame);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_TugOfWarVictoryFanfare_Init () {
-    gt_TugOfWarVictoryFanfare = TriggerCreate("gt_TugOfWarVictoryFanfare_Func");
+void gt_TugOfWarCompleted_Init () {
+    gt_TugOfWarCompleted = TriggerCreate("gt_TugOfWarCompleted_Func");
+    TriggerAddEventUnitRegion(gt_TugOfWarCompleted, UnitRefFromVariable("gv_amonsChampion"), RegionFromId(19), true);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -5625,33 +5585,13 @@ void gt_ObjectiveJinaraMustSurviveFailed_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Untitled Trigger 001
-//--------------------------------------------------------------------------------------------------
-bool gt_UntitledTrigger001_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_EnableDisableCoopAIPlayerAttackPings(gv_escortWavePlayers, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_UntitledTrigger001_Init () {
-    gt_UntitledTrigger001 = TriggerCreate("gt_UntitledTrigger001_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
     gt_Initialization_Init();
     gt_Beetles_Init();
     gt_Watchers_Init();
-    gt_Init09AI_Init();
-    gt_PickFirstAttackWaveTargetRNG_Init();
+    gt_AI_Init();
     gt_PickFirstAttackWaveTarget_Init();
     gt_RunAIWaves_Init();
     gt_EscortWaveTransmissionQ_Init();
@@ -5735,14 +5675,12 @@ void InitTriggers () {
     gt_TugOfWarFailed_Init();
     gt_TugOfWarDefeatFanfare_Init();
     gt_TugOfWarCompleted_Init();
-    gt_TugOfWarVictoryFanfare_Init();
     gt_ObjectiveKillAmonsChampionCreate_Init();
     gt_ObjectiveKillAmonsChampionComplete_Init();
     gt_ObjectiveKillAmonsChampionFailed_Init();
     gt_ObjectiveJinaraMustSurviveCreate_Init();
     gt_ObjectiveJinaraMustSurviveComplete_Init();
     gt_ObjectiveJinaraMustSurviveFailed_Init();
-    gt_UntitledTrigger001_Init();
 }
 
 //--------------------------------------------------------------------------------------------------

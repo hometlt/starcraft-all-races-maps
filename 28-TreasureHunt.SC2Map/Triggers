@@ -14,7 +14,6 @@
             //==================================================================================================
             include &quot;TriggerLibs/SwarmLib&quot;
             include &quot;LibCOMI&quot;
-            include &quot;Lib37CC0EF2&quot;
             //--------------------------------------------------------------------------------------------------
             // Library Initialization
             //--------------------------------------------------------------------------------------------------
@@ -22,16 +21,15 @@
                 libNtve_InitLib();
                 libHots_InitLib();
                 libCOMI_InitLib();
-                lib37CC0EF2_InitLib();
             }
             //--------------------------------------------------------------------------------------------------
             // Constants
             //--------------------------------------------------------------------------------------------------
-            const int gv_pLAYER_01_USER = 1;
-            const int gv_pLAYER_02_USER = 2;
-            const int gv_pLAYER_03_Player01Enemy = 3;
-            const int gv_pLAYER_04_Player02Enemy = 4;
-            const int gv_pLAYER_05_Player03Hybrids = 5;
+            int gv_pLAYER_01_USER = 1;
+            int gv_pLAYER_02_USER = 2;
+            const int gv_pLAYER_03_Player01Enemy = 6;
+            const int gv_pLAYER_04_Player02Enemy = 7;
+            const int gv_pLAYER_05_Player03Hybrids = 8;
             const int gv_pLAYER_10_Crystal = 10;
             const int gv_pLAYER_11_Transport = 11;
             const int gv_objectiveEscortCrystalsGoal = 7;
@@ -341,16 +339,12 @@
             trigger gt_SecondStorm;
             trigger gt_Crystaldouble;
             trigger gt_VictoryTransmission;
-            trigger gt_DefeatTransmission;
             trigger gt_DefeatPrimaryObjectiveFailed;
             trigger gt_VictoryEscortingCompleted;
             trigger gt_VictorySequence;
             trigger gt_Victory;
             trigger gt_VictoryFanfareQ;
-            trigger gt_VictoryFanfareQwtihdebug;
             trigger gt_Defeat;
-            trigger gt_VictoryCheat;
-            trigger gt_DefeatCheat;
             trigger gt_BaseAttackWave01A;
             trigger gt_BaseAttackWave01A2;
             trigger gt_BaseAttackWave01B;
@@ -2175,7 +2169,6 @@
             // Trigger: Init 01 Load Data
             //--------------------------------------------------------------------------------------------------
             bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-                gt_Init02Players();
                 libCOMI_gf_LoadCoopMission(&quot;COOP_Placeholder&quot;, gt_Init03LoadingComplete);
                 return true;
             }
@@ -2184,26 +2177,13 @@
                 gt_Init01LoadData = TriggerCreate(&quot;gt_Init01LoadData_Func&quot;);
                 TriggerAddEventMapInit(gt_Init01LoadData);
             }
-            
             //--------------------------------------------------------------------------------------------------
             // Trigger: Init 02 Players
             //--------------------------------------------------------------------------------------------------
             void gt_Init02Players () {
-            
-                libNtve_gf_SetAlliance(gv_pLAYER_03_Player01Enemy, gv_pLAYER_10_Crystal, libNtve_ge_AllianceSetting_Ally);
-                libNtve_gf_SetAlliance(gv_pLAYER_04_Player02Enemy, gv_pLAYER_10_Crystal, libNtve_ge_AllianceSetting_Ally);
-                libNtve_gf_SetAlliance(12, gv_pLAYER_10_Crystal, libNtve_ge_AllianceSetting_Ally);
-                libNtve_gf_SetAlliance(gv_pLAYER_05_Player03Hybrids, gv_pLAYER_10_Crystal, libNtve_ge_AllianceSetting_EnemyWithSharedVision);
-                libNtve_gf_SetAlliance(gv_pLAYER_03_Player01Enemy, gv_pLAYER_11_Transport, libNtve_ge_AllianceSetting_EnemyWithSharedVision);
-                libNtve_gf_SetAlliance(gv_pLAYER_04_Player02Enemy, gv_pLAYER_11_Transport, libNtve_ge_AllianceSetting_EnemyWithSharedVision);
-                libNtve_gf_SetAlliance(gv_pLAYER_05_Player03Hybrids, gv_pLAYER_11_Transport, libNtve_ge_AllianceSetting_EnemyWithSharedVision);
-                PlayerSetAlliance(gv_pLAYER_03_Player01Enemy, c_allianceIdVision, gv_pLAYER_11_Transport, false);
-                PlayerSetAlliance(gv_pLAYER_04_Player02Enemy, c_allianceIdVision, gv_pLAYER_11_Transport, false);
-            
                 PlayerSetColorIndex(gv_pLAYER_10_Crystal, 6, true);
                 PlayerSetColorIndex(gv_pLAYER_11_Transport, 0, true);
             }
-            
             //--------------------------------------------------------------------------------------------------
             // Trigger: Init 03 Loading Complete
             //--------------------------------------------------------------------------------------------------
@@ -2212,6 +2192,11 @@
                 if (!runActions) {
                     return true;
                 }
+            
+                gt_Init02Players();
+                gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+                gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
+            
                 TriggerExecute(gt_Init05Units, true, false);
                 TriggerExecute(gt_Init06MusicSound, true, false);
                 TriggerExecute(gt_Init07Environment, true, false);
@@ -6996,30 +6981,11 @@
             // Trigger: Victory Transmission
             //--------------------------------------------------------------------------------------------------
             bool gt_VictoryTransmission_Func (bool testConds, bool runActions) {
-                int auto2B941A8E_val;
                 // Actions
                 if (!runActions) {
                     return true;
                 }
-                TransmissionClearAll();
-                TriggerQueuePause(true);
-                TriggerQueueClear(c_triggerQueueRemove);
-                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-                auto2B941A8E_val = RandomInt(1, 2);
-                if (auto2B941A8E_val == 1) {
-                    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal(&quot;Param/Value/5D351F06&quot;));
-                    libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel(&quot;AenythAdvisorPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink(&quot;AenythAdvisorY1&quot;, -1), 0.2, c_transmissionDurationAdd, true);
-                }
-                else if (auto2B941A8E_val == 2) {
-                    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal(&quot;Param/Value/0CB25634&quot;));
-                    libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel(&quot;AenythAdvisorPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink(&quot;AenythAdvisorY2&quot;, -1), 0.2, c_transmissionDurationAdd, true);
-                }
-                else {
-                }
-                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-                Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-                UISetCursorVisible(PlayerGroupAll(), true);
-                TriggerExecute(gt_Victory, true, false);
+            
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -7027,18 +6993,24 @@
                 gt_VictoryTransmission = TriggerCreate(&quot;gt_VictoryTransmission_Func&quot;);
             }
             //--------------------------------------------------------------------------------------------------
-            // Trigger: Defeat Transmission
+            // Trigger: Defeat Primary Objective Failed
             //--------------------------------------------------------------------------------------------------
-            bool gt_DefeatTransmission_Func (bool testConds, bool runActions) {
+            bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
                 int auto24528792_val;
+                // Conditions
+                if (testConds) {
+                    if (!((libCOMI_gf_GameIsOver() == false))) {
+                        return false;
+                    }
+                } 
                 // Actions
                 if (!runActions) {
                     return true;
                 }
-                TransmissionClearAll();
-                TriggerQueuePause(true);
-                TriggerQueueClear(c_triggerQueueRemove);
-                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+                TriggerEnable(TriggerGetCurrent(), false);
+            
+                libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+            
                 auto24528792_val = RandomInt(1, 2);
                 if (auto24528792_val == 1) {
                     UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal(&quot;Param/Value/C1AFE0E0&quot;));
@@ -7048,44 +7020,16 @@
                     UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal(&quot;Param/Value/E325EEE2&quot;));
                     libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel(&quot;AenythAdvisorPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink(&quot;AenythAdvisorZ2&quot;, -1), 0.2, c_transmissionDurationAdd, true);
                 }
-                else {
-                }
                 libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
                 UISetCursorVisible(PlayerGroupAll(), true);
                 TriggerExecute(gt_Defeat, true, false);
-                return true;
-            }
-            //--------------------------------------------------------------------------------------------------
-            void gt_DefeatTransmission_Init () {
-                gt_DefeatTransmission = TriggerCreate(&quot;gt_DefeatTransmission_Func&quot;);
-            }
-            //--------------------------------------------------------------------------------------------------
-            // Trigger: Defeat Primary Objective Failed
-            //--------------------------------------------------------------------------------------------------
-            bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
-                // Conditions
-                if (testConds) {
-                    if (!((libCOMI_gf_GameIsOver() == false))) {
-                        return false;
-                    }
-                }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                TriggerExecute(gt_DefeatTransmission, true, false);
-                libCOMI_gf_CinematicModeCampaign(true, 1.5, false);
+            
                 libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/285C8236&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                CameraLockInput(gv_pLAYER_01_USER, true);
-                CameraLockInput(gv_pLAYER_02_USER, true);
-                UnitClearSelection(gv_pLAYER_01_USER);
-                UnitClearSelection(gv_pLAYER_02_USER);
-                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-                CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                CameraPan(gv_pLAYER_01_USER, gv_lastCriticalEventPosition, 1.5, -1, 10.0, false);
-                CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                CameraPan(gv_pLAYER_02_USER, gv_lastCriticalEventPosition, 1.5, -1, 10.0, false);
+            
+                libCOMI_gf_MoveCameraForAllPlayers(gv_lastCriticalEventPosition, 2.0);
+            
+                libCOMI_gf_AfterFanfare(c_gameOverDefeat);
+            
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -7096,6 +7040,7 @@
             // Trigger: Victory Escorting Completed
             //--------------------------------------------------------------------------------------------------
             bool gt_VictoryEscortingCompleted_Func (bool testConds, bool runActions) {
+                int auto2B941A8E_val;
                 // Conditions
                 if (testConds) {
                     if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -7110,7 +7055,27 @@
                     return true;
                 }
                 TriggerEnable(TriggerGetCurrent(), false);
-                TriggerExecute(gt_VictorySequence, true, false);
+            
+                VictoryPanelAddCustomStatisticLine(StringExternal(&quot;Param/Value/63CB2206&quot;), StringExternal(&quot;Param/Value/D5D27AD3&quot;));
+                VictoryPanelAddCustomStatisticLine(StringExternal(&quot;Param/Value/620A36D3&quot;), StringExternal(&quot;Param/Value/550EAE47&quot;));
+            
+                libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+                auto2B941A8E_val = RandomInt(1, 2);
+                if (auto2B941A8E_val == 1) {
+                    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal(&quot;Param/Value/5D351F06&quot;));
+                    libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel(&quot;AenythAdvisorPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink(&quot;AenythAdvisorY1&quot;, -1), 0.2, c_transmissionDurationAdd, true);
+                }
+                else if (auto2B941A8E_val == 2) {
+                    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal(&quot;Param/Value/0CB25634&quot;));
+                    libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel(&quot;AenythAdvisorPortrait&quot;), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink(&quot;AenythAdvisorY2&quot;, -1), 0.2, c_transmissionDurationAdd, true);
+                }
+                libCOMI_gf_MoveCameraForAllPlayers(gv_lastCriticalEventPosition, 2.0);
+                libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/2F58291D&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+                Wait(0.5, c_timeGame);
+                libCOMI_gf_MoveCameraForAllPlayers(gv_lastCriticalEventPosition, 2.0);
+                libCOMI_gf_AfterFanfare(c_gameOverVictory);
+            
+            
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -7121,19 +7086,6 @@
             // Trigger: Victory Sequence
             //--------------------------------------------------------------------------------------------------
             bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-                // Conditions
-                if (testConds) {
-                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-                        return false;
-                    }
-                }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                Wait(2.0, c_timeReal);
-                libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -7144,28 +7096,6 @@
             // Trigger: Victory
             //--------------------------------------------------------------------------------------------------
             bool gt_Victory_Func (bool testConds, bool runActions) {
-                // Conditions
-                if (testConds) {
-                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-                        return false;
-                    }
-                }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                if ((ObjectiveGetState(gv_objectiveDestroyZergBase) == c_objectiveStateCompleted) &amp;&amp; (ObjectiveGetState(gv_objectiveRescueStalkers) == c_objectiveStateCompleted)) {
-                }
-                VictoryPanelAddTrackedStatistic(&quot;UnitsTotalCount&quot;);
-                VictoryPanelAddTrackedStatistic(&quot;UnitsKilledCount&quot;);
-                VictoryPanelAddTrackedStatistic(&quot;UnitsLostCount&quot;);
-                VictoryPanelAddTrackedStatistic(&quot;StructuresKilledCount&quot;);
-                VictoryPanelAddTrackedStatistic(&quot;StructuresLostCount&quot;);
-                VictoryPanelAddCustomStatisticLine(StringExternal(&quot;Param/Value/63CB2206&quot;), StringExternal(&quot;Param/Value/D5D27AD3&quot;));
-                VictoryPanelAddCustomStatisticLine(StringExternal(&quot;Param/Value/620A36D3&quot;), StringExternal(&quot;Param/Value/550EAE47&quot;));
-                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-                libCOMI_gf_EndCampaignMission(c_gameOverVictory);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -7176,115 +7106,11 @@
             // Trigger: Victory Fanfare Q
             //--------------------------------------------------------------------------------------------------
             bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerExecute(gt_VictoryTransmission, true, false);
-                libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
-                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_01_USER, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_PauseUnit(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_02_USER, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_PauseUnit(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_03_Player01Enemy, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_PauseUnit(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_04_Player02Enemy, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_PauseUnit(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05_Player03Hybrids, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_PauseUnit(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                CameraLockInput(gv_pLAYER_01_USER, true);
-                CameraLockInput(gv_pLAYER_02_USER, true);
-                UnitClearSelection(gv_pLAYER_01_USER);
-                UnitClearSelection(gv_pLAYER_02_USER);
-                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-                CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoFromId(899221366), 1.0, -1, 10.0, false);
-                CameraPan(gv_pLAYER_01_USER, gv_lastCriticalEventPosition, 2.0, -1, 10.0, false);
-                CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoFromId(899221366), 1.0, -1, 10.0, false);
-                CameraPan(gv_pLAYER_02_USER, gv_lastCriticalEventPosition, 2.0, -1, 10.0, false);
-                libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/2F58291D&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                Wait(0.5, c_timeGame);
-                CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoFromId(732033166), 4.0, -1, 25.0, false);
-                CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoFromId(732033166), 4.0, -1, 25.0, false);
-                CameraPan(gv_pLAYER_01_USER, gv_lastCriticalEventPosition, 1.5, -1, 10.0, false);
-                CameraPan(gv_pLAYER_02_USER, gv_lastCriticalEventPosition, 1.5, -1, 10.0, false);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
             void gt_VictoryFanfareQ_Init () {
                 gt_VictoryFanfareQ = TriggerCreate(&quot;gt_VictoryFanfareQ_Func&quot;);
-            }
-            //--------------------------------------------------------------------------------------------------
-            // Trigger: Victory Fanfare Q wtih debug
-            //--------------------------------------------------------------------------------------------------
-            bool gt_VictoryFanfareQwtihdebug_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerExecute(gt_VictoryTransmission, true, false);
-                libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
-                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_01_USER, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_PauseUnit(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_02_USER, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_PauseUnit(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_03_Player01Enemy, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_PauseUnit(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_04_Player02Enemy, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_PauseUnit(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05_Player03Hybrids, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_PauseUnit(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                CameraLockInput(gv_pLAYER_01_USER, true);
-                CameraLockInput(gv_pLAYER_02_USER, true);
-                UnitClearSelection(gv_pLAYER_01_USER);
-                UnitClearSelection(gv_pLAYER_02_USER);
-                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-                CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoFromId(899221366), 1.0, -1, 10.0, false);
-                CameraPan(gv_pLAYER_01_USER, gv_lastCriticalEventPosition, 2.0, -1, 10.0, false);
-                CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoFromId(899221366), 1.0, -1, 10.0, false);
-                CameraPan(gv_pLAYER_02_USER, gv_lastCriticalEventPosition, 2.0, -1, 10.0, false);
-                libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/C09CAF80&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                TextExpressionSetToken(&quot;Param/Expression/B72BA7AA&quot;, &quot;A&quot;, TextTimeFormat(StringToText(&quot;&lt;mintotal/&gt;:&lt;sec2/&gt;&quot;), FixedToInt(TimerGetElapsed(gv_debuggametimer))));
-                UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, TextExpressionAssemble(&quot;Param/Expression/B72BA7AA&quot;));
-                Wait(0.5, c_timeGame);
-                CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoFromId(732033166), 4.0, -1, 25.0, false);
-                CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoFromId(732033166), 4.0, -1, 25.0, false);
-                CameraPan(gv_pLAYER_01_USER, gv_lastCriticalEventPosition, 1.5, -1, 10.0, false);
-                CameraPan(gv_pLAYER_02_USER, gv_lastCriticalEventPosition, 1.5, -1, 10.0, false);
-                return true;
-            }
-            //--------------------------------------------------------------------------------------------------
-            void gt_VictoryFanfareQwtihdebug_Init () {
-                gt_VictoryFanfareQwtihdebug = TriggerCreate(&quot;gt_VictoryFanfareQwtihdebug_Func&quot;);
             }
             //--------------------------------------------------------------------------------------------------
             // Trigger: Defeat
@@ -7309,56 +7135,7 @@
             void gt_Defeat_Init () {
                 gt_Defeat = TriggerCreate(&quot;gt_Defeat_Func&quot;);
             }
-            //--------------------------------------------------------------------------------------------------
-            // Trigger: Victory Cheat
-            //--------------------------------------------------------------------------------------------------
-            bool gt_VictoryCheat_Func (bool testConds, bool runActions) {
-                // Conditions
-                if (testConds) {
-                    if (!((libCOMI_gf_GameIsOver() == false))) {
-                        return false;
-                    }
-                }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-                libCOMI_gf_RunMissionVictorySequence(gt_Victory);
-                return true;
-            }
-            //--------------------------------------------------------------------------------------------------
-            void gt_VictoryCheat_Init () {
-                gt_VictoryCheat = TriggerCreate(&quot;gt_VictoryCheat_Func&quot;);
-                TriggerAddEventPlayerLeft(gt_VictoryCheat, gv_pLAYER_01_USER, c_gameResultVictory);
-                TriggerAddEventPlayerLeft(gt_VictoryCheat, gv_pLAYER_02_USER, c_gameResultVictory);
-            }
-            //--------------------------------------------------------------------------------------------------
-            // Trigger: Defeat Cheat
-            //--------------------------------------------------------------------------------------------------
-            bool gt_DefeatCheat_Func (bool testConds, bool runActions) {
-                // Conditions
-                if (testConds) {
-                    if (!((libCOMI_gf_GameIsOver() == false))) {
-                        return false;
-                    }
-                }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-                TriggerExecute(gt_Defeat, true, false);
-                return true;
-            }
-            //--------------------------------------------------------------------------------------------------
-            void gt_DefeatCheat_Init () {
-                gt_DefeatCheat = TriggerCreate(&quot;gt_DefeatCheat_Func&quot;);
-                TriggerAddEventPlayerLeft(gt_DefeatCheat, gv_pLAYER_01_USER, c_gameResultDefeat);
-                TriggerAddEventPlayerLeft(gt_DefeatCheat, gv_pLAYER_02_USER, c_gameResultDefeat);
-            }
+            
             //--------------------------------------------------------------------------------------------------
             // Trigger: Base Attack Wave 01A
             //--------------------------------------------------------------------------------------------------
@@ -9189,16 +8966,12 @@
                 gt_SecondStorm_Init();
                 gt_Crystaldouble_Init();
                 gt_VictoryTransmission_Init();
-                gt_DefeatTransmission_Init();
                 gt_DefeatPrimaryObjectiveFailed_Init();
                 gt_VictoryEscortingCompleted_Init();
                 gt_VictorySequence_Init();
                 gt_Victory_Init();
                 gt_VictoryFanfareQ_Init();
-                gt_VictoryFanfareQwtihdebug_Init();
                 gt_Defeat_Init();
-                gt_VictoryCheat_Init();
-                gt_DefeatCheat_Init();
                 gt_BaseAttackWave01A_Init();
                 gt_BaseAttackWave01A2_Init();
                 gt_BaseAttackWave01B_Init();

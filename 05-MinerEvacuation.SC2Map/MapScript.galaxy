@@ -21,6 +21,12 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
+const string gv_launchUnitToTargetPointBaseEffect = "UnitLaunchToTargetPoint";
+const int gv_c_ColonyShipHoldoutTime = 120;
+const string gv_c_ColonyShipObjective = "IndustrialShip";
+const string gv_c_ColonyShipObjective_Dead = "InfestedIndustrialShip";
+const int gv_c_ColonyShip_MaxCount = 9;
+const int gv_c_InfestedTownCount = 10;
 const int gv_pLAYER_03_AMON_Claimers = 13;
 const int gv_pLAYER_04_AMON_BaseWaves = 14;
 const int gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss = 12;
@@ -30,12 +36,6 @@ const int gv_pLAYER_08_ColonyShip = 8;
 const int gv_pLAYER_09_ERADICATOR = 9;
 const int gv_pLAYER_10_ColonyShipTARGET = 10;
 const int gv_pLAYER_11_COLONISTS = 11;
-const string gv_launchUnitToTargetPointBaseEffect = "UnitLaunchToTargetPoint";
-const int gv_c_ColonyShipHoldoutTime = 120;
-const string gv_c_ColonyShipObjective = "IndustrialShip";
-const string gv_c_ColonyShipObjective_Dead = "InfestedIndustrialShip";
-const int gv_c_ColonyShip_MaxCount = 9;
-const int gv_c_InfestedTownCount = 10;
 
 //--------------------------------------------------------------------------------------------------
 // Global Structures
@@ -97,19 +97,6 @@ const int ge_PRESETClaimerWaveType_LargeB = 5;
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
-int[4] gv_optionsDialogMenus;
-int gv_optionsDialogAccept;
-int[4] gv_optionsDialogLabels;
-int gv_optionsDialogTitle;
-int gv_optionsDialog;
-int gv_pLAYER_01_USER;
-int gv_pLAYER_02_USER;
-string gv_mapMusicTrack2;
-string gv_mapMusicTrack3;
-string gv_mapMusicTrack4;
-playergroup gv_zergPlayers;
-playergroup gv_amonPlayers;
-playergroup gv_enemyPlayers;
 int gv_leaderboardTimeScoreFinal;
 int gv_leaderboardShuttleScore;
 int gv_leaderboardBonusScoreFinal;
@@ -192,24 +179,18 @@ bool gv_objectiveExploreUmojanMine_Kill_TextDone;
 int gv_objectiveExploreScienceFacility_EradicatorsDestroyed;
 int gv_objectiveExploreScienceFacility_Destroy;
 bool gv_objectiveExploreScienceFacility_Destroy_TextDone;
+int gv_pLAYER_01_USER;
+int gv_pLAYER_02_USER;
+string gv_mapMusicTrack2;
+string gv_mapMusicTrack3;
+string gv_mapMusicTrack4;
+playergroup gv_zergPlayers;
+playergroup gv_amonPlayers;
+playergroup gv_enemyPlayers;
 
 void InitGlobals () {
     int init_i;
 
-    for (init_i = 0; init_i <= 3; init_i += 1) {
-        gv_optionsDialogMenus[init_i] = c_invalidDialogControlId;
-    }
-    gv_optionsDialogAccept = c_invalidDialogControlId;
-    for (init_i = 0; init_i <= 3; init_i += 1) {
-        gv_optionsDialogLabels[init_i] = c_invalidDialogControlId;
-    }
-    gv_optionsDialogTitle = c_invalidDialogControlId;
-    gv_optionsDialog = c_invalidDialogId;
-    gv_pLAYER_01_USER = 1;
-    gv_pLAYER_02_USER = 2;
-    gv_zergPlayers = PlayerGroupEmpty();
-    gv_amonPlayers = PlayerGroupEmpty();
-    gv_enemyPlayers = PlayerGroupEmpty();
     gv_pauseMissionTimer = TimerCreate();
     gv_missionEventTimer = TimerCreate();
     gv_enableAIInfestedBansheeCloak = TimerCreate();
@@ -238,6 +219,11 @@ void InitGlobals () {
     gv_objectiveDestroyZergBase2 = c_invalidObjectiveId;
     gv_objectiveExploreUmojanMine_Kill = c_invalidObjectiveId;
     gv_objectiveExploreScienceFacility_Destroy = c_invalidObjectiveId;
+    gv_pLAYER_01_USER = 1;
+    gv_pLAYER_02_USER = 2;
+    gv_zergPlayers = PlayerGroupEmpty();
+    gv_amonPlayers = PlayerGroupEmpty();
+    gv_enemyPlayers = PlayerGroupEmpty();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -322,20 +308,6 @@ abilcmd gf_GetUnitTypeSuperWarpGateCommand (string lp_warpInType);
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
-trigger gt_CreateOptionsDialog;
-trigger gt_OpenOptions;
-trigger gt_CloseOptions;
-trigger gt_InitializeColonyShipLocations;
-trigger gt_Init01LoadData;
-trigger gt_Init02LoadingComplete;
-trigger gt_Init03Players;
-trigger gt_Init04Technology;
-trigger gt_Init05Units;
-trigger gt_Init06MusicSound;
-trigger gt_Init07Environment;
-trigger gt_Init08Difficulties;
-trigger gt_StartAI;
-trigger gt_StartGameQ;
 trigger gt_CharExample;
 trigger gt_InfestMercs;
 trigger gt_CreateColonyShipPings;
@@ -413,8 +385,6 @@ trigger gt_ProtossClaimerWaveTransmissionQ;
 trigger gt_ClaimerWaveDestroyedTransmissionQ;
 trigger gt_DefeatPrimaryObjectiveFailed;
 trigger gt_VictoryDestoryZergBaseCompleted;
-trigger gt_VictorySequence;
-trigger gt_VictoryFanfareQ;
 trigger gt_ObjectiveExtractColonyShipCreate;
 trigger gt_ObjectiveExtractColonyShipComplete;
 trigger gt_ObjectiveExtractColonyShipUpdate;
@@ -431,6 +401,16 @@ trigger gt_ObjectiveExploreScienceFacilityDestroyCreate;
 trigger gt_ObjectiveExploreScienceFacilityUpdate;
 trigger gt_ObjectiveExploreScienceFacilityDestroyComplete;
 trigger gt_ObjectiveExploreScienceFacilityFailed;
+trigger gt_InitializeColonyShipLocations;
+trigger gt_Init02LoadingComplete;
+trigger gt_Init03Players;
+trigger gt_Init04Technology;
+trigger gt_Init05Units;
+trigger gt_Init06MusicSound;
+trigger gt_Init07Environment;
+trigger gt_Init08Difficulties;
+trigger gt_StartAI;
+trigger gt_StartGameQ;
 
 //--------------------------------------------------------------------------------------------------
 // Global Presets
@@ -4266,1052 +4246,6 @@ abilcmd gf_GetUnitTypeSuperWarpGateCommand (string lp_warpInType) {
         breakpoint;
     }
     return lv_warpAbilCmd;
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Create Options Dialog
-//--------------------------------------------------------------------------------------------------
-bool gt_CreateOptionsDialog_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_i;
-    int lv_numOptions;
-
-    // Automatic Variable Declarations
-    int auto5C2C6261_ae;
-    const int auto5C2C6261_ai = 1;
-    int autoA59C40DA_ae;
-    const int autoA59C40DA_ai = 1;
-
-    // Variable Initialization
-    lv_numOptions = 2;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    DialogCreate(700, (220+(lv_numOptions*70)), c_anchorCenter, 0, 0, true);
-    gv_optionsDialog = DialogLastCreated();
-    libNtve_gf_CreateDialogItemLabel(gv_optionsDialog, 700, 50, c_anchorTop, 0, 50, StringExternal("Param/Value/782B2E60"), ColorWithAlpha(0,0,0,0), false, 2.0);
-    gv_optionsDialogTitle = DialogControlLastCreated();
-    libNtve_gf_SetDialogItemStyle(gv_optionsDialogTitle, "BattlenetDialogTitle", PlayerGroupAll());
-    auto5C2C6261_ae = (lv_numOptions-1);
-    lv_i = 0;
-    for ( ; ( (auto5C2C6261_ai >= 0 && lv_i <= auto5C2C6261_ae) || (auto5C2C6261_ai < 0 && lv_i >= auto5C2C6261_ae) ) ; lv_i += auto5C2C6261_ai ) {
-        libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 300, 50, c_anchorTopLeft, 60, (120+(lv_i*70)), IntToText(lv_i), ColorWithAlpha(0,0,0,0), false, 2.0);
-        gv_optionsDialogLabels[lv_i] = DialogControlLastCreated();
-    }
-    libNtve_gf_SetDialogItemText(gv_optionsDialogLabels[0], StringExternal("Param/Value/8B20FC55"), PlayerGroupAll());
-    libNtve_gf_SetDialogItemText(gv_optionsDialogLabels[1], StringExternal("Param/Value/CE2CFE4F"), PlayerGroupAll());
-    autoA59C40DA_ae = (lv_numOptions-1);
-    lv_i = 0;
-    for ( ; ( (autoA59C40DA_ai >= 0 && lv_i <= autoA59C40DA_ae) || (autoA59C40DA_ai < 0 && lv_i >= autoA59C40DA_ae) ) ; lv_i += autoA59C40DA_ai ) {
-        DialogControlCreate(gv_optionsDialog, c_triggerControlTypePulldown);
-        gv_optionsDialogMenus[lv_i] = DialogControlLastCreated();
-        DialogControlSetPosition(gv_optionsDialogMenus[lv_i], PlayerGroupAll(), c_anchorTopLeft, 390, (100+(lv_i*70)));
-        DialogControlAddItem(gv_optionsDialogMenus[lv_i], PlayerGroupAll(), StringExternal("Param/Value/E05E3741"));
-    }
-    DialogControlRemoveAllItems(gv_optionsDialogMenus[0], PlayerGroupAll());
-    DialogControlAddItem(gv_optionsDialogMenus[0], PlayerGroupAll(), StringExternal("Param/Value/4EE237E5"));
-    DialogControlAddItem(gv_optionsDialogMenus[0], PlayerGroupAll(), StringExternal("Param/Value/4213F89C"));
-    DialogControlAddItem(gv_optionsDialogMenus[0], PlayerGroupAll(), StringExternal("Param/Value/19632C72"));
-    DialogControlAddItem(gv_optionsDialogMenus[0], PlayerGroupAll(), StringExternal("Param/Value/E8F17C87"));
-    DialogControlSelectItem(gv_optionsDialogMenus[0], PlayerGroupAll(), 1);
-    DialogControlRemoveAllItems(gv_optionsDialogMenus[1], PlayerGroupAll());
-    DialogControlAddItem(gv_optionsDialogMenus[1], PlayerGroupAll(), StringExternal("Param/Value/5994A54C"));
-    DialogControlAddItem(gv_optionsDialogMenus[1], PlayerGroupAll(), StringExternal("Param/Value/3A8F5A52"));
-    DialogControlAddItem(gv_optionsDialogMenus[1], PlayerGroupAll(), StringExternal("Param/Value/E4F52433"));
-    DialogControlAddItem(gv_optionsDialogMenus[1], PlayerGroupAll(), StringExternal("Param/Value/6C571503"));
-    DialogControlSelectItem(gv_optionsDialogMenus[1], PlayerGroupAll(), 1);
-    libNtve_gf_CreateDialogItemButton(gv_optionsDialog, 200, 50, c_anchorBottom, 0, 50, StringToText(""), StringExternal("Param/Value/E55CF9D2"), "");
-    gv_optionsDialogAccept = DialogControlLastCreated();
-    DialogSetRenderPriority(gv_optionsDialog, 10000);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_CreateOptionsDialog_Init () {
-    gt_CreateOptionsDialog = TriggerCreate("gt_CreateOptionsDialog_Func");
-    TriggerAddEventMapInit(gt_CreateOptionsDialog);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Open Options
-//--------------------------------------------------------------------------------------------------
-bool gt_OpenOptions_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    DialogSetVisible(gv_optionsDialog, PlayerGroupAll(), true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_OpenOptions_Init () {
-    gt_OpenOptions = TriggerCreate("gt_OpenOptions_Func");
-    TriggerAddEventChatMessage(gt_OpenOptions, c_playerAny, "-options", true);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Close Options
-//--------------------------------------------------------------------------------------------------
-bool gt_CloseOptions_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((EventDialogControl() == gv_optionsDialogAccept))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    DialogSetVisible(gv_optionsDialog, PlayerGroupAll(), false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_CloseOptions_Init () {
-    gt_CloseOptions = TriggerCreate("gt_CloseOptions_Func");
-    TriggerAddEventDialogControl(gt_CloseOptions, c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Initialize ColonyShip Locations
-//--------------------------------------------------------------------------------------------------
-bool gt_InitializeColonyShipLocations_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    fixed lv_beaconTriggerDiameter;
-    int[4] lv_listOfDisableTanks;
-    int lv_disableTanksIter;
-    int lv_disableTanksRoll;
-    int lv_disableTanksIndex;
-
-    // Automatic Variable Declarations
-    playergroup autoAAB33195_g;
-    int autoAAB33195_var;
-    int auto17A80970_val;
-    playergroup auto30720D25_g;
-    int auto30720D25_var;
-    int autoA1514799_val;
-    int auto5C348BA4_ae;
-    int auto5C348BA4_var;
-
-    // Variable Initialization
-    lv_beaconTriggerDiameter = 1.0;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    gv_colonyShipLocationsCount += 1;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(380);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(57);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(13);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(12);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
-    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
-    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
-    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
-    gv_colonyShipLocationsCount += 1;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(379);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(71);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(85);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(13);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
-    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
-    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
-    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
-    gv_colonyShipLocationsCount += 1;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(335);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(59);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(87);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(14);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
-    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
-    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
-    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
-    gv_colonyShipLocationsCount += 1;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(128);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(82);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(88);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(15);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
-    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
-    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
-    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
-    gv_colonyShipLocationsCount += 1;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(129);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(90);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(89);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(16);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
-    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
-    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
-    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
-    gv_colonyShipLocationsCount += 1;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(136);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(83);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(91);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(17);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
-    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
-    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
-    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
-    gv_colonyShipLocationsCount += 1;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(131);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(84);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(92);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(18);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
-    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
-    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
-    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
-    gv_colonyShipLocationsCount += 1;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(133);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(86);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(93);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(19);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
-    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
-    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
-    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
-    gv_colonyShipLocationsCount += 1;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(405);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(404);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(406);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(21);
-    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
-    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
-    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
-    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
-    if ((libCOMI_gf_MinimumDifficultyValueCoopInteger(0, 0, 0, 1, 1, 1) == 1)) {
-        gf_DisableColonyShip(1);
-    }
-
-    lv_listOfDisableTanks[1] = 2;
-    lv_listOfDisableTanks[2] = 3;
-    lv_listOfDisableTanks[3] = 6;
-    lv_disableTanksRoll = RandomInt(1, 5);
-    if (((lv_disableTanksRoll == 1) || (lv_disableTanksRoll == 2))) {
-        lv_disableTanksIndex = 1;
-    }
-    else {
-        if (((lv_disableTanksRoll == 3) || (lv_disableTanksRoll == 4))) {
-            lv_disableTanksIndex = 3;
-        }
-        else {
-            lv_disableTanksIndex = 2;
-        }
-    }
-    if ((DialogControlGetSelectedItem(gv_optionsDialogMenus[0], 1) == 1) && (DialogControlGetSelectedItem(gv_optionsDialogMenus[0], 2) == 1)) {
-        gf_DisableColonyShip(lv_listOfDisableTanks[lv_disableTanksIndex]);
-    }
-    else {
-        autoAAB33195_g = PlayerGroupActive();
-        autoAAB33195_var = -1;
-        while (true) {
-            autoAAB33195_var = PlayerGroupNextPlayer(autoAAB33195_g, autoAAB33195_var);
-            if (autoAAB33195_var < 0) { break; }
-            auto17A80970_val = DialogControlGetSelectedItem(gv_optionsDialogMenus[0], autoAAB33195_var);
-            if (auto17A80970_val == 2) {
-                gf_DisableColonyShip(lv_listOfDisableTanks[1]);
-                break;
-            }
-            else if (auto17A80970_val == 3) {
-                gf_DisableColonyShip(lv_listOfDisableTanks[2]);
-                break;
-            }
-            else if (auto17A80970_val == 4) {
-                gf_DisableColonyShip(lv_listOfDisableTanks[3]);
-                break;
-            }
-            else {
-            }
-        }
-    }
-    lv_disableTanksIter = 1;
-    lv_listOfDisableTanks[lv_disableTanksIter] = 4;
-    lv_disableTanksIter += 1;
-    lv_listOfDisableTanks[lv_disableTanksIter] = 7;
-    lv_disableTanksIter += 1;
-    lv_listOfDisableTanks[lv_disableTanksIter] = 9;
-    if ((DialogControlGetSelectedItem(gv_optionsDialogMenus[1], 1) == 1) && (DialogControlGetSelectedItem(gv_optionsDialogMenus[1], 2) == 1)) {
-        gf_DisableColonyShip(lv_listOfDisableTanks[RandomInt(1, 3)]);
-    }
-    else {
-        auto30720D25_g = PlayerGroupActive();
-        auto30720D25_var = -1;
-        while (true) {
-            auto30720D25_var = PlayerGroupNextPlayer(auto30720D25_g, auto30720D25_var);
-            if (auto30720D25_var < 0) { break; }
-            autoA1514799_val = DialogControlGetSelectedItem(gv_optionsDialogMenus[1], auto30720D25_var);
-            if (autoA1514799_val == 2) {
-                gf_DisableColonyShip(lv_listOfDisableTanks[1]);
-                break;
-            }
-            else if (autoA1514799_val == 3) {
-                gf_DisableColonyShip(lv_listOfDisableTanks[2]);
-                break;
-            }
-            else if (autoA1514799_val == 4) {
-                gf_DisableColonyShip(lv_listOfDisableTanks[3]);
-                break;
-            }
-            else {
-            }
-        }
-    }
-    auto5C348BA4_ae = gv_colonyShipLocationsCount;
-    auto5C348BA4_var = 1;
-    for ( ; auto5C348BA4_var <= auto5C348BA4_ae; auto5C348BA4_var += 1 ) {
-        libCOMI_gf_DisplayUnitProgressBar(gv_colonyShipLocations[auto5C348BA4_var].lv_beaconUnit, StringExternal("Param/Value/1595402E"), 0, 100);
-        libCOMI_gf_ShowHideUnitProgressBar(gv_colonyShipLocations[auto5C348BA4_var].lv_beaconUnit, false);
-    }
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_InitializeColonyShipLocations_Init () {
-    gt_InitializeColonyShipLocations = TriggerCreate("gt_InitializeColonyShipLocations_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 01 Load Data
-//--------------------------------------------------------------------------------------------------
-bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_LoadCoopMission("AC_JarbanPointCapture", gt_Init02LoadingComplete);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init01LoadData_Init () {
-    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
-    TriggerAddEventMapInit(gt_Init01LoadData);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 02 Loading Complete
-//--------------------------------------------------------------------------------------------------
-bool gt_Init02LoadingComplete_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_Init03Players, true, false);
-    TriggerExecute(gt_Init04Technology, true, false);
-    TriggerExecute(gt_Init05Units, true, false);
-    TriggerExecute(gt_Init06MusicSound, true, false);
-    TriggerExecute(gt_Init07Environment, true, false);
-    TriggerExecute(gt_Init08Difficulties, true, false);
-    TriggerExecute(gt_StartAI, true, false);
-    TriggerExecute(gt_StartGameQ, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init02LoadingComplete_Init () {
-    gt_Init02LoadingComplete = TriggerCreate("gt_Init02LoadingComplete_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 03 Players
-//--------------------------------------------------------------------------------------------------
-bool gt_Init03Players_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_humanPlayerIter;
-    playergroup lv_ignoreResources;
-
-    // Automatic Variable Declarations
-    playergroup autoF7951ECD_g;
-    playergroup auto5A28068E_g;
-    int auto5A28068E_var;
-    playergroup autoF04F56FE_g;
-    int autoF04F56FE_var;
-    playergroup autoAEA6D7E6_g;
-    int autoAEA6D7E6_var;
-
-    // Variable Initialization
-    lv_ignoreResources = PlayerGroupEmpty();
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
-    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
-    libCOMI_gf_StartCoopAI(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, gv_pLAYER_01_USER);
-    libCOMI_gf_StartCoopAI(gv_pLAYER_06_INFESTED_BaseWavesHateToss, gv_pLAYER_02_USER);
-    libCOMI_gf_StartCoopAI(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, gv_pLAYER_01_USER);
-    libCOMI_gf_StartCoopAI(gv_pLAYER_06_INFESTED_BaseWavesHateToss, gv_pLAYER_02_USER);
-    PlayerGroupAdd(gv_amonPlayers, gv_pLAYER_03_AMON_Claimers);
-    PlayerGroupAdd(gv_amonPlayers, gv_pLAYER_04_AMON_BaseWaves);
-    libNtve_gf_AddPlayerGroupToPlayerGroup(libCOMI_gf_GetEnemyHumanPlayers(), gv_amonPlayers);
-    PlayerGroupAdd(gv_zergPlayers, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss);
-    PlayerGroupAdd(gv_zergPlayers, gv_pLAYER_06_INFESTED_BaseWavesHateToss);
-    PlayerGroupAdd(gv_zergPlayers, gv_pLAYER_07_ZERG);
-    libNtve_gf_AddPlayerGroupToPlayerGroup(gv_amonPlayers, gv_enemyPlayers);
-    libNtve_gf_AddPlayerGroupToPlayerGroup(gv_zergPlayers, gv_enemyPlayers);
-    TechTreeUpgradeAddLevel(gv_pLAYER_08_ColonyShip, "CoopNPCPlayer", 1);
-    TechTreeUpgradeAddLevel(gv_pLAYER_10_ColonyShipTARGET, "CoopNPCPlayer", 1);
-    TechTreeUpgradeAddLevel(gv_pLAYER_11_COLONISTS, "CoopNPCPlayer", 1);
-    autoF7951ECD_g = libCOMI_gf_GetAlliedCommandersPlayers();
-    lv_humanPlayerIter = -1;
-    while (true) {
-        lv_humanPlayerIter = PlayerGroupNextPlayer(autoF7951ECD_g, lv_humanPlayerIter);
-        if (lv_humanPlayerIter < 0) { break; }
-        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_08_ColonyShip, libNtve_ge_AllianceSetting_Ally);
-        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_10_ColonyShipTARGET, libNtve_ge_AllianceSetting_Ally);
-        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_11_COLONISTS, libNtve_ge_AllianceSetting_Neutral);
-        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_03_AMON_Claimers, libNtve_ge_AllianceSetting_Enemy);
-        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_04_AMON_BaseWaves, libNtve_ge_AllianceSetting_Enemy);
-        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, libNtve_ge_AllianceSetting_Enemy);
-        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_06_INFESTED_BaseWavesHateToss, libNtve_ge_AllianceSetting_Enemy);
-        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_07_ZERG, libNtve_ge_AllianceSetting_Enemy);
-        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_09_ERADICATOR, libNtve_ge_AllianceSetting_Enemy);
-    }
-    libNtve_gf_SetAlliance(gv_pLAYER_08_ColonyShip, gv_pLAYER_10_ColonyShipTARGET, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(gv_pLAYER_08_ColonyShip, gv_pLAYER_11_COLONISTS, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(gv_pLAYER_11_COLONISTS, gv_pLAYER_09_ERADICATOR, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAlliance(gv_pLAYER_11_COLONISTS, gv_pLAYER_10_ColonyShipTARGET, libNtve_ge_AllianceSetting_Ally);
-    auto5A28068E_g = gv_zergPlayers;
-    auto5A28068E_var = -1;
-    while (true) {
-        auto5A28068E_var = PlayerGroupNextPlayer(auto5A28068E_g, auto5A28068E_var);
-        if (auto5A28068E_var < 0) { break; }
-        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_08_ColonyShip, libNtve_ge_AllianceSetting_Ally);
-        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_10_ColonyShipTARGET, libNtve_ge_AllianceSetting_Enemy);
-        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_11_COLONISTS, libNtve_ge_AllianceSetting_Neutral);
-        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_04_AMON_BaseWaves, libNtve_ge_AllianceSetting_Enemy);
-        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_03_AMON_Claimers, libNtve_ge_AllianceSetting_Enemy);
-        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_09_ERADICATOR, libNtve_ge_AllianceSetting_Ally);
-        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_06_INFESTED_BaseWavesHateToss, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_07_ZERG, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-        PlayerSetColorIndex(auto5A28068E_var, 1, true);
-    }
-    autoF04F56FE_g = gv_amonPlayers;
-    autoF04F56FE_var = -1;
-    while (true) {
-        autoF04F56FE_var = PlayerGroupNextPlayer(autoF04F56FE_g, autoF04F56FE_var);
-        if (autoF04F56FE_var < 0) { break; }
-        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_08_ColonyShip, libNtve_ge_AllianceSetting_Neutral);
-        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_10_ColonyShipTARGET, libNtve_ge_AllianceSetting_Enemy);
-        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_11_COLONISTS, libNtve_ge_AllianceSetting_Neutral);
-        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, libNtve_ge_AllianceSetting_Neutral);
-        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_06_INFESTED_BaseWavesHateToss, libNtve_ge_AllianceSetting_Enemy);
-        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_06_INFESTED_BaseWavesHateToss, libNtve_ge_AllianceSetting_Neutral);
-        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_09_ERADICATOR, libNtve_ge_AllianceSetting_Ally);
-        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_03_AMON_Claimers, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_04_AMON_BaseWaves, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_07_ZERG, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    }
-    libNtve_gf_AddPlayerGroupToPlayerGroup(libCOMI_gf_GetEnemyAIPlayers(), lv_ignoreResources);
-    PlayerGroupAdd(lv_ignoreResources, gv_pLAYER_06_INFESTED_BaseWavesHateToss);
-    PlayerGroupAdd(lv_ignoreResources, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss);
-    PlayerGroupAdd(lv_ignoreResources, gv_pLAYER_11_COLONISTS);
-    autoAEA6D7E6_g = lv_ignoreResources;
-    autoAEA6D7E6_var = -1;
-    while (true) {
-        autoAEA6D7E6_var = PlayerGroupNextPlayer(autoAEA6D7E6_g, autoAEA6D7E6_var);
-        if (autoAEA6D7E6_var < 0) { break; }
-        PlayerSetState(autoAEA6D7E6_var, c_playerStateMineralCostIgnored, true);
-        PlayerSetState(autoAEA6D7E6_var, c_playerStateVespeneCostIgnored, true);
-        PlayerSetState(autoAEA6D7E6_var, c_playerStateFoodIgnored, true);
-    }
-    PlayerSetColorIndex(gv_pLAYER_09_ERADICATOR, 0, true);
-    PlayerSetColorIndex(gv_pLAYER_11_COLONISTS, 0, true);
-    PlayerSetColorIndex(gv_pLAYER_08_ColonyShip, 0, true);
-    PlayerSetColorIndex(gv_pLAYER_10_ColonyShipTARGET, 0, true);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init03Players_Init () {
-    gt_Init03Players = TriggerCreate("gt_Init03Players_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 04 Technology
-//--------------------------------------------------------------------------------------------------
-bool gt_Init04Technology_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TechTreeUpgradeAddLevel(gv_pLAYER_08_ColonyShip, "FireSuppressionSystems", 1);
-    TechTreeUpgradeAddLevel(gv_pLAYER_10_ColonyShipTARGET, "FireSuppressionSystems", 1);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init04Technology_Init () {
-    gt_Init04Technology = TriggerCreate("gt_Init04Technology_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 05 Units
-//--------------------------------------------------------------------------------------------------
-bool gt_Init05Units_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    unitgroup lv_rocksSmall;
-    unitgroup lv_rocksLarge;
-
-    // Automatic Variable Declarations
-    unitgroup auto71F4FFAB_g;
-    int auto71F4FFAB_u;
-    unit auto71F4FFAB_var;
-    unitgroup auto67337D53_g;
-    int auto67337D53_u;
-    unit auto67337D53_var;
-    unitgroup autoC386889F_g;
-    int autoC386889F_u;
-    unit autoC386889F_var;
-    unitgroup autoB24B72C5_g;
-    int autoB24B72C5_u;
-    unit autoB24B72C5_var;
-    unitgroup auto3043FF71_g;
-    int auto3043FF71_u;
-    unit auto3043FF71_var;
-    unitgroup auto63ED60AE_g;
-    int auto63ED60AE_u;
-    unit auto63ED60AE_var;
-    unitgroup auto4B109324_g;
-    int auto4B109324_u;
-    unit auto4B109324_var;
-    unitgroup auto4BFC89B0_g;
-    int auto4BFC89B0_u;
-    unit auto4BFC89B0_var;
-    unitgroup auto9E557A8C_g;
-    int auto9E557A8C_u;
-    unit auto9E557A8C_var;
-    unitgroup auto5EF66E23_g;
-    int auto5EF66E23_u;
-    unit auto5EF66E23_var;
-    unitgroup auto1BD26239_g;
-    int auto1BD26239_u;
-    unit auto1BD26239_var;
-    unitgroup autoDFFB1E2D_g;
-    int autoDFFB1E2D_u;
-    unit autoDFFB1E2D_var;
-    unitgroup autoAB3250EE_g;
-    int autoAB3250EE_u;
-    unit autoAB3250EE_var;
-    unitgroup auto0976269A_g;
-    int auto0976269A_u;
-    unit auto0976269A_var;
-
-    // Variable Initialization
-    lv_rocksSmall = UnitGroupEmpty();
-    lv_rocksLarge = UnitGroupEmpty();
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_InitializeColonyShipLocations, true, false);
-    auto71F4FFAB_g = UnitGroup(null, gv_pLAYER_11_COLONISTS, null, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto71F4FFAB_u = UnitGroupCount(auto71F4FFAB_g, c_unitCountAll);
-    for (;; auto71F4FFAB_u -= 1) {
-        auto71F4FFAB_var = UnitGroupUnitFromEnd(auto71F4FFAB_g, auto71F4FFAB_u);
-        if (auto71F4FFAB_var == null) { break; }
-        if (((UnitGetType(auto71F4FFAB_var) == "JarbanColonistHut") || (UnitGetType(auto71F4FFAB_var) == "Excavator") || (UnitGetType(auto71F4FFAB_var) == "TankerTruck") || (UnitGetType(auto71F4FFAB_var) == "DumpTruck") || (UnitGetType(auto71F4FFAB_var) == "TruckFlatbedUnit"))) {
-            libNtve_gf_SendActorMessageToUnit(auto71F4FFAB_var, "SetMinimapVisibility");
-            UnitIssueOrder(auto71F4FFAB_var, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
-        }
-
-    }
-    auto67337D53_g = UnitGroupFromId(2);
-    auto67337D53_u = UnitGroupCount(auto67337D53_g, c_unitCountAll);
-    for (;; auto67337D53_u -= 1) {
-        auto67337D53_var = UnitGroupUnitFromEnd(auto67337D53_g, auto67337D53_u);
-        if (auto67337D53_var == null) { break; }
-        UnitBehaviorAdd(auto67337D53_var, "Harmless", auto67337D53_var, 1);
-    }
-    autoC386889F_g = UnitGroup("InfestedColonistTransportNova", gv_pLAYER_11_COLONISTS, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    autoC386889F_u = UnitGroupCount(autoC386889F_g, c_unitCountAll);
-    for (;; autoC386889F_u -= 1) {
-        autoC386889F_var = UnitGroupUnitFromEnd(autoC386889F_g, autoC386889F_u);
-        if (autoC386889F_var == null) { break; }
-        UnitBehaviorAdd(autoC386889F_var, "Harmless", autoC386889F_var, 1);
-        UnitSetState(autoC386889F_var, c_unitStateHighlightable, false);
-        UnitSetState(autoC386889F_var, c_unitStateSelectable, false);
-        UnitSetState(autoC386889F_var, c_unitStateTargetable, false);
-        UnitSetState(autoC386889F_var, c_unitStateTooltipable, false);
-        UnitIssueOrder(autoC386889F_var, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
-    }
-    autoB24B72C5_g = UnitGroup("MilitarizedColonistTransportNova", gv_pLAYER_11_COLONISTS, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    autoB24B72C5_u = UnitGroupCount(autoB24B72C5_g, c_unitCountAll);
-    for (;; autoB24B72C5_u -= 1) {
-        autoB24B72C5_var = UnitGroupUnitFromEnd(autoB24B72C5_g, autoB24B72C5_u);
-        if (autoB24B72C5_var == null) { break; }
-        UnitBehaviorAdd(autoB24B72C5_var, "Harmless", autoB24B72C5_var, 1);
-    }
-    libCOMI_gf_SendActorMessageToDoodadsInRegion("AnimPlay StandUnpowered Stand,Unpowered PlayForever", "Zerg_EggSackOneEggs", RegionFromId(57));
-    libCOMI_gf_SendActorMessageToDoodadsInRegion("AnimPlay StandUnpowered Stand,Unpowered PlayForever", "Zerg_EggSackTwoEggs", RegionFromId(57));
-    libCOMI_gf_SendActorMessageToDoodadsInRegion("AnimPlay StandUnpowered Stand,Unpowered PlayForever", "Zerg_EggSackThreeEggs", RegionFromId(57));
-    libCOMI_gf_SendActorMessageToDoodadsInRegion("SetMinimapVisibility", "Zerg_EggSackOneEggs", RegionFromId(57));
-    libCOMI_gf_SendActorMessageToDoodadsInRegion("SetMinimapVisibility", "Zerg_EggSackTwoEggs", RegionFromId(57));
-    libCOMI_gf_SendActorMessageToDoodadsInRegion("SetMinimapVisibility", "Zerg_EggSackThreeEggs", RegionFromId(57));
-    auto3043FF71_g = UnitGroup(gv_c_ColonyShipObjective_Dead, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto3043FF71_u = UnitGroupCount(auto3043FF71_g, c_unitCountAll);
-    for (;; auto3043FF71_u -= 1) {
-        auto3043FF71_var = UnitGroupUnitFromEnd(auto3043FF71_g, auto3043FF71_u);
-        if (auto3043FF71_var == null) { break; }
-        UnitSetCustomValue(auto3043FF71_var, 1, 1.0);
-        UnitSetState(auto3043FF71_var, c_unitStateHighlightable, false);
-        UnitSetState(auto3043FF71_var, c_unitStateSelectable, false);
-        UnitSetState(auto3043FF71_var, c_unitStateTargetable, false);
-        UnitSetState(auto3043FF71_var, c_unitStateTooltipable, false);
-        UnitSetState(auto3043FF71_var, c_unitStateInvulnerable, true);
-        libNtve_gf_SendActorMessageToUnit(auto3043FF71_var, "SetMinimapVisibility");
-    }
-    auto63ED60AE_g = UnitGroup(null, c_playerAny, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto63ED60AE_u = UnitGroupCount(auto63ED60AE_g, c_unitCountAll);
-    for (;; auto63ED60AE_u -= 1) {
-        auto63ED60AE_var = UnitGroupUnitFromEnd(auto63ED60AE_g, auto63ED60AE_u);
-        if (auto63ED60AE_var == null) { break; }
-        if (((UnitGetType(auto63ED60AE_var) == "InfestableBiodome") || (UnitGetType(auto63ED60AE_var) == "InfestableColonistBiodome") || (UnitGetType(auto63ED60AE_var) == "InfestableColonistHut") || (UnitGetType(auto63ED60AE_var) == "JarbanInfestibleColonistHut") || (UnitGetType(auto63ED60AE_var) == "InfestableHut") || (UnitGetType(auto63ED60AE_var) == "InfestedArmory") || (UnitGetType(auto63ED60AE_var) == "InfestedBarracks") || (UnitGetType(auto63ED60AE_var) == "InfestedBunker") || (UnitGetType(auto63ED60AE_var) == "InfestedCC") || (UnitGetType(auto63ED60AE_var) == "InfestedEngBay") || (UnitGetType(auto63ED60AE_var) == "InfestedFactory") || (UnitGetType(auto63ED60AE_var) == "InfestedMissileTurret") || (UnitGetType(auto63ED60AE_var) == "InfestedRefinery") || (UnitGetType(auto63ED60AE_var) == "InfestedStarport") || (UnitGetType(auto63ED60AE_var) == "InfestedSupply") || (UnitGetType(auto63ED60AE_var) == "InfestedMercHaven"))) {
-            UnitBehaviorAddPlayer(auto63ED60AE_var, "ColonyInfestation", UnitGetOwner(auto63ED60AE_var), 1);
-        }
-
-    }
-    auto4B109324_g = UnitGroup("InfestedBunker", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto4B109324_u = UnitGroupCount(auto4B109324_g, c_unitCountAll);
-    for (;; auto4B109324_u -= 1) {
-        auto4B109324_var = UnitGroupUnitFromEnd(auto4B109324_g, auto4B109324_u);
-        if (auto4B109324_var == null) { break; }
-        UnitBehaviorAddPlayer(auto4B109324_var, "ColonyInfestation", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, 1);
-        UnitCargoCreate(auto4B109324_var, "InfestedTerranCampaign", 4);
-    }
-    auto4BFC89B0_g = UnitGroup("NovaInfestedSiegeTankUprooted", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto4BFC89B0_u = UnitGroupCount(auto4BFC89B0_g, c_unitCountAll);
-    for (;; auto4BFC89B0_u -= 1) {
-        auto4BFC89B0_var = UnitGroupUnitFromEnd(auto4BFC89B0_g, auto4BFC89B0_u);
-        if (auto4BFC89B0_var == null) { break; }
-        UnitGroupAdd(gv_infestedSiegeTanks, auto4BFC89B0_var);
-        AISetUnitScriptControlled(auto4BFC89B0_var, true);
-    }
-    auto9E557A8C_g = UnitGroup("NovaInfestedSiegeTankUprooted", gv_pLAYER_06_INFESTED_BaseWavesHateToss, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto9E557A8C_u = UnitGroupCount(auto9E557A8C_g, c_unitCountAll);
-    for (;; auto9E557A8C_u -= 1) {
-        auto9E557A8C_var = UnitGroupUnitFromEnd(auto9E557A8C_g, auto9E557A8C_u);
-        if (auto9E557A8C_var == null) { break; }
-        UnitGroupAdd(gv_infestedSiegeTanks, auto9E557A8C_var);
-        AISetUnitScriptControlled(auto9E557A8C_var, true);
-    }
-    auto5EF66E23_g = UnitGroup("InfestedCivilianBurrowed", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto5EF66E23_u = UnitGroupCount(auto5EF66E23_g, c_unitCountAll);
-    for (;; auto5EF66E23_u -= 1) {
-        auto5EF66E23_var = UnitGroupUnitFromEnd(auto5EF66E23_g, auto5EF66E23_u);
-        if (auto5EF66E23_var == null) { break; }
-        UnitBehaviorAddPlayer(auto5EF66E23_var, "ScanRangeBonus", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, 1);
-    }
-    auto1BD26239_g = UnitGroup("InfestedTerranCampaignBurrowed", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto1BD26239_u = UnitGroupCount(auto1BD26239_g, c_unitCountAll);
-    for (;; auto1BD26239_u -= 1) {
-        auto1BD26239_var = UnitGroupUnitFromEnd(auto1BD26239_g, auto1BD26239_u);
-        if (auto1BD26239_var == null) { break; }
-        UnitBehaviorAddPlayer(auto1BD26239_var, "ScanRangeBonus", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, 1);
-    }
-    libNtve_gf_PauseUnit(gv_c_BonusObjective_Blightbringer, true);
-    UnitSetCustomValue(gv_c_BonusObjective_Blightbringer, 1, 1.0);
-    autoDFFB1E2D_g = UnitGroup("InfestedCivilian", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, RegionFromId(79), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    autoDFFB1E2D_u = UnitGroupCount(autoDFFB1E2D_g, c_unitCountAll);
-    for (;; autoDFFB1E2D_u -= 1) {
-        autoDFFB1E2D_var = UnitGroupUnitFromEnd(autoDFFB1E2D_g, autoDFFB1E2D_u);
-        if (autoDFFB1E2D_var == null) { break; }
-        UnitGroupAdd(gv_bonusObjective_HatchedInfestedGroup, autoDFFB1E2D_var);
-        UnitBehaviorAdd(autoDFFB1E2D_var, "CritterWanderLeashShort", autoDFFB1E2D_var, 1);
-    }
-    gv_eradicatorTypeMissile = UnitFromId(895);
-    gv_eradicatorTypeCannon = UnitFromId(1340);
-    UnitIssueOrder(gv_eradicatorTypeMissile, Order(AbilityCommand("NovaEradicatorMissileMode", 0)), c_orderQueueReplace);
-    UnitIssueOrder(gv_eradicatorTypeMissile, OrderSetAutoCast(AbilityCommand("EradicatorLockOnAir", 0), false), c_orderQueueAddToEnd);
-    UnitIssueOrder(gv_eradicatorTypeCannon, OrderSetAutoCast(AbilityCommand("EradicatorLockOnAir", 0), false), c_orderQueueAddToEnd);
-    UnitIssueOrder(gv_eradicatorTypeMissile, OrderSetAutoCast(AbilityCommand("EradicatorLockOn", 0), false), c_orderQueueAddToEnd);
-    UnitIssueOrder(gv_eradicatorTypeCannon, OrderSetAutoCast(AbilityCommand("EradicatorLockOn", 0), false), c_orderQueueAddToEnd);
-    UnitAbilityEnable(gv_eradicatorTypeMissile, "move", false);
-    CatalogFieldValueSet(c_gameCatalogActor, "Cyclone", "PortraitModel", gv_pLAYER_09_ERADICATOR, ("MULEPortrait"));
-    autoAB3250EE_g = UnitGroupFromId(1);
-    autoAB3250EE_u = UnitGroupCount(autoAB3250EE_g, c_unitCountAll);
-    for (;; autoAB3250EE_u -= 1) {
-        autoAB3250EE_var = UnitGroupUnitFromEnd(autoAB3250EE_g, autoAB3250EE_u);
-        if (autoAB3250EE_var == null) { break; }
-        gf_InfestUnit(autoAB3250EE_var);
-    }
-    if ((RandomInt(0, 100) > 33)) {
-        auto0976269A_g = UnitGroup(null, c_playerAny, RegionFromId(24), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-        auto0976269A_u = UnitGroupCount(auto0976269A_g, c_unitCountAll);
-        for (;; auto0976269A_u -= 1) {
-            auto0976269A_var = UnitGroupUnitFromEnd(auto0976269A_g, auto0976269A_u);
-            if (auto0976269A_var == null) { break; }
-            UnitRemove(auto0976269A_var);
-        }
-        TriggerEnable(gt_NeverTakeMeAliveQ, false);
-    }
-
-    UnitSetPropertyFixed(UnitFromId(1634), c_unitPropLifePercent, 50.0);
-    UnitSetPropertyFixed(UnitFromId(1636), c_unitPropLifePercent, 30.0);
-    UnitSetPropertyFixed(UnitFromId(1635), c_unitPropLifePercent, 1.0);
-    UnitSetPropertyFixed(UnitFromId(1634), c_unitPropKills, 5.0);
-    UnitSetPropertyFixed(UnitFromId(1636), c_unitPropKills, 2.0);
-    UnitSetPropertyFixed(UnitFromId(1635), c_unitPropKills, 17.0);
-    UnitBehaviorAdd(UnitFromId(1634), "CritterWanderLeashShort", UnitFromId(1634), 1);
-    UnitBehaviorAdd(UnitFromId(1636), "CritterWanderLeashShort", UnitFromId(1636), 1);
-    UnitBehaviorAdd(UnitFromId(1635), "CritterWanderLeashShort", UnitFromId(1635), 1);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init05Units_Init () {
-    gt_Init05Units = TriggerCreate("gt_Init05Units_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 06 Music/Sound
-//--------------------------------------------------------------------------------------------------
-bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    gv_mapMusicTrack2 = "Ambience_Nova05_Main";
-    gv_mapMusicTrack3 = "Ambience_Nova05_ZergMines";
-    gv_mapMusicTrack4 = "Ambience_Nova05_ScienceFacility";
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init06MusicSound_Init () {
-    gt_Init06MusicSound = TriggerCreate("gt_Init06MusicSound_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 07 Environment
-//--------------------------------------------------------------------------------------------------
-bool gt_Init07Environment_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    playergroup autoDC6F5366_g;
-    int autoDC6F5366_var;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    GameSetToDLighting("JarbanMinor_Jungle");
-    autoDC6F5366_g = libCOMI_gf_HumanPlayers();
-    autoDC6F5366_var = -1;
-    while (true) {
-        autoDC6F5366_var = PlayerGroupNextPlayer(autoDC6F5366_g, autoDC6F5366_var);
-        if (autoDC6F5366_var < 0) { break; }
-        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(65), RegionFromId(65), autoDC6F5366_var);
-        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(74), RegionFromId(74), autoDC6F5366_var);
-        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(68), RegionFromId(68), autoDC6F5366_var);
-        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(69), RegionFromId(69), autoDC6F5366_var);
-        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(70), RegionFromId(70), autoDC6F5366_var);
-        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(155), RegionFromId(155), autoDC6F5366_var);
-    }
-    libNtve_gf_ShowHideDoodadsInRegion(false, RegionEntireMap(), "Griffin_Pickup_Flyby");
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init07Environment_Init () {
-    gt_Init07Environment = TriggerCreate("gt_Init07Environment_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 08 Difficulties
-//--------------------------------------------------------------------------------------------------
-bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    fixed lv_colonyShipLifeMax;
-    fixed lv_eradicatorLifeMax;
-    fixed lv_blightbringerLifeMax;
-
-    // Automatic Variable Declarations
-    playergroup auto2AD571A7_g;
-    int auto2AD571A7_var;
-    playergroup auto139417E7_g;
-    int auto139417E7_var;
-    unitgroup auto95A5FABE_g;
-    int auto95A5FABE_u;
-    unit auto95A5FABE_var;
-    int auto927DCC0B_val;
-    playergroup auto60B674C5_g;
-    int auto60B674C5_var;
-
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    auto2AD571A7_g = gv_enemyPlayers;
-    auto2AD571A7_var = -1;
-    while (true) {
-        auto2AD571A7_var = PlayerGroupNextPlayer(auto2AD571A7_g, auto2AD571A7_var);
-        if (auto2AD571A7_var < 0) { break; }
-        TechTreeAbilityAllow(auto2AD571A7_var, AbilityCommand("InfestedBansheeCloakingField", 0), false);
-    }
-    TimerStart(gv_enableAIInfestedBansheeCloak, (9.0 * 60.0), false, c_timeGame);
-    if ((RandomInt(0, 100) <= 66)) {
-        gv_bonusObjective_MineFirst = true;
-    }
-    else {
-        gv_bonusObjective_MineFirst = false;
-    }
-    gv_objectiveExtractColonyShipMax = libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 4, 4, 5, 5, 0, 0);
-    gv_objectiveDoNotLetDevicesBeDestroyedMax = libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 3, 3, 2, 2, 0, 0);
-    lv_colonyShipLifeMax = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 2000.0, 2000.0, 1750.0, 1500.0, 0.0, 0.0);
-    CatalogFieldValueSet(c_gameCatalogUnit, gv_c_ColonyShipObjective, "LifeMax", gv_pLAYER_08_ColonyShip, FixedToString(lv_colonyShipLifeMax, c_fixedPrecisionAny));
-    CatalogFieldValueSet(c_gameCatalogUnit, gv_c_ColonyShipObjective, "LifeMax", gv_pLAYER_10_ColonyShipTARGET, FixedToString(lv_colonyShipLifeMax, c_fixedPrecisionAny));
-    TechTreeUpgradeAddLevel(gv_pLAYER_11_COLONISTS, "ShieldWall", 1);
-    lv_eradicatorLifeMax = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 1500.0, 1500.0, 2500.0, 3500.0, 0.0, 0.0);
-    CatalogFieldValueSet(c_gameCatalogUnit, "NovaEradicator", "LifeStart", gv_pLAYER_09_ERADICATOR, FixedToString(lv_eradicatorLifeMax, c_fixedPrecisionAny));
-    CatalogFieldValueSet(c_gameCatalogUnit, "NovaEradicator", "LifeMax", gv_pLAYER_09_ERADICATOR, FixedToString(lv_eradicatorLifeMax, c_fixedPrecisionAny));
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_09_ERADICATOR, "NovaEradicatorDamageHard", libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 0, 0, 1, 0, 0, 0));
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_09_ERADICATOR, "NovaEradicatorDamageBrutal", libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 0, 0, 0, 1, 0, 0));
-    lv_blightbringerLifeMax = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 3000.0, 3000.0, 4500.0, 5500.0, 0.0, 0.0);
-    CatalogFieldValueSet(c_gameCatalogUnit, "Blightbringer", "LifeStart", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, FixedToString(lv_blightbringerLifeMax, c_fixedPrecisionAny));
-    CatalogFieldValueSet(c_gameCatalogUnit, "Blightbringer", "LifeMax", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, FixedToString(lv_blightbringerLifeMax, c_fixedPrecisionAny));
-    gv_bonusObjective_Blightbringer_EggLarge = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 60.0, 60.0, 120.0, 180.0, 0.0, 0.0);
-    gv_bonusObjective_Blightbringer_EggSmall = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 40.0, 40.0, 80.0, 120.0, 0.0, 0.0);
-    gv_bonusObjective_Blightbringer_EggHatchTime = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 10.0, 10.0, 9.0, 8.0, 0.0, 0.0);
-    CatalogFieldValueSet(c_gameCatalogAbil, "ParasiticBomb", "Cost[" + IntToString(0) + "].Vital[" + IntToString(c_unitVitalEnergy) + "]", UnitGetOwner(gv_c_BonusObjective_Blightbringer), IntToString(0));
-    gv_bonusObjective_Blightbringer_AttackGroundCD = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 6.0, 6.0, 4.0, 3.0, 0.0, 0.0);
-    gv_bonusObjective_Blightbringer_AttackAirCD = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 30.0, 30.0, 20.0, 10.0, 0.0, 0.0);
-    auto139417E7_g = gv_enemyPlayers;
-    auto139417E7_var = -1;
-    while (true) {
-        auto139417E7_var = PlayerGroupNextPlayer(auto139417E7_g, auto139417E7_var);
-        if (auto139417E7_var < 0) { break; }
-        TechTreeUpgradeAddLevel(auto139417E7_var, "overlordspeed", 1);
-        TechTreeUpgradeAddLevel(auto139417E7_var, "overlordtransport", 1);
-        TechTreeUpgradeAddLevel(auto139417E7_var, "ObserverGraviticBooster", 1);
-    }
-    auto95A5FABE_g = UnitGroup(null, c_playerAny, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto95A5FABE_u = UnitGroupCount(auto95A5FABE_g, c_unitCountAll);
-    for (;; auto95A5FABE_u -= 1) {
-        auto95A5FABE_var = UnitGroupUnitFromEnd(auto95A5FABE_g, auto95A5FABE_u);
-        if (auto95A5FABE_var == null) { break; }
-        if (((UnitGetType(auto95A5FABE_var) == "InfestableBiodome") || (UnitGetType(auto95A5FABE_var) == "InfestableColonistBiodome") || (UnitGetType(auto95A5FABE_var) == "InfestableColonistHut") || (UnitGetType(auto95A5FABE_var) == "InfestableHut") || (UnitGetType(auto95A5FABE_var) == "InfestedArmory") || (UnitGetType(auto95A5FABE_var) == "InfestedBarracks") || (UnitGetType(auto95A5FABE_var) == "InfestedBunker") || (UnitGetType(auto95A5FABE_var) == "InfestedCC") || (UnitGetType(auto95A5FABE_var) == "InfestedEngBay") || (UnitGetType(auto95A5FABE_var) == "InfestedFactory") || (UnitGetType(auto95A5FABE_var) == "InfestedMissileTurret") || (UnitGetType(auto95A5FABE_var) == "InfestedRefinery") || (UnitGetType(auto95A5FABE_var) == "InfestedStarport") || (UnitGetType(auto95A5FABE_var) == "InfestedSupply"))) {
-            auto927DCC0B_val = libCOMI_gf_GetMissionDifficulty();
-            if (auto927DCC0B_val == 1) {
-                UnitSetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, (UnitGetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, c_unitPropCurrent) * 0.75));
-            }
-            else if (auto927DCC0B_val == 2) {
-                UnitSetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, (UnitGetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, c_unitPropCurrent) * 0.75));
-            }
-            else if (auto927DCC0B_val == 3) {
-                UnitSetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, (UnitGetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, c_unitPropCurrent) * 1.25));
-            }
-            else if (auto927DCC0B_val == 4) {
-                UnitSetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, (UnitGetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, c_unitPropCurrent) * 1.5));
-            }
-            else {
-            }
-            UnitSetPropertyFixed(auto95A5FABE_var, c_unitPropLifePercent, 100.0);
-        }
-
-    }
-    auto60B674C5_g = gv_enemyPlayers;
-    auto60B674C5_var = -1;
-    while (true) {
-        auto60B674C5_var = PlayerGroupNextPlayer(auto60B674C5_g, auto60B674C5_var);
-        if (auto60B674C5_var < 0) { break; }
-        if ((libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 0, 0, 1, 1, 0, 0) == 1)) {
-            TechTreeUpgradeAddLevel(auto60B674C5_var, "zerglingmovementspeed", 1);
-            TechTreeUpgradeAddLevel(auto60B674C5_var, "hydraliskspeed", 1);
-        }
-
-        if ((libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 0, 0, 0, 1, 0, 0) == 1)) {
-            TechTreeUpgradeAddLevel(auto60B674C5_var, "zerglingattackspeed", 1);
-        }
-
-    }
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init08Difficulties_Init () {
-    gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Start AI
-//--------------------------------------------------------------------------------------------------
-bool gt_StartAI_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    playergroup lv_infestedBullies;
-
-    // Automatic Variable Declarations
-    playergroup autoCCE4179B_g;
-    int autoCCE4179B_var;
-    playergroup auto8C4A9983_g;
-    int auto8C4A9983_var;
-
-    // Variable Initialization
-    lv_infestedBullies = PlayerGroupEmpty();
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_SetupInfestedPoints, true, false);
-    libCOMI_gf_StartCoopAI(gv_pLAYER_07_ZERG, gv_pLAYER_01_USER);
-    if ((PlayerGroupCount(libCOMI_gv_vU_AlliedCommanders) == 1)) {
-        libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 1), "Infested");
-        libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_06_INFESTED_BaseWavesHateToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 2), "Infested");
-    }
-    else {
-        if ((RandomInt(0, 100) <= 50)) {
-            libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 1), "Infested");
-            libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_06_INFESTED_BaseWavesHateToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 2), "Infested");
-        }
-        else {
-            libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 2), "Infested");
-            libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_06_INFESTED_BaseWavesHateToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 1), "Infested");
-        }
-    }
-    TriggerExecute(gt_SetupProtossAIWarpInUnits, true, false);
-    TriggerExecute(gt_InitializeClaimerWaveTargetPriority, true, false);
-    CampaignInitAI();
-    AITransportSetPanic(gv_pLAYER_03_AMON_Claimers, 0.9);
-    autoCCE4179B_g = gv_enemyPlayers;
-    autoCCE4179B_var = -1;
-    while (true) {
-        autoCCE4179B_var = PlayerGroupNextPlayer(autoCCE4179B_g, autoCCE4179B_var);
-        if (autoCCE4179B_var < 0) { break; }
-        VisRevealArea(autoCCE4179B_var, RegionFromId(3), 2.0, false);
-    }
-    PlayerGroupAdd(lv_infestedBullies, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss);
-    PlayerGroupAdd(lv_infestedBullies, gv_pLAYER_06_INFESTED_BaseWavesHateToss);
-    auto8C4A9983_g = lv_infestedBullies;
-    auto8C4A9983_var = -1;
-    while (true) {
-        auto8C4A9983_var = PlayerGroupNextPlayer(auto8C4A9983_g, auto8C4A9983_var);
-        if (auto8C4A9983_var < 0) { break; }
-        libNtve_gf_SetTacticalAIThink(auto8C4A9983_var, "InfestedColonistTransportNova", "InfestedTransportAI", false);
-        AISetBullyRebuildDelay(5.0, 10.0, auto8C4A9983_var);
-        AINearestTownBullyRebuild(auto8C4A9983_var, true);
-        AINearestTownLimitWaveGather(auto8C4A9983_var, true);
-    }
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(87));
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(88));
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(102));
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(103));
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(104));
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(105));
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(106));
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(109));
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(109));
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(107));
-    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(108));
-    gv_infestedAttackPlayer = gv_pLAYER_06_INFESTED_BaseWavesHateToss;
-    libCOMI_gf_EnableDisableCoopAIPlayerAttackPings(PlayerGroupSingle(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss), false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_StartAI_Init () {
-    gt_StartAI = TriggerCreate("gt_StartAI_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Start Game Q
-//--------------------------------------------------------------------------------------------------
-bool gt_StartGameQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    int auto9DE949BB_val;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_MissionProgression, true, false);
-    TriggerExecute(gt_ForceColonyShipSetup, true, false);
-    Wait(7.0, c_timeReal);
-    TriggerQueueEnter();
-    TriggerExecute(gt_ObjectiveExtractColonyShipCreate, true, true);
-    Wait(2.0, c_timeReal);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    auto9DE949BB_val = RandomInt(0, 2);
-    if (auto9DE949BB_val == 0) {
-        libCOMI_gf_SendMissionTransmission("Intro1JC", true, -1);
-    }
-    else if (auto9DE949BB_val == 1) {
-        libCOMI_gf_SendMissionTransmission("Intro2JC", true, -1);
-    }
-    else {
-        libCOMI_gf_SendMissionTransmission("Intro3JC", true, -1);
-    }
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerExecute(gt_CreateColonyShipPings, true, false);
-    Wait(2.0, c_timeReal);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("CapturePingJC", true, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_StartGameQ_Init () {
-    gt_StartGameQ = TriggerCreate("gt_StartGameQ_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -9420,9 +8354,6 @@ void gt_ClaimerWaveDestroyedTransmissionQ_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
-    playergroup autoF26283F8_g;
-    int autoF26283F8_var;
-
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -9439,30 +8370,14 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    libCOMI_gf_SendMissionTransmission("DefeatJC", false, -1);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
     TriggerExecute(gt_ObjectiveExtractColonyShipFailed, true, false);
     TriggerExecute(gt_ObjectivePreventProtossFailed, true, false);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupAll(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/124EBD46"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    autoF26283F8_g = libCOMI_gf_HumanPlayers();
-    autoF26283F8_var = -1;
-    while (true) {
-        autoF26283F8_var = PlayerGroupNextPlayer(autoF26283F8_g, autoF26283F8_var);
-        if (autoF26283F8_var < 0) { break; }
-        CameraLockInput(autoF26283F8_var, true);
-        UnitClearSelection(autoF26283F8_var);
-        CameraPan(autoF26283F8_var, gv_defeatLocation, 1.5, -1, 10.0, false);
-    }
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(3.0, c_timeGame);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(libCOMI_gt_Defeat, true, false);
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+    libCOMI_gf_SendVictoryTransmission("DefeatJC");
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/A62C1CC5"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(gv_defeatLocation, 2.0);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
@@ -9493,97 +8408,23 @@ bool gt_VictoryDestoryZergBaseCompleted_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_VictorySequence, true, false);
+    TriggerExecute(gt_ObjectiveExtractColonyShipComplete, true, true);
+    TriggerExecute(gt_ObjectiveDoNotLetDevicesBeDestroyedComplete, true, true);
+    VictoryPanelAddCustomStatisticLine(StringExternal("Param/Value/4F2D2B30"), StringExternal("Param/Value/2DE76641"));
+    VictoryPanelAddCustomStatisticLine(StringExternal("Param/Value/E91D5A5F"), StringExternal("Param/Value/D61C8849"));
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+    libCOMI_gf_SendVictoryTransmission("VictoryJC");
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/69A3E0A3"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(UnitGetPosition(gv_colonyShipLocations[gv_victoryIndex].lv_colonyShipUnit), 2.0);
+    gf_AnimateColonyShipTakeoff(gv_victoryIndex);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryDestoryZergBaseCompleted_Init () {
     gt_VictoryDestoryZergBaseCompleted = TriggerCreate("gt_VictoryDestoryZergBaseCompleted_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Sequence
-//--------------------------------------------------------------------------------------------------
-bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-    Wait(2.0, c_timeReal);
-    TriggerExecute(gt_ObjectiveExtractColonyShipComplete, true, true);
-    TriggerExecute(gt_ObjectiveDoNotLetDevicesBeDestroyedComplete, true, true);
-    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictorySequence_Init () {
-    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Fanfare Q
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    playergroup auto285B5B8B_g;
-    int auto285B5B8B_var;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TransmissionClearAll();
-    TriggerQueueEnter();
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
-    libCOMI_gf_SendVictoryTransmission("VictoryJC");
-    UnitPauseAll(true);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    auto285B5B8B_g = libCOMI_gf_HumanPlayers();
-    auto285B5B8B_var = -1;
-    while (true) {
-        auto285B5B8B_var = PlayerGroupNextPlayer(auto285B5B8B_g, auto285B5B8B_var);
-        if (auto285B5B8B_var < 0) { break; }
-        CameraApplyInfo(auto285B5B8B_var, CameraInfoDefault(), 2.0, -1, 10.0, false);
-        CameraPan(auto285B5B8B_var, UnitGetPosition(gv_colonyShipLocations[gv_victoryIndex].lv_colonyShipUnit), 2.0, -1, 10.0, false);
-    }
-    gf_AnimateColonyShipTakeoff(gv_victoryIndex);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/93FC67C5"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    VictoryPanelAddTrackedStatistic("UnitsTotalCount");
-    VictoryPanelAddTrackedStatistic("UnitsKilledCount");
-    VictoryPanelAddTrackedStatistic("UnitsLostCount");
-    VictoryPanelAddTrackedStatistic("StructuresKilledCount");
-    VictoryPanelAddTrackedStatistic("StructuresLostCount");
-    VictoryPanelAddCustomStatisticLine(StringExternal("Param/Value/4F2D2B30"), StringExternal("Param/Value/2DE76641"));
-    VictoryPanelAddCustomStatisticLine(StringExternal("Param/Value/E91D5A5F"), StringExternal("Param/Value/D61C8849"));
-    TriggerExecute(libCOMI_gt_Victory, true, false);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryFanfareQ_Init () {
-    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -10059,23 +8900,866 @@ void gt_ObjectiveExploreScienceFacilityFailed_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
+// Trigger: Initialize ColonyShip Locations
+//--------------------------------------------------------------------------------------------------
+bool gt_InitializeColonyShipLocations_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    fixed lv_beaconTriggerDiameter;
+    int[4] lv_listOfDisableTanks;
+    int lv_disableTanksIter;
+    int lv_disableTanksRoll;
+    int lv_disableTanksIndex;
+
+    // Automatic Variable Declarations
+    int auto5C348BA4_ae;
+    int auto5C348BA4_var;
+
+    // Variable Initialization
+    lv_beaconTriggerDiameter = 1.0;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_colonyShipLocationsCount += 1;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(380);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(57);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(13);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(12);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
+    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
+    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
+    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
+    gv_colonyShipLocationsCount += 1;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(379);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(71);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(85);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(13);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
+    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
+    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
+    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
+    gv_colonyShipLocationsCount += 1;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(335);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(59);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(87);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(14);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
+    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
+    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
+    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
+    gv_colonyShipLocationsCount += 1;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(128);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(82);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(88);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(15);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
+    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
+    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
+    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
+    gv_colonyShipLocationsCount += 1;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(129);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(90);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(89);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(16);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
+    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
+    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
+    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
+    gv_colonyShipLocationsCount += 1;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(136);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(83);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(91);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(17);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
+    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
+    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
+    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
+    gv_colonyShipLocationsCount += 1;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(131);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(84);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(92);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(18);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
+    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
+    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
+    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
+    gv_colonyShipLocationsCount += 1;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(133);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(86);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(93);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(19);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
+    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
+    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
+    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
+    gv_colonyShipLocationsCount += 1;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit = UnitFromId(405);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipPoint = UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit = UnitFromId(404);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconRegion = RegionCircle(UnitGetPosition(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit), lv_beaconTriggerDiameter);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_state = ge_PRESETColonyShipState_Available;
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTransportTarget = PointFromId(406);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_protossClaimerWaveTargetRegion = RegionFromId(21);
+    gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_claimWaveSpawn = PointFromName(("Claimer Wave Spawn 0" + IntToString(gv_colonyShipLocationsCount)));
+    UnitSetState(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, c_unitStateTargetable, false);
+    UnitSetCustomValue(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_colonyShipUnit, 1, 1.0);
+    libNtve_gf_SendActorMessageToUnit(gv_colonyShipLocations[gv_colonyShipLocationsCount].lv_beaconUnit, "SetMinimapVisibility");
+    if ((libCOMI_gf_MinimumDifficultyValueCoopInteger(0, 0, 0, 1, 1, 1) == 1)) {
+        gf_DisableColonyShip(1);
+    }
+
+    lv_listOfDisableTanks[1] = 2;
+    lv_listOfDisableTanks[2] = 3;
+    lv_listOfDisableTanks[3] = 6;
+    lv_disableTanksRoll = RandomInt(1, 5);
+    if (((lv_disableTanksRoll == 1) || (lv_disableTanksRoll == 2))) {
+        lv_disableTanksIndex = 1;
+    }
+    else {
+        if (((lv_disableTanksRoll == 3) || (lv_disableTanksRoll == 4))) {
+            lv_disableTanksIndex = 3;
+        }
+        else {
+            lv_disableTanksIndex = 2;
+        }
+    }
+    gf_DisableColonyShip(lv_listOfDisableTanks[lv_disableTanksIndex]);
+    lv_disableTanksIter = 1;
+    lv_listOfDisableTanks[lv_disableTanksIter] = 4;
+    lv_disableTanksIter += 1;
+    lv_listOfDisableTanks[lv_disableTanksIter] = 7;
+    lv_disableTanksIter += 1;
+    lv_listOfDisableTanks[lv_disableTanksIter] = 9;
+    gf_DisableColonyShip(lv_listOfDisableTanks[RandomInt(1, 3)]);
+    auto5C348BA4_ae = gv_colonyShipLocationsCount;
+    auto5C348BA4_var = 1;
+    for ( ; auto5C348BA4_var <= auto5C348BA4_ae; auto5C348BA4_var += 1 ) {
+        libCOMI_gf_DisplayUnitProgressBar(gv_colonyShipLocations[auto5C348BA4_var].lv_beaconUnit, StringExternal("Param/Value/1595402E"), 0, 100);
+        libCOMI_gf_ShowHideUnitProgressBar(gv_colonyShipLocations[auto5C348BA4_var].lv_beaconUnit, false);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_InitializeColonyShipLocations_Init () {
+    gt_InitializeColonyShipLocations = TriggerCreate("gt_InitializeColonyShipLocations_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 02 Loading Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_Init02LoadingComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_Init03Players, true, false);
+    TriggerExecute(gt_Init04Technology, true, false);
+    TriggerExecute(gt_Init05Units, true, false);
+    TriggerExecute(gt_Init06MusicSound, true, false);
+    TriggerExecute(gt_Init07Environment, true, false);
+    TriggerExecute(gt_Init08Difficulties, true, false);
+    TriggerExecute(gt_StartAI, true, false);
+    TriggerExecute(gt_StartGameQ, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init02LoadingComplete_Init () {
+    gt_Init02LoadingComplete = TriggerCreate("gt_Init02LoadingComplete_Func");
+    TriggerAddEventGeneric(gt_Init02LoadingComplete, libCOMI_gv_COOP_MISSION_STARTED_EVENT);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 03 Players
+//--------------------------------------------------------------------------------------------------
+bool gt_Init03Players_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_humanPlayerIter;
+    playergroup lv_ignoreResources;
+
+    // Automatic Variable Declarations
+    playergroup autoF7951ECD_g;
+    playergroup auto5A28068E_g;
+    int auto5A28068E_var;
+    playergroup autoF04F56FE_g;
+    int autoF04F56FE_var;
+    playergroup autoAEA6D7E6_g;
+    int autoAEA6D7E6_var;
+
+    // Variable Initialization
+    lv_ignoreResources = PlayerGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
+    libCOMI_gf_StartCoopAI(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, gv_pLAYER_01_USER);
+    libCOMI_gf_StartCoopAI(gv_pLAYER_06_INFESTED_BaseWavesHateToss, gv_pLAYER_02_USER);
+    libCOMI_gf_StartCoopAI(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, gv_pLAYER_01_USER);
+    libCOMI_gf_StartCoopAI(gv_pLAYER_06_INFESTED_BaseWavesHateToss, gv_pLAYER_02_USER);
+    PlayerGroupAdd(gv_amonPlayers, gv_pLAYER_03_AMON_Claimers);
+    PlayerGroupAdd(gv_amonPlayers, gv_pLAYER_04_AMON_BaseWaves);
+    libNtve_gf_AddPlayerGroupToPlayerGroup(libCOMI_gf_GetEnemyHumanPlayers(), gv_amonPlayers);
+    PlayerGroupAdd(gv_zergPlayers, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss);
+    PlayerGroupAdd(gv_zergPlayers, gv_pLAYER_06_INFESTED_BaseWavesHateToss);
+    PlayerGroupAdd(gv_zergPlayers, gv_pLAYER_07_ZERG);
+    libNtve_gf_AddPlayerGroupToPlayerGroup(gv_amonPlayers, gv_enemyPlayers);
+    libNtve_gf_AddPlayerGroupToPlayerGroup(gv_zergPlayers, gv_enemyPlayers);
+    TechTreeUpgradeAddLevel(gv_pLAYER_08_ColonyShip, "CoopNPCPlayer", 1);
+    TechTreeUpgradeAddLevel(gv_pLAYER_10_ColonyShipTARGET, "CoopNPCPlayer", 1);
+    TechTreeUpgradeAddLevel(gv_pLAYER_11_COLONISTS, "CoopNPCPlayer", 1);
+    autoF7951ECD_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    lv_humanPlayerIter = -1;
+    while (true) {
+        lv_humanPlayerIter = PlayerGroupNextPlayer(autoF7951ECD_g, lv_humanPlayerIter);
+        if (lv_humanPlayerIter < 0) { break; }
+        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_08_ColonyShip, libNtve_ge_AllianceSetting_Ally);
+        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_10_ColonyShipTARGET, libNtve_ge_AllianceSetting_Ally);
+        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_11_COLONISTS, libNtve_ge_AllianceSetting_Neutral);
+        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_03_AMON_Claimers, libNtve_ge_AllianceSetting_Enemy);
+        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_04_AMON_BaseWaves, libNtve_ge_AllianceSetting_Enemy);
+        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, libNtve_ge_AllianceSetting_Enemy);
+        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_06_INFESTED_BaseWavesHateToss, libNtve_ge_AllianceSetting_Enemy);
+        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_07_ZERG, libNtve_ge_AllianceSetting_Enemy);
+        libNtve_gf_SetAlliance(lv_humanPlayerIter, gv_pLAYER_09_ERADICATOR, libNtve_ge_AllianceSetting_Enemy);
+    }
+    libNtve_gf_SetAlliance(gv_pLAYER_08_ColonyShip, gv_pLAYER_10_ColonyShipTARGET, libNtve_ge_AllianceSetting_Ally);
+    libNtve_gf_SetAlliance(gv_pLAYER_08_ColonyShip, gv_pLAYER_11_COLONISTS, libNtve_ge_AllianceSetting_Ally);
+    libNtve_gf_SetAlliance(gv_pLAYER_11_COLONISTS, gv_pLAYER_09_ERADICATOR, libNtve_ge_AllianceSetting_Enemy);
+    libNtve_gf_SetAlliance(gv_pLAYER_11_COLONISTS, gv_pLAYER_10_ColonyShipTARGET, libNtve_ge_AllianceSetting_Ally);
+    auto5A28068E_g = gv_zergPlayers;
+    auto5A28068E_var = -1;
+    while (true) {
+        auto5A28068E_var = PlayerGroupNextPlayer(auto5A28068E_g, auto5A28068E_var);
+        if (auto5A28068E_var < 0) { break; }
+        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_08_ColonyShip, libNtve_ge_AllianceSetting_Ally);
+        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_10_ColonyShipTARGET, libNtve_ge_AllianceSetting_Enemy);
+        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_11_COLONISTS, libNtve_ge_AllianceSetting_Neutral);
+        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_04_AMON_BaseWaves, libNtve_ge_AllianceSetting_Enemy);
+        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_03_AMON_Claimers, libNtve_ge_AllianceSetting_Enemy);
+        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_09_ERADICATOR, libNtve_ge_AllianceSetting_Ally);
+        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_06_INFESTED_BaseWavesHateToss, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+        libNtve_gf_SetAlliance(auto5A28068E_var, gv_pLAYER_07_ZERG, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+        PlayerSetColorIndex(auto5A28068E_var, 1, true);
+    }
+    autoF04F56FE_g = gv_amonPlayers;
+    autoF04F56FE_var = -1;
+    while (true) {
+        autoF04F56FE_var = PlayerGroupNextPlayer(autoF04F56FE_g, autoF04F56FE_var);
+        if (autoF04F56FE_var < 0) { break; }
+        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_08_ColonyShip, libNtve_ge_AllianceSetting_Neutral);
+        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_10_ColonyShipTARGET, libNtve_ge_AllianceSetting_Enemy);
+        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_11_COLONISTS, libNtve_ge_AllianceSetting_Neutral);
+        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, libNtve_ge_AllianceSetting_Neutral);
+        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_06_INFESTED_BaseWavesHateToss, libNtve_ge_AllianceSetting_Enemy);
+        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_06_INFESTED_BaseWavesHateToss, libNtve_ge_AllianceSetting_Neutral);
+        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_09_ERADICATOR, libNtve_ge_AllianceSetting_Ally);
+        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_03_AMON_Claimers, libNtve_ge_AllianceSetting_AllyWithSharedVision);
+        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_04_AMON_BaseWaves, libNtve_ge_AllianceSetting_AllyWithSharedVision);
+        libNtve_gf_SetAlliance(autoF04F56FE_var, gv_pLAYER_07_ZERG, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+    }
+    libNtve_gf_AddPlayerGroupToPlayerGroup(libCOMI_gf_GetEnemyAIPlayers(), lv_ignoreResources);
+    PlayerGroupAdd(lv_ignoreResources, gv_pLAYER_06_INFESTED_BaseWavesHateToss);
+    PlayerGroupAdd(lv_ignoreResources, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss);
+    PlayerGroupAdd(lv_ignoreResources, gv_pLAYER_11_COLONISTS);
+    autoAEA6D7E6_g = lv_ignoreResources;
+    autoAEA6D7E6_var = -1;
+    while (true) {
+        autoAEA6D7E6_var = PlayerGroupNextPlayer(autoAEA6D7E6_g, autoAEA6D7E6_var);
+        if (autoAEA6D7E6_var < 0) { break; }
+        PlayerSetState(autoAEA6D7E6_var, c_playerStateMineralCostIgnored, true);
+        PlayerSetState(autoAEA6D7E6_var, c_playerStateVespeneCostIgnored, true);
+        PlayerSetState(autoAEA6D7E6_var, c_playerStateFoodIgnored, true);
+    }
+    PlayerSetColorIndex(gv_pLAYER_09_ERADICATOR, 0, true);
+    PlayerSetColorIndex(gv_pLAYER_11_COLONISTS, 0, true);
+    PlayerSetColorIndex(gv_pLAYER_08_ColonyShip, 0, true);
+    PlayerSetColorIndex(gv_pLAYER_10_ColonyShipTARGET, 0, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init03Players_Init () {
+    gt_Init03Players = TriggerCreate("gt_Init03Players_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 04 Technology
+//--------------------------------------------------------------------------------------------------
+bool gt_Init04Technology_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TechTreeUpgradeAddLevel(gv_pLAYER_08_ColonyShip, "FireSuppressionSystems", 1);
+    TechTreeUpgradeAddLevel(gv_pLAYER_10_ColonyShipTARGET, "FireSuppressionSystems", 1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init04Technology_Init () {
+    gt_Init04Technology = TriggerCreate("gt_Init04Technology_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 05 Units
+//--------------------------------------------------------------------------------------------------
+bool gt_Init05Units_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unitgroup lv_rocksSmall;
+    unitgroup lv_rocksLarge;
+
+    // Automatic Variable Declarations
+    unitgroup auto71F4FFAB_g;
+    int auto71F4FFAB_u;
+    unit auto71F4FFAB_var;
+    unitgroup auto67337D53_g;
+    int auto67337D53_u;
+    unit auto67337D53_var;
+    unitgroup autoC386889F_g;
+    int autoC386889F_u;
+    unit autoC386889F_var;
+    unitgroup autoB24B72C5_g;
+    int autoB24B72C5_u;
+    unit autoB24B72C5_var;
+    unitgroup auto3043FF71_g;
+    int auto3043FF71_u;
+    unit auto3043FF71_var;
+    unitgroup auto63ED60AE_g;
+    int auto63ED60AE_u;
+    unit auto63ED60AE_var;
+    unitgroup auto4B109324_g;
+    int auto4B109324_u;
+    unit auto4B109324_var;
+    unitgroup auto4BFC89B0_g;
+    int auto4BFC89B0_u;
+    unit auto4BFC89B0_var;
+    unitgroup auto9E557A8C_g;
+    int auto9E557A8C_u;
+    unit auto9E557A8C_var;
+    unitgroup auto5EF66E23_g;
+    int auto5EF66E23_u;
+    unit auto5EF66E23_var;
+    unitgroup auto1BD26239_g;
+    int auto1BD26239_u;
+    unit auto1BD26239_var;
+    unitgroup autoDFFB1E2D_g;
+    int autoDFFB1E2D_u;
+    unit autoDFFB1E2D_var;
+    unitgroup autoAB3250EE_g;
+    int autoAB3250EE_u;
+    unit autoAB3250EE_var;
+    unitgroup auto0976269A_g;
+    int auto0976269A_u;
+    unit auto0976269A_var;
+
+    // Variable Initialization
+    lv_rocksSmall = UnitGroupEmpty();
+    lv_rocksLarge = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_InitializeColonyShipLocations, true, false);
+    auto71F4FFAB_g = UnitGroup(null, gv_pLAYER_11_COLONISTS, null, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto71F4FFAB_u = UnitGroupCount(auto71F4FFAB_g, c_unitCountAll);
+    for (;; auto71F4FFAB_u -= 1) {
+        auto71F4FFAB_var = UnitGroupUnitFromEnd(auto71F4FFAB_g, auto71F4FFAB_u);
+        if (auto71F4FFAB_var == null) { break; }
+        if (((UnitGetType(auto71F4FFAB_var) == "JarbanColonistHut") || (UnitGetType(auto71F4FFAB_var) == "Excavator") || (UnitGetType(auto71F4FFAB_var) == "TankerTruck") || (UnitGetType(auto71F4FFAB_var) == "DumpTruck") || (UnitGetType(auto71F4FFAB_var) == "TruckFlatbedUnit"))) {
+            libNtve_gf_SendActorMessageToUnit(auto71F4FFAB_var, "SetMinimapVisibility");
+            UnitIssueOrder(auto71F4FFAB_var, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
+        }
+
+    }
+    auto67337D53_g = UnitGroupFromId(2);
+    auto67337D53_u = UnitGroupCount(auto67337D53_g, c_unitCountAll);
+    for (;; auto67337D53_u -= 1) {
+        auto67337D53_var = UnitGroupUnitFromEnd(auto67337D53_g, auto67337D53_u);
+        if (auto67337D53_var == null) { break; }
+        UnitBehaviorAdd(auto67337D53_var, "Harmless", auto67337D53_var, 1);
+    }
+    autoC386889F_g = UnitGroup("InfestedColonistTransportNova", gv_pLAYER_11_COLONISTS, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoC386889F_u = UnitGroupCount(autoC386889F_g, c_unitCountAll);
+    for (;; autoC386889F_u -= 1) {
+        autoC386889F_var = UnitGroupUnitFromEnd(autoC386889F_g, autoC386889F_u);
+        if (autoC386889F_var == null) { break; }
+        UnitBehaviorAdd(autoC386889F_var, "Harmless", autoC386889F_var, 1);
+        UnitSetState(autoC386889F_var, c_unitStateHighlightable, false);
+        UnitSetState(autoC386889F_var, c_unitStateSelectable, false);
+        UnitSetState(autoC386889F_var, c_unitStateTargetable, false);
+        UnitSetState(autoC386889F_var, c_unitStateTooltipable, false);
+        UnitIssueOrder(autoC386889F_var, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
+    }
+    autoB24B72C5_g = UnitGroup("MilitarizedColonistTransportNova", gv_pLAYER_11_COLONISTS, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoB24B72C5_u = UnitGroupCount(autoB24B72C5_g, c_unitCountAll);
+    for (;; autoB24B72C5_u -= 1) {
+        autoB24B72C5_var = UnitGroupUnitFromEnd(autoB24B72C5_g, autoB24B72C5_u);
+        if (autoB24B72C5_var == null) { break; }
+        UnitBehaviorAdd(autoB24B72C5_var, "Harmless", autoB24B72C5_var, 1);
+    }
+    libCOMI_gf_SendActorMessageToDoodadsInRegion("AnimPlay StandUnpowered Stand,Unpowered PlayForever", "Zerg_EggSackOneEggs", RegionFromId(57));
+    libCOMI_gf_SendActorMessageToDoodadsInRegion("AnimPlay StandUnpowered Stand,Unpowered PlayForever", "Zerg_EggSackTwoEggs", RegionFromId(57));
+    libCOMI_gf_SendActorMessageToDoodadsInRegion("AnimPlay StandUnpowered Stand,Unpowered PlayForever", "Zerg_EggSackThreeEggs", RegionFromId(57));
+    libCOMI_gf_SendActorMessageToDoodadsInRegion("SetMinimapVisibility", "Zerg_EggSackOneEggs", RegionFromId(57));
+    libCOMI_gf_SendActorMessageToDoodadsInRegion("SetMinimapVisibility", "Zerg_EggSackTwoEggs", RegionFromId(57));
+    libCOMI_gf_SendActorMessageToDoodadsInRegion("SetMinimapVisibility", "Zerg_EggSackThreeEggs", RegionFromId(57));
+    auto3043FF71_g = UnitGroup(gv_c_ColonyShipObjective_Dead, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto3043FF71_u = UnitGroupCount(auto3043FF71_g, c_unitCountAll);
+    for (;; auto3043FF71_u -= 1) {
+        auto3043FF71_var = UnitGroupUnitFromEnd(auto3043FF71_g, auto3043FF71_u);
+        if (auto3043FF71_var == null) { break; }
+        UnitSetCustomValue(auto3043FF71_var, 1, 1.0);
+        UnitSetState(auto3043FF71_var, c_unitStateHighlightable, false);
+        UnitSetState(auto3043FF71_var, c_unitStateSelectable, false);
+        UnitSetState(auto3043FF71_var, c_unitStateTargetable, false);
+        UnitSetState(auto3043FF71_var, c_unitStateTooltipable, false);
+        UnitSetState(auto3043FF71_var, c_unitStateInvulnerable, true);
+        libNtve_gf_SendActorMessageToUnit(auto3043FF71_var, "SetMinimapVisibility");
+    }
+    auto63ED60AE_g = UnitGroup(null, c_playerAny, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto63ED60AE_u = UnitGroupCount(auto63ED60AE_g, c_unitCountAll);
+    for (;; auto63ED60AE_u -= 1) {
+        auto63ED60AE_var = UnitGroupUnitFromEnd(auto63ED60AE_g, auto63ED60AE_u);
+        if (auto63ED60AE_var == null) { break; }
+        if (((UnitGetType(auto63ED60AE_var) == "InfestableBiodome") || (UnitGetType(auto63ED60AE_var) == "InfestableColonistBiodome") || (UnitGetType(auto63ED60AE_var) == "InfestableColonistHut") || (UnitGetType(auto63ED60AE_var) == "JarbanInfestibleColonistHut") || (UnitGetType(auto63ED60AE_var) == "InfestableHut") || (UnitGetType(auto63ED60AE_var) == "InfestedArmory") || (UnitGetType(auto63ED60AE_var) == "InfestedBarracks") || (UnitGetType(auto63ED60AE_var) == "InfestedBunker") || (UnitGetType(auto63ED60AE_var) == "InfestedCC") || (UnitGetType(auto63ED60AE_var) == "InfestedEngBay") || (UnitGetType(auto63ED60AE_var) == "InfestedFactory") || (UnitGetType(auto63ED60AE_var) == "InfestedMissileTurret") || (UnitGetType(auto63ED60AE_var) == "InfestedRefinery") || (UnitGetType(auto63ED60AE_var) == "InfestedStarport") || (UnitGetType(auto63ED60AE_var) == "InfestedSupply") || (UnitGetType(auto63ED60AE_var) == "InfestedMercHaven"))) {
+            UnitBehaviorAddPlayer(auto63ED60AE_var, "ColonyInfestation", UnitGetOwner(auto63ED60AE_var), 1);
+        }
+
+    }
+    auto4B109324_g = UnitGroup("InfestedBunker", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto4B109324_u = UnitGroupCount(auto4B109324_g, c_unitCountAll);
+    for (;; auto4B109324_u -= 1) {
+        auto4B109324_var = UnitGroupUnitFromEnd(auto4B109324_g, auto4B109324_u);
+        if (auto4B109324_var == null) { break; }
+        UnitBehaviorAddPlayer(auto4B109324_var, "ColonyInfestation", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, 1);
+        UnitCargoCreate(auto4B109324_var, "InfestedTerranCampaign", 4);
+    }
+    auto4BFC89B0_g = UnitGroup("NovaInfestedSiegeTankUprooted", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto4BFC89B0_u = UnitGroupCount(auto4BFC89B0_g, c_unitCountAll);
+    for (;; auto4BFC89B0_u -= 1) {
+        auto4BFC89B0_var = UnitGroupUnitFromEnd(auto4BFC89B0_g, auto4BFC89B0_u);
+        if (auto4BFC89B0_var == null) { break; }
+        UnitGroupAdd(gv_infestedSiegeTanks, auto4BFC89B0_var);
+        AISetUnitScriptControlled(auto4BFC89B0_var, true);
+    }
+    auto9E557A8C_g = UnitGroup("NovaInfestedSiegeTankUprooted", gv_pLAYER_06_INFESTED_BaseWavesHateToss, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto9E557A8C_u = UnitGroupCount(auto9E557A8C_g, c_unitCountAll);
+    for (;; auto9E557A8C_u -= 1) {
+        auto9E557A8C_var = UnitGroupUnitFromEnd(auto9E557A8C_g, auto9E557A8C_u);
+        if (auto9E557A8C_var == null) { break; }
+        UnitGroupAdd(gv_infestedSiegeTanks, auto9E557A8C_var);
+        AISetUnitScriptControlled(auto9E557A8C_var, true);
+    }
+    auto5EF66E23_g = UnitGroup("InfestedCivilianBurrowed", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto5EF66E23_u = UnitGroupCount(auto5EF66E23_g, c_unitCountAll);
+    for (;; auto5EF66E23_u -= 1) {
+        auto5EF66E23_var = UnitGroupUnitFromEnd(auto5EF66E23_g, auto5EF66E23_u);
+        if (auto5EF66E23_var == null) { break; }
+        UnitBehaviorAddPlayer(auto5EF66E23_var, "ScanRangeBonus", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, 1);
+    }
+    auto1BD26239_g = UnitGroup("InfestedTerranCampaignBurrowed", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto1BD26239_u = UnitGroupCount(auto1BD26239_g, c_unitCountAll);
+    for (;; auto1BD26239_u -= 1) {
+        auto1BD26239_var = UnitGroupUnitFromEnd(auto1BD26239_g, auto1BD26239_u);
+        if (auto1BD26239_var == null) { break; }
+        UnitBehaviorAddPlayer(auto1BD26239_var, "ScanRangeBonus", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, 1);
+    }
+    libNtve_gf_PauseUnit(gv_c_BonusObjective_Blightbringer, true);
+    UnitSetCustomValue(gv_c_BonusObjective_Blightbringer, 1, 1.0);
+    autoDFFB1E2D_g = UnitGroup("InfestedCivilian", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, RegionFromId(79), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoDFFB1E2D_u = UnitGroupCount(autoDFFB1E2D_g, c_unitCountAll);
+    for (;; autoDFFB1E2D_u -= 1) {
+        autoDFFB1E2D_var = UnitGroupUnitFromEnd(autoDFFB1E2D_g, autoDFFB1E2D_u);
+        if (autoDFFB1E2D_var == null) { break; }
+        UnitGroupAdd(gv_bonusObjective_HatchedInfestedGroup, autoDFFB1E2D_var);
+        UnitBehaviorAdd(autoDFFB1E2D_var, "CritterWanderLeashShort", autoDFFB1E2D_var, 1);
+    }
+    gv_eradicatorTypeMissile = UnitFromId(895);
+    gv_eradicatorTypeCannon = UnitFromId(1340);
+    UnitIssueOrder(gv_eradicatorTypeMissile, Order(AbilityCommand("NovaEradicatorMissileMode", 0)), c_orderQueueReplace);
+    UnitIssueOrder(gv_eradicatorTypeMissile, OrderSetAutoCast(AbilityCommand("EradicatorLockOnAir", 0), false), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_eradicatorTypeCannon, OrderSetAutoCast(AbilityCommand("EradicatorLockOnAir", 0), false), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_eradicatorTypeMissile, OrderSetAutoCast(AbilityCommand("EradicatorLockOn", 0), false), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_eradicatorTypeCannon, OrderSetAutoCast(AbilityCommand("EradicatorLockOn", 0), false), c_orderQueueAddToEnd);
+    UnitAbilityEnable(gv_eradicatorTypeMissile, "move", false);
+    CatalogFieldValueSet(c_gameCatalogActor, "Cyclone", "PortraitModel", gv_pLAYER_09_ERADICATOR, ("MULEPortrait"));
+    autoAB3250EE_g = UnitGroupFromId(1);
+    autoAB3250EE_u = UnitGroupCount(autoAB3250EE_g, c_unitCountAll);
+    for (;; autoAB3250EE_u -= 1) {
+        autoAB3250EE_var = UnitGroupUnitFromEnd(autoAB3250EE_g, autoAB3250EE_u);
+        if (autoAB3250EE_var == null) { break; }
+        gf_InfestUnit(autoAB3250EE_var);
+    }
+    if ((RandomInt(0, 100) > 33)) {
+        auto0976269A_g = UnitGroup(null, c_playerAny, RegionFromId(24), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+        auto0976269A_u = UnitGroupCount(auto0976269A_g, c_unitCountAll);
+        for (;; auto0976269A_u -= 1) {
+            auto0976269A_var = UnitGroupUnitFromEnd(auto0976269A_g, auto0976269A_u);
+            if (auto0976269A_var == null) { break; }
+            UnitRemove(auto0976269A_var);
+        }
+        TriggerEnable(gt_NeverTakeMeAliveQ, false);
+    }
+
+    UnitSetPropertyFixed(UnitFromId(1634), c_unitPropLifePercent, 50.0);
+    UnitSetPropertyFixed(UnitFromId(1636), c_unitPropLifePercent, 30.0);
+    UnitSetPropertyFixed(UnitFromId(1635), c_unitPropLifePercent, 1.0);
+    UnitSetPropertyFixed(UnitFromId(1634), c_unitPropKills, 5.0);
+    UnitSetPropertyFixed(UnitFromId(1636), c_unitPropKills, 2.0);
+    UnitSetPropertyFixed(UnitFromId(1635), c_unitPropKills, 17.0);
+    UnitBehaviorAdd(UnitFromId(1634), "CritterWanderLeashShort", UnitFromId(1634), 1);
+    UnitBehaviorAdd(UnitFromId(1636), "CritterWanderLeashShort", UnitFromId(1636), 1);
+    UnitBehaviorAdd(UnitFromId(1635), "CritterWanderLeashShort", UnitFromId(1635), 1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init05Units_Init () {
+    gt_Init05Units = TriggerCreate("gt_Init05Units_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 06 Music/Sound
+//--------------------------------------------------------------------------------------------------
+bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_mapMusicTrack2 = "Ambience_Nova05_Main";
+    gv_mapMusicTrack3 = "Ambience_Nova05_ZergMines";
+    gv_mapMusicTrack4 = "Ambience_Nova05_ScienceFacility";
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init06MusicSound_Init () {
+    gt_Init06MusicSound = TriggerCreate("gt_Init06MusicSound_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 07 Environment
+//--------------------------------------------------------------------------------------------------
+bool gt_Init07Environment_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    playergroup autoDC6F5366_g;
+    int autoDC6F5366_var;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    GameSetToDLighting("JarbanMinor_Jungle");
+    autoDC6F5366_g = libCOMI_gf_HumanPlayers();
+    autoDC6F5366_var = -1;
+    while (true) {
+        autoDC6F5366_var = PlayerGroupNextPlayer(autoDC6F5366_g, autoDC6F5366_var);
+        if (autoDC6F5366_var < 0) { break; }
+        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(65), RegionFromId(65), autoDC6F5366_var);
+        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(74), RegionFromId(74), autoDC6F5366_var);
+        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(68), RegionFromId(68), autoDC6F5366_var);
+        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(69), RegionFromId(69), autoDC6F5366_var);
+        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(70), RegionFromId(70), autoDC6F5366_var);
+        libCOMI_gf_AutoRevealRegionCoop(RegionFromId(155), RegionFromId(155), autoDC6F5366_var);
+    }
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionEntireMap(), "Griffin_Pickup_Flyby");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init07Environment_Init () {
+    gt_Init07Environment = TriggerCreate("gt_Init07Environment_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 08 Difficulties
+//--------------------------------------------------------------------------------------------------
+bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    fixed lv_colonyShipLifeMax;
+    fixed lv_eradicatorLifeMax;
+    fixed lv_blightbringerLifeMax;
+
+    // Automatic Variable Declarations
+    playergroup auto2AD571A7_g;
+    int auto2AD571A7_var;
+    playergroup auto139417E7_g;
+    int auto139417E7_var;
+    unitgroup auto95A5FABE_g;
+    int auto95A5FABE_u;
+    unit auto95A5FABE_var;
+    int auto927DCC0B_val;
+    playergroup auto60B674C5_g;
+    int auto60B674C5_var;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto2AD571A7_g = gv_enemyPlayers;
+    auto2AD571A7_var = -1;
+    while (true) {
+        auto2AD571A7_var = PlayerGroupNextPlayer(auto2AD571A7_g, auto2AD571A7_var);
+        if (auto2AD571A7_var < 0) { break; }
+        TechTreeAbilityAllow(auto2AD571A7_var, AbilityCommand("InfestedBansheeCloakingField", 0), false);
+    }
+    TimerStart(gv_enableAIInfestedBansheeCloak, (9.0 * 60.0), false, c_timeGame);
+    if ((RandomInt(0, 100) <= 66)) {
+        gv_bonusObjective_MineFirst = true;
+    }
+    else {
+        gv_bonusObjective_MineFirst = false;
+    }
+    gv_objectiveExtractColonyShipMax = libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 4, 4, 5, 5, 0, 0);
+    gv_objectiveDoNotLetDevicesBeDestroyedMax = libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 3, 3, 2, 2, 0, 0);
+    lv_colonyShipLifeMax = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 2000.0, 2000.0, 1750.0, 1500.0, 0.0, 0.0);
+    CatalogFieldValueSet(c_gameCatalogUnit, gv_c_ColonyShipObjective, "LifeMax", gv_pLAYER_08_ColonyShip, FixedToString(lv_colonyShipLifeMax, c_fixedPrecisionAny));
+    CatalogFieldValueSet(c_gameCatalogUnit, gv_c_ColonyShipObjective, "LifeMax", gv_pLAYER_10_ColonyShipTARGET, FixedToString(lv_colonyShipLifeMax, c_fixedPrecisionAny));
+    TechTreeUpgradeAddLevel(gv_pLAYER_11_COLONISTS, "ShieldWall", 1);
+    lv_eradicatorLifeMax = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 1500.0, 1500.0, 2500.0, 3500.0, 0.0, 0.0);
+    CatalogFieldValueSet(c_gameCatalogUnit, "NovaEradicator", "LifeStart", gv_pLAYER_09_ERADICATOR, FixedToString(lv_eradicatorLifeMax, c_fixedPrecisionAny));
+    CatalogFieldValueSet(c_gameCatalogUnit, "NovaEradicator", "LifeMax", gv_pLAYER_09_ERADICATOR, FixedToString(lv_eradicatorLifeMax, c_fixedPrecisionAny));
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_09_ERADICATOR, "NovaEradicatorDamageHard", libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 0, 0, 1, 0, 0, 0));
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_09_ERADICATOR, "NovaEradicatorDamageBrutal", libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 0, 0, 0, 1, 0, 0));
+    lv_blightbringerLifeMax = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 3000.0, 3000.0, 4500.0, 5500.0, 0.0, 0.0);
+    CatalogFieldValueSet(c_gameCatalogUnit, "Blightbringer", "LifeStart", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, FixedToString(lv_blightbringerLifeMax, c_fixedPrecisionAny));
+    CatalogFieldValueSet(c_gameCatalogUnit, "Blightbringer", "LifeMax", gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, FixedToString(lv_blightbringerLifeMax, c_fixedPrecisionAny));
+    gv_bonusObjective_Blightbringer_EggLarge = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 60.0, 60.0, 120.0, 180.0, 0.0, 0.0);
+    gv_bonusObjective_Blightbringer_EggSmall = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 40.0, 40.0, 80.0, 120.0, 0.0, 0.0);
+    gv_bonusObjective_Blightbringer_EggHatchTime = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 10.0, 10.0, 9.0, 8.0, 0.0, 0.0);
+    CatalogFieldValueSet(c_gameCatalogAbil, "ParasiticBomb", "Cost[" + IntToString(0) + "].Vital[" + IntToString(c_unitVitalEnergy) + "]", UnitGetOwner(gv_c_BonusObjective_Blightbringer), IntToString(0));
+    gv_bonusObjective_Blightbringer_AttackGroundCD = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 6.0, 6.0, 4.0, 3.0, 0.0, 0.0);
+    gv_bonusObjective_Blightbringer_AttackAirCD = libCOMI_gf_DifficultyValueFixed2(libCOMI_gf_GetMissionDifficulty(), 30.0, 30.0, 20.0, 10.0, 0.0, 0.0);
+    auto139417E7_g = gv_enemyPlayers;
+    auto139417E7_var = -1;
+    while (true) {
+        auto139417E7_var = PlayerGroupNextPlayer(auto139417E7_g, auto139417E7_var);
+        if (auto139417E7_var < 0) { break; }
+        TechTreeUpgradeAddLevel(auto139417E7_var, "overlordspeed", 1);
+        TechTreeUpgradeAddLevel(auto139417E7_var, "overlordtransport", 1);
+        TechTreeUpgradeAddLevel(auto139417E7_var, "ObserverGraviticBooster", 1);
+    }
+    auto95A5FABE_g = UnitGroup(null, c_playerAny, RegionPlayableMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto95A5FABE_u = UnitGroupCount(auto95A5FABE_g, c_unitCountAll);
+    for (;; auto95A5FABE_u -= 1) {
+        auto95A5FABE_var = UnitGroupUnitFromEnd(auto95A5FABE_g, auto95A5FABE_u);
+        if (auto95A5FABE_var == null) { break; }
+        if (((UnitGetType(auto95A5FABE_var) == "InfestableBiodome") || (UnitGetType(auto95A5FABE_var) == "InfestableColonistBiodome") || (UnitGetType(auto95A5FABE_var) == "InfestableColonistHut") || (UnitGetType(auto95A5FABE_var) == "InfestableHut") || (UnitGetType(auto95A5FABE_var) == "InfestedArmory") || (UnitGetType(auto95A5FABE_var) == "InfestedBarracks") || (UnitGetType(auto95A5FABE_var) == "InfestedBunker") || (UnitGetType(auto95A5FABE_var) == "InfestedCC") || (UnitGetType(auto95A5FABE_var) == "InfestedEngBay") || (UnitGetType(auto95A5FABE_var) == "InfestedFactory") || (UnitGetType(auto95A5FABE_var) == "InfestedMissileTurret") || (UnitGetType(auto95A5FABE_var) == "InfestedRefinery") || (UnitGetType(auto95A5FABE_var) == "InfestedStarport") || (UnitGetType(auto95A5FABE_var) == "InfestedSupply"))) {
+            auto927DCC0B_val = libCOMI_gf_GetMissionDifficulty();
+            if (auto927DCC0B_val == 1) {
+                UnitSetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, (UnitGetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, c_unitPropCurrent) * 0.75));
+            }
+            else if (auto927DCC0B_val == 2) {
+                UnitSetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, (UnitGetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, c_unitPropCurrent) * 0.75));
+            }
+            else if (auto927DCC0B_val == 3) {
+                UnitSetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, (UnitGetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, c_unitPropCurrent) * 1.25));
+            }
+            else if (auto927DCC0B_val == 4) {
+                UnitSetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, (UnitGetPropertyFixed(auto95A5FABE_var, c_unitPropLifeMax, c_unitPropCurrent) * 1.5));
+            }
+            else {
+            }
+            UnitSetPropertyFixed(auto95A5FABE_var, c_unitPropLifePercent, 100.0);
+        }
+
+    }
+    auto60B674C5_g = gv_enemyPlayers;
+    auto60B674C5_var = -1;
+    while (true) {
+        auto60B674C5_var = PlayerGroupNextPlayer(auto60B674C5_g, auto60B674C5_var);
+        if (auto60B674C5_var < 0) { break; }
+        if ((libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 0, 0, 1, 1, 0, 0) == 1)) {
+            TechTreeUpgradeAddLevel(auto60B674C5_var, "zerglingmovementspeed", 1);
+            TechTreeUpgradeAddLevel(auto60B674C5_var, "hydraliskspeed", 1);
+        }
+
+        if ((libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 0, 0, 0, 1, 0, 0) == 1)) {
+            TechTreeUpgradeAddLevel(auto60B674C5_var, "zerglingattackspeed", 1);
+        }
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init08Difficulties_Init () {
+    gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start AI
+//--------------------------------------------------------------------------------------------------
+bool gt_StartAI_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    playergroup lv_infestedBullies;
+
+    // Automatic Variable Declarations
+    playergroup autoCCE4179B_g;
+    int autoCCE4179B_var;
+    playergroup auto8C4A9983_g;
+    int auto8C4A9983_var;
+
+    // Variable Initialization
+    lv_infestedBullies = PlayerGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_SetupInfestedPoints, true, false);
+    libCOMI_gf_StartCoopAI(gv_pLAYER_07_ZERG, gv_pLAYER_01_USER);
+    if ((PlayerGroupCount(libCOMI_gv_vU_AlliedCommanders) == 1)) {
+        libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 1), "Infested");
+        libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_06_INFESTED_BaseWavesHateToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 2), "Infested");
+    }
+    else {
+        if ((RandomInt(0, 100) <= 50)) {
+            libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 1), "Infested");
+            libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_06_INFESTED_BaseWavesHateToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 2), "Infested");
+        }
+        else {
+            libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 2), "Infested");
+            libCOMI_gf_StartCoopAIwithSpecificPersonality(gv_pLAYER_06_INFESTED_BaseWavesHateToss, PlayerGroupPlayer(libCOMI_gv_vU_AlliedCommanders, 1), "Infested");
+        }
+    }
+    TriggerExecute(gt_SetupProtossAIWarpInUnits, true, false);
+    TriggerExecute(gt_InitializeClaimerWaveTargetPriority, true, false);
+    CampaignInitAI();
+    AITransportSetPanic(gv_pLAYER_03_AMON_Claimers, 0.9);
+    autoCCE4179B_g = gv_enemyPlayers;
+    autoCCE4179B_var = -1;
+    while (true) {
+        autoCCE4179B_var = PlayerGroupNextPlayer(autoCCE4179B_g, autoCCE4179B_var);
+        if (autoCCE4179B_var < 0) { break; }
+        VisRevealArea(autoCCE4179B_var, RegionFromId(3), 2.0, false);
+    }
+    PlayerGroupAdd(lv_infestedBullies, gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss);
+    PlayerGroupAdd(lv_infestedBullies, gv_pLAYER_06_INFESTED_BaseWavesHateToss);
+    auto8C4A9983_g = lv_infestedBullies;
+    auto8C4A9983_var = -1;
+    while (true) {
+        auto8C4A9983_var = PlayerGroupNextPlayer(auto8C4A9983_g, auto8C4A9983_var);
+        if (auto8C4A9983_var < 0) { break; }
+        libNtve_gf_SetTacticalAIThink(auto8C4A9983_var, "InfestedColonistTransportNova", "InfestedTransportAI", false);
+        AISetBullyRebuildDelay(5.0, 10.0, auto8C4A9983_var);
+        AINearestTownBullyRebuild(auto8C4A9983_var, true);
+        AINearestTownLimitWaveGather(auto8C4A9983_var, true);
+    }
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(87));
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(88));
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(102));
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(103));
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(104));
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(105));
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(106));
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(109));
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(109));
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(107));
+    gf_AIMonitorBullyRebuildRegion(lv_infestedBullies, RegionFromId(108));
+    gv_infestedAttackPlayer = gv_pLAYER_06_INFESTED_BaseWavesHateToss;
+    libCOMI_gf_EnableDisableCoopAIPlayerAttackPings(PlayerGroupSingle(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss), false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartAI_Init () {
+    gt_StartAI = TriggerCreate("gt_StartAI_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start Game Q
+//--------------------------------------------------------------------------------------------------
+bool gt_StartGameQ_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    int auto9DE949BB_val;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_MissionProgression, true, false);
+    TriggerExecute(gt_ForceColonyShipSetup, true, false);
+    Wait(7.0, c_timeReal);
+    TriggerQueueEnter();
+    TriggerExecute(gt_ObjectiveExtractColonyShipCreate, true, true);
+    Wait(2.0, c_timeReal);
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+    auto9DE949BB_val = RandomInt(0, 2);
+    if (auto9DE949BB_val == 0) {
+        libCOMI_gf_SendMissionTransmission("Intro1JC", true, -1);
+    }
+    else if (auto9DE949BB_val == 1) {
+        libCOMI_gf_SendMissionTransmission("Intro2JC", true, -1);
+    }
+    else {
+        libCOMI_gf_SendMissionTransmission("Intro3JC", true, -1);
+    }
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+    TriggerExecute(gt_CreateColonyShipPings, true, false);
+    Wait(2.0, c_timeReal);
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
+    libCOMI_gf_SendMissionTransmission("CapturePingJC", true, -1);
+    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
+    TriggerQueueExit();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_StartGameQ_Init () {
+    gt_StartGameQ = TriggerCreate("gt_StartGameQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
-    gt_CreateOptionsDialog_Init();
-    gt_OpenOptions_Init();
-    gt_CloseOptions_Init();
-    gt_InitializeColonyShipLocations_Init();
-    gt_Init01LoadData_Init();
-    gt_Init02LoadingComplete_Init();
-    gt_Init03Players_Init();
-    gt_Init04Technology_Init();
-    gt_Init05Units_Init();
-    gt_Init06MusicSound_Init();
-    gt_Init07Environment_Init();
-    gt_Init08Difficulties_Init();
-    gt_StartAI_Init();
-    gt_StartGameQ_Init();
     gt_CharExample_Init();
     gt_InfestMercs_Init();
     gt_CreateColonyShipPings_Init();
@@ -10153,8 +9837,6 @@ void InitTriggers () {
     gt_ClaimerWaveDestroyedTransmissionQ_Init();
     gt_DefeatPrimaryObjectiveFailed_Init();
     gt_VictoryDestoryZergBaseCompleted_Init();
-    gt_VictorySequence_Init();
-    gt_VictoryFanfareQ_Init();
     gt_ObjectiveExtractColonyShipCreate_Init();
     gt_ObjectiveExtractColonyShipComplete_Init();
     gt_ObjectiveExtractColonyShipUpdate_Init();
@@ -10171,6 +9853,16 @@ void InitTriggers () {
     gt_ObjectiveExploreScienceFacilityUpdate_Init();
     gt_ObjectiveExploreScienceFacilityDestroyComplete_Init();
     gt_ObjectiveExploreScienceFacilityFailed_Init();
+    gt_InitializeColonyShipLocations_Init();
+    gt_Init02LoadingComplete_Init();
+    gt_Init03Players_Init();
+    gt_Init04Technology_Init();
+    gt_Init05Units_Init();
+    gt_Init06MusicSound_Init();
+    gt_Init07Environment_Init();
+    gt_Init08Difficulties_Init();
+    gt_StartAI_Init();
+    gt_StartGameQ_Init();
 }
 
 //--------------------------------------------------------------------------------------------------

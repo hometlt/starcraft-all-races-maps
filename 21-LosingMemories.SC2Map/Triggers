@@ -201,6 +201,7 @@
             timer gf_GetVoidThrasherAttackCooldown (unit lp_thrasher, int lp_thrasherAttack);
             void gf_VoidThrasherAIThink (int lp_player, unit lp_aiUnit, unitgroup lp_scanGroup);
             void gf_AIInvadersDisablescriptcontrol (unit lp_unit, point lp_point);
+            int gf_bonusObjectiveTargetSum();
             //--------------------------------------------------------------------------------------------------
             // Trigger Variables
             //--------------------------------------------------------------------------------------------------
@@ -3188,7 +3189,7 @@
                     if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
                         return false;
                     }
-                    if (!((((PlayerGetPropertyInt(gv_pLAYER_01_USER, c_playerPropCustom) + PlayerGetPropertyInt(gv_pLAYER_02_USER, c_playerPropCustom)) &gt;= gv_bonusObjectiveTarget) || (TimerGetRemaining(gv_bonusObjectiveDurationTimer) &lt;= 0.0)))) {
+                    if (!(gf_bonusObjectiveTargetSum() &gt;= gv_bonusObjectiveTarget || TimerGetRemaining(gv_bonusObjectiveDurationTimer) &lt;= 0.0)) {
                         return false;
                     }
                 }
@@ -3233,7 +3234,7 @@
                 TriggerStop(gt_BonusObjectiveUpdate);
                 TriggerExecute(gt_ObjectiveGatherKhaydarinCrystalsUpdate, true, false);
                 Wait(2.0, c_timeGame);
-                if (((PlayerGetPropertyInt(gv_pLAYER_01_USER, c_playerPropCustom) + PlayerGetPropertyInt(gv_pLAYER_02_USER, c_playerPropCustom)) &gt;= gv_bonusObjectiveTarget)) {
+                if (gf_bonusObjectiveTargetSum()  &gt;= gv_bonusObjectiveTarget) {
                     TriggerExecute(gt_ObjectiveGatherKhaydarinCrystalsComplete, true, false);
                     TriggerExecute(gt_TransmissionSideobjectivecompletedQ, true, false);
                 }
@@ -7015,10 +7016,7 @@
                     return true;
                 }
                 TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-                TransmissionClearAll();
-                TriggerQueuePause(true);
-                TriggerQueueClear(c_triggerQueueRemove);
+            
                 TriggerExecute(gt_ObjectiveTheWarpConduitmustsurviveFailed, true, false);
                 TriggerExecute(gt_ObjectiveReachthewallofknowledgeFailed, true, false);
                 if ((UnitGroupCount(gv_roadGroupPlayers, c_unitCountAlive) &gt; 0)) {
@@ -7027,10 +7025,12 @@
                 else {
                     TriggerExecute(gt_TransmissionDefeatWarpConduitdestroyedafterreaching, true, false);
                 }
-                libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-                if ((UnitGroupCount(gv_roadGroupPlayers, c_unitCountAlive) &gt; 0)) {
-                }
-                if (((PlayerGetPropertyInt(gv_pLAYER_01_USER, c_playerPropCustom) + PlayerGetPropertyInt(gv_pLAYER_02_USER, c_playerPropCustom)) &lt; gv_bonusObjectiveTarget)) {
+            
+            
+            
+                libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+            
+                if (gf_bonusObjectiveTargetSum()  &lt; gv_bonusObjectiveTarget) {
                     TriggerExecute(gt_ObjectiveGatherKhaydarinCrystalsFailed, true, false);
                 }
                 Wait(2.0, c_timeReal);
@@ -7042,33 +7042,19 @@
                         DialogDestroy(gv_automatonsCounterDialog[2][0]);
                     }
                 }
-                libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/FE836221&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/47A3B8E0&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                lv_cameraTarget = UnitGetPosition(EventUnit());
-                Wait(2.0, c_timeReal);
-                UnitGroupLoopBegin(UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_MakeUnitInvulnerable(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                CameraLockInput(gv_pLAYER_01_USER, true);
-                CameraLockInput(gv_pLAYER_02_USER, true);
-                UnitClearSelection(gv_pLAYER_01_USER);
-                UnitClearSelection(gv_pLAYER_02_USER);
-                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-                if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_01_USER)) == false)) {
-                    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                    CameraPan(gv_pLAYER_01_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
-                }
-                if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_02_USER)) == false)) {
-                    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                    CameraPan(gv_pLAYER_02_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
-                }
+            
+                libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/FE836221&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+               
+            
+                libCOMI_gf_MoveCameraForAllPlayers(lv_cameraTarget, 1.5);
+            
                 while (!((TriggerActiveCount(gt_TransmissionDefeatWarpConduitdestroyedafterreaching) == 0) &amp;&amp; (TriggerActiveCount(gt_TransmissionDefeatWarpConduitdestroyedbeforereaching) == 0))) {
                     Wait(1.0, c_timeGame);
                 }
-                UISetCursorVisible(PlayerGroupAll(), true);
-                TriggerExecute(gt_Defeat, true, false);
+                libCOMI_gf_AfterFanfare(c_gameOverDefeat);
+            
+            
+            
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -7076,6 +7062,26 @@
                 gt_DefeatWarpConduitDead = TriggerCreate(&quot;gt_DefeatWarpConduitDead_Func&quot;);
                 TriggerAddEventUnitDied(gt_DefeatWarpConduitDead, UnitRefFromUnit(UnitFromId(1314688197)));
             }
+            
+            
+            
+            int gf_bonusObjectiveTargetSum (){
+            
+                playergroup xxx_player_group;
+                int xxx_player_current;
+                int xxx_player_sum;
+            
+                xxx_player_sum = 0;
+                xxx_player_group = libCOMI_gf_GetAlliedCommandersPlayers();
+                xxx_player_current = -1;
+                while (true) {
+                    xxx_player_current = PlayerGroupNextPlayer(xxx_player_group, xxx_player_current);
+                    if (xxx_player_current &lt; 0) { break; }
+                    xxx_player_sum += PlayerGetPropertyInt(xxx_player_current, c_playerPropCustom);
+                }
+                return  xxx_player_sum;
+            }
+            
             //--------------------------------------------------------------------------------------------------
             // Trigger: Defeat enemy reached the wall
             //--------------------------------------------------------------------------------------------------
@@ -7090,6 +7096,8 @@
                 int lv_i;
                 int lv_j;
                 fixed lv_loop;
+            
+            
                 // Variable Initialization
                 // Conditions
                 if (testConds) {
@@ -7111,17 +7119,19 @@
                     return true;
                 }
                 TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-                TransmissionClearAll();
-                TriggerQueuePause(true);
-                TriggerQueueClear(c_triggerQueueRemove);
-                libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
                 TriggerExecute(gt_ObjectiveReachthewallofknowledgeFailed, true, false);
                 TriggerExecute(gt_TransmissionDefeatEnemyreachesfirst, true, false);
-                if (((PlayerGetPropertyInt(gv_pLAYER_01_USER, c_playerPropCustom) + PlayerGetPropertyInt(gv_pLAYER_02_USER, c_playerPropCustom)) &lt; gv_bonusObjectiveTarget)) {
+            
+            
+                //TODO. CHECK ALL COMMANDERS PLAYERS
+                if (gf_bonusObjectiveTargetSum() &lt; gv_bonusObjectiveTarget) {
                     TriggerExecute(gt_ObjectiveGatherKhaydarinCrystalsFailed, true, false);
                 }
-                Wait(2.0, c_timeReal);
+            
+            
+            
+                libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+            
                 autoA4D1E06B_ae = 2;
                 autoA4D1E06B_ai = 1;
                 lv_i = 1;
@@ -7136,13 +7146,8 @@
                     }
                 }
                 libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/10C0668D&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                CameraLockInput(gv_pLAYER_01_USER, true);
-                CameraLockInput(gv_pLAYER_02_USER, true);
-                UnitClearSelection(gv_pLAYER_01_USER);
-                UnitClearSelection(gv_pLAYER_02_USER);
-                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-                CameraPan(gv_pLAYER_01_USER, RegionGetCenter(RegionFromId(7)), 1.5, -1, 10.0, false);
-                CameraPan(gv_pLAYER_02_USER, RegionGetCenter(RegionFromId(7)), 1.5, -1, 10.0, false);
+                libCOMI_gf_MoveCameraForAllPlayers(RegionGetCenter(RegionFromId(7)), 1.5);
+            
                 ActorSend(ActorFromDoodad(DoodadFromId(233984366)), &quot;AnimBracketStart Work Stand,Work,Start Stand,Work Stand,Work,End&quot;);
                 Wait(2.0, c_timeGame);
                 autoC292EA93_ae = 0.0;
@@ -7173,8 +7178,9 @@
                 while (!((TriggerActiveCount(gt_TransmissionDefeatEnemyreachesfirst) == 0))) {
                     Wait(1.0, c_timeGame);
                 }
-                UISetCursorVisible(PlayerGroupAll(), true);
-                TriggerExecute(gt_Defeat, true, false);
+            
+                libCOMI_gf_AfterFanfare(c_gameOverDefeat);
+            
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -7234,8 +7240,6 @@
                     return true;
                 }
                 TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-                Wait(2.0, c_timeReal);
                 libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
                 return true;
             }
@@ -7252,13 +7256,17 @@
                 soundlink lv_sound;
                 // Variable Initialization
                 lv_sound = SoundLink(&quot;EditorDefaultSound&quot;, -1);
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TransmissionClearAll();
-                TriggerQueueEnter();
-                libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+            
+            
+            
+            
+            
+            
+            
+                libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+                libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/DBBAA2D7&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+                libCOMI_gf_MoveCameraForAllPlayers(gv_victoryCompletePan, 2.0);
+            
                 lv_random = RandomInt(1, 2);
                 if ((lv_random == 1)) {
                     TriggerExecute(gt_TransmissionVictory1, true, false);
@@ -7266,25 +7274,14 @@
                 else {
                     TriggerExecute(gt_TransmissionVictory2RaynorVariant, true, false);
                 }
-                UnitPauseAll(true);
-                CameraLockInput(gv_pLAYER_01_USER, true);
-                CameraLockInput(gv_pLAYER_02_USER, true);
-                UnitClearSelection(gv_pLAYER_01_USER);
-                UnitClearSelection(gv_pLAYER_02_USER);
-                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-                CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                CameraPan(gv_pLAYER_01_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
-                CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                CameraPan(gv_pLAYER_02_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
-                libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/DBBAA2D7&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/B96122C2&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
                 while (!((TriggerActiveCount(gt_TransmissionVictory1) == 0) &amp;&amp; (TriggerActiveCount(gt_TransmissionVictory2RaynorVariant) == 0))) {
                     Wait(1.0, c_timeGame);
                 }
-                Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-                UISetCursorVisible(PlayerGroupAll(), true);
-                TriggerExecute(gt_Victory, true, false);
-                TriggerQueueExit();
+            
+                libCOMI_gf_AfterFanfare(c_gameOverVictory);
+            
+            
+            
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -7306,7 +7303,6 @@
                     return true;
                 }
                 TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_EndCampaignMission(c_gameOverVictory);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -7328,7 +7324,6 @@
                     return true;
                 }
                 TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -7621,7 +7616,7 @@
                 lv_remainingTime = FixedToInt(TimerGetRemaining(gv_bonusObjectiveDurationTimer));
                 TextExpressionSetToken(&quot;Param/Expression/9050B6F4&quot;, &quot;Timer&quot;, TextTimeFormat(StringToText(&quot;&lt;mintotal/&gt;:&lt;sec2/&gt;&quot;), lv_remainingTime));
                 lv_textTime = TextExpressionAssemble(&quot;Param/Expression/9050B6F4&quot;);
-                if (((PlayerGetPropertyInt(gv_pLAYER_01_USER, c_playerPropCustomCollected) + PlayerGetPropertyInt(gv_pLAYER_02_USER, c_playerPropCustomCollected)) &gt;= gv_bonusObjectiveTarget)) {
+                if (gf_bonusObjectiveTargetSum()  &gt;= gv_bonusObjectiveTarget) {
                     TextExpressionSetToken(&quot;Param/Expression/8A6BD339&quot;, &quot;GATHERED_CRYSTALS&quot;, IntToText((PlayerGetPropertyInt(gv_pLAYER_01_USER, c_playerPropCustom) + PlayerGetPropertyInt(gv_pLAYER_02_USER, c_playerPropCustom))));
                     ObjectiveSetName(gv_objectiveGatherKhaydarinCrystals, TextExpressionAssemble(&quot;Param/Expression/8A6BD339&quot;));
                 }
@@ -7635,7 +7630,7 @@
                     else if (true) {
                         lv_color = libNtve_gf_ConvertColorToString((Color(100.00, 0.00, 0.00)));
                     }
-                    TextExpressionSetToken(&quot;Param/Expression/77C3A219&quot;, &quot;MISSING_CRYSTALS&quot;, IntToText((gv_bonusObjectiveTarget - (PlayerGetPropertyInt(gv_pLAYER_01_USER, c_playerPropCustom) + PlayerGetPropertyInt(gv_pLAYER_02_USER, c_playerPropCustom)))));
+                    TextExpressionSetToken(&quot;Param/Expression/77C3A219&quot;, &quot;MISSING_CRYSTALS&quot;, IntToText((gv_bonusObjectiveTarget - gf_bonusObjectiveTargetSum() )));
                     TextExpressionSetToken(&quot;Param/Expression/77C3A219&quot;, &quot;COLOR&quot;, StringToText(lv_color));
                     TextExpressionSetToken(&quot;Param/Expression/77C3A219&quot;, &quot;REMAINING_TIME&quot;, TextTimeFormat(StringToText(&quot;&lt;min2/&gt;:&lt;sec2/&gt;&quot;), lv_remainingTime));
                     ObjectiveSetName(gv_objectiveGatherKhaydarinCrystals, TextExpressionAssemble(&quot;Param/Expression/77C3A219&quot;));

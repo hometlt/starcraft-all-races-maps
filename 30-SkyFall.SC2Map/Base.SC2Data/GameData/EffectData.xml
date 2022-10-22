@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="us-ascii"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Catalog>
     <CEffectApplyBehavior id="EnergyOverLoadBuffDarkDean">
         <EditorCategories value=""/>
@@ -460,15 +460,23 @@
         <WhichUnit Value="Caster"/>
         <Behavior value="SOLARCRYSTAL_Worker_HasCrystal"/>
     </CEffectApplyBehavior>
-    <CEffectSwitch id="SOLARCRYSTAL_SolarCrystal_Interact">
-        <ValidatorArray value="SOLARCRYSTAL_SolarCrystal_InteractTarget_HasMarkerValidator"/>
-        <ValidatorArray value="METEORITE_MeteoriteDrop_NoEnergyLostTarget"/>
-        <CaseArray Validator="SOLARCRYSTAL_SunCrystal_PickupValidator" Effect="SOLARCRYSTAL_SolarCrystal_Pickup"/>
-        <CaseArray Validator="SOLARCRYSTAL_EnergyPort_PlaceCrystalValidator" Effect="SOLARCRYSTAL_EnergyPort_PlaceInteract"/>
-        <CaseArray Validator="SOLARCRYSTAL_EnergyPort_RemoveCrystalValidator" Effect="SOLARCRYSTAL_EnergyPort_RemoveInteract"/>
-        <CaseDefault value="SUNCRYSTAL_SolarCrystal_InteractDummy"/>
-    </CEffectSwitch>
-    <CEffectSet id="SUNCRYSTAL_SolarCrystal_InteractDummy"/>
+       <CEffectSwitch id="SOLARCRYSTAL_SolarCrystal_Interact">
+           <ValidatorArray value="SOLARCRYSTAL_SolarCrystal_InteractTarget_HasMarkerValidator"/>
+           <ValidatorArray value="METEORITE_MeteoriteDrop_NoEnergyLostTarget"/>
+           <CaseArray Validator="SOLARCRYSTAL_SunCrystal_PickupValidator" Effect="SOLARCRYSTAL_SolarCrystal_Pickup"/>
+           <CaseArray Validator="SOLARCRYSTAL_EnergyPort_PlaceCrystalValidator" Effect="SOLARCRYSTAL_EnergyPort_PlaceInteract"/>
+           <CaseArray Validator="SOLARCRYSTAL_EnergyPort_RemoveCrystalValidator" Effect="SOLARCRYSTAL_EnergyPort_RemoveInteract"/>
+           <CaseDefault value="SUNCRYSTAL_SolarCrystal_InteractDummy"/>
+       </CEffectSwitch>
+       <CEffectSet id="SUNCRYSTAL_SolarCrystal_InteractDummy"/>
+<!--    <CEffectSwitch id="MapObjectInteract">-->
+<!--        <ValidatorArray index="0" value="SOLARCRYSTAL_SolarCrystal_InteractTarget_HasMarkerValidator"/>-->
+<!--        <ValidatorArray index="1" value="METEORITE_MeteoriteDrop_NoEnergyLostTarget"/>-->
+<!--        <CaseArray index="0" Validator="SOLARCRYSTAL_SunCrystal_PickupValidator" Effect="SOLARCRYSTAL_SolarCrystal_Pickup"/>-->
+<!--        <CaseArray Validator="SOLARCRYSTAL_EnergyPort_PlaceCrystalValidator" Effect="SOLARCRYSTAL_EnergyPort_PlaceInteract"/>-->
+<!--        <CaseArray Validator="SOLARCRYSTAL_EnergyPort_RemoveCrystalValidator" Effect="SOLARCRYSTAL_EnergyPort_RemoveInteract"/>-->
+<!--        <CaseArray/>-->
+<!--    </CEffectSwitch>-->
     <CEffectDamage id="SOLARCRYSTAL_SolarCrystal_KillTarget">
         <ImpactLocation Value="TargetUnit"/>
         <Flags index="Kill" value="1"/>
@@ -540,7 +548,9 @@
     </CEffectEnumArea>
     <CEffectModifyUnit id="IhanCrystalSetUnitDarkDean">
         <EditorCategories value=""/>
-        <VitalArray index="Life" ChangeFraction="0.025"/>
+        <VitalArray index="Life">
+            <ChangeFraction value="0.025"/>
+        </VitalArray>
         <ValidatorArray value="NotMaxHP"/>
     </CEffectModifyUnit>
     <CEffectApplyBehavior id="IhanCrystalTargetBuffDarkDean">

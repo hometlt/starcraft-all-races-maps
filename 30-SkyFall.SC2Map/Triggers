@@ -87,7 +87,7 @@
             const fixed lib1_gv_mETEORITE_GiantDropTimeAnim = 480.0;
             const fixed lib1_gv_mETEORITE_MeteortietRainMicroBefore = 7.5;
             const int lib1_gv_mETEORITE_MaxMeteoriteRianCount = 128;
-            const int lib1_gv_mETEORITE_ShieldGeneratorCount = 18;
+            const int lib1_gv_mETEORITE_ShieldGeneratorCount = 21; //todo make more? 18
             const fixed lib1_gv_mETEORITE_MeteoritesRainMicroLoopPerDuration = 5.0;
             const string lib1_gv_mETEORITE_WaveName = &quot;::Wave::&quot;;
             const string lib1_gv_mETEORITE_WaveDropName = &quot;::Drop::&quot;;
@@ -105,10 +105,10 @@
             const string lib1_gv_mETEORITE_NeighborName = &quot;::Neighbor::&quot;;
             const int lib1_gv_mETEORITE_ShieldRelation_LevelCount = 4;
             const string lib1_gv_cOOP_HashtablName = &quot;AI_HashtablName::&quot;;
-            const int lib1_gv_cOOP_Init_PLAYER_01_USER = 1;
-            const int lib1_gv_cOOP_Init_PLAYER_02_USER = 2;
-            const int lib1_gv_cOOP_Init_PLAYER_03_ENEMY = 3;
-            const int lib1_gv_cOOP_Init_PLAYER_04_ENEMY = 4;
+            int lib1_gv_cOOP_Init_PLAYER_01_USER = 1;
+            int lib1_gv_cOOP_Init_PLAYER_02_USER = 2;
+            const int lib1_gv_cOOP_Init_PLAYER_03_ENEMY = 6;
+            const int lib1_gv_cOOP_Init_PLAYER_04_ENEMY = 7;
             const string lib1_gv_cOOP_AI_Wave_Name = &quot;::Wave::&quot;;
             const string lib1_gv_cOOP_AI_Wave_TargetName = &quot;::Target&quot;;
             const string lib1_gv_cOOP_AI_Wave_PointName = &quot;::Point&quot;;
@@ -150,8 +150,6 @@
                 int lv_targetCount;
                 point[lib1_gv_mETEORITE_Wave_MaxTargetPerShield + 1] lv_targetPointList;
             };
-            
-            
             // Variable Declarations
             bool lib1_gv_lIB_NotOnInit;
             int lib1_gv_lIB_TimerWindowInterval;
@@ -162,7 +160,7 @@
             fixed lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter_ObjectivesTime;
             lib1_gs_SOLARCRYSTAL_Spectroscope_MegalithCutter[lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCount + 1] lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter;
             lib1_gs_PING_ModelTypeDataStruct[lib1_gv_pING_ModelTypeDataStruct_Count + 1] lib1_gv_pING_ModelTypeDataStruct;
-            string[3] lib1_gv_pING_InteractColorModelForPlayer;
+            string[6] lib1_gv_pING_InteractColorModelForPlayer;
             point lib1_gv_mETEORITE_FirstPoint;
             bool lib1_gv_mETEORITE_FinishFirstDrop;
             bool lib1_gv_mETEORITE_FinishFirstDropAnim;
@@ -262,12 +260,7 @@
             unit lib1_gf_METEORITE_SubParameter_Unit (string lp_shieldList, int lp_index);
             int lib1_gf_METEORITE_SubParameter_Int (string lp_shieldList, int lp_index);
             fixed lib1_gf_METEORITE_SubParameter_GetMicroDifficultRate (int lp_difficult);
-            
-            
-            
-            
             void lib1_gf_COOP_Transmission_Send (string lp_type, int lp_sourcePlayer, bool lp_waitUntilDone);
-            void lib1_gf_COOP_Transmission_SendImmediately (string lp_type, int lp_sourcePlayer, bool lp_waitUntilDone);
             void lib1_gf_COOP_Transmission_Init ();
             void lib1_gf_COOP_Transmission_StopCurrent ();
             void lib1_gf_COOP_AI_WaveStart_Create (int lp_pointType, int lp_resourceBucket, int lp_techBucket, int lp_targetType);
@@ -319,12 +312,9 @@
             trigger lib1_gt_COOP_Transmission_Frog;
             trigger lib1_gt_COOP_AI_Wave_Start;
             trigger lib1_gt_COOP_AI_Enemy_Attacking;
-            trigger lib1_gt_COOP_VictoryDefeat_DefeatBaseDead;
             trigger lib1_gt_COOP_VictoryDefeat_DefeatPrimaryObjectiveFailed;
             trigger lib1_gt_COOP_VictoryDefeat_VictoryPrimaryObjectiveComplete;
             trigger lib1_gt_COOP_VictoryDefeat_VictoryFanfare;
-            trigger lib1_gt_COOP_VictoryDefeat_Victory;
-            trigger lib1_gt_COOP_VictoryDefeat_Defeat;
             trigger lib1_gt_COOP_Objectives_Show;
             trigger lib1_gt_COOP_Objective_GameTime_Create;
             trigger lib1_gt_COOP_Objective_GameTime_Update;
@@ -402,7 +392,6 @@
                 lib1_gv_cOOP_Objective_GiantMeteoritesImpact = c_invalidObjectiveId;
                 lib1_gv_cOOP_Objective_DestroyMegalith = c_invalidObjectiveId;
                 lib1_gv_cOOP_Objective_Zeratul = c_invalidObjectiveId;
-            
             }
             // Presets
             // Functions
@@ -502,7 +491,6 @@
             void lib1_gf_LIB_EventList () {
                 string auto9BBC5476_val;
                 // Implementation
-            
                     lib1_gf_COOP_Objectives_Register(5.0, lib1_ge_COOP_Objectives_Type_GameTime);
                     lib1_gf_COOP_Objectives_Register(12.0, lib1_ge_COOP_Objectives_Type_GiantMeteoritesImpact);
                     lib1_gf_COOP_Objectives_Register((11.0 * 60.0), lib1_ge_COOP_Objectives_Type_DestroyMegalith);
@@ -869,6 +857,9 @@
                 lib1_gv_pING_InteractColorModelForPlayer[0] = &quot;PING_MiniMapPing_SolarCrystalInteractLocal&quot;;
                 lib1_gv_pING_InteractColorModelForPlayer[lib1_gv_cOOP_Init_PLAYER_01_USER] = &quot;PING_MiniMapPing_SolarCrystalInteract1&quot;;
                 lib1_gv_pING_InteractColorModelForPlayer[lib1_gv_cOOP_Init_PLAYER_02_USER] = &quot;PING_MiniMapPing_SolarCrystalInteract2&quot;;
+                lib1_gv_pING_InteractColorModelForPlayer[3] = &quot;PING_MiniMapPing_SolarCrystalInteract1&quot;;
+                lib1_gv_pING_InteractColorModelForPlayer[4] = &quot;PING_MiniMapPing_SolarCrystalInteract2&quot;;
+                lib1_gv_pING_InteractColorModelForPlayer[5] = &quot;PING_MiniMapPing_SolarCrystalInteract1&quot;;
                 lib1_gv_pING_ModelTypeDataStruct[lib1_ge_PING_ModelType_GeneratorActive].lv_angle = 270.0;
                 lib1_gv_pING_ModelTypeDataStruct[lib1_ge_PING_ModelType_GeneratorActive].lv_model = &quot;PING_MiniMapPing_GeneratorActive&quot;;
                 lib1_gv_pING_ModelTypeDataStruct[lib1_ge_PING_ModelType_GeneratorActive].lv_scale = 0.15;
@@ -1296,7 +1287,8 @@
                     lib1_gv_cOOP_Objective_GameTimerWindow = TimerWindowLastCreated();
                     Wait(lib1_gv_mETEORITE_GiantDropTimeRemind, c_timeGame);
                     if ((libCOMI_gf_GameIsOver() == false)) {
-                        lib1_gf_COOP_Transmission_Send(&quot;WaringMission&quot;, -1, true);
+                     //   lib1_gf_COOP_Transmission_Send(&quot;WaringMission&quot;, -1, true);
+                        libCOMI_gf_SendMissionTransmission(&quot;WaringMission&quot;, false, -1);
                     }
                 }
                 return true;
@@ -1366,7 +1358,8 @@
                 }
                 Wait((lv_delay - 15.0), c_timeGame);
                 if ((libCOMI_gf_GameIsOver() == false) &amp;&amp; (lp_isNotice == true)) {
-                    lib1_gf_COOP_Transmission_Send(&quot;WaringSpell&quot;, -1, true);
+                  //  lib1_gf_COOP_Transmission_Send(&quot;WaringSpell&quot;, -1, true);
+                    libCOMI_gf_SendMissionTransmission(&quot;WaringSpell&quot;, false, -1);
                 }
                 return true;
             }
@@ -1540,7 +1533,8 @@
                 lib1_gv_mETEORITE_Wave_MeteoriteCount += 1;
                 Wait(lp_time, c_timeGame);
                 lib1_gf_COOP_AI_HybridDominator();
-                lib1_gf_COOP_Transmission_Send(&quot;DropBeginSF&quot;, -1, true);
+                //lib1_gf_COOP_Transmission_Send(&quot;DropBeginSF&quot;, -1, true);
+                libCOMI_gf_SendMissionTransmission(&quot;DropBeginSF&quot;, false, -1);
                 lib1_gv_mETEORITE_Wave_MeteoriteIndex += 1;
                 return true;
             }
@@ -1580,7 +1574,8 @@
                 lib1_gv_mETEORITE_Wave_MeteoriteIndex += 1;
                 Wait(lp_time, c_timeGame);
                 lib1_gf_COOP_AI_HybridDominator();
-                lib1_gf_COOP_Transmission_Send(&quot;DropBeginSF&quot;, -1, true);
+                libCOMI_gf_SendMissionTransmission(&quot;DropBeginSF&quot;, false, -1);
+               // lib1_gf_COOP_Transmission_Send(&quot;DropBeginSF&quot;, -1, true);
             }
             trigger auto_lib1_gf_METEORITE_ShieldRelation_WaveMicroSingle_Trigger = null;
             fixed auto_lib1_gf_METEORITE_ShieldRelation_WaveMicroSingle_lp_time;
@@ -1761,7 +1756,6 @@
                 }
                 return 1.0;
             }
-            
             trigger auto_lib1_gf_COOP_Transmission_Send_Trigger = null;
             string auto_lib1_gf_COOP_Transmission_Send_lp_type;
             int auto_lib1_gf_COOP_Transmission_Send_lp_sourcePlayer;
@@ -1791,15 +1785,6 @@
                     TriggerQueueExit();
                 }
                 return true;
-            }
-            void lib1_gf_COOP_Transmission_SendImmediately (string lp_type, int lp_sourcePlayer, bool lp_waitUntilDone) {
-                soundlink lv_sound;
-                // Implementation
-                lv_sound = SoundLink(lp_type, -1);
-                lib1_gf_COOP_Transmission_StopCurrent();
-                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-                libCOMI_gf_SendMissionTransmission(lp_type, lp_waitUntilDone, lp_sourcePlayer);
-                libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
             }
             void lib1_gf_COOP_Transmission_Init () {
                 // Implementation
@@ -2043,8 +2028,6 @@
                 lib1_gv_cOOP_Objectives_Count += 1;
                 TriggerAddEventTimeElapsed(lib1_gt_COOP_Objectives_Show, lp_time, c_timeGame);
             }
-            
-            
             trigger lib1_gf_NANAKEY_CreateTriggerAndSaveData (string lp_triggerString, string lp_string) {
                 // Variable Declarations
                 trigger lv_trigger;
@@ -2124,13 +2107,16 @@
                     lib1_gv_mETEORITE_ShieldGeneratorInfoList[lib1_gv_mETEORITE_ShieldRelation_MicroList[lib1_gv_mETEORITE_ShieldRelation_MicroCount]].lv_isImpact = true;
                     lib1_gv_sOLARCRYSTAL_PhotonicAnchor_DestroyCount += 1;
                     if ((lib1_gv_sOLARCRYSTAL_PhotonicAnchor_DestroyCount == 2)) {
-                        lib1_gf_COOP_Transmission_Send(&quot;Destroy1SF&quot;, -1, true);
+                       // lib1_gf_COOP_Transmission_Send(&quot;Destroy1SF&quot;, -1, true);
+                        libCOMI_gf_SendMissionTransmission(&quot;Destroy1SF&quot;, false, -1);
                     }
                     else if ((lib1_gv_sOLARCRYSTAL_PhotonicAnchor_DestroyCount == 3)) {
-                        lib1_gf_COOP_Transmission_Send(&quot;Destroy2SF&quot;, -1, true);
+                       // lib1_gf_COOP_Transmission_Send(&quot;Destroy2SF&quot;, -1, true);
+                        libCOMI_gf_SendMissionTransmission(&quot;Destroy2SF&quot;, false, -1);
                     }
                     else if ((lib1_gv_sOLARCRYSTAL_PhotonicAnchor_DestroyCount == 4)) {
-                        lib1_gf_COOP_Transmission_Send(&quot;Destroy3SF&quot;, -1, true);
+                     //   lib1_gf_COOP_Transmission_Send(&quot;Destroy3SF&quot;, -1, true);
+                        libCOMI_gf_SendMissionTransmission(&quot;Destroy3SF&quot;, false, -1);
                     }
                     lib1_gf_PING_UnitDeathPing(EventUnit());
                     PathRemoveNoFlyZonesInRegion(RegionCircle(UnitGetPosition(EventUnit()), 1.0));
@@ -2142,7 +2128,8 @@
                 }
                 else if ((UnitGetType(EventUnit()) == &quot;SOLARCRYSTAL_MegalithCutter&quot;)) {
                     lv_i = DataTableGetInt(true, (lib1_gv_sOLARCRYSTAL_HashtableName + lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithName + IntToString(UnitGetTag(EventUnit()))));
-                    lib1_gf_COOP_Transmission_Send(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_bonusFinsih, -1, true);
+                    //lib1_gf_COOP_Transmission_Send(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_bonusFinsih, -1, true);
+                    libCOMI_gf_SendMissionTransmission(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_bonusFinsih, false, -1);
                     lib1_gf_SOLARCRYSTAL_Spectroscope_SetDead(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_spectroscope, true);
                     lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithKillCount += 1;
                     if ((lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_ping != c_invalidPingId)) {
@@ -2220,7 +2207,8 @@
                 else if ((UnitGetType(EventUnit()) == &quot;HybridDominatorVoid&quot;) &amp;&amp; (lib1_gv_lIB_NotOnInit == true)) {
                     lib1_gf_PING_CreatePingForUnit(EventUnit(), lib1_ge_PING_ModelType_HybridDominator, true);
                     if ((libCOMI_gf_GameIsOver() == false)) {
-                        lib1_gf_COOP_Transmission_Send(&quot;WaringEnemy&quot;, -1, true);
+                      //  lib1_gf_COOP_Transmission_Send(&quot;WaringEnemy&quot;, -1, true);
+                        libCOMI_gf_SendMissionTransmission(&quot;WaringEnemy&quot;, false, -1);
                     }
                 }
                 else if (((UnitGetType(EventUnit()) == &quot;VoidSeekerDarkDean&quot;) || (UnitGetType(EventUnit()) == &quot;VoidSeekerGroundDarkDean&quot;) || (UnitGetType(EventUnit()) == &quot;VoidSeekerGroundDarkDean&quot;))) {
@@ -2337,7 +2325,8 @@
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_unit), StringExternal(&quot;Param/Value/lib_1_63062B80&quot;));
                 PingSetUnit(PingLastCreated(), lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_unit);
                 lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_ping = PingLastCreated();
-                lib1_gf_COOP_Transmission_Send(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithStartIndex].lv_bonusStart, -1, true);
+                //lib1_gf_COOP_Transmission_Send(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithStartIndex].lv_bonusStart, -1, true);
+                libCOMI_gf_SendMissionTransmission(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithStartIndex].lv_bonusStart, false, -1);
                 while (((lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_step) &lt; lib1_ge_SOLARCRYSTAL_Spectroscope_MegalithCutter_Step_Error)) {
                     Wait((lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter_ObjectivesTime / (lib1_ge_SOLARCRYSTAL_Spectroscope_MegalithCutter_Step_End)), c_timeGame);
                     lib1_gf_SOLARCRYSTAL_Spectroscope_MegalithCutter_Step(lv_i);
@@ -2346,7 +2335,8 @@
                     }
                 }
                 lib1_gf_SOLARCRYSTAL_Spectroscope_SetDead(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_spectroscope, false);
-                lib1_gf_COOP_Transmission_Send(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_bonusFail, -1, true);
+                //lib1_gf_COOP_Transmission_Send(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_bonusFail, -1, true);
+                libCOMI_gf_SendMissionTransmission(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[lv_i].lv_bonusFail, false, -1);
                 if ((lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithStartIndex &gt;= lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithStartCount)) {
                     TriggerExecute(lib1_gt_COOP_Objective_GiantMeteoritesImpact_Failed, true, false);
                 }
@@ -2541,6 +2531,7 @@
             void lib1_gt_PING_SolarCrystalInteract_Init () {
                 lib1_gt_PING_SolarCrystalInteract = TriggerCreate(&quot;lib1_gt_PING_SolarCrystalInteract_Func&quot;);
                 TriggerAddEventUnitAbility(lib1_gt_PING_SolarCrystalInteract, null, AbilityCommand(&quot;SOLARCRYSTAL_SolarCrystal_Interact&quot;, 0), c_unitAbilStageAll, false);
+               // TriggerAddEventUnitAbility(lib1_gt_PING_SolarCrystalInteract, null, AbilityCommand(&quot;MapObjectInteract&quot;, 0), c_unitAbilStageAll, false);
             }
             //--------------------------------------------------------------------------------------------------
             // Trigger: PING_GiantFallTimerColor
@@ -2652,10 +2643,12 @@
                         lib1_gv_mETEORITE_GiantImpactCount += 1;
                         TriggerExecute(lib1_gt_COOP_Objective_GiantMeteoritesImpact_Update, true, false);
                         if ((lib1_gv_mETEORITE_GiantImpactCount == 1)) {
-                            lib1_gf_COOP_Transmission_Send(&quot;DropHitFirstSF&quot;, -1, true);
+                            //lib1_gf_COOP_Transmission_Send(&quot;DropHitFirstSF&quot;, -1, true);
+                            libCOMI_gf_SendMissionTransmission(&quot;DropHitFirstSF&quot;, false, -1);
                         }
                         else if ((lib1_gv_mETEORITE_GiantImpactCount == (lib1_gv_mETEORITE_GiantImpactDefeatCount - 1))) {
-                            lib1_gf_COOP_Transmission_Send(&quot;DropHitLastSF&quot;, -1, true);
+                            //lib1_gf_COOP_Transmission_Send(&quot;DropHitLastSF&quot;, -1, true);
+                            libCOMI_gf_SendMissionTransmission(&quot;DropHitLastSF&quot;, false, -1);
                         }
                         else if ((lib1_gv_mETEORITE_GiantImpactCount == lib1_gv_mETEORITE_GiantImpactDefeatCount)) {
                             TriggerExecute(lib1_gt_COOP_VictoryDefeat_DefeatPrimaryObjectiveFailed, true, false);
@@ -2663,7 +2656,8 @@
                     }
                     else {
                         lib1_gv_mETEORITE_FinishFirstDrop = true;
-                        lib1_gf_COOP_Transmission_Send(&quot;Intro2SF&quot;, -1, true);
+                       // lib1_gf_COOP_Transmission_Send(&quot;Intro2SF&quot;, -1, true);
+                        libCOMI_gf_SendMissionTransmission(&quot;Intro2SF&quot;, false, -1);
                     }
                 }
                 return true;
@@ -2765,50 +2759,8 @@
             // Trigger: COOP_Init_01_LoadData
             //--------------------------------------------------------------------------------------------------
             bool lib1_gt_COOP_Init_01_LoadData_Func (bool testConds, bool runActions) {
-                playergroup auto2D816E1A_g;
-                int auto2D816E1A_p;
-                string auto643959BB_val;
-                string auto14FB6BAB_val;
-                string autoF4F011A6_val;
-                string auto53A7B0DB_val;
-                string auto53A7B0DC_val;
-                string auto53A7B0DD_val;
-                string auto7ACFAC12_val;
-                string auto7ACFAC13_val;
-                string auto7ACFAC14_val;
-                // Variable Declarations
-                int lv_indexPlayer;
-                // Variable Initialization
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-            
-            //int auto14FB6BAB_val = 4;//libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 1, 2, 3, 4, 0, 0);
-               // if (auto14FB6BAB_val == 1) {
-                 //   lib1_gv_mETEORITE_GiantImpactDefeatCount = 3;
-                //    lib1_gv_cOOP_Init_AIDifficult = 0;
-            //}
-              // else if (auto14FB6BAB_val == 2) {
-             //       lib1_gv_mETEORITE_GiantImpactDefeatCount = 3;
-              //      lib1_gv_cOOP_Init_AIDifficult = 1;
-              //  }
-              //  else if (auto14FB6BAB_val == 3) {
-              //      lib1_gv_mETEORITE_GiantImpactDefeatCount = 2;
-              //      lib1_gv_cOOP_Init_AIDifficult = 2;
-              //  }
-              //  else if (auto14FB6BAB_val == 4) {
-              //      lib1_gv_mETEORITE_GiantImpactDefeatCount = 2;
-               //     lib1_gv_cOOP_Init_AIDifficult = 3;
-               // }
-            
-                    lib1_gv_mETEORITE_GiantImpactDefeatCount = 2;
-                    lib1_gv_cOOP_Init_AIDifficult = 3;
-            
-            
-                TriggerExecute(lib1_gt_COOP_Init_02_Players, true, false);
-                libCOMI_gf_LoadCoopMission(&quot;AC_Skyfall&quot;, lib1_gt_COOP_Init_03_LoadingComplete);
                 lib1_gf_PING_Initialization();
+                libCOMI_gf_LoadCoopMission(&quot;AC_Skyfall&quot;, lib1_gt_COOP_Init_03_LoadingComplete);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -2820,41 +2772,6 @@
             // Trigger: COOP_Init_02_Players
             //--------------------------------------------------------------------------------------------------
             bool lib1_gt_COOP_Init_02_Players_Func (bool testConds, bool runActions) {
-                playergroup auto3BE56B1A_g;
-                int auto3BE56B1A_p;
-                playergroup auto221D84A3_g;
-                int auto221D84A3_p;
-                // Variable Declarations
-                int lv_playerIterEnemy;
-                int lv_playerIterAlly;
-                // Variable Initialization
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-                PlayerGroupAdd(lib1_gv_cOOP_Init_EnemyGroup, lib1_gv_cOOP_Init_PLAYER_03_ENEMY);
-                PlayerGroupAdd(lib1_gv_cOOP_Init_EnemyGroup, lib1_gv_cOOP_Init_PLAYER_04_ENEMY);
-                PlayerGroupAdd(lib1_gv_cOOP_Init_EnemyGroup, 15);
-                libNtve_gf_SetPlayerGroupAlliance(lib1_gv_cOOP_Init_EnemyGroup, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-                auto3BE56B1A_g = lib1_gv_cOOP_Init_EnemyGroup; 
-                auto3BE56B1A_p = 1;
-                for ( ; auto3BE56B1A_p &lt;= PlayerGroupCount(auto3BE56B1A_g) ; auto3BE56B1A_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(auto3BE56B1A_g, auto3BE56B1A_p)) ) {
-                    lv_playerIterEnemy = PlayerGroupPlayer(auto3BE56B1A_g, auto3BE56B1A_p);
-                    PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-                    PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-                    PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-                    PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
-                    auto221D84A3_g = libCOMI_gf_HumanPlayers();
-                    auto221D84A3_p = 1;
-                    for ( ; auto221D84A3_p &lt;= PlayerGroupCount(auto221D84A3_g) ; auto221D84A3_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(auto221D84A3_g, auto221D84A3_p)) ) {
-                        lv_playerIterAlly = PlayerGroupPlayer(auto221D84A3_g, auto221D84A3_p);
-                        libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-                    }
-                }
-                PlayerSetAlliance(lib1_gv_cOOP_Init_PLAYER_03_ENEMY, c_allianceIdPower, lib1_gv_cOOP_Init_PLAYER_04_ENEMY, true);
-                PlayerSetAlliance(lib1_gv_cOOP_Init_PLAYER_04_ENEMY, c_allianceIdPower, lib1_gv_cOOP_Init_PLAYER_03_ENEMY, true);
-                libCOMI_gf_SetAlliedCommandersstartingResources();
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -2865,20 +2782,17 @@
             // Trigger: COOP_Init_03_LoadingComplete
             //--------------------------------------------------------------------------------------------------
             bool lib1_gt_COOP_Init_03_LoadingComplete_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
+                lib1_gv_mETEORITE_GiantImpactDefeatCount = 2;
+                lib1_gv_cOOP_Init_AIDifficult = 3;
+                lib1_gv_cOOP_Init_PLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+                lib1_gv_cOOP_Init_PLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
                 TriggerExecute(lib1_gt_COOP_Init_04_Technology, true, false);
-               // libCOMI_gf_PurchaseStorymodeTech();
                 TriggerExecute(lib1_gt_COOP_Init_05_Units, true, false);
                 TriggerExecute(lib1_gt_COOP_Init_06_MusicSound, true, false);
                 TriggerExecute(lib1_gt_COOP_Init_07_Environment, true, false);
                 TriggerExecute(lib1_gt_COOP_Init_08_Difficulties, true, false);
-               // libCOMI_gf_PlayMapIntroZoom(true);
                 TriggerExecute(lib1_gt_COOP_Init_09_Start_Game, true, false);
                 TriggerExecute(lib1_gt_COOP_Init_10_AI, true, false);
-            
                 lib1_gv_mETEORITE_GiantDropTime = 360.0;
                 lib1_gv_cOOP_Objective_TotalTime = 1620.0;
                 lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter_ObjectivesTime = 600.0;
@@ -2899,11 +2813,6 @@
             // Trigger: COOP_Init_04_Technology
             //--------------------------------------------------------------------------------------------------
             bool lib1_gt_COOP_Init_04_Technology_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -2914,12 +2823,6 @@
             // Trigger: COOP_Init_05_Units
             //--------------------------------------------------------------------------------------------------
             bool lib1_gt_COOP_Init_05_Units_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(lib1_gv_cOOP_Init_PLAYER_01_USER);
-                libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(lib1_gv_cOOP_Init_PLAYER_02_USER);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -2940,13 +2843,6 @@
             // Trigger: COOP_Init_07_Environment
             //--------------------------------------------------------------------------------------------------
             bool lib1_gt_COOP_Init_07_Environment_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                GameTimeOfDaySet(&quot;08:00:00&quot;);
-                VisExploreArea(lib1_gv_cOOP_Init_PLAYER_01_USER, RegionFromId(1), true, false);
-                VisExploreArea(lib1_gv_cOOP_Init_PLAYER_02_USER, RegionFromId(1), true, false);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -2961,6 +2857,7 @@
                 string auto53A7B0DB_val;
                 string auto53A7B0DC_val;
                 string auto53A7B0DD_val;
+                int auto14FB6BAB_val;
                 // Variable Declarations
                 fixed lv_bonusObjectiveLife;
                 fixed lv_mainObjectiveLife;
@@ -2969,12 +2866,8 @@
                 if (!runActions) {
                     return true;
                 }
-            
-            
-            
-                //int auto14FB6BAB_val = 4;//libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 1, 2, 3, 4, 0, 0);
-            
-                if (false) {//auto14FB6BAB_val = 1) {
+                auto14FB6BAB_val = libCOMI_gf_DifficultyValueInt2(libCOMI_gf_GetMissionDifficulty(), 1, 2, 3, 4, 0, 0);
+                if (auto14FB6BAB_val == 1) {
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropLifeMax, 2500.0);
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropLife, 2500.0);
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropShieldsMax, 2500.0);
@@ -2984,7 +2877,7 @@
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[2].lv_unit, c_unitPropShields, 2500.0);
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[2].lv_unit, c_unitPropShieldsMax, 2500.0);
                 }
-                else if (false) {//auto14FB6BAB_val = 2) {
+                else if (auto14FB6BAB_val == 2) {
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropLifeMax, 3000.0);
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropLife, 3000.0);
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropShieldsMax, 3000.0);
@@ -2994,7 +2887,7 @@
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[2].lv_unit, c_unitPropShields, 3000.0);
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[2].lv_unit, c_unitPropShieldsMax, 3000.0);
                 }
-                else if (false) {//auto14FB6BAB_val = 3) {
+                else if (auto14FB6BAB_val == 3) {
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropLifeMax, 3500.0);
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropLife, 3500.0);
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropShieldsMax, 3500.0);
@@ -3016,7 +2909,7 @@
                     UnitSetPropertyFixed(UnitFromId(400215186), c_unitPropLifeMax, 2000);
                     UnitSetPropertyFixed(UnitFromId(400215186), c_unitPropLife, 2000);
                 }
-                else if (true) {//auto14FB6BAB_val = 4) {
+                else if (auto14FB6BAB_val == 4) {
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropLifeMax, 4000.0);
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropLife, 4000.0);
                     UnitSetPropertyFixed(lib1_gv_sOLARCRYSTAL_Spectroscope_MegalithCutter[1].lv_unit, c_unitPropShieldsMax, 4000.0);
@@ -3057,8 +2950,6 @@
                 if (!runActions) {
                     return true;
                 }
-                UIAlertPoint(&quot;Trigger&quot;, lib1_gv_cOOP_Init_PLAYER_01_USER, StringExternal(&quot;Param/Value/lib_1_BD704E20&quot;), null, PlayerStartLocation(lib1_gv_cOOP_Init_PLAYER_01_USER));
-                UIAlertPoint(&quot;Trigger&quot;, lib1_gv_cOOP_Init_PLAYER_02_USER, StringExternal(&quot;Param/Value/lib_1_B580502C&quot;), null, PlayerStartLocation(lib1_gv_cOOP_Init_PLAYER_02_USER));
                 lib1_gf_COOP_Transmission_Init();
                 return true;
             }
@@ -3119,7 +3010,8 @@
                     return true;
                 }
                 TriggerEnable(TriggerGetCurrent(), false);
-                lib1_gf_COOP_Transmission_Send(&quot;MeetFrogSF&quot;, -1, true);
+              //  lib1_gf_COOP_Transmission_Send(&quot;MeetFrogSF&quot;, -1, true);
+                libCOMI_gf_SendMissionTransmission(&quot;MeetFrogSF&quot;, false, -1);
                 libCOMI_gf_CreatePingCoop(PlayerGroupAll(), &quot;PingAlert&quot;, RegionGetCenter(RegionFromId(15)), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 4.0);
                 return true;
             }
@@ -3156,7 +3048,6 @@
             void lib1_gt_COOP_AI_Wave_Start_Init () {
                 lib1_gt_COOP_AI_Wave_Start = TriggerCreate(&quot;lib1_gt_COOP_AI_Wave_Start_Func&quot;);
             }
-            
             //--------------------------------------------------------------------------------------------------
             // Trigger: COOP_AI_Enemy_Attacking
             //--------------------------------------------------------------------------------------------------
@@ -3175,7 +3066,7 @@
                     return true;
                 }
                 TriggerEnable(TriggerGetCurrent(), false);
-                lib1_gf_COOP_Transmission_Send(&quot;AttackWave&quot;, RandomInt(lib1_gv_cOOP_Init_PLAYER_01_USER, lib1_gv_cOOP_Init_PLAYER_02_USER), true);
+                libCOMI_gf_SendMissionTransmission(&quot;AttackWave&quot;, false, -1);
                 Wait(20.0, c_timeAI);
                 TriggerEnable(TriggerGetCurrent(), true);
                 return true;
@@ -3185,75 +3076,6 @@
                 lib1_gt_COOP_AI_Enemy_Attacking = TriggerCreate(&quot;lib1_gt_COOP_AI_Enemy_Attacking_Func&quot;);
                 TriggerAddEventPlayerAIWave(lib1_gt_COOP_AI_Enemy_Attacking, lib1_gv_cOOP_Init_PLAYER_03_ENEMY);
                 TriggerAddEventPlayerAIWave(lib1_gt_COOP_AI_Enemy_Attacking, lib1_gv_cOOP_Init_PLAYER_04_ENEMY);
-            }
-            //--------------------------------------------------------------------------------------------------
-            // Trigger: COOP_Victory/Defeat_DefeatBaseDead
-            //--------------------------------------------------------------------------------------------------
-            bool lib1_gt_COOP_VictoryDefeat_DefeatBaseDead_Func (bool testConds, bool runActions) {
-                // Variable Declarations
-                point lv_cameraTarget;
-                // Variable Initialization
-                // Conditions
-                if (testConds) {
-                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-                        return false;
-                    }
-                    if (!((libCOMI_gf_GameIsOver() == false))) {
-                        return false;
-                    }
-                    if (!(((libNtve_gf_UnitGroupIsDead(UnitGroup(null, lib1_gv_cOOP_Init_PLAYER_01_USER, null, UnitFilter((1 &lt;&lt; c_targetFilterPreventDefeat), 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 1)) == true) || (libNtve_gf_UnitGroupIsDead(UnitGroup(null, lib1_gv_cOOP_Init_PLAYER_02_USER, null, UnitFilter((1 &lt;&lt; c_targetFilterPreventDefeat), 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 1)) == true)))) {
-                        return false;
-                    }
-                }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-                TransmissionClearAll();
-                TriggerQueuePause(true);
-                TriggerQueueClear(c_triggerQueueRemove);
-                libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-                TriggerExecute(lib1_gt_COOP_Objective_GameTime_Failed, true, false);
-                if ((libNtve_gf_UnitGroupIsDead(UnitGroup(null, lib1_gv_cOOP_Init_PLAYER_01_USER, null, UnitFilter((1 &lt;&lt; c_targetFilterPreventDefeat), 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 1)) == true)) {
-                    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(lib1_gv_cOOP_Init_PLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/lib_1_ECDF7758&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(lib1_gv_cOOP_Init_PLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/lib_1_3CB43544&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                    lv_cameraTarget = PlayerStartLocation(lib1_gv_cOOP_Init_PLAYER_01_USER);
-                }
-                else {
-                    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(lib1_gv_cOOP_Init_PLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/lib_1_25BAE24A&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(lib1_gv_cOOP_Init_PLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/lib_1_2B193F03&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                    lv_cameraTarget = PlayerStartLocation(lib1_gv_cOOP_Init_PLAYER_02_USER);
-                }
-                Wait(2.0, c_timeReal);
-                UnitGroupLoopBegin(UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_MakeUnitInvulnerable(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                CameraLockInput(lib1_gv_cOOP_Init_PLAYER_01_USER, true);
-                CameraLockInput(lib1_gv_cOOP_Init_PLAYER_02_USER, true);
-                UnitClearSelection(lib1_gv_cOOP_Init_PLAYER_01_USER);
-                UnitClearSelection(lib1_gv_cOOP_Init_PLAYER_02_USER);
-                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-                if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(lib1_gv_cOOP_Init_PLAYER_01_USER)) == false)) {
-                    CameraApplyInfo(lib1_gv_cOOP_Init_PLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                    CameraPan(lib1_gv_cOOP_Init_PLAYER_01_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
-                }
-                if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(lib1_gv_cOOP_Init_PLAYER_02_USER)) == false)) {
-                    CameraApplyInfo(lib1_gv_cOOP_Init_PLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                    CameraPan(lib1_gv_cOOP_Init_PLAYER_02_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
-                }
-                Wait(4.0, c_timeReal);
-                UISetCursorVisible(PlayerGroupAll(), true);
-                TriggerExecute(lib1_gt_COOP_VictoryDefeat_Defeat, true, false);
-                return true;
-            }
-            //--------------------------------------------------------------------------------------------------
-            void lib1_gt_COOP_VictoryDefeat_DefeatBaseDead_Init () {
-                lib1_gt_COOP_VictoryDefeat_DefeatBaseDead = TriggerCreate(&quot;lib1_gt_COOP_VictoryDefeat_DefeatBaseDead_Func&quot;);
-                TriggerAddEventTimePeriodic(lib1_gt_COOP_VictoryDefeat_DefeatBaseDead, 1.0, c_timeAI);
             }
             //--------------------------------------------------------------------------------------------------
             // Trigger: COOP_Victory/Defeat_DefeatPrimaryObjectiveFailed
@@ -3268,37 +3090,14 @@
                         return false;
                     }
                 }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                if ((libCOMI_gf_GameIsOver() == true)) {
-                    return true;
-                }
                 TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-                TriggerQueuePause(true);
-                TriggerQueueClear(c_triggerQueueRemove);
-                libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-                lib1_gf_COOP_Transmission_SendImmediately(&quot;DefeatSF&quot;, -1, false);
-                UnitPauseAll(true);
-                TriggerExecute(lib1_gt_COOP_Objective_GiantMeteoritesImpact_Failed, true, false);
-                CameraLockInput(lib1_gv_cOOP_Init_PLAYER_01_USER, true);
-                CameraLockInput(lib1_gv_cOOP_Init_PLAYER_02_USER, true);
-                UnitClearSelection(lib1_gv_cOOP_Init_PLAYER_01_USER);
-                UnitClearSelection(lib1_gv_cOOP_Init_PLAYER_02_USER);
-                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-                CameraApplyInfo(lib1_gv_cOOP_Init_PLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                CameraPan(lib1_gv_cOOP_Init_PLAYER_01_USER, PointFromId(1055579115), 1.5, -1, 10.0, false);
-                CameraApplyInfo(lib1_gv_cOOP_Init_PLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                CameraPan(lib1_gv_cOOP_Init_PLAYER_02_USER, PointFromId(1055579115), 1.5, -1, 10.0, false);
+                libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+                libCOMI_gf_SendMissionTransmission(&quot;DefeatSF&quot;, false, -1);
+                libCOMI_gf_MoveCameraForAllPlayers(PointFromId(1055579115), 2.0);
                 Wait(0.5, c_timeGame);
-                ActorSend(ActorFromDoodad(DoodadFromId(130647579)), &quot;Signal Death&quot;);
                 libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/lib_1_6FDF91A2&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                libCOMI_gf_WaitForMissionTransmission();
-                Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-                UISetCursorVisible(PlayerGroupAll(), true);
-                TriggerExecute(lib1_gt_COOP_VictoryDefeat_Defeat, true, false);
+                ActorSend(ActorFromDoodad(DoodadFromId(130647579)), &quot;Signal Death&quot;);
+                libCOMI_gf_AfterFanfare(c_gameOverDefeat);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -3344,85 +3143,14 @@
                         return false;
                     }
                 }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                if ((libCOMI_gf_GameIsOver() == true)) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-                TriggerQueuePause(true);
-                TriggerQueueClear(c_triggerQueueRemove);
-                libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
-                lib1_gf_COOP_Transmission_SendImmediately(&quot;VictorySF&quot;, -1, false);
-                UnitPauseAll(true);
-                CameraLockInput(lib1_gv_cOOP_Init_PLAYER_01_USER, true);
-                CameraLockInput(lib1_gv_cOOP_Init_PLAYER_02_USER, true);
-                UnitClearSelection(lib1_gv_cOOP_Init_PLAYER_01_USER);
-                UnitClearSelection(lib1_gv_cOOP_Init_PLAYER_02_USER);
+                libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+                libCOMI_gf_SendMissionTransmission(&quot;VictorySF&quot;, false, -1);
                 UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
                 ActorSend(ActorFromDoodad(DoodadFromId(130647579)), &quot;Signal Startup&quot;);
-                CameraApplyInfo(lib1_gv_cOOP_Init_PLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                CameraPan(lib1_gv_cOOP_Init_PLAYER_01_USER, PointFromId(1055579115), 2.0, -1, 10.0, false);
-                CameraApplyInfo(lib1_gv_cOOP_Init_PLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                CameraPan(lib1_gv_cOOP_Init_PLAYER_02_USER, PointFromId(1055579115), 2.0, -1, 10.0, false);
-                libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(lib1_gv_cOOP_Init_PLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/lib_1_68DD932B&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(lib1_gv_cOOP_Init_PLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/lib_1_227C36F3&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                libCOMI_gf_WaitForMissionTransmission();
-                Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-                UISetCursorVisible(PlayerGroupAll(), true);
-                TriggerExecute(lib1_gt_COOP_VictoryDefeat_Victory, true, false);
+                libCOMI_gf_MoveCameraForAllPlayers(PointFromId(1055579115), 2.0);
+                libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal(&quot;Param/Value/lib_1_68DD932B&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+                libCOMI_gf_AfterFanfare(c_gameOverVictory);
                 return true;
-            }
-            //--------------------------------------------------------------------------------------------------
-            void lib1_gt_COOP_VictoryDefeat_VictoryFanfare_Init () {
-                lib1_gt_COOP_VictoryDefeat_VictoryFanfare = TriggerCreate(&quot;lib1_gt_COOP_VictoryDefeat_VictoryFanfare_Func&quot;);
-            }
-            //--------------------------------------------------------------------------------------------------
-            // Trigger: COOP_Victory/Defeat_Victory
-            //--------------------------------------------------------------------------------------------------
-            bool lib1_gt_COOP_VictoryDefeat_Victory_Func (bool testConds, bool runActions) {
-                // Conditions
-                if (testConds) {
-                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-                        return false;
-                    }
-                }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_EndCampaignMission(c_gameOverVictory);
-                return true;
-            }
-            //--------------------------------------------------------------------------------------------------
-            void lib1_gt_COOP_VictoryDefeat_Victory_Init () {
-                lib1_gt_COOP_VictoryDefeat_Victory = TriggerCreate(&quot;lib1_gt_COOP_VictoryDefeat_Victory_Func&quot;);
-            }
-            //--------------------------------------------------------------------------------------------------
-            // Trigger: COOP_Victory/Defeat_Defeat
-            //--------------------------------------------------------------------------------------------------
-            bool lib1_gt_COOP_VictoryDefeat_Defeat_Func (bool testConds, bool runActions) {
-                // Conditions
-                if (testConds) {
-                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-                        return false;
-                    }
-                }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
-                return true;
-            }
-            //--------------------------------------------------------------------------------------------------
-            void lib1_gt_COOP_VictoryDefeat_Defeat_Init () {
-                lib1_gt_COOP_VictoryDefeat_Defeat = TriggerCreate(&quot;lib1_gt_COOP_VictoryDefeat_Defeat_Func&quot;);
             }
             //--------------------------------------------------------------------------------------------------
             // Trigger: COOP_Objectives_Show
@@ -3472,7 +3200,8 @@
                 lib1_gv_cOOP_Objective_GameTime = ObjectiveLastCreated();
                 ObjectiveSetPriority(lib1_gv_cOOP_Objective_GameTime, 10);
                 TriggerExecute(lib1_gt_COOP_Objective_GameTime_Update, true, false);
-                lib1_gf_COOP_Transmission_Send(&quot;Intro1SF&quot;, -1, true);
+                //lib1_gf_COOP_Transmission_Send(&quot;Intro1SF&quot;, -1, true);
+                libCOMI_gf_SendMissionTransmission(&quot;Intro1SF&quot;, false, -1);
                 Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
                 return true;
             }
@@ -3568,11 +3297,13 @@
                     TriggerExecute(lib1_gt_COOP_Objective_GameTime_Update, true, false);
                     if ((lv_pass50 == false) &amp;&amp; ((TimerGetRemaining(lib1_gv_cOOP_Objective_GameTimer) / lib1_gv_cOOP_Objective_TotalTime) &lt;= 0.5)) {
                         lv_pass50 = true;
-                        lib1_gf_COOP_Transmission_Send(&quot;Pass50SF&quot;, -1, false);
+                        //lib1_gf_COOP_Transmission_Send(&quot;Pass50SF&quot;, -1, false);
+                        libCOMI_gf_SendMissionTransmission(&quot;Pass50SF&quot;, false, -1);
                     }
                     else if ((lv_pass90 == false) &amp;&amp; ((TimerGetRemaining(lib1_gv_cOOP_Objective_GameTimer) / lib1_gv_cOOP_Objective_TotalTime) &lt;= 0.1)) {
                         lv_pass90 = true;
-                        lib1_gf_COOP_Transmission_Send(&quot;DropFinalSF&quot;, -1, true);
+                        //lib1_gf_COOP_Transmission_Send(&quot;DropFinalSF&quot;, -1, true);
+                        libCOMI_gf_SendMissionTransmission(&quot;DropFinalSF&quot;, false, -1);
                     }
                     Wait(0.5, c_timeGame);
                 }
@@ -3813,10 +3544,6 @@
                         return false;
                     }
                 }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
                 TriggerEnable(TriggerGetCurrent(), false);
                 ActorSend(ActorFromDoodad(DoodadFromId(621441189)), &quot;Signal WarpOut&quot;);
                 ObjectiveCreate(StringExternal(&quot;Param/Value/lib_1_18ABDC4F&quot;), StringExternal(&quot;Param/Value/lib_1_75E0E7BF&quot;), c_objectiveStateCompleted, false);
@@ -3831,8 +3558,6 @@
                 lib1_gt_COOP_Objective_Zeratul_Complete = TriggerCreate(&quot;lib1_gt_COOP_Objective_Zeratul_Complete_Func&quot;);
                 TriggerAddEventUnitRegion(lib1_gt_COOP_Objective_Zeratul_Complete, null, RegionFromId(16), true);
             }
-            
-            
             void lib1_InitTriggers () {
                 lib1_gt_LIB_Initialization_Init();
                 lib1_gt_LIB_UnitDeath_Init();
@@ -3870,12 +3595,8 @@
                 lib1_gt_COOP_Transmission_Frog_Init();
                 lib1_gt_COOP_AI_Wave_Start_Init();
                 lib1_gt_COOP_AI_Enemy_Attacking_Init();
-                lib1_gt_COOP_VictoryDefeat_DefeatBaseDead_Init();
                 lib1_gt_COOP_VictoryDefeat_DefeatPrimaryObjectiveFailed_Init();
                 lib1_gt_COOP_VictoryDefeat_VictoryPrimaryObjectiveComplete_Init();
-                lib1_gt_COOP_VictoryDefeat_VictoryFanfare_Init();
-                lib1_gt_COOP_VictoryDefeat_Victory_Init();
-                lib1_gt_COOP_VictoryDefeat_Defeat_Init();
                 lib1_gt_COOP_Objectives_Show_Init();
                 lib1_gt_COOP_Objective_GameTime_Create_Init();
                 lib1_gt_COOP_Objective_GameTime_Update_Init();

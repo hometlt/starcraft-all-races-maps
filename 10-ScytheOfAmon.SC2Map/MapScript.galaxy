@@ -21,10 +21,10 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_c_EscortShipMax = 3;
 const string gv_c_TempAdvisorImage = "ImmortalShakurasPortrait";
 const int gv_c_VoidSliversCount = 5;
 const fixed gv_bONUSCAPDURATION = 20.0;
+const int gv_c_EscortShipMax = 3;
 const int gv_pLAYER_03_Player01Enemy = 8;
 const int gv_pLAYER_04_Player02Enemy = 9;
 const int gv_pLAYER_03_BULLIES = 8;
@@ -37,13 +37,6 @@ const int gv_pLAYER_11_BONUSESCORT = 11;
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
-int gv_objectiveFailTimer;
-int gv_objectiveDestroyVoidSlivers;
-string[gv_c_EscortShipMax + 1] gv_bonusObjectives;
-int[gv_c_EscortShipMax + 1] gv_objectiveEscortEvacShips;
-int gv_powerEvacPointsCount;
-int gv_warpPrismsLeft;
-int gv_warpPrismsMax;
 text gv_c_TempAdvisorName;
 fixed gv_sliverKilledFailTimerIncrease;
 timer gv_missionFailTimer;
@@ -85,8 +78,18 @@ point gv_pLAYER04_ATTACKWAYPOINT;
 point gv_pLAYER03_EXPO_ATTACKWAYPOINT;
 point gv_pLAYER03_ATTACKWAYPOINT;
 bool gv_attackWave02_AttackP1;
+int gv_objectiveFailTimer;
+int gv_objectiveDestroyVoidSlivers;
+string[gv_c_EscortShipMax + 1] gv_bonusObjectives;
+int[gv_c_EscortShipMax + 1] gv_objectiveEscortEvacShips;
+int gv_powerEvacPointsCount;
+int gv_warpPrismsLeft;
+int gv_warpPrismsMax;
 int[3] gv_victoryStat_UnitsLostToSliver;
 int[3] gv_victoryStat_VoidUnitsKilled;
+int gv_leaderboardTimeScoreFinal;
+int[gv_c_EscortShipMax + 1] gv_leaderboardBonusScoreFinal;
+fixed[gv_c_EscortShipMax + 1] gv_bonusObjectiveDamageTaken;
 int gv_pLAYER_01_USER;
 int gv_pLAYER_02_USER;
 playergroup gv_enemyPlayerGroup_All;
@@ -94,9 +97,6 @@ playergroup gv_enemyPlayerGroup_VoidForces;
 playergroup gv_allyPlayerGroup;
 unit gv_amonUnit;
 unit gv_chosenVoidSliver;
-int gv_leaderboardTimeScoreFinal;
-int[gv_c_EscortShipMax + 1] gv_leaderboardBonusScoreFinal;
-fixed[gv_c_EscortShipMax + 1] gv_bonusObjectiveDamageTaken;
 int[4] gv_optionsDialogMenus;
 int gv_optionsDialogAccept;
 int[4] gv_optionsDialogLabels;
@@ -107,11 +107,6 @@ int[4] gv_wavePattern;
 void InitGlobals () {
     int init_i;
 
-    gv_objectiveFailTimer = c_invalidObjectiveId;
-    gv_objectiveDestroyVoidSlivers = c_invalidObjectiveId;
-    for (init_i = 0; init_i <= gv_c_EscortShipMax; init_i += 1) {
-        gv_objectiveEscortEvacShips[init_i] = c_invalidObjectiveId;
-    }
     gv_c_TempAdvisorName = StringExternal("Param/Value/DA2AE412");
     gv_missionFailTimer = TimerCreate();
     gv_missionFailTimerWindow = c_timerWindowNone;
@@ -120,6 +115,11 @@ void InitGlobals () {
     gv_pLAYER04_ATTACKWAYPOINT = PointFromId(2080400002);
     gv_pLAYER03_EXPO_ATTACKWAYPOINT = PointFromId(427894755);
     gv_pLAYER03_ATTACKWAYPOINT = PointFromId(1162714313);
+    gv_objectiveFailTimer = c_invalidObjectiveId;
+    gv_objectiveDestroyVoidSlivers = c_invalidObjectiveId;
+    for (init_i = 0; init_i <= gv_c_EscortShipMax; init_i += 1) {
+        gv_objectiveEscortEvacShips[init_i] = c_invalidObjectiveId;
+    }
     gv_pLAYER_01_USER = 1;
     gv_pLAYER_02_USER = 2;
     gv_enemyPlayerGroup_All = PlayerGroupEmpty();
@@ -142,10 +142,6 @@ void InitGlobals () {
 //--------------------------------------------------------------------------------------------------
 // Global Function Declarations
 //--------------------------------------------------------------------------------------------------
-void gf_ObjectiveEscortEvacShipsCreate (int lp_escortObjective);
-void gf_ObjectiveEscortEvacShipsUpdate (int lp_escortObjective);
-void gf_ObjectiveEscortEvacShipsComplete (int lp_escortObjective);
-void gf_ObjectiveEscortEvacShipsFailed (int lp_escortObjective);
 int gf_PlusOrMinus ();
 int gf_NumberofDestroyedVoidSlivers ();
 void gf_VoidSliverAI (int lp_index, unit lp_voidSliver);
@@ -162,6 +158,10 @@ string gf_TransportType (int lp_player);
 void gf_AttackWaveatTime (fixed lp_time, trigger lp_aIAttackWave, bool lp_difficultyCheck);
 void gf_CleanUpAttackWaveTransports (unitgroup lp_transports, point lp_cleanupLocation);
 void gf_CreateWarpInEffect (unit lp_unit);
+void gf_ObjectiveEscortEvacShipsCreate (int lp_escortObjective);
+void gf_ObjectiveEscortEvacShipsUpdate (int lp_escortObjective);
+void gf_ObjectiveEscortEvacShipsComplete (int lp_escortObjective);
+void gf_ObjectiveEscortEvacShipsFailed (int lp_escortObjective);
 void gf_InfestedBunker (unit lp_bunker);
 void gf_MissionEventatTime (fixed lp_time, trigger lp_missionEvent);
 fixed gf_UnitGroupTotalVitality (unitgroup lp_unitGroup);
@@ -169,14 +169,6 @@ fixed gf_UnitGroupTotalVitality (unitgroup lp_unitGroup);
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
-trigger gt_ObjectiveFailTimerCreate;
-trigger gt_ObjectiveFailTimerComplete;
-trigger gt_ObjectiveFailTimerUpdate;
-trigger gt_ObjectiveFailTimerFailed;
-trigger gt_ObjectiveDestroyVoidSliversCreate;
-trigger gt_ObjectiveDestroyVoidSliversComplete;
-trigger gt_ObjectiveDestroyVoidSliversUpdate;
-trigger gt_ObjectiveDestroyVoidSliversFailed;
 trigger gt_MissionEvents;
 trigger gt_FailXP;
 trigger gt_FailTimerWindow;
@@ -205,11 +197,8 @@ trigger gt_TurnOnRain;
 trigger gt_TurnOnLightningStrikes;
 trigger gt_DefeatPrimaryObjectiveFailed;
 trigger gt_VictoryVoidSliversDestroyedCompleted;
-trigger gt_VictorySequence;
-trigger gt_VictoryFanfareQ;
 trigger gt_P01Fanfare;
 trigger gt_P02Fanfare;
-trigger gt_DefeatFanfare;
 trigger gt_DefeatAmonBeamController;
 trigger gt_AttackWave02;
 trigger gt_AttackWave03ExpoAttack;
@@ -222,10 +211,18 @@ trigger gt_VoidSpawnsReinforcements01;
 trigger gt_VoidSpawnsReinforcements02;
 trigger gt_VoidSpawnsReinforcements03;
 trigger gt_VoidSpawnsReinforcements04Hard;
+trigger gt_ObjectiveFailTimerCreate;
+trigger gt_ObjectiveFailTimerComplete;
+trigger gt_ObjectiveFailTimerUpdate;
+trigger gt_ObjectiveFailTimerFailed;
+trigger gt_ObjectiveDestroyVoidSliversCreate;
+trigger gt_ObjectiveDestroyVoidSliversComplete;
+trigger gt_ObjectiveDestroyVoidSliversUpdate;
+trigger gt_ObjectiveDestroyVoidSliversFailed;
 trigger gt_VictoryStatsForUnitsThatDie;
-trigger gt_Init01LoadData;
-trigger gt_Init02Players;
+trigger gt_VoidEntitySpawned;
 trigger gt_Init03LoadingComplete;
+trigger gt_Init02Players;
 trigger gt_Init04Technology;
 trigger gt_Init05Units;
 trigger gt_Init06MusicSound;
@@ -234,7 +231,6 @@ trigger gt_Init08Difficulties;
 trigger gt_Init08aDifficultySettingsVoidSlivers;
 trigger gt_StartAI;
 trigger gt_StartGameQ;
-trigger gt_VoidEntitySpawned;
 trigger gt_CreateOptionsDialog;
 trigger gt_OpenOptions;
 trigger gt_CloseOptions;
@@ -245,72 +241,6 @@ trigger gt_AttackWave06c;
 //--------------------------------------------------------------------------------------------------
 // Global Functions
 //--------------------------------------------------------------------------------------------------
-void gf_ObjectiveEscortEvacShipsCreate (int lp_escortObjective) {
-    // Automatic Variable Declarations
-    // Implementation
-    if ((libCOMI_gf_GameIsOver() == false) && (gv_objectiveEscortEvacShips[lp_escortObjective] == c_invalidObjectiveId)) {
-        libCOMI_gf_CreateObjectiveCampaign(gv_bonusObjectives[lp_escortObjective]);
-        gv_objectiveEscortEvacShips[lp_escortObjective] = ObjectiveLastCreated();
-        Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    }
-
-}
-
-void gf_ObjectiveEscortEvacShipsUpdate (int lp_escortObjective) {
-    // Variable Declarations
-    color lv_vitalityColor;
-    fixed lv_currentVitalityPercent;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-    lv_vitalityColor = Color(100,100,100);
-
-    // Implementation
-    if ((libCOMI_gf_GameIsOver() == true)) {
-        return ;
-    }
-
-    if ((UnitIsValid(gv_currentEscortShip) == false)) {
-        libCOMI_gf_SetMissionObjectiveCustomText(gv_bonusObjectives[lp_escortObjective], StringToText(""));
-        return ;
-    }
-
-    lv_currentVitalityPercent = UnitGetPropertyFixed(gv_currentEscortShip, c_unitPropVitalityPercent, c_unitPropCurrent);
-    if ((lv_currentVitalityPercent <= 25.0)) {
-        lv_vitalityColor = Color(100.00, 0.00, 0.00);
-    }
-    else if ((lv_currentVitalityPercent <= 50.0)) {
-        lv_vitalityColor = Color(150*100/255,150*100/255,30*100/255);
-    }
-    gf_ObjectiveEscortEvacShipsCreate(lp_escortObjective);
-    TextExpressionSetToken("Param/Expression/C9C24BFD", "A", TextWithColor(FixedToText(lv_currentVitalityPercent, 0), lv_vitalityColor));
-    libCOMI_gf_SetMissionObjectiveCustomText(gv_bonusObjectives[lp_escortObjective], TextExpressionAssemble("Param/Expression/C9C24BFD"));
-}
-
-void gf_ObjectiveEscortEvacShipsComplete (int lp_escortObjective) {
-    // Automatic Variable Declarations
-    // Implementation
-    if ((libCOMI_gf_GameIsOver() == false)) {
-        libCOMI_gf_SetMissionObjectiveCustomText(gv_bonusObjectives[lp_escortObjective], StringToText(""));
-        gf_ObjectiveEscortEvacShipsCreate(lp_escortObjective);
-        libCOMI_gf_ZS_SetMissionObjectiveState(gv_bonusObjectives[lp_escortObjective], libCOMI_ge_MissionObjectiveState_Completed);
-        Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    }
-
-}
-
-void gf_ObjectiveEscortEvacShipsFailed (int lp_escortObjective) {
-    // Automatic Variable Declarations
-    // Implementation
-    if ((libCOMI_gf_GameIsOver() == false)) {
-        libCOMI_gf_SetMissionObjectiveCustomText(gv_bonusObjectives[lp_escortObjective], StringToText(""));
-        gf_ObjectiveEscortEvacShipsCreate(lp_escortObjective);
-        libCOMI_gf_ZS_SetMissionObjectiveState(gv_bonusObjectives[lp_escortObjective], libCOMI_ge_MissionObjectiveState_Failed);
-        Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    }
-
-}
-
 int gf_PlusOrMinus () {
     // Automatic Variable Declarations
     // Implementation
@@ -1202,6 +1132,72 @@ bool auto_gf_CreateWarpInEffect_TriggerFunc (bool testConds, bool runActions) {
     return true;
 }
 
+void gf_ObjectiveEscortEvacShipsCreate (int lp_escortObjective) {
+    // Automatic Variable Declarations
+    // Implementation
+    if ((libCOMI_gf_GameIsOver() == false) && (gv_objectiveEscortEvacShips[lp_escortObjective] == c_invalidObjectiveId)) {
+        libCOMI_gf_CreateObjectiveCampaign(gv_bonusObjectives[lp_escortObjective]);
+        gv_objectiveEscortEvacShips[lp_escortObjective] = ObjectiveLastCreated();
+        Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    }
+
+}
+
+void gf_ObjectiveEscortEvacShipsUpdate (int lp_escortObjective) {
+    // Variable Declarations
+    color lv_vitalityColor;
+    fixed lv_currentVitalityPercent;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_vitalityColor = Color(100,100,100);
+
+    // Implementation
+    if ((libCOMI_gf_GameIsOver() == true)) {
+        return ;
+    }
+
+    if ((UnitIsValid(gv_currentEscortShip) == false)) {
+        libCOMI_gf_SetMissionObjectiveCustomText(gv_bonusObjectives[lp_escortObjective], StringToText(""));
+        return ;
+    }
+
+    lv_currentVitalityPercent = UnitGetPropertyFixed(gv_currentEscortShip, c_unitPropVitalityPercent, c_unitPropCurrent);
+    if ((lv_currentVitalityPercent <= 25.0)) {
+        lv_vitalityColor = Color(100.00, 0.00, 0.00);
+    }
+    else if ((lv_currentVitalityPercent <= 50.0)) {
+        lv_vitalityColor = Color(150*100/255,150*100/255,30*100/255);
+    }
+    gf_ObjectiveEscortEvacShipsCreate(lp_escortObjective);
+    TextExpressionSetToken("Param/Expression/C9C24BFD", "A", TextWithColor(FixedToText(lv_currentVitalityPercent, 0), lv_vitalityColor));
+    libCOMI_gf_SetMissionObjectiveCustomText(gv_bonusObjectives[lp_escortObjective], TextExpressionAssemble("Param/Expression/C9C24BFD"));
+}
+
+void gf_ObjectiveEscortEvacShipsComplete (int lp_escortObjective) {
+    // Automatic Variable Declarations
+    // Implementation
+    if ((libCOMI_gf_GameIsOver() == false)) {
+        libCOMI_gf_SetMissionObjectiveCustomText(gv_bonusObjectives[lp_escortObjective], StringToText(""));
+        gf_ObjectiveEscortEvacShipsCreate(lp_escortObjective);
+        libCOMI_gf_ZS_SetMissionObjectiveState(gv_bonusObjectives[lp_escortObjective], libCOMI_ge_MissionObjectiveState_Completed);
+        Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    }
+
+}
+
+void gf_ObjectiveEscortEvacShipsFailed (int lp_escortObjective) {
+    // Automatic Variable Declarations
+    // Implementation
+    if ((libCOMI_gf_GameIsOver() == false)) {
+        libCOMI_gf_SetMissionObjectiveCustomText(gv_bonusObjectives[lp_escortObjective], StringToText(""));
+        gf_ObjectiveEscortEvacShipsCreate(lp_escortObjective);
+        libCOMI_gf_ZS_SetMissionObjectiveState(gv_bonusObjectives[lp_escortObjective], libCOMI_ge_MissionObjectiveState_Failed);
+        Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    }
+
+}
+
 trigger auto_gf_InfestedBunker_Trigger = null;
 unit auto_gf_InfestedBunker_lp_bunker;
 
@@ -1306,221 +1302,6 @@ fixed gf_UnitGroupTotalVitality (unitgroup lp_unitGroup) {
         lv_totalVitality += UnitGetPropertyFixed(lv_currentUnit, c_unitPropVitality, c_unitPropCurrent);
     }
     return lv_totalVitality;
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective FailTimer Create
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveFailTimerCreate_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_CreateObjectiveCampaign("AC_AiurSiege_Primary02");
-    gv_objectiveFailTimer = ObjectiveLastCreated();
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveFailTimerCreate_Init () {
-    gt_ObjectiveFailTimerCreate = TriggerCreate("gt_ObjectiveFailTimerCreate_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective FailTimer Complete
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveFailTimerComplete_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveFailTimerCreate, true, false);
-    libCOMI_gf_ZS_SetMissionObjectiveState("AC_AiurSiege_Primary02", libCOMI_ge_MissionObjectiveState_Completed);
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveFailTimerComplete_Init () {
-    gt_ObjectiveFailTimerComplete = TriggerCreate("gt_ObjectiveFailTimerComplete_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective FailTimer Update
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveFailTimerUpdate_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_ObjectiveFailTimerCreate, true, false);
-    TextExpressionSetToken("Param/Expression/8A311A50", "CURRENT", TextTimeFormat(StringToText("<mintotal/>:<sec2/>"), FixedToInt(TimerGetRemaining(gv_missionFailTimer))));
-    libCOMI_gf_SetMissionObjectiveCustomText("AC_AiurSiege_Primary02", TextExpressionAssemble("Param/Expression/8A311A50"));
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveFailTimerUpdate_Init () {
-    gt_ObjectiveFailTimerUpdate = TriggerCreate("gt_ObjectiveFailTimerUpdate_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective FailTimer Failed
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveFailTimerFailed_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveFailTimerCreate, true, false);
-    libCOMI_gf_ZS_SetMissionObjectiveState("AC_AiurSiege_Primary02", libCOMI_ge_MissionObjectiveState_Failed);
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveFailTimerFailed_Init () {
-    gt_ObjectiveFailTimerFailed = TriggerCreate("gt_ObjectiveFailTimerFailed_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective - Destroy Void Slivers Create
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveDestroyVoidSliversCreate_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_CreateObjectiveCampaign("AC_AiurSiege_Primary01");
-    gv_objectiveDestroyVoidSlivers = ObjectiveLastCreated();
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveDestroyVoidSliversCreate_Init () {
-    gt_ObjectiveDestroyVoidSliversCreate = TriggerCreate("gt_ObjectiveDestroyVoidSliversCreate_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective - Destroy Void Slivers Complete
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveDestroyVoidSliversComplete_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveDestroyVoidSliversCreate, true, false);
-    libCOMI_gf_ZS_SetMissionObjectiveState("AC_AiurSiege_Primary01", libCOMI_ge_MissionObjectiveState_Completed);
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveDestroyVoidSliversComplete_Init () {
-    gt_ObjectiveDestroyVoidSliversComplete = TriggerCreate("gt_ObjectiveDestroyVoidSliversComplete_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective - Destroy Void Slivers Update
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveDestroyVoidSliversUpdate_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_ObjectiveDestroyVoidSliversCreate, true, false);
-    libCOMI_gf_SetMissionObjectiveProgress("AC_AiurSiege_Primary01", gf_NumberofDestroyedVoidSlivers());
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveDestroyVoidSliversUpdate_Init () {
-    gt_ObjectiveDestroyVoidSliversUpdate = TriggerCreate("gt_ObjectiveDestroyVoidSliversUpdate_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Objective - Destroy Void Slivers Failed
-//--------------------------------------------------------------------------------------------------
-bool gt_ObjectiveDestroyVoidSliversFailed_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_ObjectiveDestroyVoidSliversCreate, true, false);
-    libCOMI_gf_ZS_SetMissionObjectiveState("AC_AiurSiege_Primary01", libCOMI_ge_MissionObjectiveState_Failed);
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_ObjectiveDestroyVoidSliversFailed_Init () {
-    gt_ObjectiveDestroyVoidSliversFailed = TriggerCreate("gt_ObjectiveDestroyVoidSliversFailed_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2685,6 +2466,11 @@ void gt_TurnOnLightningStrikes_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
+    playergroup auto9F63EC97_g;
+    int auto9F63EC97_var;
+    playergroup auto8A084A2B_g;
+    int auto8A084A2B_var;
+
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -2698,17 +2484,47 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    TransmissionClearAll();
     TriggerExecute(gt_ObjectiveFailTimerFailed, true, false);
     TriggerExecute(gt_ObjectiveDestroyVoidSliversFailed, true, false);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/2AF07D54"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    TriggerExecute(gt_DefeatFanfare, true, true);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(libCOMI_gt_Defeat, true, false);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/C6F74663"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libNtve_gf_PlayAnimation(ActorFromDoodad(DoodadFromId(797)), c_animNameDefault, "Death", 0, c_animTimeDefault);
+    libNtve_gf_ShowHideDoodadsInRegion(true, RegionEntireMap(), "RainEmitterLarge");
+    libNtve_gf_ShowHideDoodadsInRegion(true, RegionEntireMap(), "LightningBolt");
+    libNtve_gf_ShowHideDoodadsInRegion(true, RegionEntireMap(), "ThunderLightning");
+    libNtve_gf_PauseUnit(gv_amonUnit, false);
+    libNtve_gf_ShowHideUnit(gv_amonUnit, true);
+    VisRevealArea(UnitGetOwner(gv_amonUnit), RegionFromId(17), 0.0, false);
+    libCOMI_gf_ApplyCameraForAllPlayers(CameraInfoFromId(2605), 0.0);
+    SoundPlayForPlayer(SoundLink("Event_Aiur05Victory_AmonAwake", -1), c_maxPlayers, PlayerGroupAll(), 80.0, 0.0);
+    SoundtrackStop(PlayerGroupAll(), c_soundtrackCategoryMusic, true);
+    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, "AC_Music_AiurSiege_FailOutro", c_soundtrackCueAny, c_soundtrackIndexAny, false);
+    libNtve_gf_SendActorMessageToUnit(gv_amonUnit, "AnimGroupApply Work Stand,Work,Start Stand,Work,End");
+    libCOMI_gf_SendMissionTransmission("DefeatAS", false, -1);
+    Wait(3.0, c_timeGame);
+    UnitIssueOrder(gv_amonUnit, OrderTargetingPoint(AbilityCommand("AmonHostDeathBeam", 0), PointFromId(2619)), c_orderQueueReplace);
+    auto9F63EC97_g = libCOMI_gf_HumanPlayers();
+    auto9F63EC97_var = -1;
+    while (true) {
+        auto9F63EC97_var = PlayerGroupNextPlayer(auto9F63EC97_g, auto9F63EC97_var);
+        if (auto9F63EC97_var < 0) { break; }
+        CameraApplyInfo(auto9F63EC97_var, CameraInfoFromId(319), 3.0, -1, 10, true);
+    }
+    Wait(1.0, c_timeGame);
+    SoundPlayForPlayer(SoundLink("Event_Aiur05Victory_AmonShoots", -1), c_maxPlayers, PlayerGroupAll(), 90.0, 0.0);
+    Wait(2.0, c_timeGame);
+    auto8A084A2B_g = libCOMI_gf_HumanPlayers();
+    auto8A084A2B_var = -1;
+    while (true) {
+        auto8A084A2B_var = PlayerGroupNextPlayer(auto8A084A2B_g, auto8A084A2B_var);
+        if (auto8A084A2B_var < 0) { break; }
+        CameraShake(auto8A084A2B_var, "Light", "Earthquake", 0.0, 1.0, 8.0);
+        CameraApplyInfo(auto8A084A2B_var, CameraInfoFromId(771), 0.0, -1, 10, true);
+        CameraApplyInfo(auto8A084A2B_var, CameraInfoFromId(2661), 5.0, -1, 10, true);
+    }
+    Wait(2.0, c_timeGame);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -2723,6 +2539,13 @@ void gt_DefeatPrimaryObjectiveFailed_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_VictoryVoidSliversDestroyedCompleted_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
+    playergroup auto9D5D8C20_g;
+    int auto9D5D8C20_var;
+    playergroup autoC0CB242C_g;
+    int autoC0CB242C_var;
+    playergroup auto2B06E477_g;
+    int auto2B06E477_var;
+
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -2740,86 +2563,16 @@ bool gt_VictoryVoidSliversDestroyedCompleted_Func (bool testConds, bool runActio
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_VictorySequence, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryVoidSliversDestroyedCompleted_Init () {
-    gt_VictoryVoidSliversDestroyedCompleted = TriggerCreate("gt_VictoryVoidSliversDestroyedCompleted_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Sequence
-//--------------------------------------------------------------------------------------------------
-bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-    Wait(2.0, c_timeReal);
     TriggerExecute(gt_ObjectiveFailTimerComplete, true, false);
     TriggerExecute(gt_ObjectiveDestroyVoidSliversComplete, true, true);
-    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictorySequence_Init () {
-    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Fanfare Q
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    playergroup auto5C46E64F_g;
-    int auto5C46E64F_var;
-    playergroup auto9D5D8C20_g;
-    int auto9D5D8C20_var;
-    playergroup autoC0CB242C_g;
-    int autoC0CB242C_var;
-    playergroup auto2B06E477_g;
-    int auto2B06E477_var;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TransmissionClearAll();
-    TriggerQueueEnter();
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    VictoryPanelAddTrackedStatistic("DamageDealtToVoidShards");
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
     libCOMI_gf_SendVictoryTransmission("VictoryAS");
-    UnitPauseAll(true);
     libNtve_gf_PauseUnit(gv_amonUnit, false);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
     UnitSetHeight(UnitFromId(2102766350), 30.0, 0.0);
     UnitSetHeight(UnitFromId(1372570234), 30.0, 0.0);
     UnitSetHeight(UnitFromId(1916549955), 15.0, 0.0);
-    auto5C46E64F_g = libCOMI_gf_HumanPlayers();
-    auto5C46E64F_var = -1;
-    while (true) {
-        auto5C46E64F_var = PlayerGroupNextPlayer(auto5C46E64F_g, auto5C46E64F_var);
-        if (auto5C46E64F_var < 0) { break; }
-        CameraApplyInfo(auto5C46E64F_var, CameraInfoFromId(2706), 0.0, -1, 10, true);
-    }
+    libCOMI_gf_ApplyCameraForAllPlayers(CameraInfoFromId(2706), 0.0);
     Wait(2.5, c_timeGame);
     TriggerExecute(gt_P02Fanfare, true, false);
     Wait(0.66, c_timeGame);
@@ -2852,23 +2605,14 @@ bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
     }
     SoundPlayForPlayer(SoundLink("Event_Aiur05Victory_White_to_Ashes", -1), c_maxPlayers, PlayerGroupAll(), 80.0, 0.0);
     libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/56377069"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    VictoryPanelAddTrackedStatistic("UnitsTotalCount");
-    VictoryPanelAddTrackedStatistic("UnitsKilledCount");
-    VictoryPanelAddTrackedStatistic("UnitsLostCount");
-    VictoryPanelAddTrackedStatistic("StructuresKilledCount");
-    VictoryPanelAddTrackedStatistic("StructuresLostCount");
-    VictoryPanelAddTrackedStatistic("DamageDealtToVoidShards");
-    TriggerExecute(libCOMI_gt_Victory, true, false);
-    TriggerQueueExit();
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_VictoryFanfareQ_Init () {
-    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
+void gt_VictoryVoidSliversDestroyedCompleted_Init () {
+    gt_VictoryVoidSliversDestroyedCompleted = TriggerCreate("gt_VictoryVoidSliversDestroyedCompleted_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2960,92 +2704,6 @@ bool gt_P02Fanfare_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_P02Fanfare_Init () {
     gt_P02Fanfare = TriggerCreate("gt_P02Fanfare_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Defeat Fanfare
-//--------------------------------------------------------------------------------------------------
-bool gt_DefeatFanfare_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    playergroup autoF6DB5ABB_g;
-    int autoF6DB5ABB_var;
-    playergroup autoAEF671F6_g;
-    int autoAEF671F6_var;
-    playergroup auto9F63EC97_g;
-    int auto9F63EC97_var;
-    playergroup auto8A084A2B_g;
-    int auto8A084A2B_var;
-
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libNtve_gf_PlayAnimation(ActorFromDoodad(DoodadFromId(797)), c_animNameDefault, "Death", 0, c_animTimeDefault);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-    autoF6DB5ABB_g = libCOMI_gf_HumanPlayers();
-    autoF6DB5ABB_var = -1;
-    while (true) {
-        autoF6DB5ABB_var = PlayerGroupNextPlayer(autoF6DB5ABB_g, autoF6DB5ABB_var);
-        if (autoF6DB5ABB_var < 0) { break; }
-        CameraLockInput(autoF6DB5ABB_var, true);
-        UnitClearSelection(autoF6DB5ABB_var);
-    }
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    libNtve_gf_ShowHideDoodadsInRegion(true, RegionEntireMap(), "RainEmitterLarge");
-    libNtve_gf_ShowHideDoodadsInRegion(true, RegionEntireMap(), "LightningBolt");
-    libNtve_gf_ShowHideDoodadsInRegion(true, RegionEntireMap(), "ThunderLightning");
-    libNtve_gf_PauseUnit(gv_amonUnit, false);
-    libNtve_gf_ShowHideUnit(gv_amonUnit, true);
-    VisRevealArea(UnitGetOwner(gv_amonUnit), RegionFromId(17), 0.0, false);
-    autoAEF671F6_g = libCOMI_gf_HumanPlayers();
-    autoAEF671F6_var = -1;
-    while (true) {
-        autoAEF671F6_var = PlayerGroupNextPlayer(autoAEF671F6_g, autoAEF671F6_var);
-        if (autoAEF671F6_var < 0) { break; }
-        CameraApplyInfo(autoAEF671F6_var, CameraInfoFromId(2605), 0.0, -1, 10, true);
-    }
-    SoundPlayForPlayer(SoundLink("Event_Aiur05Victory_AmonAwake", -1), c_maxPlayers, PlayerGroupAll(), 80.0, 0.0);
-    SoundtrackStop(PlayerGroupAll(), c_soundtrackCategoryMusic, true);
-    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, "AC_Music_AiurSiege_FailOutro", c_soundtrackCueAny, c_soundtrackIndexAny, false);
-    libNtve_gf_SendActorMessageToUnit(gv_amonUnit, "AnimGroupApply Work Stand,Work,Start Stand,Work,End");
-    libCOMI_gf_SendMissionTransmission("DefeatAS", false, -1);
-    Wait(3.0, c_timeGame);
-    UnitIssueOrder(gv_amonUnit, OrderTargetingPoint(AbilityCommand("AmonHostDeathBeam", 0), PointFromId(2619)), c_orderQueueReplace);
-    auto9F63EC97_g = libCOMI_gf_HumanPlayers();
-    auto9F63EC97_var = -1;
-    while (true) {
-        auto9F63EC97_var = PlayerGroupNextPlayer(auto9F63EC97_g, auto9F63EC97_var);
-        if (auto9F63EC97_var < 0) { break; }
-        CameraApplyInfo(auto9F63EC97_var, CameraInfoFromId(319), 3.0, -1, 10, true);
-    }
-    Wait(1.0, c_timeGame);
-    SoundPlayForPlayer(SoundLink("Event_Aiur05Victory_AmonShoots", -1), c_maxPlayers, PlayerGroupAll(), 90.0, 0.0);
-    Wait(2.0, c_timeGame);
-    auto8A084A2B_g = libCOMI_gf_HumanPlayers();
-    auto8A084A2B_var = -1;
-    while (true) {
-        auto8A084A2B_var = PlayerGroupNextPlayer(auto8A084A2B_g, auto8A084A2B_var);
-        if (auto8A084A2B_var < 0) { break; }
-        CameraShake(auto8A084A2B_var, "Light", "Earthquake", 0.0, 1.0, 8.0);
-        CameraApplyInfo(auto8A084A2B_var, CameraInfoFromId(771), 0.0, -1, 10, true);
-        CameraApplyInfo(auto8A084A2B_var, CameraInfoFromId(2661), 5.0, -1, 10, true);
-    }
-    Wait(2.0, c_timeGame);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_DefeatFanfare_Init () {
-    gt_DefeatFanfare = TriggerCreate("gt_DefeatFanfare_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -3731,6 +3389,221 @@ void gt_VoidSpawnsReinforcements04Hard_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
+// Trigger: Objective FailTimer Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveFailTimerCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_CreateObjectiveCampaign("AC_AiurSiege_Primary02");
+    gv_objectiveFailTimer = ObjectiveLastCreated();
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveFailTimerCreate_Init () {
+    gt_ObjectiveFailTimerCreate = TriggerCreate("gt_ObjectiveFailTimerCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective FailTimer Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveFailTimerComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveFailTimerCreate, true, false);
+    libCOMI_gf_ZS_SetMissionObjectiveState("AC_AiurSiege_Primary02", libCOMI_ge_MissionObjectiveState_Completed);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveFailTimerComplete_Init () {
+    gt_ObjectiveFailTimerComplete = TriggerCreate("gt_ObjectiveFailTimerComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective FailTimer Update
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveFailTimerUpdate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_ObjectiveFailTimerCreate, true, false);
+    TextExpressionSetToken("Param/Expression/8A311A50", "CURRENT", TextTimeFormat(StringToText("<mintotal/>:<sec2/>"), FixedToInt(TimerGetRemaining(gv_missionFailTimer))));
+    libCOMI_gf_SetMissionObjectiveCustomText("AC_AiurSiege_Primary02", TextExpressionAssemble("Param/Expression/8A311A50"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveFailTimerUpdate_Init () {
+    gt_ObjectiveFailTimerUpdate = TriggerCreate("gt_ObjectiveFailTimerUpdate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective FailTimer Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveFailTimerFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveFailTimerCreate, true, false);
+    libCOMI_gf_ZS_SetMissionObjectiveState("AC_AiurSiege_Primary02", libCOMI_ge_MissionObjectiveState_Failed);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveFailTimerFailed_Init () {
+    gt_ObjectiveFailTimerFailed = TriggerCreate("gt_ObjectiveFailTimerFailed_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - Destroy Void Slivers Create
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyVoidSliversCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libCOMI_gf_CreateObjectiveCampaign("AC_AiurSiege_Primary01");
+    gv_objectiveDestroyVoidSlivers = ObjectiveLastCreated();
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyVoidSliversCreate_Init () {
+    gt_ObjectiveDestroyVoidSliversCreate = TriggerCreate("gt_ObjectiveDestroyVoidSliversCreate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - Destroy Void Slivers Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyVoidSliversComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDestroyVoidSliversCreate, true, false);
+    libCOMI_gf_ZS_SetMissionObjectiveState("AC_AiurSiege_Primary01", libCOMI_ge_MissionObjectiveState_Completed);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyVoidSliversComplete_Init () {
+    gt_ObjectiveDestroyVoidSliversComplete = TriggerCreate("gt_ObjectiveDestroyVoidSliversComplete_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - Destroy Void Slivers Update
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyVoidSliversUpdate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerExecute(gt_ObjectiveDestroyVoidSliversCreate, true, false);
+    libCOMI_gf_SetMissionObjectiveProgress("AC_AiurSiege_Primary01", gf_NumberofDestroyedVoidSlivers());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyVoidSliversUpdate_Init () {
+    gt_ObjectiveDestroyVoidSliversUpdate = TriggerCreate("gt_ObjectiveDestroyVoidSliversUpdate_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Objective - Destroy Void Slivers Failed
+//--------------------------------------------------------------------------------------------------
+bool gt_ObjectiveDestroyVoidSliversFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerExecute(gt_ObjectiveDestroyVoidSliversCreate, true, false);
+    libCOMI_gf_ZS_SetMissionObjectiveState("AC_AiurSiege_Primary01", libCOMI_ge_MissionObjectiveState_Failed);
+    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_ObjectiveDestroyVoidSliversFailed_Init () {
+    gt_ObjectiveDestroyVoidSliversFailed = TriggerCreate("gt_ObjectiveDestroyVoidSliversFailed_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
 // Trigger: Victory Stats For Units That Die
 //--------------------------------------------------------------------------------------------------
 bool gt_VictoryStatsForUnitsThatDie_Func (bool testConds, bool runActions) {
@@ -3777,23 +3650,65 @@ void gt_VictoryStatsForUnitsThatDie_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Init 01 Load Data
+// Trigger: Void Entity Spawned
 //--------------------------------------------------------------------------------------------------
-bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
+bool gt_VoidEntitySpawned_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMI_gf_GameIsOver() == false))) {
+            return false;
+        }
+
+        if (!(((UnitGetOwner(EventUnitProgressUnit()) == gv_pLAYER_05_VOIDFORCES) || (UnitGetOwner(EventUnitProgressUnit()) == gv_pLAYER_06_VOIDFORCES) || (UnitGetOwner(EventUnitProgressUnit()) == gv_pLAYER_07_VOIDFORCES)))) {
+            return false;
+        }
+
+        if (!((UnitGetType(EventUnit()) == "VoidRiftUnselectable"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitBehaviorAdd(EventUnitProgressUnit(), "VoidShade", EventUnit(), 1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_VoidEntitySpawned_Init () {
+    gt_VoidEntitySpawned = TriggerCreate("gt_VoidEntitySpawned_Func");
+    TriggerAddEventUnitTrainProgress(gt_VoidEntitySpawned, null, c_unitProgressStageComplete);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 03 Loading Complete
+//--------------------------------------------------------------------------------------------------
+bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
     }
 
-    libCOMI_gf_LoadCoopMission("AC_AiurSiege", gt_Init03LoadingComplete);
+    TriggerExecute(gt_Init02Players, true, false);
+    TriggerExecute(gt_Init04Technology, true, false);
+    TriggerExecute(gt_Init05Units, true, false);
+    TriggerExecute(gt_Init06MusicSound, true, false);
+    TriggerExecute(gt_Init07Environment, true, false);
+    TriggerExecute(gt_Init08Difficulties, true, false);
+    TriggerExecute(gt_StartAI, true, false);
+    TriggerExecute(gt_StartGameQ, true, false);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
-void gt_Init01LoadData_Init () {
-    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
-    TriggerAddEventMapInit(gt_Init01LoadData);
+void gt_Init03LoadingComplete_Init () {
+    gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+    TriggerAddEventGeneric(gt_Init03LoadingComplete, libCOMI_gv_COOP_MISSION_STARTED_EVENT);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -3827,32 +3742,6 @@ bool gt_Init02Players_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Init02Players_Init () {
     gt_Init02Players = TriggerCreate("gt_Init02Players_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 03 Loading Complete
-//--------------------------------------------------------------------------------------------------
-bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerExecute(gt_Init02Players, true, false);
-    TriggerExecute(gt_Init04Technology, true, false);
-    TriggerExecute(gt_Init05Units, true, false);
-    TriggerExecute(gt_Init06MusicSound, true, false);
-    TriggerExecute(gt_Init07Environment, true, false);
-    TriggerExecute(gt_Init08Difficulties, true, false);
-    TriggerExecute(gt_StartAI, true, false);
-    TriggerExecute(gt_StartGameQ, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init03LoadingComplete_Init () {
-    gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -4359,41 +4248,6 @@ void gt_StartGameQ_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Void Entity Spawned
-//--------------------------------------------------------------------------------------------------
-bool gt_VoidEntitySpawned_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!(((UnitGetOwner(EventUnitProgressUnit()) == gv_pLAYER_05_VOIDFORCES) || (UnitGetOwner(EventUnitProgressUnit()) == gv_pLAYER_06_VOIDFORCES) || (UnitGetOwner(EventUnitProgressUnit()) == gv_pLAYER_07_VOIDFORCES)))) {
-            return false;
-        }
-
-        if (!((UnitGetType(EventUnit()) == "VoidRiftUnselectable"))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    UnitBehaviorAdd(EventUnitProgressUnit(), "VoidShade", EventUnit(), 1);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VoidEntitySpawned_Init () {
-    gt_VoidEntitySpawned = TriggerCreate("gt_VoidEntitySpawned_Func");
-    TriggerAddEventUnitTrainProgress(gt_VoidEntitySpawned, null, c_unitProgressStageComplete);
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Create Options Dialog
 //--------------------------------------------------------------------------------------------------
 bool gt_CreateOptionsDialog_Func (bool testConds, bool runActions) {
@@ -4691,14 +4545,6 @@ void gt_AttackWave06c_Init () {
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
-    gt_ObjectiveFailTimerCreate_Init();
-    gt_ObjectiveFailTimerComplete_Init();
-    gt_ObjectiveFailTimerUpdate_Init();
-    gt_ObjectiveFailTimerFailed_Init();
-    gt_ObjectiveDestroyVoidSliversCreate_Init();
-    gt_ObjectiveDestroyVoidSliversComplete_Init();
-    gt_ObjectiveDestroyVoidSliversUpdate_Init();
-    gt_ObjectiveDestroyVoidSliversFailed_Init();
     gt_MissionEvents_Init();
     gt_FailXP_Init();
     gt_FailTimerWindow_Init();
@@ -4727,11 +4573,8 @@ void InitTriggers () {
     gt_TurnOnLightningStrikes_Init();
     gt_DefeatPrimaryObjectiveFailed_Init();
     gt_VictoryVoidSliversDestroyedCompleted_Init();
-    gt_VictorySequence_Init();
-    gt_VictoryFanfareQ_Init();
     gt_P01Fanfare_Init();
     gt_P02Fanfare_Init();
-    gt_DefeatFanfare_Init();
     gt_DefeatAmonBeamController_Init();
     gt_AttackWave02_Init();
     gt_AttackWave03ExpoAttack_Init();
@@ -4744,10 +4587,18 @@ void InitTriggers () {
     gt_VoidSpawnsReinforcements02_Init();
     gt_VoidSpawnsReinforcements03_Init();
     gt_VoidSpawnsReinforcements04Hard_Init();
+    gt_ObjectiveFailTimerCreate_Init();
+    gt_ObjectiveFailTimerComplete_Init();
+    gt_ObjectiveFailTimerUpdate_Init();
+    gt_ObjectiveFailTimerFailed_Init();
+    gt_ObjectiveDestroyVoidSliversCreate_Init();
+    gt_ObjectiveDestroyVoidSliversComplete_Init();
+    gt_ObjectiveDestroyVoidSliversUpdate_Init();
+    gt_ObjectiveDestroyVoidSliversFailed_Init();
     gt_VictoryStatsForUnitsThatDie_Init();
-    gt_Init01LoadData_Init();
-    gt_Init02Players_Init();
+    gt_VoidEntitySpawned_Init();
     gt_Init03LoadingComplete_Init();
+    gt_Init02Players_Init();
     gt_Init04Technology_Init();
     gt_Init05Units_Init();
     gt_Init06MusicSound_Init();
@@ -4756,7 +4607,6 @@ void InitTriggers () {
     gt_Init08aDifficultySettingsVoidSlivers_Init();
     gt_StartAI_Init();
     gt_StartGameQ_Init();
-    gt_VoidEntitySpawned_Init();
     gt_CreateOptionsDialog_Init();
     gt_OpenOptions_Init();
     gt_CloseOptions_Init();

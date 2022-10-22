@@ -30,8 +30,6 @@ const int gv_pLAYER_06_PATROL = 6;
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
-int gv_pLAYER_01_USER;
-int gv_pLAYER_02_USER;
 int[5] gv_counter;
 unitgroup gv_dSBonusBeacons;
 int[15] gv_dSCapturedLocations;
@@ -97,12 +95,12 @@ int gv_dSMaxDeathCount;
 int gv_objectiveRecapturetheFleet;
 int gv_objectiveCapturetheGorgons;
 int gv_objectiveDontLetManyPilotsDie;
+int gv_pLAYER_01_USER;
+int gv_pLAYER_02_USER;
 
 void InitGlobals () {
     int init_i;
 
-    gv_pLAYER_01_USER = 1;
-    gv_pLAYER_02_USER = 2;
     gv_dSBonusBeacons = UnitGroupEmpty();
     gv_dSDropPods = UnitGroupEmpty();
     for (init_i = 0; init_i <= 4; init_i += 1) {
@@ -181,6 +179,8 @@ void InitGlobals () {
     gv_objectiveRecapturetheFleet = c_invalidObjectiveId;
     gv_objectiveCapturetheGorgons = c_invalidObjectiveId;
     gv_objectiveDontLetManyPilotsDie = c_invalidObjectiveId;
+    gv_pLAYER_01_USER = 1;
+    gv_pLAYER_02_USER = 2;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -199,19 +199,17 @@ void gf_DSCapitalSetCaptureBarProgress (int lp_progress, int lp_shipIndex);
 void gf_DSCapitalShowHideCaptureProgressBar (int lp_shipIndex, bool lp_showHide);
 void gf_DSShipTimer (unit lp_capturingPilot, region lp_captureRegion, unit lp_ship, int lp_shipIndex);
 void gf_DSShipCaptureEvent (unit lp_capturingPilot, unit lp_ship);
-void gf_DefeatEndSequence (point lp_cameraTarget);
+void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time);
+void gf_DSAITechBonus (int lp_armourLevel);
 void gf_DSKillTeamPathFromStart ();
 void gf_DSKillTeamPathFromMid ();
 void gf_DSKillTeamPingFollow (unitgroup lp_killGroup, int lp_killPing);
 point gf_AttackWaveSpawn ();
 void gf_DSGorgonSendAttackers (int lp_targetGorgon, int lp_resourceBucket, int lp_techBucket);
-void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time);
-void gf_DSAITechBonus (int lp_armourLevel);
 
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
-trigger gt_Init01LoadData;
 trigger gt_Init03LoadingComplete;
 trigger gt_Init04Technology;
 trigger gt_Init05Units;
@@ -247,10 +245,6 @@ trigger gt_ShipCaptured5;
 trigger gt_DefeatPilotsDiedInit;
 trigger gt_DefeatPrimaryObjectiveFailed;
 trigger gt_VictoryPrimaryObjectiveComplete;
-trigger gt_VictorySequence;
-trigger gt_VictoryFanfareQ;
-trigger gt_Victory;
-trigger gt_Defeat;
 trigger gt_DSMakeKillTeam1;
 trigger gt_DSMakeKillTeam2;
 trigger gt_DSKillTeamPingPath;
@@ -874,34 +868,75 @@ void gf_DSShipCaptureEvent (unit lp_capturingPilot, unit lp_ship) {
     SoundPlayForPlayer(SoundLink("Doodad_TerrainObjectBraxisAlphaReactorDoodadStandCenterPt3", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
 }
 
-void gf_DefeatEndSequence (point lp_cameraTarget) {
+trigger auto_gf_RunAttackWaveatMissionTime_Trigger = null;
+trigger auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
+fixed auto_gf_RunAttackWaveatMissionTime_lp_time;
+
+void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time) {
+    auto_gf_RunAttackWaveatMissionTime_lp_attackWave = lp_attackWave;
+    auto_gf_RunAttackWaveatMissionTime_lp_time = lp_time;
+
+    if (auto_gf_RunAttackWaveatMissionTime_Trigger == null) {
+        auto_gf_RunAttackWaveatMissionTime_Trigger = TriggerCreate("auto_gf_RunAttackWaveatMissionTime_TriggerFunc");
+    }
+
+    TriggerExecute(auto_gf_RunAttackWaveatMissionTime_Trigger, false, false);
+}
+
+bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runActions) {
+    trigger lp_attackWave = auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
+    fixed lp_time = auto_gf_RunAttackWaveatMissionTime_lp_time;
+
     // Automatic Variable Declarations
-    unitgroup auto52FCF6FA_g;
-    int auto52FCF6FA_u;
-    unit auto52FCF6FA_var;
+    // Implementation
+    while (!((lp_time <= GameGetMissionTime()))) {
+        Wait(0.3, c_timeAI);
+    }
+    if ((libCOMI_gf_GameIsOver() == false)) {
+        TriggerExecute(lp_attackWave, true, false);
+    }
+
+    return true;
+}
+
+void gf_DSAITechBonus (int lp_armourLevel) {
+    // Automatic Variable Declarations
+    int auto96D2C574_val;
 
     // Implementation
-    auto52FCF6FA_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto52FCF6FA_u = UnitGroupCount(auto52FCF6FA_g, c_unitCountAll);
-    for (;; auto52FCF6FA_u -= 1) {
-        auto52FCF6FA_var = UnitGroupUnitFromEnd(auto52FCF6FA_g, auto52FCF6FA_u);
-        if (auto52FCF6FA_var == null) { break; }
-        libNtve_gf_MakeUnitInvulnerable(auto52FCF6FA_var, true);
+    auto96D2C574_val = lp_armourLevel;
+    if (auto96D2C574_val == 1) {
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryArmorsLevel1", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryWeaponsLevel1", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipArmorsLevel1", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipWeaponsLevel1", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryArmorsLevel1", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryWeaponsLevel1", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipArmorsLevel1", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipWeaponsLevel1", 1);
     }
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
-    libCOMI_gf_SendMissionTransmission("DefeatDS", false, -1);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    CameraPan(gv_pLAYER_01_USER, lp_cameraTarget, 1.5, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, lp_cameraTarget, 1.5, -1, 10.0, false);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(2.0, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Defeat, true, false);
+    else if (auto96D2C574_val == 2) {
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryArmorsLevel2", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryWeaponsLevel2", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipArmorsLevel2", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipWeaponsLevel2", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryArmorsLevel2", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryWeaponsLevel2", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipArmorsLevel2", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipWeaponsLevel2", 1);
+    }
+    else if (auto96D2C574_val == 3) {
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryArmorsLevel3", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryWeaponsLevel3", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipArmorsLevel3", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipWeaponsLevel3", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryArmorsLevel3", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryWeaponsLevel3", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipArmorsLevel3", 1);
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipWeaponsLevel3", 1);
+    }
+    else {
+    }
 }
 
 void gf_DSKillTeamPathFromStart () {
@@ -1059,102 +1094,6 @@ void gf_DSGorgonSendAttackers (int lp_targetGorgon, int lp_resourceBucket, int l
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
 }
 
-trigger auto_gf_RunAttackWaveatMissionTime_Trigger = null;
-trigger auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
-fixed auto_gf_RunAttackWaveatMissionTime_lp_time;
-
-void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time) {
-    auto_gf_RunAttackWaveatMissionTime_lp_attackWave = lp_attackWave;
-    auto_gf_RunAttackWaveatMissionTime_lp_time = lp_time;
-
-    if (auto_gf_RunAttackWaveatMissionTime_Trigger == null) {
-        auto_gf_RunAttackWaveatMissionTime_Trigger = TriggerCreate("auto_gf_RunAttackWaveatMissionTime_TriggerFunc");
-    }
-
-    TriggerExecute(auto_gf_RunAttackWaveatMissionTime_Trigger, false, false);
-}
-
-bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runActions) {
-    trigger lp_attackWave = auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
-    fixed lp_time = auto_gf_RunAttackWaveatMissionTime_lp_time;
-
-    // Automatic Variable Declarations
-    // Implementation
-    while (!((lp_time <= GameGetMissionTime()))) {
-        Wait(0.3, c_timeAI);
-    }
-    if ((libCOMI_gf_GameIsOver() == false)) {
-        TriggerExecute(lp_attackWave, true, false);
-    }
-
-    return true;
-}
-
-void gf_DSAITechBonus (int lp_armourLevel) {
-    // Automatic Variable Declarations
-    int auto96D2C574_val;
-
-    // Implementation
-    auto96D2C574_val = lp_armourLevel;
-    if (auto96D2C574_val == 1) {
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryArmorsLevel1", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryWeaponsLevel1", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipArmorsLevel1", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipWeaponsLevel1", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryArmorsLevel1", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryWeaponsLevel1", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipArmorsLevel1", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipWeaponsLevel1", 1);
-    }
-    else if (auto96D2C574_val == 2) {
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryArmorsLevel2", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryWeaponsLevel2", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipArmorsLevel2", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipWeaponsLevel2", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryArmorsLevel2", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryWeaponsLevel2", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipArmorsLevel2", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipWeaponsLevel2", 1);
-    }
-    else if (auto96D2C574_val == 3) {
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryArmorsLevel3", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranInfantryWeaponsLevel3", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipArmorsLevel3", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_ENEMY, "TerranVehicleAndShipWeaponsLevel3", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryArmorsLevel3", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranInfantryWeaponsLevel3", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipArmorsLevel3", 1);
-        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_ENEMY, "TerranVehicleAndShipWeaponsLevel3", 1);
-    }
-    else {
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 01 Load Data
-//--------------------------------------------------------------------------------------------------
-bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_indexPlayer;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init01LoadData_Init () {
-    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
-    TriggerAddEventMapInit(gt_Init01LoadData);
-}
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
@@ -1180,6 +1119,7 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Init03LoadingComplete_Init () {
     gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
+    TriggerAddEventGeneric(gt_Init03LoadingComplete, libCOMI_gv_COOP_MISSION_STARTED_EVENT);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2913,17 +2853,14 @@ bool gt_DefeatPilotsDiedInit_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    lv_cameraTarget = gv_defeatLocationPan;
     gv_dSKillTeamGreen = false;
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
     TriggerExecute(gt_ObjectivePilotDeathsFailed, true, false);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/13593846"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    Wait(2.0, c_timeReal);
-    gf_DefeatEndSequence(lv_cameraTarget);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+    libCOMI_gf_SendMissionTransmission("DefeatDS", false, -1);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/8EC536BB"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(gv_defeatLocationPan, 1.5);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -2959,17 +2896,14 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
     TriggerExecute(gt_ObjectiveRecapturetheFleetFailed, true, false);
-    lv_cameraTarget = PointFromId(1520390563);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
     gv_dSKillTeamGreen = false;
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/79462FB3"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    Wait(2.0, c_timeReal);
-    gf_DefeatEndSequence(lv_cameraTarget);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+    libCOMI_gf_SendMissionTransmission("DefeatDS", false, -1);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/5D6E1F71"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(PointFromId(1520390563), 1.5);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -3005,141 +2939,19 @@ bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
 
     TriggerEnable(TriggerGetCurrent(), false);
     gv_dSKillTeamGreen = false;
-    TriggerExecute(gt_VictorySequence, true, false);
+    TriggerExecute(gt_ObjectiveRecapturetheFleetComplete, true, false);
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+    libCOMI_gf_SendVictoryTransmission("VictoryDS");
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/F3E9D6C2"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(PointFromId(1794473033), 2.0);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryPrimaryObjectiveComplete_Init () {
     gt_VictoryPrimaryObjectiveComplete = TriggerCreate("gt_VictoryPrimaryObjectiveComplete_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Sequence
-//--------------------------------------------------------------------------------------------------
-bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-    Wait(2.0, c_timeReal);
-    TriggerExecute(gt_ObjectiveRecapturetheFleetComplete, true, false);
-    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictorySequence_Init () {
-    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Fanfare Q
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TransmissionClearAll();
-    TriggerQueueEnter();
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
-    gf_QueueTransmission("VictoryDS");
-    UnitPauseAll(true);
-    gv_victoryCompletePan = PointFromId(1794473033);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_01_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
-    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/684A78B4"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/E5C8709E"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Victory, true, false);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryFanfareQ_Init () {
-    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory
-//--------------------------------------------------------------------------------------------------
-bool gt_Victory_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Victory_Init () {
-    gt_Victory = TriggerCreate("gt_Victory_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Defeat
-//--------------------------------------------------------------------------------------------------
-bool gt_Defeat_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Defeat_Init () {
-    gt_Defeat = TriggerCreate("gt_Defeat_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -4270,7 +4082,6 @@ void gt_ObjectivePilotDeathsFailed_Init () {
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
-    gt_Init01LoadData_Init();
     gt_Init03LoadingComplete_Init();
     gt_Init04Technology_Init();
     gt_Init05Units_Init();
@@ -4306,10 +4117,6 @@ void InitTriggers () {
     gt_DefeatPilotsDiedInit_Init();
     gt_DefeatPrimaryObjectiveFailed_Init();
     gt_VictoryPrimaryObjectiveComplete_Init();
-    gt_VictorySequence_Init();
-    gt_VictoryFanfareQ_Init();
-    gt_Victory_Init();
-    gt_Defeat_Init();
     gt_DSMakeKillTeam1_Init();
     gt_DSMakeKillTeam2_Init();
     gt_DSKillTeamPingPath_Init();
