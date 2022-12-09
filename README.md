@@ -142,3 +142,4 @@ RTC2017 contest participants for great maps
 Alex007 for inspiration
 SC2Mapster community 
 -------------------------------------------------------
+Hello world!
