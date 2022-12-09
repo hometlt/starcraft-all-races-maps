@@ -236,7 +236,6 @@ trigger gt_BonusObjectiveFailedQ;
 trigger gt_DefeatShardActivated;
 trigger gt_VictoryDestorytheSpawningRiftsCompleted;
 trigger gt_MissionEffortDefeat;
-trigger gt_TipReadyQ;
 trigger gt_AIDangerMapsUsageOn;
 trigger gt_AIAttackWavesA;
 trigger gt_AttackWaveA01;
@@ -1495,7 +1494,6 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     Wait(7.0, c_timeReal);
     TriggerQueueExit();
-    TriggerExecute(gt_TipReadyQ, true, false);
     autoA85B9F66_at = 0;
     while (!((UnitGroupCount(UnitGroupAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromId(57), UnitFilter(0, 0, (1 << c_targetFilterStructure) | (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) == 0)) && autoA85B9F66_at <= 240.0) {
         Wait(1.0, c_timeGame);
@@ -3035,44 +3033,6 @@ bool gt_MissionEffortDefeat_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_MissionEffortDefeat_Init () {
     gt_MissionEffortDefeat = TriggerCreate("gt_MissionEffortDefeat_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Tip Ready Q
-//--------------------------------------------------------------------------------------------------
-bool gt_TipReadyQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_PlayerInCinematicModeCampaign() == false))) {
-            return false;
-        }
-
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_DisplayMissionTip();
-    Wait(libCOMI_gv_campaignHintDelay, c_timeReal);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_TipReadyQ_Init () {
-    gt_TipReadyQ = TriggerCreate("gt_TipReadyQ_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -4820,7 +4780,6 @@ void InitTriggers () {
     gt_DefeatShardActivated_Init();
     gt_VictoryDestorytheSpawningRiftsCompleted_Init();
     gt_MissionEffortDefeat_Init();
-    gt_TipReadyQ_Init();
     gt_AIDangerMapsUsageOn_Init();
     gt_AIAttackWavesA_Init();
     gt_AttackWaveA01_Init();

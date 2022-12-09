@@ -1259,7 +1259,11 @@ bool auto_gf_WatchPayloadDropoffs_TriggerFunc (bool testConds, bool runActions) 
             }
 
         }
-        TriggerExecute(gt_DefeatPrimaryObjectiveFailed, true, false);
+        if ((TimerGetRemaining(gv_countdownUntilMissionFailure) <= 0.0)) {
+            TriggerExecute(gt_DefeatPrimaryObjectiveFailed, true, false);
+            return true;
+        }
+
         Wait(0.1, c_timeGame);
     }
     return true;
@@ -2175,7 +2179,13 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
     }
 
     gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
-    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
+    if ((PlayerGroupCount(libCOMI_gf_GetAlliedCommandersPlayers()) == 1)) {
+        gv_pLAYER_02_USER = gv_pLAYER_STONE;
+        PlayerSetAlliance(gv_pLAYER_STONE, c_allianceIdControl, gv_pLAYER_01_USER, true);
+    }
+    else {
+        gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
+    }
     TriggerEnable(gt_TransmissionFirstConstructQ, true);
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init05bTargetLocations, true, false);
@@ -5810,10 +5820,6 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TimerGetRemaining(gv_countdownUntilMissionFailure) <= 0.0))) {
             return false;
         }
     }
