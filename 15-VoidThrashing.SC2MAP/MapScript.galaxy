@@ -8,7 +8,6 @@
 include "TriggerLibs/NativeLib"
 include "TriggerLibs/SwarmLib"
 include "LibCOMI"
-include "LibMISS"
 
 //--------------------------------------------------------------------------------------------------
 // Library Initialization
@@ -17,7 +16,6 @@ void InitLibs () {
     libNtve_InitLib();
     libHots_InitLib();
     libCOMI_InitLib();
-    libMISS_InitLib();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -226,7 +224,6 @@ trigger gt_AttackWaveB05;
 trigger gt_AttackWaveB06;
 trigger gt_AttackWaveB07;
 trigger gt_AttackWaveB08;
-trigger gt_OnEnd;
 trigger gt_Init03LoadingCompleteRNG;
 trigger gt_Init05Units;
 trigger gt_Init08Difficulties;
@@ -2321,30 +2318,12 @@ bool gt_DefeatHammersFortressDestroyed_Func (bool testConds, bool runActions) {
         UnitSetState(auto7236788B_var, c_unitStateInvulnerable, true);
     }
     libCOMI_gf_SendMissionTransmission("DefeatCT", false, -1);
-    GameCheatAllow(c_gameCheatVictory, false);
-    GameCheatAllow(c_gameCheatDefeat, false);
-    Wait(2.0, c_timeReal);
-    TransmissionClearAll();
-    UnitPauseAll(true);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    TimerStart(libCOMI_gv_fanfareMaxWaitTimer, 60.0, false, c_timeReal);
-    TriggerQueueClear(c_triggerQueueRetain);
-    TriggerQueuePause(false);
-    libCOMI_gv_cM_MissionVictoryActionQueyeEmpty = false;
-    TriggerExecute(libCOMI_gt_CM_MissionVictoryCallbackBlockActionQueueOneMinute, true, false);
-    while (!(((libCOMI_gv_cM_MissionVictoryActionQueyeEmpty == true) || (TimerGetRemaining(libCOMI_gv_fanfareMaxWaitTimer) <= 0.0)))) {
-        Wait(1.0, c_timeReal);
-    }
-    TriggerQueueClear(c_triggerQueueKill);
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
     libCOMI_gf_SendMissionTransmission("DefeatBE", false, -1);
     libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/C91E6FAC"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
     libCOMI_gf_MoveCameraForAllPlayers(libCOMI_gv_lastEventPoint, 1.5);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
-    TriggerExecute(libCOMI_gt_CM_MissionVictoryCallbackBlockActionQueue, true, false);  
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     UnitKill(UnitFromId(224));
     CameraShake(1, "Heavy", "Earthquake", 3.0, 1.0, 5.0);
     Wait(2.0, c_timeGame);
@@ -2399,32 +2378,13 @@ bool gt_VictoryKillVoidThrashersCompleted_Func (bool testConds, bool runActions)
         if (autoEB271F70_var == null) { break; }
         UnitRemove(autoEB271F70_var);
     }
-    GameCheatAllow(c_gameCheatVictory, false);
-    GameCheatAllow(c_gameCheatDefeat, false);
-    Wait(2.0, c_timeReal);
-    TransmissionClearAll();
-    UnitPauseAll(true);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    TimerStart(libCOMI_gv_fanfareMaxWaitTimer, 60.0, false, c_timeReal);
-    TriggerQueueClear(c_triggerQueueRetain);
-    TriggerQueuePause(false);
-    libCOMI_gv_cM_MissionVictoryActionQueyeEmpty = false;
-    TriggerExecute(libCOMI_gt_CM_MissionVictoryCallbackBlockActionQueueOneMinute, true, false);
-    while (!(((libCOMI_gv_cM_MissionVictoryActionQueyeEmpty == true) || (TimerGetRemaining(libCOMI_gv_fanfareMaxWaitTimer) <= 0.0)))) {
-        Wait(1.0, c_timeReal);
-    }
-    TriggerQueueClear(c_triggerQueueKill);
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
     libCOMI_gf_SendVictoryTransmission("VictoryCT");
     libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_GetAlliedCommandersPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/D04A57DF"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
     libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_GetEnemyHumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/3A869327"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_TaskCreateRevealers(libCOMI_gv_global, libCOMI_gf_GetHumanPlayers(), RegionCircle(UnitGetPosition(UnitFromId(96)), 15.0));
     libCOMI_gf_MoveCameraForAllPlayers(UnitGetPosition(UnitFromId(96)), 2.0);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
-    TriggerExecute(libCOMI_gt_CM_MissionVictoryCallbackBlockActionQueue, true, false);  
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
@@ -3468,36 +3428,6 @@ void gt_AttackWaveB08_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: OnEnd
-//--------------------------------------------------------------------------------------------------
-bool gt_OnEnd_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    unitgroup autoC0CA6F6A_g;
-    int autoC0CA6F6A_u;
-    unit autoC0CA6F6A_var;
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    autoC0CA6F6A_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    autoC0CA6F6A_u = UnitGroupCount(autoC0CA6F6A_g, c_unitCountAll);
-    for (;; autoC0CA6F6A_u -= 1) {
-        autoC0CA6F6A_var = UnitGroupUnitFromEnd(autoC0CA6F6A_g, autoC0CA6F6A_u);
-        if (autoC0CA6F6A_var == null) { break; }
-        UnitIssueOrder(autoC0CA6F6A_var, Order(AbilityCommand("stop", 0)), c_orderQueueReplace);
-    }
-    libNtve_gf_SetAlliance(gv_pLAYER_01_USER, gv_pLAYER_03_ENEMY_01, libNtve_ge_AllianceSetting_Ally);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_OnEnd_Init () {
-    gt_OnEnd = TriggerCreate("gt_OnEnd_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Init 03 Loading Complete RNG
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingCompleteRNG_Func (bool testConds, bool runActions) {
@@ -3816,7 +3746,6 @@ void InitTriggers () {
     gt_AttackWaveB06_Init();
     gt_AttackWaveB07_Init();
     gt_AttackWaveB08_Init();
-    gt_OnEnd_Init();
     gt_Init03LoadingCompleteRNG_Init();
     gt_Init05Units_Init();
     gt_Init08Difficulties_Init();
