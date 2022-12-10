@@ -8,6 +8,7 @@
 include "TriggerLibs/NativeLib"
 include "TriggerLibs/SwarmLib"
 include "LibCOMI"
+include "LibARRA"
 include "ai3E812353"
 include "aiBDA87FA6"
 
@@ -18,6 +19,7 @@ void InitLibs () {
     libNtve_InitLib();
     libHots_InitLib();
     libCOMI_InitLib();
+    libARRA_InitLib();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -3240,6 +3242,7 @@ bool gt_AttackWave01_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libARRA_gf_LOGString("1st wave incoming");
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_03_ENEMY, PointFromId(233));
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_04_ENEMY, PointFromId(233));
     AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, gv_player03Target);
@@ -3279,6 +3282,7 @@ bool gt_AttackWave02_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libARRA_gf_LOGString("2nd wave incoming");
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_03_ENEMY, PointFromId(109));
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_04_ENEMY, PointFromId(109));
     AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, gv_player03Target);
@@ -3325,6 +3329,7 @@ bool gt_AttackWave03_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libARRA_gf_LOGString("3rd wave incoming");
     lv_l_PriorityTargetFilter = UnitFilter((1 << c_targetFilterStructure), 0, 0, (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterSummoned - 32)));
     lv_l_NumberOfTargetsLeftExpo = UnitGroupCount(UnitGroupAlliance(gv_pLAYER_05_SHUTTLE, c_unitAllianceEnemy, RegionFromId(11), lv_l_PriorityTargetFilter, 0), c_unitCountAlive);
     lv_l_NumberOfTargetsRightExpo = UnitGroupCount(UnitGroupAlliance(gv_pLAYER_05_SHUTTLE, c_unitAllianceEnemy, RegionFromId(4), lv_l_PriorityTargetFilter, 0), c_unitCountAlive);
@@ -3385,6 +3390,7 @@ bool gt_AttackWave04_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libARRA_gf_LOGString("4th wave incoming");
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_03_ENEMY, PointFromId(233));
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_04_ENEMY, PointFromId(233));
     AIAttackWaveSetTargetPlayer(gv_pLAYER_03_ENEMY, libCOMI_gf_HumanPlayers());
@@ -3428,6 +3434,7 @@ bool gt_AttackWave05_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libARRA_gf_LOGString("5th wave incoming");
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_03_ENEMY, PointFromId(109));
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_04_ENEMY, PointFromId(109));
     AIAttackWaveSetTargetPlayer(gv_pLAYER_03_ENEMY, libCOMI_gf_HumanPlayers());
@@ -3475,6 +3482,7 @@ bool gt_AttackWave06_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libARRA_gf_LOGString("6th wave incoming");
     lv_l_NumberOfStructuresLeftSide = UnitGroupCount(UnitGroupAlliance(gv_pLAYER_05_SHUTTLE, c_unitAllianceEnemy, RegionFromId(8), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
     lv_l_NumberOfStructuresRightSide = UnitGroupCount(UnitGroupAlliance(gv_pLAYER_05_SHUTTLE, c_unitAllianceEnemy, RegionFromId(9), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
     if ((lv_l_NumberOfStructuresLeftSide == 0) && (lv_l_NumberOfStructuresRightSide > 0)) {
@@ -3546,6 +3554,7 @@ bool gt_AttackWave07_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libARRA_gf_LOGString("7th wave incoming");
     lv_l_SpawnPosition = PointFromId(109);
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_03_ENEMY, lv_l_SpawnPosition);
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_04_ENEMY, lv_l_SpawnPosition);
@@ -3601,6 +3610,7 @@ bool gt_AttackWave08_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libARRA_gf_LOGString("8th wave incoming");
     AISetDifficulty(gv_pLAYER_03_ENEMY, c_diffEnableDangerMap, true);
     AISetDifficulty(gv_pLAYER_04_ENEMY, c_diffEnableDangerMap, true);
     AISetDifficulty(gv_pLAYER_03_ENEMY, c_diffWaveAvoidDanger, true);
@@ -3659,6 +3669,7 @@ bool gt_AttackWave09_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libARRA_gf_LOGString("9th wave incoming");
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_03_ENEMY, PointFromId(233));
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_04_ENEMY, PointFromId(233));
     libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_l_ResourceSize, lv_l_TechLevel, PointFromId(233), true);
@@ -3713,6 +3724,7 @@ bool gt_AttackWave10_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    libARRA_gf_LOGString("10th wave incoming");
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_03_ENEMY, PointFromId(233));
     libCOMI_gf_SetCoopAIAttackGroupSpawnPoint(gv_pLAYER_04_ENEMY, PointFromId(233));
     libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_l_ResourceSize, lv_l_TechLevel, PointFromId(233), true);
@@ -3764,33 +3776,12 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_ObjectiveDestroyAllProtossShuttlesUpdate, false);
     TriggerExecute(gt_ObjectiveDestroyAllProtossShuttlesFailed, true, false);
     TriggerExecute(gt_ObjectiveNoShuttleCanEscapeFailed, true, false);
-    //Wait(2.0, c_timeReal);
-    //TransmissionClearAll();
-    //TimerStart(libCOMI_gv_fanfareMaxWaitTimer, 60.0, false, c_timeReal);
-    //TriggerQueuePause(false);
-    //libCOMI_gv_cM_MissionVictoryActionQueyeEmpty = false;
-    //TriggerExecute(libCOMI_gt_CM_MissionVictoryCallbackBlockActionQueueOneMinute, true, false);
-    //while (!(((libCOMI_gv_cM_MissionVictoryActionQueyeEmpty == true) || (TimerGetRemaining(libCOMI_gv_fanfareMaxWaitTimer) <= 0.0)))) {
-        //    Wait(1.0, c_timeReal);
-        //}
-    //TriggerQueueClear(c_triggerQueueKill);
-    //libCOMI_gf_SendMissionTransmission("DefeatKS", false, -1);
-    libCOMI_gf_DisplayCampaignMessage(PlayerGroupAll(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/E5B2BD1F"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_MoveCameraForAllPlayers(gv_escapedShuttlePosition, 1.5);
-    //TriggerExecute(libCOMI_gt_CM_MissionVictoryCallbackBlockActionQueue, true, false);  
-    GameCheatAllow(c_gameCheatVictory, false);
-    GameCheatAllow(c_gameCheatDefeat, false);
-    TriggerQueueClear(c_triggerQueueRetain);
-    UnitPauseAll(true);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
     libCOMI_gf_SendMissionTransmission("DefeatKS", false, -1);
     libCOMI_gf_DisplayCampaignMessage(PlayerGroupAll(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/E5B2BD1F"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
     libCOMI_gf_MoveCameraForAllPlayers(gv_escapedShuttlePosition, 1.5);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -3806,8 +3797,6 @@ bool gt_VictorySequence_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
     playergroup autoD72354E1_g;
     int autoD72354E1_var;
-    playergroup autoB0B19490_g;
-    int autoB0B19490_var;
 
     // Conditions
     if (testConds) {
@@ -3834,35 +3823,13 @@ bool gt_VictorySequence_Func (bool testConds, bool runActions) {
         TextExpressionSetToken("Param/Expression/393DC4E8", "ShuttlesDestroyed", IntToText(gv_shuttleKills[autoD72354E1_var]));
         VictoryPanelAddCustomStatisticLine(TextExpressionAssemble("Param/Expression/2AD22DF8"), TextExpressionAssemble("Param/Expression/393DC4E8"));
     }
-    //Wait(2.0, c_timeReal);
-    //TransmissionClearAll();
-    //TimerStart(libCOMI_gv_fanfareMaxWaitTimer, 60.0, false, c_timeReal);
-    //TriggerQueuePause(false);
-    //libCOMI_gv_cM_MissionVictoryActionQueyeEmpty = false;
-    //TriggerExecute(libCOMI_gt_CM_MissionVictoryCallbackBlockActionQueueOneMinute, true, false);
-    //while (!(((libCOMI_gv_cM_MissionVictoryActionQueyeEmpty == true) || (TimerGetRemaining(libCOMI_gv_fanfareMaxWaitTimer) <= 0.0)))) {
-        //    Wait(1.0, c_timeReal);
-        //}
-    //TriggerQueueClear(c_triggerQueueKill);
-    //libCOMI_gf_SendVictoryTransmission("VictoryKS");
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_GetAlliedCommandersPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/C2A17202"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_GetEnemyHumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/CC400199"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    libCOMI_gf_MoveCameraForAllPlayers(gv_victoryPan, 2.0);
-    //TriggerExecute(libCOMI_gt_CM_MissionVictoryCallbackBlockActionQueue, true, false);  
-    GameCheatAllow(c_gameCheatVictory, false);
-    GameCheatAllow(c_gameCheatDefeat, false);
-    TriggerQueueClear(c_triggerQueueRetain);
-    UnitPauseAll(true);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
     libCOMI_gf_SendVictoryTransmission("VictoryKS");
     libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_GetAlliedCommandersPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/C2A17202"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
     libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_GetEnemyHumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/CC400199"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
     libCOMI_gf_MoveCameraForAllPlayers(gv_victoryPan, 2.0);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
