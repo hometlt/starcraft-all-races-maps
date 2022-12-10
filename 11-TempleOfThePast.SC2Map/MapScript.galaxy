@@ -216,7 +216,6 @@ trigger gt_AttackWaveB22mins;
 trigger gt_RemoveUsedTransports;
 trigger gt_AIGiveResources;
 trigger gt_ExtraThrasherBreathAttacks;
-trigger gt_TipReadyQ;
 trigger gt_VictorySequence;
 trigger gt_VictoryFanfareTempleAnimations;
 trigger gt_DefeatPrimaryObjectiveFailed;
@@ -2667,44 +2666,6 @@ void gt_ExtraThrasherBreathAttacks_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Tip Ready Q
-//--------------------------------------------------------------------------------------------------
-bool gt_TipReadyQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_PlayerInCinematicModeCampaign() == false))) {
-            return false;
-        }
-
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_DisplayMissionTip();
-    Wait(libCOMI_gv_campaignHintDelay, c_timeReal);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_TipReadyQ_Init () {
-    gt_TipReadyQ = TriggerCreate("gt_TipReadyQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Victory Sequence
 //--------------------------------------------------------------------------------------------------
 bool gt_VictorySequence_Func (bool testConds, bool runActions) {
@@ -4366,7 +4327,6 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TimerStart(gv_victoryTimer_AlmostDone, (TimerGetDuration(gv_victoryTimer) - 240.0), false, c_timeGame);
     TimerStart(gv_victoryTimer_50, (TimerGetDuration(gv_victoryTimer) * 0.5), false, c_timeGame);
     TimerStart(gv_victoryTimer_75, (TimerGetDuration(gv_victoryTimer) * 0.25), false, c_timeGame);
-    TriggerExecute(gt_TipReadyQ, true, false);
     Wait(5.0, c_timeReal);
     TriggerQueueEnter();
     TriggerExecute(gt_ObjectiveDefendTempleCreate, true, true);
@@ -4691,7 +4651,6 @@ void InitTriggers () {
     gt_RemoveUsedTransports_Init();
     gt_AIGiveResources_Init();
     gt_ExtraThrasherBreathAttacks_Init();
-    gt_TipReadyQ_Init();
     gt_VictorySequence_Init();
     gt_VictoryFanfareTempleAnimations_Init();
     gt_DefeatPrimaryObjectiveFailed_Init();
