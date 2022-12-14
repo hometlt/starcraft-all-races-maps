@@ -7,7 +7,7 @@
         <Identifier>Triggers</Identifier>
         <ScriptCode>
             //==================================================================================================
-            // 
+            //   
             // Generated AI Script
             // 
             // AI Name: Hybrid Wave AI
@@ -925,7 +925,6 @@
             //--------------------------------------------------------------------------------------------------
             // Global Function Declarations
             //--------------------------------------------------------------------------------------------------
-            
             void gf_CreateProgressBarForBoss (unit lp_boss, int lp_time, fixed lp_progressBarHeight);
             void gf_SetupAIForBoss (unit lp_boss);
             void gf_BossSpawnEggs (int lp_zerglingEggs, int lp_hydraliskEggs, int lp_ultraliskEggs, region lp_region, int lp_player, unit lp_boss);
@@ -1076,7 +1075,6 @@
             trigger gt_TransmissionBonusCompleteQ;
             trigger gt_TransmissionEnemyAttackingBasesQ;
             trigger gt_TransmissionCloakedEnemiesQ;
-            trigger gt_DefeatBaseDead;
             trigger gt_DefeatPrimaryObjectiveFailed;
             trigger gt_VictoryPrimaryObjectiveComplete;
             trigger gt_VictorySequence;
@@ -2861,7 +2859,6 @@
                 PlayerSetColorIndex(gv_pLAYER_05_PRIMALZERG, libCOMI_gf_EnemyPlayerColor(), true);
                 PlayerSetColorIndex(gv_pLAYER_06_EGGS, libCOMI_gf_AllyPlayerColor(), true);
                 PlayerSetColorIndex(gv_pLAYER_07_BOSSESNEUTRAL, libCOMI_gf_EnemyPlayerColor(), true);
-                libCOMI_gf_SetAlliedCommandersstartingResources();
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -2877,12 +2874,10 @@
                     return true;
                 }
                 TriggerExecute(gt_Init04Technology, true, false);
-                libCOMI_gf_PurchaseStorymodeTech();
                 TriggerExecute(gt_Init05Units, true, false);
                 TriggerExecute(gt_Init06MusicSound, true, false);
                 TriggerExecute(gt_Init07Environment, true, false);
                 TriggerExecute(gt_Init08Difficulties, true, false);
-                libCOMI_gf_PlayMapIntroZoom(true);
                 TriggerExecute(gt_StartAI, true, false);
                 TriggerExecute(gt_StartGameQ, true, false);
                 return true;
@@ -2899,11 +2894,6 @@
                 if (!runActions) {
                     return true;
                 }
-                libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
-                TechTreeBehaviorAllow(gv_pLAYER_03_ENEMY, &quot;GhostCloak&quot;, false);
-                TechTreeBehaviorAllow(gv_pLAYER_04_ENEMY, &quot;GhostCloak&quot;, false);
-                TechTreeBehaviorAllow(gv_pLAYER_03_ENEMY, &quot;BansheeCloak&quot;, false);
-                TechTreeBehaviorAllow(gv_pLAYER_04_ENEMY, &quot;BansheeCloak&quot;, false);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -2918,8 +2908,6 @@
                 if (!runActions) {
                     return true;
                 }
-                libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_01_USER);
-                libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_02_USER);
                 TriggerExecute(gt_BossesSetVariables, true, true);
                 TriggerExecute(gt_AshWormSetVariables, true, true);
                 TriggerExecute(gt_BonusSetVariables, true, true);
@@ -3022,9 +3010,6 @@
                 if (!runActions) {
                     return true;
                 }
-                GameTimeOfDaySet(&quot;12:00:00&quot;);
-                VisExploreArea(gv_pLAYER_01_USER, RegionFromId(49), true, false);
-                VisExploreArea(gv_pLAYER_02_USER, RegionFromId(49), true, false);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -3297,8 +3282,6 @@
                 if (!runActions) {
                     return true;
                 }
-                UIAlertPoint(&quot;Trigger&quot;, gv_pLAYER_01_USER, StringExternal(&quot;Param/Value/068743D5&quot;), null, PlayerStartLocation(gv_pLAYER_01_USER));
-                UIAlertPoint(&quot;Trigger&quot;, gv_pLAYER_02_USER, StringExternal(&quot;Param/Value/187E0E6E&quot;), null, PlayerStartLocation(gv_pLAYER_02_USER));
                 Wait(2.0, c_timeReal);
                 PlayerModifyPropertyInt(gv_pLAYER_05_PRIMALZERG, c_playerPropSuppliesLimit, c_playerPropOperSetTo, 400);
                 PlayerModifyPropertyInt(gv_pLAYER_05_PRIMALZERG, c_playerPropSuppliesMade, c_playerPropOperSetTo, 400);
@@ -6120,75 +6103,6 @@
                 gt_TransmissionCloakedEnemiesQ = TriggerCreate(&quot;gt_TransmissionCloakedEnemiesQ_Func&quot;);
             }
             //--------------------------------------------------------------------------------------------------
-            // Trigger: Defeat Base Dead
-            //--------------------------------------------------------------------------------------------------
-            bool gt_DefeatBaseDead_Func (bool testConds, bool runActions) {
-                // Variable Declarations
-                point lv_cameraTarget;
-                // Variable Initialization
-                // Conditions
-                if (testConds) {
-                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-                        return false;
-                    }
-                    if (!((libCOMI_gf_GameIsOver() == false))) {
-                        return false;
-                    }
-                    if (!(((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_01_USER, null, UnitFilter((1 &lt;&lt; c_targetFilterPreventDefeat), 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 1)) == true) || (libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_02_USER, null, UnitFilter((1 &lt;&lt; c_targetFilterPreventDefeat), 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 1)) == true)))) {
-                        return false;
-                    }
-                }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-                TransmissionClearAll();
-                TriggerQueuePause(true);
-                TriggerQueueClear(c_triggerQueueRemove);
-                libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-                TriggerExecute(gt_ObjectiveSlayPackAscendantsFailed, true, false);
-                if ((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_01_USER, null, UnitFilter((1 &lt;&lt; c_targetFilterPreventDefeat), 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 1)) == true)) {
-                    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/6166427B&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/7A60698B&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                    lv_cameraTarget = PlayerStartLocation(gv_pLAYER_01_USER);
-                }
-                else {
-                    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/FAF74290&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                    libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal(&quot;Param/Value/D7FCB0EB&quot;), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-                    lv_cameraTarget = PlayerStartLocation(gv_pLAYER_02_USER);
-                }
-                Wait(2.0, c_timeReal);
-                UnitGroupLoopBegin(UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
-                for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    libNtve_gf_MakeUnitInvulnerable(UnitGroupLoopCurrent(), true);
-                }
-                UnitGroupLoopEnd();
-                CameraLockInput(gv_pLAYER_01_USER, true);
-                CameraLockInput(gv_pLAYER_02_USER, true);
-                UnitClearSelection(gv_pLAYER_01_USER);
-                UnitClearSelection(gv_pLAYER_02_USER);
-                UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-                if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_01_USER)) == false)) {
-                    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                    CameraPan(gv_pLAYER_01_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
-                }
-                if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_02_USER)) == false)) {
-                    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-                    CameraPan(gv_pLAYER_02_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
-                }
-                Wait(4.0, c_timeReal);
-                UISetCursorVisible(PlayerGroupAll(), true);
-                TriggerExecute(gt_Defeat, true, false);
-                return true;
-            }
-            //--------------------------------------------------------------------------------------------------
-            void gt_DefeatBaseDead_Init () {
-                gt_DefeatBaseDead = TriggerCreate(&quot;gt_DefeatBaseDead_Func&quot;);
-                TriggerAddEventTimePeriodic(gt_DefeatBaseDead, 1.0, c_timeAI);
-            }
-            //--------------------------------------------------------------------------------------------------
             // Trigger: Defeat Primary Objective Failed
             //--------------------------------------------------------------------------------------------------
             bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
@@ -6737,7 +6651,6 @@
                 gt_TransmissionBonusCompleteQ_Init();
                 gt_TransmissionEnemyAttackingBasesQ_Init();
                 gt_TransmissionCloakedEnemiesQ_Init();
-                gt_DefeatBaseDead_Init();
                 gt_DefeatPrimaryObjectiveFailed_Init();
                 gt_VictoryPrimaryObjectiveComplete_Init();
                 gt_VictorySequence_Init();

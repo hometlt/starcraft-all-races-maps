@@ -33,11 +33,11 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
-const int gv_pLAYER_05_DEHAKA = 5;
+int gv_pLAYER_01_USER = 1;
+int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 9;
+const int gv_pLAYER_04_ENEMY = 10;
+const int gv_pLAYER_05_DEHAKA = 11;
 const int gv_pLAYER_06_PRIMALS = 6;
 const int gv_pLAYER_07_PACKS = 7;
 const fixed gv_obj_EXECUTION_DURATION = 300.0;
@@ -2479,7 +2479,9 @@ bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    gf_ExCoopScoreScreenInitialize();
+    //gf_ExCoopScoreScreenInitialize();
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
