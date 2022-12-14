@@ -1,16 +1,4 @@
 //==================================================================================================
-// 
-// Generated Map Script
-// 
-// Name:   Nexus Coop - Real Steel
-// 
-//==================================================================================================
-include "TriggerLibs/natives"
-
-//--------------------------------------------------------------------------------------------------
-// Custom Script: Triggers
-//--------------------------------------------------------------------------------------------------
-//==================================================================================================
 //
 // Generated Map Script
 //
@@ -32,11 +20,11 @@ void InitLibs () {
 // Constants
 //--------------------------------------------------------------------------------------------------
 const int PLAYER_00 = 0;
-int PLAYER_01 = 1;
-int PLAYER_02 = 2;
-const int PLAYER_03 = 8;
-const int PLAYER_04 = 9;
-const int PLAYER_05 = 7;
+const int PLAYER_01 = 1;
+const int PLAYER_02 = 2;
+const int PLAYER_03 = 3;
+const int PLAYER_04 = 4;
+const int PLAYER_05 = 5;
 const int gv_cTC_AmonHeroAbilityTargetIndex = 1;
 const int gv_cTC_AmonHeroMaxHeroTypes = 10;
 const bool gv_cMC_CoopAI_AttackForce_DataTableScope = false;
@@ -409,7 +397,20 @@ void InitGlobals () {
     for (init_i = 0; init_i <= 10; init_i += 1) {
         gv_e6958CE696B9E98787E99B86E782B9E5B08FE59CB0E59BBEE68F90E7A4BA[init_i] = c_invalidPingId;
     }
+    for (init_i = 0; init_i <= gv_cTC_AmonHeroMaxHeroTypes; init_i += 1) {
+        gv_cT_AmonHeroSoundArray[init_i] = SoundLink("EditorDefaultSound", -1);
+    }
+    gv_cT_AmonHeroLastSpawnTimer = TimerCreate();
+    gv_cM_CoopAI_AttackForce_Transports = UnitGroupEmpty();
+    gv_objectiveDestroyZergBase = c_invalidObjectiveId;
+    gv_objectiveDestroyZergBase2 = c_invalidObjectiveId;
+    gv_objectiveDestroyZergBase3 = c_invalidObjectiveId;
+    gv_objectiveDestroyZergBase4 = c_invalidObjectiveId;
+    gv_objectiveDestroyZergBase5 = c_invalidObjectiveId;
+    gv_objectiveDestroyZergBase6 = c_invalidObjectiveId;
     gv_e6A380E6B58BE589A9E4BD99E69CBAE794B2E695B0E9878F = 4;
+    gv_objectiveRescueStalkers = c_invalidObjectiveId;
+    gv_objectiveRescueStalkers2 = c_invalidObjectiveId;
 }
 //--------------------------------------------------------------------------------------------------
 // Global Function Declarations
@@ -491,7 +492,9 @@ trigger gt_E590AFE58AA8AI;
 trigger gt_E8AEBEE7BDAEAIE8B584E6BA90;
 trigger gt_E694BBE587BBE6B3A2E6ACA1E8AFADE99FB3;
 trigger gt_E7AE80E58D95E694BBE587BBE6B3A2E6ACA1E4BA8BE4BE8B;
+trigger gt_SimpleDropAttackExample;
 trigger gt_E8B685E7BAA7E99A90E8978FE5BDA9E89B8B;
+trigger gt_CM_VOEnemySpotted;
 trigger gt_E69CBAE794B2E8A2ABE691A7E6AF81E4B880E6ACA1E8AFADE99FB3;
 trigger gt_E6A380E69FA5E7ACACE4B880E6ACA1E69CBAE794B2E6ADBBE4BAA1;
 trigger gt_E6B3B0E587AFE696AFE5BCBAE588B6E9A9BEE9A9B6E69CBAE794B22;
@@ -531,6 +534,8 @@ trigger gt_E58FAAE69C89E59CA8E7A6BBE7BABFE697B6E6898DE4BC9AE590AFE794A8E5AD97E5B
 trigger gt_E8BE93E585A5E58AA0E9809F;
 trigger gt_E5BC80E585A8E59BBE;
 trigger gt_E6B58BE8AF95E58D87E7BAA7;
+trigger gt_NexusAITestE7AE80E4BEBFE78988;
+trigger gt_NexusAITestE7AE80E4BEBFE99A8FE69CBAE78988;
 trigger gt_E7BB99E78EA9E5AEB6E699AEE7BD97E7B1B3E4BFAEE696AF;
 trigger gt_E59F83E89299E7BB99E788B7E6ADBB;
 trigger gt_E6B58BE8AF95E5A596E58AB1E79BAEE6A087;
@@ -541,6 +546,7 @@ trigger gt_NPCE58F97E588B0E4BCA4E5AEB3E6A380E6B58B50;
 trigger gt_NPCE58F97E588B0E4BCA4E5AEB350;
 trigger gt_NPCE58F97E588B0E4BCA4E5AEB325;
 trigger gt_E699AEE7BD97E7B1B3E4BFAEE696AFE8BDACE8BAAB;
+trigger gt_E5889DE5A78BE9A38EE69AB4E88BB1E99B84;
 trigger gt_E9878DE8AEBEE58CBAE59F9FE5BD93E5898DE59D9AE59BBAE7A88BE5BAA6;
 trigger gt_E4BFA1E6A087E4B88DE6ADBB;
 trigger gt_E5BDA9E89B8B;
@@ -560,6 +566,7 @@ trigger gt_E5A596E58AB1E79BAEE6A0871E5AE8CE68890;
 trigger gt_E5A596E58AB1E79BAEE6A0871E5A4B1E8B4A5;
 trigger gt_E5A596E58AB1E79BAEE6A0871E5BC80E5A78BE5889DE5A78B;
 trigger gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F91;
+trigger gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F911E58CBAE59F9FE78988;
 trigger gt_E5A596E58AB1E79BAEE6A087E8AEA1E697B6E599A81;
 trigger gt_E5A596E58AB1E79BAEE6A0872E998B2E5AE88E5889DE5A78BE8AFADE99FB3;
 trigger gt_E5A596E58AB1E79BAEE6A0872E8A7A6E58F91E8AFADE99FB3;
@@ -567,6 +574,7 @@ trigger gt_E5A596E58AB1E79BAEE6A0872E5BC80E5A78BE5889DE5A78B;
 trigger gt_E5A596E58AB1E79BAEE6A0872E5AE8CE68890;
 trigger gt_E5A596E58AB1E79BAEE6A0872E5A4B1E8B4A5;
 trigger gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912;
+trigger gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912E58CBAE59F9FE78988;
 trigger gt_E5A596E58AB1E79BAEE6A087E8AEA1E697B6E599A82;
 trigger gt_E6A1A5E6A281E5889DE5A78BE58C96;
 trigger gt_E6A1A5E6A281E68EA7E588B6E5BC80E590AF;
@@ -581,6 +589,7 @@ trigger gt_E58DA0E9A286E6B3B0E587AFE696AFE7A7BBE58AA8E4BD8DE7BDAEE696B0;
 trigger gt_E58DA0E9A286E6B3B0E587AFE696AFE7A7BBE58AA8E4BD8DE7BDAEE697A7;
 trigger gt_E6B3B0E587AFE696AFE8BF9BE585A5E69CBAE794B2E58CBAE59F9F;
 trigger gt_E6B3B0E587AFE696AFE5BCBAE588B6E9A9BEE9A9B6E69CBAE794B2;
+trigger gt_E591A8E69C9FE585B3E997ADE7AA81E58F98E59BA0E5AD90E58D95E4BD8DE6ADBBE4BAA1;
 trigger gt_E4BBBBE58AA1E79BAEE6A087E5889DE5A78BE5889BE5BBBA;
 trigger gt_E4BBBBE58AA1E79BAEE6A087E5889DE5A78BE5AE8CE68890;
 trigger gt_E4BBBBE58AA1E79BAEE6A087E5889DE5A78BE5A4B1E8B4A5;
@@ -2319,6 +2328,7 @@ bool gt_Init01E58AA0E8BDBDE695B0E68DAE_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
+    TriggerExecute(gt_Init02E78EA9E5AEB6E585B3E7B3BB, true, false);
     libCOMI_gf_LoadCoopMission("AC_RealSteel", gt_Init03E58AA0E8BDBDE5AE8CE68890);
     return true;
 }
@@ -2345,10 +2355,6 @@ bool gt_Init02E78EA9E5AEB6E585B3E7B3BB_Func (bool testConds, bool runActions) {
     int autoFF0B8AA0_var;
     playergroup auto5FC9A0D9_g;
     // Variable Initialization
-
-    PLAYER_01 = libCOMI_gf_GetRolePlayer(1);
-    PLAYER_02 = libCOMI_gf_GetRolePlayer(2);
-
     lv_humanPlayersAndAllies = PlayerGroupEmpty();
     lv_enemyPlayers = PlayerGroupEmpty();
     // Actions
@@ -2391,6 +2397,7 @@ bool gt_Init02E78EA9E5AEB6E585B3E7B3BB_Func (bool testConds, bool runActions) {
         libNtve_gf_SetAlliance(autoFF0B8AA0_var, UnitGetOwner(gv_e6B3B0E587AFE696AFE58D95E4BD8D), libNtve_ge_AllianceSetting_Enemy);
         libNtve_gf_SetAlliance(autoFF0B8AA0_var, 6, libNtve_ge_AllianceSetting_Enemy);
     }
+    libCOMI_gf_SetAlliedCommandersstartingResources();
     auto5FC9A0D9_g = lv_enemyPlayers;
     lv_enemyIter = -1;
     while (true) {
@@ -2417,14 +2424,16 @@ bool gt_Init03E58AA0E8BDBDE5AE8CE68890_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    TriggerExecute(gt_Init02E78EA9E5AEB6E585B3E7B3BB, true, false);
     TriggerExecute(gt_Init04E78EA9E5AEB6E7A791E68A80, true, false);
+    libCOMI_gf_PurchaseStorymodeTech();
     TriggerExecute(gt_Init05E58D95E4BD8D, true, false);
     TriggerExecute(gt_Init06E99FB3E4B990E5A3B0E99FB3, true, false);
     TriggerExecute(gt_Init07E78EAFE5A283, true, false);
     TriggerExecute(gt_Init08E59BB0E99ABEE5BAA6, true, false);
+    libCOMI_gf_PlayMapIntroZoom(true);
     TriggerExecute(gt_E590AFE58AA8AI, true, false);
     TriggerExecute(gt_E590AFE58AA8E6B8B8E6888FQ, true, false);
+    TriggerEnable(gt_E5889DE5A78BE9A38EE69AB4E88BB1E99B84, true);
     gf_CU_EnemyBriefInit(libCOMI_gv_cM_CoopAIPlayer_Commander[PLAYER_03]);
     return true;
 }
@@ -2445,6 +2454,7 @@ bool gt_Init04E78EA9E5AEB6E7A791E68A80_Func (bool testConds, bool runActions) {
     TechTreeUpgradeAddLevel(UnitGetOwner(gv_e6B3B0E587AFE696AFE58D95E4BD8D), "UnknownUpgrade286", 1);
     TechTreeUpgradeAddLevel(PLAYER_03, "UnknownUpgrade286", 1);
     TechTreeUpgradeAddLevel(6, "FireSuppressionSystems", 1);
+    libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -3717,6 +3727,23 @@ void gt_E7AE80E58D95E694BBE587BBE6B3A2E6ACA1E4BA8BE4BE8B_Init () {
     gt_E7AE80E58D95E694BBE587BBE6B3A2E6ACA1E4BA8BE4BE8B = TriggerCreate("gt_E7AE80E58D95E694BBE587BBE6B3A2E6ACA1E4BA8BE4BE8B_Func");
 }
 //--------------------------------------------------------------------------------------------------
+// Trigger: ????????????????????????
+//--------------------------------------------------------------------------------------------------
+bool gt_SimpleDropAttackExample_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+    libCOMI_gf_CreateCommanderDropAttack(PLAYER_03, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__3Mid, RegionRandomPoint(RegionPlayableMap()), RegionGetCenter(RegionPlayableMap()));
+    libCOMI_gf_CreateCommanderDropAttack(PLAYER_04, libCOMI_ge_CoopAIAttackWaveBuckets__5Large, libCOMI_ge_CoopAITechLevelBuckets__3Mid, RegionRandomPoint(RegionPlayableMap()), RegionGetCenter(RegionPlayableMap()));
+    return true;
+}
+//--------------------------------------------------------------------------------------------------
+void gt_SimpleDropAttackExample_Init () {
+    gt_SimpleDropAttackExample = TriggerCreate("gt_SimpleDropAttackExample_Func");
+}
+//--------------------------------------------------------------------------------------------------
 // Trigger: ??????????????????
 //--------------------------------------------------------------------------------------------------
 bool gt_E8B685E7BAA7E99A90E8978FE5BDA9E89B8B_Func (bool testConds, bool runActions) {
@@ -3762,6 +3789,49 @@ bool gt_E8B685E7BAA7E99A90E8978FE5BDA9E89B8B_Func (bool testConds, bool runActio
 void gt_E8B685E7BAA7E99A90E8978FE5BDA9E89B8B_Init () {
     gt_E8B685E7BAA7E99A90E8978FE5BDA9E89B8B = TriggerCreate("gt_E8B685E7BAA7E99A90E8978FE5BDA9E89B8B_Func");
     TriggerAddEventUnitDied(gt_E8B685E7BAA7E99A90E8978FE5BDA9E89B8B, null);
+}
+//--------------------------------------------------------------------------------------------------
+// Trigger: CM_VOEnemySpotted
+//--------------------------------------------------------------------------------------------------
+bool gt_CM_VOEnemySpotted_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_enemyPlayer;
+    int lv_userPlayer;
+    unit lv_enemyUnit;
+    // Automatic Variable Declarations
+    // Variable Initialization
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+    if ((PlayerGroupHasPlayer(libCOMI_gf_CommanderPlayers(), UnitGetOwner(EventUnitTarget())) == true)) {
+        lv_userPlayer = UnitGetOwner(EventUnitTarget());
+    }
+    else if ((libNtve_gf_PlayerIsEnemy(UnitGetOwner(EventUnitTarget()), EventPlayer(), libNtve_ge_PlayerRelation_Enemy) == true)) {
+        lv_enemyPlayer = UnitGetOwner(EventUnitTarget());
+        lv_enemyUnit = EventUnitTarget();
+    }
+    if ((PlayerGroupHasPlayer(libCOMI_gf_CommanderPlayers(), EventPlayer()) == true)) {
+        lv_userPlayer = EventPlayer();
+    }
+    else if ((libNtve_gf_PlayerIsEnemy(UnitGetOwner(EventUnitTarget()), EventPlayer(), libNtve_ge_PlayerRelation_Enemy) == true)) {
+        lv_enemyPlayer = EventPlayer();
+        lv_enemyUnit = EventUnit();
+    }
+    if (((lv_enemyPlayer == 0) || (lv_userPlayer == 0))) {
+        return true;
+    }
+    if (((lv_enemyUnit == null) || (PlayerRace(3) != libCOMI_gf_GetUnitRace(lv_enemyUnit)))) {
+        return true;
+    }
+    TriggerEnable(TriggerGetCurrent(), false);
+    gf_CU_EnemyBriefShowHide(true);
+    return true;
+}
+//--------------------------------------------------------------------------------------------------
+void gt_CM_VOEnemySpotted_Init () {
+    gt_CM_VOEnemySpotted = TriggerCreate("gt_CM_VOEnemySpotted_Func");
+    TriggerAddEventUnitAttacked2(gt_CM_VOEnemySpotted, null, null);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: ???????????????????????????
@@ -6214,6 +6284,196 @@ void gt_E6B58BE8AF95E58D87E7BAA7_Init () {
     TriggerAddEventUnitResearchProgress(gt_E6B58BE8AF95E58D87E7BAA7, null, c_unitProgressStageComplete);
 }
 //--------------------------------------------------------------------------------------------------
+// Trigger: Nexus AI Test-?????????
+//--------------------------------------------------------------------------------------------------
+bool gt_NexusAITestE7AE80E4BEBFE78988_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((GameIsOnline() == false))) {
+            return false;
+        }
+    }
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+    if ((EventChatMessage(false) == "AI-MBSA")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/25662BF2"));
+        libCOMI_gv_nexus_CoopAI_On = 20;
+    }
+    if ((EventChatMessage(false) == "AI-MBSB")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/90EF3DAC"));
+        libCOMI_gv_nexus_CoopAI_On = 21;
+    }
+    if ((EventChatMessage(false) == "AI-DGTGA")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/57B5DE01"));
+        libCOMI_gv_nexus_CoopAI_On = 22;
+    }
+    if ((EventChatMessage(false) == "AI-DGTGB")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/F350C527"));
+        libCOMI_gv_nexus_CoopAI_On = 23;
+    }
+    if ((EventChatMessage(false) == "AI-KMRA")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/EC2928A7"));
+        libCOMI_gv_nexus_CoopAI_On = 24;
+    }
+    if ((EventChatMessage(false) == "AI-NLQMA")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/6C95955E"));
+        libCOMI_gv_nexus_CoopAI_On = 25;
+    }
+    if ((EventChatMessage(false) == "AI-NLQMB")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/5DB00DA2"));
+        libCOMI_gv_nexus_CoopAI_On = 26;
+    }
+    if ((EventChatMessage(false) == "AI-NLQMC")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/CFB5B275"));
+        libCOMI_gv_nexus_CoopAI_On = 27;
+    }
+    if ((EventChatMessage(false) == "AI-HJSD")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/84ADF393"));
+        libCOMI_gv_nexus_CoopAI_On = 28;
+    }
+    if ((EventChatMessage(false) == "AI-TDLA")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/6DE20E8C"));
+        libCOMI_gv_nexus_CoopAI_On = 29;
+    }
+    if ((EventChatMessage(false) == "AI-TDLB")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/1BF459CB"));
+        libCOMI_gv_nexus_CoopAI_On = 30;
+    }
+    if ((EventChatMessage(false) == "AI-ZCA")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/49878EE2"));
+        libCOMI_gv_nexus_CoopAI_On = 31;
+    }
+    if ((EventChatMessage(false) == "AI-ZCB")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/23F2FCB2"));
+        libCOMI_gv_nexus_CoopAI_On = 32;
+    }
+    if ((EventChatMessage(false) == "AI-JXYC")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/904200CB"));
+        libCOMI_gv_nexus_CoopAI_On = 33;
+    }
+    if ((EventChatMessage(false) == "AI-KJ")) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/CE82F0D2"));
+        TechTreeUpgradeAddLevel(1, "MobiusDiamondbackTriLithiumPowerCells", 1);
+        TechTreeUpgradeAddLevel(1, "MobiusHunterJoriumArmor", 1);
+        TechTreeUpgradeAddLevel(1, "MobiusMarauderStimpack", 1);
+        TechTreeUpgradeAddLevel(1, "MobiusWarpInReinforcements", 1);
+        TechTreeUpgradeAddLevel(1, "MobiusPredatorRobotClawsRetributionStrike", 1);
+        TechTreeUpgradeAddLevel(1, "MobiusSpectreIIUltrasonicPulse", 1);
+        TechTreeUpgradeAddLevel(1, "MobiusSpectreIIEnergyArmor", 1);
+        TechTreeUpgradeAddLevel(1, "NerazimColossusIceThermalLance", 1);
+        TechTreeUpgradeAddLevel(1, "NerazimCorsairEnergy", 1);
+        TechTreeUpgradeAddLevel(1, "NerazimCorsairDisruptionWeb", 1);
+        TechTreeUpgradeAddLevel(1, "NerazimDarkArchonMindControl", 1);
+        TechTreeUpgradeAddLevel(1, "NerazimOracleCloak", 1);
+        TechTreeUpgradeAddLevel(1, "NerazimShadowTemplarBlink", 1);
+        TechTreeUpgradeAddLevel(1, "NerazimStalkerCloak", 1);
+        TechTreeUpgradeAddLevel(1, "NerazimVoidRaySpeedUpgrade", 1);
+        TechTreeUpgradeAddLevel(1, "NerazimZealotShadowCharge", 1);
+        TechTreeUpgradeAddLevel(1, "NestDefilerEnergy", 1);
+        TechTreeUpgradeAddLevel(1, "NestDefilerPlague", 1);
+        TechTreeUpgradeAddLevel(1, "NestDevourerImprovedOsmosis", 1);
+        TechTreeUpgradeAddLevel(1, "NestGuardianDotDamage", 1);
+        TechTreeUpgradeAddLevel(1, "NestHydraliskSpeed", 1);
+        TechTreeUpgradeAddLevel(1, "NestHydraliskAttackRange", 1);
+        TechTreeUpgradeAddLevel(1, "NestLurkerBurrowSpeed", 1);
+        TechTreeUpgradeAddLevel(1, "NestLurkerSeismicSpines", 1);
+        TechTreeUpgradeAddLevel(1, "NestMutaliskViciousGlaive", 1);
+        TechTreeUpgradeAddLevel(1, "NestMutaliskRapidRegeneration", 1);
+        TechTreeUpgradeAddLevel(1, "NestQueenBlastKill", 1);
+        TechTreeUpgradeAddLevel(1, "NestQueenEnergy", 1);
+        TechTreeUpgradeAddLevel(1, "NestScourgeVirulentSpores", 1);
+        TechTreeUpgradeAddLevel(1, "NestUltraliskArmorAura", 1);
+        TechTreeUpgradeAddLevel(1, "NestZerglingAdrenalGlands", 1);
+        TechTreeUpgradeAddLevel(1, "TaldarimHighTemplarMindBlast", 1);
+        TechTreeUpgradeAddLevel(1, "TaldarimHighTemplarEmpower", 1);
+        TechTreeUpgradeAddLevel(1, "TaldarimMothershipTemporalField", 1);
+        TechTreeUpgradeAddLevel(1, "TaldarimScoutWeaponRange", 1);
+        TechTreeUpgradeAddLevel(1, "TaldarimSentrySquadSight", 1);
+        TechTreeUpgradeAddLevel(1, "TaldarimStalkerPhasingArmor", 1);
+        TechTreeUpgradeAddLevel(1, "TaldarimZealotShockwave", 1);
+        TechTreeUpgradeAddLevel(1, "CovertOpsBansheeAirstrike", 1);
+        TechTreeUpgradeAddLevel(1, "CovertOpsGhostDeathSnipe", 1);
+        TechTreeUpgradeAddLevel(1, "CovertOpsGhostEMPBlast", 1);
+        TechTreeUpgradeAddLevel(1, "CovertOpsGhostEMP", 1);
+        TechTreeUpgradeAddLevel(1, "CovertOpsGoliathLockdownMissile", 1);
+        TechTreeUpgradeAddLevel(1, "CovertOpsLiberatorMultiTaskMAFServos", 1);
+        TechTreeUpgradeAddLevel(1, "CovertOpsMarauderPunisherGrenades", 1);
+        TechTreeUpgradeAddLevel(1, "CovertOpsMarineSuperStimpack", 1);
+        TechTreeUpgradeAddLevel(1, "CovertOpsSiegeTankSiegeModeProgressiveRangeIncease", 1);
+    }
+    return true;
+}
+//--------------------------------------------------------------------------------------------------
+void gt_NexusAITestE7AE80E4BEBFE78988_Init () {
+    gt_NexusAITestE7AE80E4BEBFE78988 = TriggerCreate("gt_NexusAITestE7AE80E4BEBFE78988_Func");
+    TriggerEnable(gt_NexusAITestE7AE80E4BEBFE78988, false);
+    TriggerAddEventChatMessage(gt_NexusAITestE7AE80E4BEBFE78988, c_playerAny, "AI-", false);
+}
+//--------------------------------------------------------------------------------------------------
+// Trigger: Nexus AI Test-???????????????
+//--------------------------------------------------------------------------------------------------
+bool gt_NexusAITestE7AE80E4BEBFE99A8FE69CBAE78988_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    int auto3B063084_val;
+    // Conditions
+    if (testConds) {
+        if (!((GameIsOnline() == false))) {
+            return false;
+        }
+    }
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+    auto3B063084_val = RandomInt(0, 11);
+    if (auto3B063084_val == 0) {
+        libCOMI_gv_nexus_CoopAI_On = 20;
+    }
+    else if (auto3B063084_val == 1) {
+        libCOMI_gv_nexus_CoopAI_On = 21;
+    }
+    else if (auto3B063084_val == 2) {
+        libCOMI_gv_nexus_CoopAI_On = 22;
+    }
+    else if (auto3B063084_val == 3) {
+        libCOMI_gv_nexus_CoopAI_On = 23;
+    }
+    else if (auto3B063084_val == 4) {
+        libCOMI_gv_nexus_CoopAI_On = 24;
+    }
+    else if (auto3B063084_val == 5) {
+        libCOMI_gv_nexus_CoopAI_On = 31;
+    }
+    else if (auto3B063084_val == 6) {
+        libCOMI_gv_nexus_CoopAI_On = 32;
+    }
+    else if (auto3B063084_val == 7) {
+        libCOMI_gv_nexus_CoopAI_On = 25;
+    }
+    else if (auto3B063084_val == 8) {
+        libCOMI_gv_nexus_CoopAI_On = 26;
+    }
+    else if (auto3B063084_val == 9) {
+        libCOMI_gv_nexus_CoopAI_On = 27;
+    }
+    else if (auto3B063084_val == 10) {
+        libCOMI_gv_nexus_CoopAI_On = 29;
+    }
+    else {
+        libCOMI_gv_nexus_CoopAI_On = 30;
+    }
+    return true;
+}
+//--------------------------------------------------------------------------------------------------
+void gt_NexusAITestE7AE80E4BEBFE99A8FE69CBAE78988_Init () {
+    gt_NexusAITestE7AE80E4BEBFE99A8FE69CBAE78988 = TriggerCreate("gt_NexusAITestE7AE80E4BEBFE99A8FE69CBAE78988_Func");
+    TriggerEnable(gt_NexusAITestE7AE80E4BEBFE99A8FE69CBAE78988, false);
+    TriggerAddEventChatMessage(gt_NexusAITestE7AE80E4BEBFE99A8FE69CBAE78988, c_playerAny, "-SJAI", false);
+}
+//--------------------------------------------------------------------------------------------------
 // Trigger: ????????????????????????
 //--------------------------------------------------------------------------------------------------
 bool gt_E7BB99E78EA9E5AEB6E699AEE7BD97E7B1B3E4BFAEE696AF_Func (bool testConds, bool runActions) {
@@ -6510,6 +6770,32 @@ bool gt_E699AEE7BD97E7B1B3E4BFAEE696AFE8BDACE8BAAB_Func (bool testConds, bool ru
 void gt_E699AEE7BD97E7B1B3E4BFAEE696AFE8BDACE8BAAB_Init () {
     gt_E699AEE7BD97E7B1B3E4BFAEE696AFE8BDACE8BAAB = TriggerCreate("gt_E699AEE7BD97E7B1B3E4BFAEE696AFE8BDACE8BAAB_Func");
     TriggerAddEventTimePeriodic(gt_E699AEE7BD97E7B1B3E4BFAEE696AFE8BDACE8BAAB, 1.0, c_timeGame);
+}
+//--------------------------------------------------------------------------------------------------
+// Trigger: ??????????????????
+//--------------------------------------------------------------------------------------------------
+bool gt_E5889DE5A78BE9A38EE69AB4E88BB1E99B84_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((libCOMU_gf_MutatorIsEnabled("HeroesFromTheStorm") == true))) {
+            return false;
+        }
+    }
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerEnable(libCOMU_gt_CT_HeroesFromTheStorm, false);
+    TriggerExecute(gt_CT_InitializeHeroesFromTheStorm, true, false);
+    return true;
+}
+//--------------------------------------------------------------------------------------------------
+void gt_E5889DE5A78BE9A38EE69AB4E88BB1E99B84_Init () {
+    gt_E5889DE5A78BE9A38EE69AB4E88BB1E99B84 = TriggerCreate("gt_E5889DE5A78BE9A38EE69AB4E88BB1E99B84_Func");
+    TriggerEnable(gt_E5889DE5A78BE9A38EE69AB4E88BB1E99B84, false);
+    TriggerAddEventTimePeriodic(gt_E5889DE5A78BE9A38EE69AB4E88BB1E99B84, 0.1, c_timeGame);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: ??????????????????????????????
@@ -7427,6 +7713,44 @@ void gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F91_Init () {
     gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F91 = TriggerCreate("gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F91_Func");
 }
 //--------------------------------------------------------------------------------------------------
+// Trigger: ?????????????????? 1?????????
+//--------------------------------------------------------------------------------------------------
+bool gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F911E58CBAE59F9FE78988_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_e698AFE590A6E5BC80E590AFE5A596E58AB1E4BBBBE58AA1 == false))) {
+            return false;
+        }
+        if (!((PlayerGroupHasPlayer(libCOMI_gf_CommanderPlayers(), UnitGetOwner(EventUnit())) == true))) {
+            return false;
+        }
+        if (!((UnitFilterMatch(EventUnit(), 1, UnitFilter(0, 0, (1 << c_targetFilterNeutral) | (1 << c_targetFilterEnemy) | (1 << c_targetFilterStructure) | (1 << c_targetFilterMissile), (1 << (c_targetFilterHidden - 32)))) == true))) {
+            return false;
+        }
+    }
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+    TriggerExecute(gt_E5A596E58AB1E79BAEE6A0871E8A7A6E58F91E8AFADE99FB3, true, false);
+    gv_e698AFE590A6E5BC80E590AFE5A596E58AB1E4BBBBE58AA1 = true;
+    TriggerEnable(gt_E58DA0E9A286E5A596E58AB1E79BAEE6A087E7BB88E7ABAF, true);
+    libNtve_gf_ShowHideUnit(gv_bM1E4BFA1E6A087, true);
+    gf_E5889BE5BBBAE5A596E58AB1E79BAEE6A087E5B08FE59CB0E59BBEE59BBEE6A087(gv_bM1E4BFA1E6A087);
+    TriggerExecute(gt_E4BBBBE58AA1E79BAEE6A087E68EA7E588B6E7BB88E7ABAFE5889BE5BBBA, true, false);
+    TriggerExecute(gt_E5A596E58AB1E79BAEE6A087E8AEA1E697B6E599A81, true, false);
+    TriggerEnable(TriggerGetCurrent(), false);
+    libNtve_gf_ShowHideUnit(gv_bM1E4BFA1E6A087, true);
+    gf_E6A380E6B58BE4BFA1E6A087E78AB6E68081(gv_bM1E4BFA1E6A087, gv_objectiveRescueStalkers, UnitGetPosition(gv_bM1E4BFA1E6A087), UnitGetOwner(gv_bM1E4BFA1E6A087));
+    return true;
+}
+//--------------------------------------------------------------------------------------------------
+void gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F911E58CBAE59F9FE78988_Init () {
+    gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F911E58CBAE59F9FE78988 = TriggerCreate("gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F911E58CBAE59F9FE78988_Func");
+    TriggerAddEventUnitRegion(gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F911E58CBAE59F9FE78988, null, RegionFromId(25), true);
+}
+//--------------------------------------------------------------------------------------------------
 // Trigger: ?????????????????????1
 //--------------------------------------------------------------------------------------------------
 bool gt_E5A596E58AB1E79BAEE6A087E8AEA1E697B6E599A81_Func (bool testConds, bool runActions) {
@@ -7704,6 +8028,44 @@ bool gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912_Func (bool testConds, bool runActi
 //--------------------------------------------------------------------------------------------------
 void gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912_Init () {
     gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912 = TriggerCreate("gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912_Func");
+}
+//--------------------------------------------------------------------------------------------------
+// Trigger: ?????????????????? 2?????????
+//--------------------------------------------------------------------------------------------------
+bool gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912E58CBAE59F9FE78988_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((gv_e698AFE590A6E5BC80E590AFE5A596E58AB1E4BBBBE58AA12 == false))) {
+            return false;
+        }
+        if (!((PlayerGroupHasPlayer(libCOMI_gf_CommanderPlayers(), UnitGetOwner(EventUnit())) == true))) {
+            return false;
+        }
+        if (!((UnitFilterMatch(EventUnit(), 1, UnitFilter(0, 0, (1 << c_targetFilterNeutral) | (1 << c_targetFilterEnemy) | (1 << c_targetFilterStructure) | (1 << c_targetFilterMissile), (1 << (c_targetFilterHidden - 32)))) == true))) {
+            return false;
+        }
+    }
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+    TriggerExecute(gt_E5A596E58AB1E79BAEE6A0872E8A7A6E58F91E8AFADE99FB3, true, false);
+    TriggerEnable(gt_E58DA0E9A286E5A596E58AB1E79BAEE6A087E7BB88E7ABAF2, true);
+    gv_e698AFE590A6E5BC80E590AFE5A596E58AB1E4BBBBE58AA12 = true;
+    libNtve_gf_ShowHideUnit(gv_bM2E4BFA1E6A087, true);
+    gf_E5889BE5BBBAE5A596E58AB1E79BAEE6A087E5B08FE59CB0E59BBEE59BBEE6A087(gv_bM2E4BFA1E6A087);
+    TriggerExecute(gt_E4BBBBE58AA1E79BAEE6A087E998B2E5BEA1E781ABE782AEE5889BE5BBBA, true, false);
+    TriggerExecute(gt_E5A596E58AB1E79BAEE6A087E8AEA1E697B6E599A82, true, false);
+    TriggerEnable(TriggerGetCurrent(), false);
+    libNtve_gf_ShowHideUnit(gv_bM2E4BFA1E6A087, true);
+    gf_E6A380E6B58BE4BFA1E6A087E78AB6E68081(gv_bM2E4BFA1E6A087, gv_objectiveRescueStalkers2, UnitGetPosition(gv_bM2E4BFA1E6A087), UnitGetOwner(gv_bM2E4BFA1E6A087));
+    return true;
+}
+//--------------------------------------------------------------------------------------------------
+void gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912E58CBAE59F9FE78988_Init () {
+    gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912E58CBAE59F9FE78988 = TriggerCreate("gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912E58CBAE59F9FE78988_Func");
+    TriggerAddEventUnitRegion(gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912E58CBAE59F9FE78988, null, RegionFromId(26), true);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: ?????????????????????2
@@ -8380,6 +8742,23 @@ bool gt_E6B3B0E587AFE696AFE5BCBAE588B6E9A9BEE9A9B6E69CBAE794B2_Func (bool testCo
 void gt_E6B3B0E587AFE696AFE5BCBAE588B6E9A9BEE9A9B6E69CBAE794B2_Init () {
     gt_E6B3B0E587AFE696AFE5BCBAE588B6E9A9BEE9A9B6E69CBAE794B2 = TriggerCreate("gt_E6B3B0E587AFE696AFE5BCBAE588B6E9A9BEE9A9B6E69CBAE794B2_Func");
 }
+//--------------------------------------------------------------------------------------------------
+// Trigger: ????????????????????????????????????
+//--------------------------------------------------------------------------------------------------
+bool gt_E591A8E69C9FE585B3E997ADE7AA81E58F98E59BA0E5AD90E58D95E4BD8DE6ADBBE4BAA1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+    TriggerEnable(libCOMU_gt_CT_UnitDeath, false);
+    return true;
+}
+//--------------------------------------------------------------------------------------------------
+void gt_E591A8E69C9FE585B3E997ADE7AA81E58F98E59BA0E5AD90E58D95E4BD8DE6ADBBE4BAA1_Init () {
+    gt_E591A8E69C9FE585B3E997ADE7AA81E58F98E59BA0E5AD90E58D95E4BD8DE6ADBBE4BAA1 = TriggerCreate("gt_E591A8E69C9FE585B3E997ADE7AA81E58F98E59BA0E5AD90E58D95E4BD8DE6ADBBE4BAA1_Func");
+    TriggerAddEventTimePeriodic(gt_E591A8E69C9FE585B3E997ADE7AA81E58F98E59BA0E5AD90E58D95E4BD8DE6ADBBE4BAA1, 0.1, c_timeGame);
+}
 
 //--------------------------------------------------------------------------------------------------
 // Trigger: ???????????? {??????} ??????
@@ -8993,7 +9372,9 @@ void InitTriggers () {
     gt_E8AEBEE7BDAEAIE8B584E6BA90_Init();
     gt_E694BBE587BBE6B3A2E6ACA1E8AFADE99FB3_Init();
     gt_E7AE80E58D95E694BBE587BBE6B3A2E6ACA1E4BA8BE4BE8B_Init();
+    gt_SimpleDropAttackExample_Init();
     gt_E8B685E7BAA7E99A90E8978FE5BDA9E89B8B_Init();
+    gt_CM_VOEnemySpotted_Init();
     gt_E69CBAE794B2E8A2ABE691A7E6AF81E4B880E6ACA1E8AFADE99FB3_Init();
     gt_E6A380E69FA5E7ACACE4B880E6ACA1E69CBAE794B2E6ADBBE4BAA1_Init();
     gt_E6B3B0E587AFE696AFE5BCBAE588B6E9A9BEE9A9B6E69CBAE794B22_Init();
@@ -9033,6 +9414,8 @@ void InitTriggers () {
     gt_E8BE93E585A5E58AA0E9809F_Init();
     gt_E5BC80E585A8E59BBE_Init();
     gt_E6B58BE8AF95E58D87E7BAA7_Init();
+    gt_NexusAITestE7AE80E4BEBFE78988_Init();
+    gt_NexusAITestE7AE80E4BEBFE99A8FE69CBAE78988_Init();
     gt_E7BB99E78EA9E5AEB6E699AEE7BD97E7B1B3E4BFAEE696AF_Init();
     gt_E59F83E89299E7BB99E788B7E6ADBB_Init();
     gt_E6B58BE8AF95E5A596E58AB1E79BAEE6A087_Init();
@@ -9043,6 +9426,7 @@ void InitTriggers () {
     gt_NPCE58F97E588B0E4BCA4E5AEB350_Init();
     gt_NPCE58F97E588B0E4BCA4E5AEB325_Init();
     gt_E699AEE7BD97E7B1B3E4BFAEE696AFE8BDACE8BAAB_Init();
+    gt_E5889DE5A78BE9A38EE69AB4E88BB1E99B84_Init();
     gt_E9878DE8AEBEE58CBAE59F9FE5BD93E5898DE59D9AE59BBAE7A88BE5BAA6_Init();
     gt_E4BFA1E6A087E4B88DE6ADBB_Init();
     gt_E5BDA9E89B8B_Init();
@@ -9062,6 +9446,7 @@ void InitTriggers () {
     gt_E5A596E58AB1E79BAEE6A0871E5A4B1E8B4A5_Init();
     gt_E5A596E58AB1E79BAEE6A0871E5BC80E5A78BE5889DE5A78B_Init();
     gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F91_Init();
+    gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F911E58CBAE59F9FE78988_Init();
     gt_E5A596E58AB1E79BAEE6A087E8AEA1E697B6E599A81_Init();
     gt_E5A596E58AB1E79BAEE6A0872E998B2E5AE88E5889DE5A78BE8AFADE99FB3_Init();
     gt_E5A596E58AB1E79BAEE6A0872E8A7A6E58F91E8AFADE99FB3_Init();
@@ -9069,6 +9454,7 @@ void InitTriggers () {
     gt_E5A596E58AB1E79BAEE6A0872E5AE8CE68890_Init();
     gt_E5A596E58AB1E79BAEE6A0872E5A4B1E8B4A5_Init();
     gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912_Init();
+    gt_E5A596E58AB1E79BAEE6A087E8A7A6E58F912E58CBAE59F9FE78988_Init();
     gt_E5A596E58AB1E79BAEE6A087E8AEA1E697B6E599A82_Init();
     gt_E6A1A5E6A281E5889DE5A78BE58C96_Init();
     gt_E6A1A5E6A281E68EA7E588B6E5BC80E590AF_Init();
@@ -9083,6 +9469,7 @@ void InitTriggers () {
     gt_E58DA0E9A286E6B3B0E587AFE696AFE7A7BBE58AA8E4BD8DE7BDAEE697A7_Init();
     gt_E6B3B0E587AFE696AFE8BF9BE585A5E69CBAE794B2E58CBAE59F9F_Init();
     gt_E6B3B0E587AFE696AFE5BCBAE588B6E9A9BEE9A9B6E69CBAE794B2_Init();
+    gt_E591A8E69C9FE585B3E997ADE7AA81E58F98E59BA0E5AD90E58D95E4BD8DE6ADBBE4BAA1_Init();
     gt_E4BBBBE58AA1E79BAEE6A087E5889DE5A78BE5889BE5BBBA_Init();
     gt_E4BBBBE58AA1E79BAEE6A087E5889DE5A78BE5AE8CE68890_Init();
     gt_E4BBBBE58AA1E79BAEE6A087E5889DE5A78BE5A4B1E8B4A5_Init();
@@ -9113,18 +9500,4 @@ void run () {
     InitLibs();
     InitGlobals();
     InitTriggers();
-}
-
-//--------------------------------------------------------------------------------------------------
-// Custom Script Initialization
-//--------------------------------------------------------------------------------------------------
-void InitCustomScript () {
-    run();
-}
-
-//--------------------------------------------------------------------------------------------------
-// Map Initialization
-//--------------------------------------------------------------------------------------------------
-void InitMap () {
-    InitCustomScript();
 }
