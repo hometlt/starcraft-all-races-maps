@@ -359,8 +359,6 @@ wave cai_wave_createdWave (int w, int p) {
 
 //--------------------------------------------------------------------------------------------------
 void cai_startall () {
-    AICampaignStart(3);
-    AICampaignStart(4);
     AICampaignStart(6);
     AICampaignStart(7);
     AICampaignStart(8);
@@ -3600,8 +3598,12 @@ void gt_ObjectiveDestroyPowerCoresUpdate2_Init () {
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
-    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_PlatformInit, true, false);
     TriggerExecute(gt_Init08Difficulties, true, false);

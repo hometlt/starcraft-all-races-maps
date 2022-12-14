@@ -41,7 +41,6 @@ const int gv_pLAYER_05_DEHAKA = 5;
 const int gv_pLAYER_06_PRIMALS = 6;
 const int gv_pLAYER_07_PACKS = 7;
 const fixed gv_obj_EXECUTION_DURATION = 300.0;
-
 //--------------------------------------------------------------------------------------------------
 // Global Structures
 //--------------------------------------------------------------------------------------------------
@@ -111,7 +110,6 @@ const int ge_ExCoopScoreScreenResult_Defeat = 1;
 const int ge_CoopAIAttackWaveHybridTier_HybridTierNormal = 0;
 const int ge_CoopAIAttackWaveHybridTier_HybridTierMedium = 1;
 const int ge_CoopAIAttackWaveHybridTier_HybridTierWide = 2;
-
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
@@ -2699,26 +2697,6 @@ void gt_StartGameQ_Init () {
 // Trigger: Tip Ready Q
 //--------------------------------------------------------------------------------------------------
 bool gt_TipReadyQ_Func (bool testConds, bool runActions) {
-    if (testConds) {
-        if (!((libCOMI_gf_PlayerInCinematicModeCampaign() == false))) {
-            return false;
-        }
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    TriggerEnable(TriggerGetCurrent(), false);
-    TriggerQueueEnter();
-    libCOMI_gf_DisplayMissionTip();
-    Wait(libCOMI_gv_campaignHintDelay, c_timeReal);
-    TriggerQueueExit();
     return true;
 }
 void gt_TipReadyQ_Init () {
@@ -7927,7 +7905,6 @@ bool gt_TrHybridDetectedQ_Func (bool testConds, bool runActions) {
 void gt_TrHybridDetectedQ_Init () {
     gt_TrHybridDetectedQ = TriggerCreate("gt_TrHybridDetectedQ_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Score - Damage Done
 //--------------------------------------------------------------------------------------------------
