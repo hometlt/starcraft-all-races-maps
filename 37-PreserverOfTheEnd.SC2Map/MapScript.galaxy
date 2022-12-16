@@ -21,10 +21,8 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
+const int gv_pLAYER_03_ENEMY = 6;
+const int gv_pLAYER_04_ENEMY = 7;
 const int gv_mAXGAMEPHASES = 5;
 const fixed gv_cONDUITRANGE = 33.0;
 
@@ -80,6 +78,8 @@ struct gs_ScenarioData {
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
+int gv_pLAYER_01_USER;
+int gv_pLAYER_02_USER;
 gs_ScenarioData gv_sD;
 point gv_victoryCompletePan;
 int gv_assignedWavenum;
@@ -88,6 +88,8 @@ void InitGlobals () {
     int init_i1;
     int init_j1;
 
+    gv_pLAYER_01_USER = 1;
+    gv_pLAYER_02_USER = 2;
     gv_sD.lv_pRESETGAMEDIFFICULTY = 2;
     gv_sD.lv_xENOSUnitGroup = UnitGroupEmpty();
     gv_sD.lv_xENOSEscortGroup = UnitGroupEmpty();
@@ -204,10 +206,6 @@ trigger gt_ObjectiveHarvestPereodicRefreshREFRESH;
 trigger gt_EnemyAttackingQ;
 trigger gt_DefeatPrimaryObjectiveFailed;
 trigger gt_VictoryPrimaryObjectiveComplete;
-trigger gt_VictorySequence;
-trigger gt_VictoryFanfareQ;
-trigger gt_Victory;
-trigger gt_Defeat;
 trigger gt_AIAttackWaves;
 
 //--------------------------------------------------------------------------------------------------
@@ -2265,13 +2263,14 @@ void gt_Init03LoadingComplete_Init () {
 // Trigger: Init 02 Players
 //--------------------------------------------------------------------------------------------------
 bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_playerIterEnemy;
-    int lv_playerIterAlly;
-
     // Automatic Variable Declarations
-    // Variable Initialization
+    // Actions
+    if (!runActions) {
+        return true;
+    }
 
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     return true;
 }
 
@@ -2285,17 +2284,21 @@ void gt_Init02Players_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_Init04Technology_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
+    playergroup auto617B8BC4_g;
+    int auto617B8BC4_var;
+
     // Actions
     if (!runActions) {
         return true;
     }
 
-    TechTreeUpgradeAddLevel(1, "GameMineralTip", 1);
-    TechTreeUpgradeAddLevel(2, "GameMineralTip", 1);
-    TechTreeAbilityAllow(gv_pLAYER_03_ENEMY, AbilityCommand("CreepTumorBuild", 0), false);
-    TechTreeAbilityAllow(gv_pLAYER_03_ENEMY, AbilityCommand("CreepTumorBuild", 2), false);
-    TechTreeAbilityAllow(gv_pLAYER_04_ENEMY, AbilityCommand("CreepTumorBuild", 0), false);
-    TechTreeAbilityAllow(gv_pLAYER_04_ENEMY, AbilityCommand("CreepTumorBuild", 2), false);
+    auto617B8BC4_g = libCOMI_gf_GetAlliesPlayers();
+    auto617B8BC4_var = -1;
+    while (true) {
+        auto617B8BC4_var = PlayerGroupNextPlayer(auto617B8BC4_g, auto617B8BC4_var);
+        if (auto617B8BC4_var < 0) { break; }
+        TechTreeUpgradeAddLevel(auto617B8BC4_var, "GameMineralTip", 1);
+    }
     return true;
 }
 
@@ -3272,13 +3275,6 @@ void gt_TRHarvestClear_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_TRMissionFail_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    DialogSetVisible(gv_sD.lv_dIALOGAreaRemainingAmount, PlayerGroupAll(), false);
-    gf_SendTransmissionCampaignPlaceHolder(null, "PortraitXenos", StringExternal("Param/Value/E7301810"), StringExternal("Param/Value/DF6FADB8"), 10.0, true, libCOMI_ge_MissionTransmissionPortraitOptioins_HidePortraitAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
     return true;
 }
 
@@ -3292,14 +3288,6 @@ void gt_TRMissionFail_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_TRMissionVictory_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    DialogSetVisible(gv_sD.lv_dIALOGAreaRemainingAmount, PlayerGroupAll(), false);
-    gf_SendTransmissionCampaignPlaceHolder(null, "PortraitXenos", StringExternal("Param/Value/CD6F6099"), StringExternal("Param/Value/05F21AF1"), 2.0, true, libCOMI_ge_MissionTransmissionPortraitOptioins_LeavePortraitVisibleAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
-    gf_SendTransmissionCampaignPlaceHolder(null, "PortraitXenos", StringExternal("Param/Value/06A90DE7"), StringExternal("Param/Value/C62F461E"), 6.0, true, libCOMI_ge_MissionTransmissionPortraitOptioins_HidePortraitAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
     return true;
 }
 
@@ -3639,28 +3627,17 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
     ObjectiveSetState(gv_sD.lv_objectiveDoNotLetAmonHarvestResource, c_objectiveStateFailed);
     Wait(4.0, c_timeGame);
-    TriggerExecute(gt_TRMissionFail, true, false);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+    DialogSetVisible(gv_sD.lv_dIALOGAreaRemainingAmount, PlayerGroupAll(), false);
     UnitGroupAddUnitGroup(lv_group, gv_sD.lv_voidConduitPhaseGroup[gv_sD.lv_objectivePhase][0]);
     UnitGroupAddUnitGroup(lv_group, gv_sD.lv_voidConduitPhaseGroup[gv_sD.lv_objectivePhase][1]);
-    CameraPan(gv_pLAYER_01_USER, UnitGetPosition(UnitGroupRandomUnit(lv_group, c_unitCountAlive)), 1.5, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, UnitGetPosition(UnitGroupRandomUnit(lv_group, c_unitCountAlive)), 1.5, -1, 10.0, false);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/79462FB3"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-    Wait(5.5, c_timeGame);
-    libCOMI_gf_WaitForMissionTransmission();
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Defeat, true, false);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
+    gf_SendTransmissionCampaignPlaceHolder(null, "PortraitXenos", StringExternal("Param/Value/E7301810"), StringExternal("Param/Value/DF6FADB8"), 10.0, true, libCOMI_ge_MissionTransmissionPortraitOptioins_HidePortraitAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/FD5E87AE"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(UnitGetPosition(UnitGroupRandomUnit(lv_group, c_unitCountAlive)), 1.5);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -3691,140 +3668,22 @@ bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_VictorySequence, true, false);
+    ObjectiveSetState(gv_sD.lv_objectiveHarvestResource, c_objectiveStateCompleted);
+    DialogSetVisible(gv_sD.lv_dIALOGAreaRemainingAmount, PlayerGroupAll(), false);
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+    gf_SendTransmissionCampaignPlaceHolder(null, "PortraitXenos", StringExternal("Param/Value/CD6F6099"), StringExternal("Param/Value/05F21AF1"), 2.0, true, libCOMI_ge_MissionTransmissionPortraitOptioins_LeavePortraitVisibleAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
+    gf_SendTransmissionCampaignPlaceHolder(null, "PortraitXenos", StringExternal("Param/Value/06A90DE7"), StringExternal("Param/Value/C62F461E"), 6.0, true, libCOMI_ge_MissionTransmissionPortraitOptioins_HidePortraitAfter, libCOMI_ge_MissionTransmissionCueSoundOptions_DefaultCueSoundBehavior);
+    Wait(6.0, c_timeReal);
+    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionVictory, StringExternal("Param/Value/2D3E2175"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_MoveCameraForAllPlayers(gv_victoryCompletePan, 2.0);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryPrimaryObjectiveComplete_Init () {
     gt_VictoryPrimaryObjectiveComplete = TriggerCreate("gt_VictoryPrimaryObjectiveComplete_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Sequence
-//--------------------------------------------------------------------------------------------------
-bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerQueueClear(c_triggerQueueKill);
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-    ObjectiveSetState(gv_sD.lv_objectiveHarvestResource, c_objectiveStateCompleted);
-    TriggerExecute(gt_TRMissionVictory, true, false);
-    Wait(6.0, c_timeReal);
-    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictorySequence_Init () {
-    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Fanfare Q
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TransmissionClearAll();
-    TriggerQueueEnter();
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
-    libCOMI_gf_SendMissionTransmission("PrimaryObjectiveVictory", false, -1);
-    UnitPauseAll(true);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_01_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
-    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, gv_victoryCompletePan, 2.0, -1, 10.0, false);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Victory, true, false);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryFanfareQ_Init () {
-    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory
-//--------------------------------------------------------------------------------------------------
-bool gt_Victory_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Victory_Init () {
-    gt_Victory = TriggerCreate("gt_Victory_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Defeat
-//--------------------------------------------------------------------------------------------------
-bool gt_Defeat_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Defeat_Init () {
-    gt_Defeat = TriggerCreate("gt_Defeat_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -3897,10 +3756,6 @@ void InitTriggers () {
     gt_EnemyAttackingQ_Init();
     gt_DefeatPrimaryObjectiveFailed_Init();
     gt_VictoryPrimaryObjectiveComplete_Init();
-    gt_VictorySequence_Init();
-    gt_VictoryFanfareQ_Init();
-    gt_Victory_Init();
-    gt_Defeat_Init();
     gt_AIAttackWaves_Init();
 }
 
