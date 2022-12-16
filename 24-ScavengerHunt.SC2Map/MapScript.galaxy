@@ -22,6 +22,7 @@ include "TriggerLibs/AI"
 include "TriggerLibs/Computer"
 //--------------------------------------------------------------------------------------------------
 // Globals
+
 //--------------------------------------------------------------------------------------------------
 point[17] aiF917F4D7_defGather;
 string[17] aiF917F4D7_customData;
@@ -829,16 +830,15 @@ void InitLibs () {
     libNtve_InitLib();
     libCOMI_InitLib();
 }
-int custom_difficulty(){
-    return 4;
-}
+
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
+int gv_pLAYER_01_USER = 1;
+int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 7;
+const int gv_pLAYER_04_ENEMY = 8;
+const int gv_pLAYER_05 = 9;
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
@@ -950,7 +950,6 @@ trigger gt_ChristopherDialogueEnemyAttackWaveHybrid;
 trigger gt_VictorySequence;
 trigger gt_VictoryFanfareQ;
 trigger gt_Victory;
-trigger gt_DefeatEventPlayersBasesDestroyed;
 trigger gt_DefeatEventChristopherDies;
 trigger gt_DefeatEventShipDies;
 trigger gt_Defeat;
@@ -1220,7 +1219,7 @@ void gf_SpawnAIWave (bool lp_useHybrid, int lp_enemyLevel) {
     lv_aISpawnWaveLocation = gv_aISpawnWaveLocation;
     PlayerGroupAdd(lv_attackingPlayers, gv_pLAYER_03_ENEMY);
     PlayerGroupAdd(lv_attackingPlayers, gv_pLAYER_04_ENEMY);
-    libCOMI_gf_CM_CoopAI_SetupAttackForce(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_aISpawnWaveLocation));
+    libCOMI_gf_SetupAttackForce(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_aISpawnWaveLocation));
     auto2065854E_ae = libCOMI_gf_CM_CoopAI_AttackForce_UnitTypeCount();
     auto2065854E_ai = 1;
     lv_unitTypeIter = 1;
@@ -1396,7 +1395,7 @@ void gf_SpawnAIWaveShip (int lp_enemyLevel) {
     lv_aISpawnWaveLocation = gv_aISpawnWaveLocation;
     PlayerGroupAdd(lv_attackingPlayers, gv_pLAYER_03_ENEMY);
     PlayerGroupAdd(lv_attackingPlayers, gv_pLAYER_04_ENEMY);
-    libCOMI_gf_CM_CoopAI_SetupAttackForce(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_aISpawnWaveLocation));
+    libCOMI_gf_SetupAttackForce(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_aISpawnWaveLocation));
     autoAF474159_ae = libCOMI_gf_CM_CoopAI_AttackForce_UnitTypeCount();
     autoAF474159_ai = 1;
     lv_unitTypeIter = 1;
@@ -1512,7 +1511,7 @@ void gf_SpawnAIWavePet1 (int lp_enemyLevel) {
     lv_aISpawnWaveLocation = RegionFromId(4);
     PlayerGroupAdd(lv_attackingPlayers, gv_pLAYER_03_ENEMY);
     PlayerGroupAdd(lv_attackingPlayers, gv_pLAYER_04_ENEMY);
-    libCOMI_gf_CM_CoopAI_SetupAttackForce(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_aISpawnWaveLocation));
+    libCOMI_gf_SetupAttackForce(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_aISpawnWaveLocation));
     auto450E14B7_ae = libCOMI_gf_CM_CoopAI_AttackForce_UnitTypeCount();
     auto450E14B7_ai = 1;
     lv_unitTypeIter = 1;
@@ -1677,7 +1676,7 @@ void gf_SpawnAIWavePet2 (int lp_enemyLevel) {
     lv_aISpawnWaveLocation = RegionFromId(6);
     PlayerGroupAdd(lv_attackingPlayers, gv_pLAYER_03_ENEMY);
     PlayerGroupAdd(lv_attackingPlayers, gv_pLAYER_04_ENEMY);
-    libCOMI_gf_CM_CoopAI_SetupAttackForce(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_aISpawnWaveLocation));
+    libCOMI_gf_SetupAttackForce(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, RegionGetCenter(lv_aISpawnWaveLocation));
     auto5B87A586_ae = libCOMI_gf_CM_CoopAI_AttackForce_UnitTypeCount();
     auto5B87A586_ai = 1;
     lv_unitTypeIter = 1;
@@ -1912,7 +1911,6 @@ bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    TriggerExecute(gt_Init02Players, true, false);
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
@@ -1925,51 +1923,11 @@ void gt_Init01LoadData_Init () {
 // Trigger: Init 02 Players
 //--------------------------------------------------------------------------------------------------
 bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    playergroup autoE0EF2853_g;
-    int autoE0EF2853_p;
-    playergroup autoB969537F_g;
-    int autoB969537F_p;
-    // Variable Declarations
-    int lv_playerIterEnemy;
-    int lv_playerIterAlly;
-    // Variable Initialization
-    // Actions
     if (!runActions) {
         return true;
     }
-    libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_03_ENEMY);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_04_ENEMY);
-    libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    autoE0EF2853_g = gv_enemyGroup;
-    autoE0EF2853_p = 1;
-    for ( ; autoE0EF2853_p <= PlayerGroupCount(autoE0EF2853_g) ; autoE0EF2853_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p)) ) {
-        lv_playerIterEnemy = PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-        PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
-        autoB969537F_g = libCOMI_gf_HumanPlayers();
-        autoB969537F_p = 1;
-        for ( ; autoB969537F_p <= PlayerGroupCount(autoB969537F_g) ; autoB969537F_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoB969537F_g, autoB969537F_p)) ) {
-            lv_playerIterAlly = PlayerGroupPlayer(autoB969537F_g, autoB969537F_p);
-            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-        }
-    }
-    PlayerSetAlliance(gv_pLAYER_03_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
-    PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_03_ENEMY, true);
-    libCOMI_gf_SetAlliedCommandersstartingResources();
-    libNtve_gf_SetAlliance(1, 5, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAlliance(2, 5, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAlliance(3, 5, libNtve_ge_AllianceSetting_Neutral);
-    libNtve_gf_SetAlliance(4, 5, libNtve_ge_AllianceSetting_Neutral);
-    libNtve_gf_SetAlliance(1, 6, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-    libNtve_gf_SetAlliance(2, 6, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-    PlayerSetAlliance(1, c_allianceIdPushable, 6, true);
-    PlayerSetAlliance(2, c_allianceIdPushable, 6, true);
-    libNtve_gf_SetAlliance(3, 6, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAlliance(4, 6, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAlliance(5, 6, libNtve_ge_AllianceSetting_Enemy);
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -1984,6 +1942,7 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
+    TriggerExecute(gt_Init02Players, true, false);
     TriggerExecute(gt_Init04Technology, true, false);
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
@@ -2006,7 +1965,6 @@ bool gt_Init04Technology_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -2040,28 +1998,8 @@ bool gt_Init05Units_Func (bool testConds, bool runActions) {
     UnitSetState(gv_petKenji, c_unitStateTargetable, false);
     UnitSetState(gv_petKenji, c_unitStateInvulnerable, true);
     libCOMI_gf_SetUnitInfoTextCampaign(gv_petKenji, null, StringExternal("Param/Value/23BD5E86"), null);
-    UnitSetPropertyFixed(UnitFromId(1919988320), c_unitPropLifeMax, libCOMI_gf_ExpansionRockLife(libCOMI_ge_ExpansionRockType_TownHallRock));
-    UnitSetPropertyFixed(UnitFromId(643557259), c_unitPropLifeMax, libCOMI_gf_ExpansionRockLife(libCOMI_ge_ExpansionRockType_TownHallRock));
-    UnitSetPropertyFixed(UnitFromId(568620807), c_unitPropLifeMax, libCOMI_gf_ExpansionRockLife(libCOMI_ge_ExpansionRockType_GeyserRock));
-    UnitSetPropertyFixed(UnitFromId(447828498), c_unitPropLifeMax, libCOMI_gf_ExpansionRockLife(libCOMI_ge_ExpansionRockType_GeyserRock));
-    UnitSetPropertyFixed(UnitFromId(445514100), c_unitPropLifeMax, libCOMI_gf_ExpansionRockLife(libCOMI_ge_ExpansionRockType_GeyserRock));
-    UnitSetPropertyFixed(UnitFromId(1974084917), c_unitPropLifeMax, libCOMI_gf_ExpansionRockLife(libCOMI_ge_ExpansionRockType_GeyserRock));
-    UnitSetPropertyFixed(UnitFromId(1919988320), c_unitPropLifePercent, 100.0);
-    UnitSetPropertyFixed(UnitFromId(643557259), c_unitPropLifePercent, 100.0);
-    UnitSetPropertyFixed(UnitFromId(568620807), c_unitPropLifePercent, 100.0);
-    UnitSetPropertyFixed(UnitFromId(447828498), c_unitPropLifePercent, 100.0);
-    UnitSetPropertyFixed(UnitFromId(445514100), c_unitPropLifePercent, 100.0);
-    UnitSetPropertyFixed(UnitFromId(1974084917), c_unitPropLifePercent, 100.0);
-    UnitBehaviorAddPlayer(UnitFromId(1919988320), "ExpansionRocks", 0, 1);
-    UnitBehaviorAddPlayer(UnitFromId(643557259), "ExpansionRocks", 0, 1);
-    UnitBehaviorAddPlayer(UnitFromId(568620807), "ExpansionRocks", 0, 1);
-    UnitBehaviorAddPlayer(UnitFromId(447828498), "ExpansionRocks", 0, 1);
-    UnitBehaviorAddPlayer(UnitFromId(445514100), "ExpansionRocks", 0, 1);
-    UnitBehaviorAddPlayer(UnitFromId(1974084917), "ExpansionRocks", 0, 1);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(830175013), true);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(364091896), true);
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_01_USER);
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_02_USER);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -2087,8 +2025,6 @@ bool gt_Init07Environment_Func (bool testConds, bool runActions) {
         return true;
     }
     GameTimeOfDaySet("08:00:00");
-    VisExploreArea(gv_pLAYER_01_USER, RegionFromId(49), true, false);
-    VisExploreArea(gv_pLAYER_02_USER, RegionFromId(49), true, false);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -2107,24 +2043,20 @@ bool gt_Init08DifficultyAdjustments_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    if ((custom_difficulty() == 2)) {
-        libNtve_gf_SetUpgradeLevelForPlayer(5, "ConstructAbilityCooldownsUpgrade", 1);
+    if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
+        libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05, "ConstructAbilityCooldownsUpgrade", 1);
     }
     else {
-        if ((custom_difficulty() == 3)) {
-            libNtve_gf_SetUpgradeLevelForPlayer(5, "ConstructAbilityCooldownsUpgrade", 2);
-            libNtve_gf_SetUpgradeLevelForPlayer(5, "ConstructAbilityCooldownsUpgradeHard", 1);
+        if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
+            libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05, "ConstructAbilityCooldownsUpgrade", 2);
+            libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05, "ConstructAbilityCooldownsUpgradeHard", 1);
         }
         else {
-            if ((custom_difficulty() == 4)) {
-                libNtve_gf_SetUpgradeLevelForPlayer(5, "ConstructAbilityCooldownsUpgrade", 3);
-                libNtve_gf_SetUpgradeLevelForPlayer(5, "ConstructAbilityCooldownsUpgradeBrutal", 1);
+            if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05, "ConstructAbilityCooldownsUpgrade", 3);
+                libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05, "ConstructAbilityCooldownsUpgradeBrutal", 1);
             }
         }
-    }
-    if ((custom_difficulty() == 4)) {
-        UnitRemove(UnitFromId(574573504));
-        UnitRemove(UnitFromId(276078741));
     }
     return true;
 }
@@ -2296,30 +2228,30 @@ bool gt_Init09ConstructSpawn_Func (bool testConds, bool runActions) {
             }
         }
     }
-    UnitCreate(1, lv_constructType1, 0, 5, PointFromId(674248550), 225.0);
-    UnitCreate(1, lv_constructType2, 0, 5, PointFromId(1836751042), 45.0);
-    UnitCreate(1, lv_constructType3, 0, 5, PointFromId(1222831155), 135.0);
-    UnitCreate(1, lv_constructType4, 0, 5, PointFromId(687528844), 315.0);
-    if ((custom_difficulty() == 2)) {
-        UnitGroupLoopBegin(UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitCreate(1, lv_constructType1, 0, gv_pLAYER_05, PointFromId(674248550), 225.0);
+    UnitCreate(1, lv_constructType2, 0, gv_pLAYER_05, PointFromId(1836751042), 45.0);
+    UnitCreate(1, lv_constructType3, 0, gv_pLAYER_05, PointFromId(1222831155), 135.0);
+    UnitCreate(1, lv_constructType4, 0, gv_pLAYER_05, PointFromId(687528844), 315.0);
+    if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
+        UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-            UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "ConstructDamageReductionNormal", 5, 1);
+            UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "ConstructDamageReductionNormal", gv_pLAYER_05, 1);
         }
         UnitGroupLoopEnd();
     }
     else {
-        if ((custom_difficulty() == 3)) {
-            UnitGroupLoopBegin(UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
+            UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "ConstructDamageReductionHard", 5, 1);
+                UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "ConstructDamageReductionHard", gv_pLAYER_05, 1);
             }
             UnitGroupLoopEnd();
         }
         else {
-            if ((custom_difficulty() == 4)) {
-                UnitGroupLoopBegin(UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
+                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                    UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "ConstructDamageReductionBrutal", 5, 1);
+                    UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "ConstructDamageReductionBrutal", gv_pLAYER_05, 1);
                 }
                 UnitGroupLoopEnd();
             }
@@ -2343,7 +2275,7 @@ bool gt_Init10HybridSpawn_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    if ((custom_difficulty() == 4)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
         lv_randomInteger = RandomInt(1, 3);
         if ((lv_randomInteger == 1)) {
             UnitCreate(1, "HybridBehemoth", c_unitCreateIgnorePlacement, gv_pLAYER_03_ENEMY, PointFromId(1533805012), 0.0);
@@ -2359,7 +2291,7 @@ bool gt_Init10HybridSpawn_Func (bool testConds, bool runActions) {
             }
         }
     }
-    if ((custom_difficulty() == 3)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
         lv_randomInteger2 = RandomInt(1, 2);
         if ((lv_randomInteger2 == 1)) {
             UnitCreate(1, "HybridReaver", c_unitCreateIgnorePlacement, gv_pLAYER_03_ENEMY, PointFromId(125113392), 0.0);
@@ -2371,7 +2303,7 @@ bool gt_Init10HybridSpawn_Func (bool testConds, bool runActions) {
         }
     }
     else {
-        if ((custom_difficulty() == 4)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
             lv_randomInteger2 = RandomInt(1, 2);
             if ((lv_randomInteger2 == 1)) {
                 UnitCreate(1, "HybridReaver", c_unitCreateIgnorePlacement, gv_pLAYER_03_ENEMY, PointFromId(125113392), 0.0);
@@ -2785,78 +2717,6 @@ void gt_Victory_Init () {
     gt_Victory = TriggerCreate("gt_Victory_Func");
 }
 //--------------------------------------------------------------------------------------------------
-// Trigger: Defeat Event - Players' Bases Destroyed
-//--------------------------------------------------------------------------------------------------
-bool gt_DefeatEventPlayersBasesDestroyed_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    point lv_cameraTarget;
-    // Variable Initialization
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-        if (!(((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_01_USER, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true) || (libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_02_USER, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true)))) {
-            return false;
-        }
-    }
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    ObjectiveSetState(gv_objectiveRetrieveGear, c_objectiveStateFailed);
-    ObjectiveSetState(gv_objectiveChristopherMustSurvive, c_objectiveStateFailed);
-    ObjectiveSetState(gv_objectiveShipMustSurvive, c_objectiveStateFailed);
-    Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
-    UnitGroupLoopBegin(UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
-    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-        libNtve_gf_MakeUnitInvulnerable(UnitGroupLoopCurrent(), true);
-    }
-    UnitGroupLoopEnd();
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    if ((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_01_USER, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true)) {
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/BEE13EAE"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/26F019A7"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-        lv_cameraTarget = PlayerStartLocation(gv_pLAYER_01_USER);
-    }
-    else {
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/E89D78EC"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/74E14482"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-        lv_cameraTarget = PlayerStartLocation(gv_pLAYER_02_USER);
-    }
-    if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_01_USER)) == false)) {
-        CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-        CameraPan(gv_pLAYER_01_USER, lv_cameraTarget, 1.5, -1, 10.0, false);
-    }
-    if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_02_USER)) == false)) {
-        CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-        CameraPan(gv_pLAYER_02_USER, lv_cameraTarget, 1.5, -1, 10.0, false);
-    }
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(2.0, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Defeat, true, false);
-    return true;
-}
-//--------------------------------------------------------------------------------------------------
-void gt_DefeatEventPlayersBasesDestroyed_Init () {
-    gt_DefeatEventPlayersBasesDestroyed = TriggerCreate("gt_DefeatEventPlayersBasesDestroyed_Func");
-    TriggerAddEventTimePeriodic(gt_DefeatEventPlayersBasesDestroyed, 1.0, c_timeAI);
-}
-//--------------------------------------------------------------------------------------------------
 // Trigger: Defeat Event - Christopher Dies
 //--------------------------------------------------------------------------------------------------
 bool gt_DefeatEventChristopherDies_Func (bool testConds, bool runActions) {
@@ -3058,7 +2918,7 @@ bool gt_StartAI_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    AICampaignStart(5);
+ //   AICampaignStart(gv_pLAYER_05);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -3074,19 +2934,19 @@ bool gt_Round1_Func (bool testConds, bool runActions) {
         return true;
     }
     TriggerExecute(gt_CreateTimerChristophersShipFirstTime, false, false);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         Wait(230.0, c_timeGame);
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             Wait(220.0, c_timeGame);
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 Wait(210.0, c_timeGame);
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     Wait(200.0, c_timeGame);
                 }
             }
@@ -3108,38 +2968,38 @@ bool gt_Round2_Func (bool testConds, bool runActions) {
         return true;
     }
     TriggerExecute(gt_CreateTimerChristophersShipSecondTime, false, false);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         Wait(60.0, c_timeGame);
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             Wait(55.0, c_timeGame);
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 Wait(50.0, c_timeGame);
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     Wait(45.0, c_timeGame);
                 }
             }
         }
     }
     TriggerExecute(gt_AttackWave2, false, false);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         Wait(60.0, c_timeGame);
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             Wait(55.0, c_timeGame);
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 Wait(50.0, c_timeGame);
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     Wait(45.0, c_timeGame);
                 }
             }
@@ -3161,19 +3021,19 @@ bool gt_Round3_Func (bool testConds, bool runActions) {
         return true;
     }
     TriggerExecute(gt_CreateTimerChristophersShipThirdTime, false, false);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         Wait(60.0, c_timeGame);
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             Wait(55.0, c_timeGame);
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 Wait(50.0, c_timeGame);
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     Wait(45.0, c_timeGame);
                 }
             }
@@ -3182,19 +3042,19 @@ bool gt_Round3_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_AttackWave6, false, false);
     Wait(20.0, c_timeGame);
     TriggerExecute(gt_ObjectivePet1Create, false, false);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         Wait(60.0, c_timeGame);
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             Wait(55.0, c_timeGame);
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 Wait(50.0, c_timeGame);
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     Wait(45.0, c_timeGame);
                 }
             }
@@ -3216,19 +3076,19 @@ bool gt_Round4_Func (bool testConds, bool runActions) {
         return true;
     }
     TriggerExecute(gt_CreateTimerChristophersShipFourthTime, false, false);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         Wait(60.0, c_timeGame);
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             Wait(55.0, c_timeGame);
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 Wait(50.0, c_timeGame);
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     Wait(45.0, c_timeGame);
                 }
             }
@@ -3237,19 +3097,19 @@ bool gt_Round4_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_AttackWave9, false, false);
     Wait(20.0, c_timeGame);
     TriggerExecute(gt_ObjectivePet2Create, false, false);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         Wait(60.0, c_timeGame);
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             Wait(55.0, c_timeGame);
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 Wait(50.0, c_timeGame);
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     Wait(45.0, c_timeGame);
                 }
             }
@@ -3292,19 +3152,19 @@ bool gt_AttackWave2_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_DetermineEnemySpawnWaveLocation, false, true);
     Wait(1.0, c_timeGame);
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
             gf_SpawnAIWave(false, 1);
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWave(false, 1);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWave(false, 2);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWave(false, 2);
                     }
                 }
@@ -3328,19 +3188,19 @@ bool gt_AttackWave3_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_DetermineEnemySpawnWaveLocation, false, true);
     Wait(1.0, c_timeGame);
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
             gf_SpawnAIWave(false, 1);
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWave(false, 2);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWave(false, 3);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWave(false, 3);
                     }
                 }
@@ -3368,7 +3228,7 @@ bool gt_AttackWave4_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_DetermineEnemySpawnWaveLocation, false, true);
     Wait(1.0, c_timeGame);
     lv_randomInteger = RandomInt(1, 10);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         if ((lv_randomInteger == 1)) {
             lv_hybridChoice = false;
         }
@@ -3419,7 +3279,7 @@ bool gt_AttackWave4_Func (bool testConds, bool runActions) {
         }
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             if ((lv_randomInteger == 1)) {
                 lv_hybridChoice = false;
             }
@@ -3470,7 +3330,7 @@ bool gt_AttackWave4_Func (bool testConds, bool runActions) {
             }
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 if ((lv_randomInteger == 1)) {
                     lv_hybridChoice = true;
                 }
@@ -3521,7 +3381,7 @@ bool gt_AttackWave4_Func (bool testConds, bool runActions) {
                 }
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     if ((lv_randomInteger == 1)) {
                         lv_hybridChoice = true;
                     }
@@ -3575,19 +3435,19 @@ bool gt_AttackWave4_Func (bool testConds, bool runActions) {
         }
     }
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
             gf_SpawnAIWave(lv_hybridChoice, 2);
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWave(lv_hybridChoice, 3);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWave(lv_hybridChoice, 4);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWave(lv_hybridChoice, 4);
                     }
                 }
@@ -3615,7 +3475,7 @@ bool gt_AttackWave5_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_DetermineEnemySpawnWaveLocation, false, true);
     Wait(1.0, c_timeGame);
     lv_randomInteger = RandomInt(1, 10);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         if ((lv_randomInteger == 1)) {
             lv_hybridChoice = true;
         }
@@ -3666,7 +3526,7 @@ bool gt_AttackWave5_Func (bool testConds, bool runActions) {
         }
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             if ((lv_randomInteger == 1)) {
                 lv_hybridChoice = true;
             }
@@ -3717,7 +3577,7 @@ bool gt_AttackWave5_Func (bool testConds, bool runActions) {
             }
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 if ((lv_randomInteger == 1)) {
                     lv_hybridChoice = true;
                 }
@@ -3768,7 +3628,7 @@ bool gt_AttackWave5_Func (bool testConds, bool runActions) {
                 }
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     if ((lv_randomInteger == 1)) {
                         lv_hybridChoice = true;
                     }
@@ -3822,19 +3682,19 @@ bool gt_AttackWave5_Func (bool testConds, bool runActions) {
         }
     }
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
             gf_SpawnAIWave(lv_hybridChoice, 3);
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWave(lv_hybridChoice, 4);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWave(lv_hybridChoice, 5);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWave(lv_hybridChoice, 5);
                     }
                 }
@@ -3862,7 +3722,7 @@ bool gt_AttackWave6_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_DetermineEnemySpawnWaveLocation, false, true);
     Wait(1.0, c_timeGame);
     lv_randomInteger = RandomInt(1, 10);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         if ((lv_randomInteger == 1)) {
             lv_hybridChoice = true;
         }
@@ -3913,7 +3773,7 @@ bool gt_AttackWave6_Func (bool testConds, bool runActions) {
         }
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             if ((lv_randomInteger == 1)) {
                 lv_hybridChoice = true;
             }
@@ -3964,7 +3824,7 @@ bool gt_AttackWave6_Func (bool testConds, bool runActions) {
             }
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 if ((lv_randomInteger == 1)) {
                     lv_hybridChoice = true;
                 }
@@ -4015,7 +3875,7 @@ bool gt_AttackWave6_Func (bool testConds, bool runActions) {
                 }
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     if ((lv_randomInteger == 1)) {
                         lv_hybridChoice = true;
                     }
@@ -4069,19 +3929,19 @@ bool gt_AttackWave6_Func (bool testConds, bool runActions) {
         }
     }
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
             gf_SpawnAIWave(lv_hybridChoice, 4);
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWave(lv_hybridChoice, 5);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWave(lv_hybridChoice, 6);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWave(lv_hybridChoice, 6);
                     }
                 }
@@ -4109,7 +3969,7 @@ bool gt_AttackWave7_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_DetermineEnemySpawnWaveLocation, false, true);
     Wait(1.0, c_timeGame);
     lv_randomInteger = RandomInt(1, 10);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         if ((lv_randomInteger == 1)) {
             lv_hybridChoice = true;
         }
@@ -4160,7 +4020,7 @@ bool gt_AttackWave7_Func (bool testConds, bool runActions) {
         }
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             if ((lv_randomInteger == 1)) {
                 lv_hybridChoice = true;
             }
@@ -4211,7 +4071,7 @@ bool gt_AttackWave7_Func (bool testConds, bool runActions) {
             }
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 if ((lv_randomInteger == 1)) {
                     lv_hybridChoice = true;
                 }
@@ -4262,7 +4122,7 @@ bool gt_AttackWave7_Func (bool testConds, bool runActions) {
                 }
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     if ((lv_randomInteger == 1)) {
                         lv_hybridChoice = true;
                     }
@@ -4316,19 +4176,19 @@ bool gt_AttackWave7_Func (bool testConds, bool runActions) {
         }
     }
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
             gf_SpawnAIWave(lv_hybridChoice, 5);
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWave(lv_hybridChoice, 6);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWave(lv_hybridChoice, 7);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWave(lv_hybridChoice, 7);
                     }
                 }
@@ -4356,7 +4216,7 @@ bool gt_AttackWave8_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_DetermineEnemySpawnWaveLocation, false, true);
     Wait(1.0, c_timeGame);
     lv_randomInteger = RandomInt(1, 10);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         if ((lv_randomInteger == 1)) {
             lv_hybridChoice = true;
         }
@@ -4407,7 +4267,7 @@ bool gt_AttackWave8_Func (bool testConds, bool runActions) {
         }
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             if ((lv_randomInteger == 1)) {
                 lv_hybridChoice = true;
             }
@@ -4458,7 +4318,7 @@ bool gt_AttackWave8_Func (bool testConds, bool runActions) {
             }
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 if ((lv_randomInteger == 1)) {
                     lv_hybridChoice = true;
                 }
@@ -4509,7 +4369,7 @@ bool gt_AttackWave8_Func (bool testConds, bool runActions) {
                 }
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     if ((lv_randomInteger == 1)) {
                         lv_hybridChoice = true;
                     }
@@ -4563,19 +4423,19 @@ bool gt_AttackWave8_Func (bool testConds, bool runActions) {
         }
     }
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
             gf_SpawnAIWave(lv_hybridChoice, 6);
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWave(lv_hybridChoice, 7);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWave(lv_hybridChoice, 7);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWave(lv_hybridChoice, 7);
                     }
                 }
@@ -4603,7 +4463,7 @@ bool gt_AttackWave9_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_DetermineEnemySpawnWaveLocation, false, true);
     Wait(1.0, c_timeGame);
     lv_randomInteger = RandomInt(1, 10);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         if ((lv_randomInteger == 1)) {
             lv_hybridChoice = true;
         }
@@ -4654,7 +4514,7 @@ bool gt_AttackWave9_Func (bool testConds, bool runActions) {
         }
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             if ((lv_randomInteger == 1)) {
                 lv_hybridChoice = true;
             }
@@ -4705,7 +4565,7 @@ bool gt_AttackWave9_Func (bool testConds, bool runActions) {
             }
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 if ((lv_randomInteger == 1)) {
                     lv_hybridChoice = true;
                 }
@@ -4756,7 +4616,7 @@ bool gt_AttackWave9_Func (bool testConds, bool runActions) {
                 }
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     if ((lv_randomInteger == 1)) {
                         lv_hybridChoice = true;
                     }
@@ -4810,19 +4670,19 @@ bool gt_AttackWave9_Func (bool testConds, bool runActions) {
         }
     }
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
             gf_SpawnAIWave(lv_hybridChoice, 7);
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWave(lv_hybridChoice, 7);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWave(lv_hybridChoice, 7);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWave(lv_hybridChoice, 7);
                     }
                 }
@@ -4850,7 +4710,7 @@ bool gt_AttackWave10_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_DetermineEnemySpawnWaveLocation, false, true);
     Wait(1.0, c_timeGame);
     lv_randomInteger = RandomInt(1, 10);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         if ((lv_randomInteger == 1)) {
             lv_hybridChoice = true;
         }
@@ -4901,7 +4761,7 @@ bool gt_AttackWave10_Func (bool testConds, bool runActions) {
         }
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             if ((lv_randomInteger == 1)) {
                 lv_hybridChoice = true;
             }
@@ -4952,7 +4812,7 @@ bool gt_AttackWave10_Func (bool testConds, bool runActions) {
             }
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 if ((lv_randomInteger == 1)) {
                     lv_hybridChoice = true;
                 }
@@ -5003,7 +4863,7 @@ bool gt_AttackWave10_Func (bool testConds, bool runActions) {
                 }
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     if ((lv_randomInteger == 1)) {
                         lv_hybridChoice = true;
                     }
@@ -5057,19 +4917,19 @@ bool gt_AttackWave10_Func (bool testConds, bool runActions) {
         }
     }
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
             gf_SpawnAIWave(lv_hybridChoice, 1);
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWave(lv_hybridChoice, 1);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWave(lv_hybridChoice, 1);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWave(lv_hybridChoice, 1);
                     }
                 }
@@ -5513,19 +5373,19 @@ bool gt_SendPetHatersGroup1_Func (bool testConds, bool runActions) {
     Wait(30.0, c_timeGame);
     libNtve_gf_StopTimer(gv_timerPets);
     TimerWindowDestroy(gv_timerWindowPets);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         gf_SpawnAIWavePet1(4);
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             gf_SpawnAIWavePet1(5);
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 gf_SpawnAIWavePet1(5);
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     gf_SpawnAIWavePet1(6);
                 }
             }
@@ -5561,19 +5421,19 @@ bool gt_SendPetHatersGroup2_Func (bool testConds, bool runActions) {
     Wait(30.0, c_timeGame);
     libNtve_gf_StopTimer(gv_timerPets2);
     TimerWindowDestroy(gv_timerWindowPets2);
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         gf_SpawnAIWavePet2(5);
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             gf_SpawnAIWavePet2(6);
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 gf_SpawnAIWavePet2(6);
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     gf_SpawnAIWavePet2(7);
                 }
             }
@@ -5652,7 +5512,7 @@ bool gt_StartBossFightArena1_Func (bool testConds, bool runActions) {
     gv_pointBossArenaCenter = PointFromId(674248550);
     gv_pointLostGearSpawn = PointFromId(1700973576);
     gv_currenBossArenaRegion = RegionFromId(14);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         gv_defeatedConstruct = UnitGroupLoopCurrent();
     }
@@ -5665,7 +5525,7 @@ bool gt_StartBossFightArena1_Func (bool testConds, bool runActions) {
     UnitIssueOrder(gv_heroChristopher, OrderTargetingPoint(AbilityCommand("move", 0), PointWithOffset(PointFromId(674248550), 0.0, -4.0)), c_orderQueueAddToEnd);
     UnitIssueOrder(gv_heroChristopher, Order(AbilityCommand("move", 2)), c_orderQueueAddToEnd);
     Wait(6.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 1.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 1.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         SoundPlay(SoundLink("UI_TerranPing", -1), PlayerGroupAll(), 100.0, 0.0);
         libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingBoss", UnitGetPosition(UnitGroupLoopCurrent()), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 180.0, 270.0);
@@ -5674,20 +5534,20 @@ bool gt_StartBossFightArena1_Func (bool testConds, bool runActions) {
         UIAlertUnit("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/8879E61E"), null, UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("XelNagaEyeHideousConstruct", 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("XelNagaEyeHideousConstruct", gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-        PlayerCreateEffectUnit(5, "XelNagaEyeChangeHeight", UnitGroupLoopCurrent());
+        PlayerCreateEffectUnit(gv_pLAYER_05, "XelNagaEyeChangeHeight", UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("XelNagaEyeVileConstruct", 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("XelNagaEyeVileConstruct", gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-        PlayerCreateEffectUnit(5, "XelNagaEyeChangeHeight", UnitGroupLoopCurrent());
+        PlayerCreateEffectUnit(gv_pLAYER_05, "XelNagaEyeChangeHeight", UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitBehaviorRemove(UnitGroupLoopCurrent(), "Hibernation", 1);
-        UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "Hibernation2", 5, 1);
+        UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "Hibernation2", gv_pLAYER_05, 1);
     }
     UnitGroupLoopEnd();
     TriggerExecute(gt_ChristopherDialogueBossStart, false, false);
@@ -5724,7 +5584,7 @@ bool gt_StartBossFightArena2_Func (bool testConds, bool runActions) {
     gv_pointBossArenaCenter = PointFromId(1836751042);
     gv_pointLostGearSpawn = PointFromId(1151295193);
     gv_currenBossArenaRegion = RegionFromId(15);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null,gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         gv_defeatedConstruct = UnitGroupLoopCurrent();
     }
@@ -5737,7 +5597,7 @@ bool gt_StartBossFightArena2_Func (bool testConds, bool runActions) {
     UnitIssueOrder(gv_heroChristopher, OrderTargetingPoint(AbilityCommand("move", 4), gv_pointBossArenaCenter), c_orderQueueAddToEnd);
     UnitIssueOrder(gv_heroChristopher, Order(AbilityCommand("move", 2)), c_orderQueueAddToEnd);
     Wait(6.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 1.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 1.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         SoundPlay(SoundLink("UI_TerranPing", -1), PlayerGroupAll(), 100.0, 0.0);
         libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingBoss", UnitGetPosition(UnitGroupLoopCurrent()), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 180.0, 270.0);
@@ -5746,20 +5606,20 @@ bool gt_StartBossFightArena2_Func (bool testConds, bool runActions) {
         UIAlertUnit("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/CE5956E2"), null, UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("XelNagaEyeHideousConstruct", 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("XelNagaEyeHideousConstruct", gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         PlayerCreateEffectUnit(5, "XelNagaEyeChangeHeight", UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("XelNagaEyeVileConstruct", 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("XelNagaEyeVileConstruct", gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         PlayerCreateEffectUnit(5, "XelNagaEyeChangeHeight", UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitBehaviorRemove(UnitGroupLoopCurrent(), "Hibernation", 1);
-        UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "Hibernation2", 5, 1);
+        UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "Hibernation2", gv_pLAYER_05, 1);
     }
     UnitGroupLoopEnd();
     TriggerExecute(gt_ChristopherDialogueBossStart, false, false);
@@ -5796,7 +5656,7 @@ bool gt_StartBossFightArena3_Func (bool testConds, bool runActions) {
     gv_pointBossArenaCenter = PointFromId(1222831155);
     gv_pointLostGearSpawn = PointFromId(1128701987);
     gv_currenBossArenaRegion = RegionFromId(16);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         gv_defeatedConstruct = UnitGroupLoopCurrent();
     }
@@ -5809,7 +5669,7 @@ bool gt_StartBossFightArena3_Func (bool testConds, bool runActions) {
     UnitIssueOrder(gv_heroChristopher, OrderTargetingPoint(AbilityCommand("move", 4), gv_pointBossArenaCenter), c_orderQueueAddToEnd);
     UnitIssueOrder(gv_heroChristopher, Order(AbilityCommand("move", 2)), c_orderQueueAddToEnd);
     Wait(6.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 1.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 1.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         SoundPlay(SoundLink("UI_TerranPing", -1), PlayerGroupAll(), 100.0, 0.0);
         libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingBoss", UnitGetPosition(UnitGroupLoopCurrent()), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 180.0, 270.0);
@@ -5818,20 +5678,20 @@ bool gt_StartBossFightArena3_Func (bool testConds, bool runActions) {
         UIAlertUnit("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/71094141"), null, UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("XelNagaEyeHideousConstruct", 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("XelNagaEyeHideousConstruct", gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         PlayerCreateEffectUnit(5, "XelNagaEyeChangeHeight", UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("XelNagaEyeVileConstruct", 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("XelNagaEyeVileConstruct", gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         PlayerCreateEffectUnit(5, "XelNagaEyeChangeHeight", UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitBehaviorRemove(UnitGroupLoopCurrent(), "Hibernation", 1);
-        UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "Hibernation2", 5, 1);
+        UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "Hibernation2", gv_pLAYER_05, 1);
     }
     UnitGroupLoopEnd();
     TriggerExecute(gt_ChristopherDialogueBossStart, false, false);
@@ -5868,7 +5728,7 @@ bool gt_StartBossFightArena4_Func (bool testConds, bool runActions) {
     gv_pointBossArenaCenter = PointFromId(687528844);
     gv_pointLostGearSpawn = PointFromId(1605981638);
     gv_currenBossArenaRegion = RegionFromId(17);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         gv_defeatedConstruct = UnitGroupLoopCurrent();
     }
@@ -5879,7 +5739,7 @@ bool gt_StartBossFightArena4_Func (bool testConds, bool runActions) {
     UnitIssueOrder(gv_heroChristopher, OrderTargetingPoint(AbilityCommand("move", 4), gv_pointBossArenaCenter), c_orderQueueAddToEnd);
     UnitIssueOrder(gv_heroChristopher, Order(AbilityCommand("move", 2)), c_orderQueueAddToEnd);
     Wait(6.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 1.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 1.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         SoundPlay(SoundLink("UI_TerranPing", -1), PlayerGroupAll(), 100.0, 0.0);
         libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingBoss", UnitGetPosition(UnitGroupLoopCurrent()), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 180.0, 270.0);
@@ -5888,20 +5748,20 @@ bool gt_StartBossFightArena4_Func (bool testConds, bool runActions) {
         UIAlertUnit("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/09E3E968"), null, UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("XelNagaEyeHideousConstruct", 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("XelNagaEyeHideousConstruct", gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         PlayerCreateEffectUnit(5, "XelNagaEyeChangeHeight", UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("XelNagaEyeVileConstruct", 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("XelNagaEyeVileConstruct", gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         PlayerCreateEffectUnit(5, "XelNagaEyeChangeHeight", UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(gv_pointBossArenaCenter, 3.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitBehaviorRemove(UnitGroupLoopCurrent(), "Hibernation", 1);
-        UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "Hibernation2", 5, 1);
+        UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "Hibernation2", gv_pLAYER_05, 1);
     }
     UnitGroupLoopEnd();
     TriggerExecute(gt_ChristopherDialogueBossStart, false, false);
@@ -5923,7 +5783,7 @@ void gt_StartBossFightArena4_Init () {
 bool gt_GoBacktoArenaCenter1_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05))) {
             return false;
         }
     }
@@ -5946,7 +5806,7 @@ void gt_GoBacktoArenaCenter1_Init () {
 bool gt_GoBacktoArenaCenter2_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05))) {
             return false;
         }
     }
@@ -5969,7 +5829,7 @@ void gt_GoBacktoArenaCenter2_Init () {
 bool gt_GoBacktoArenaCenter3_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05))) {
             return false;
         }
     }
@@ -5992,7 +5852,7 @@ void gt_GoBacktoArenaCenter3_Init () {
 bool gt_GoBacktoArenaCenter4_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05))) {
             return false;
         }
     }
@@ -6056,8 +5916,8 @@ bool gt_BossDefeatedFieryConstruct_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_KeepMovingDuringBossFight, false);
     gv_christopherCanMove = false;
     TriggerEnable(TriggerGetCurrent(), false);
-    UnitBehaviorAddPlayer(EventUnit(), "Hibernation", 5, 1);
-    UnitBehaviorAddPlayer(EventUnit(), "Hibernation3", 5, 1);
+    UnitBehaviorAddPlayer(EventUnit(), "Hibernation", gv_pLAYER_05, 1);
+    UnitBehaviorAddPlayer(EventUnit(), "Hibernation3", gv_pLAYER_05, 1);
     UnitIssueOrder(gv_heroChristopher, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
     PointSet(PointFromId(1002152419), UnitGetPosition(gv_defeatedConstruct));
     gv_transmissionChristopherMovesForTheFirstTime = false;
@@ -6120,8 +5980,8 @@ bool gt_BossDefeatedArcticConstruct_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_KeepMovingDuringBossFight, false);
     gv_christopherCanMove = false;
     TriggerEnable(TriggerGetCurrent(), false);
-    UnitBehaviorAddPlayer(EventUnit(), "Hibernation", 5, 1);
-    UnitBehaviorAddPlayer(EventUnit(), "Hibernation3", 5, 1);
+    UnitBehaviorAddPlayer(EventUnit(), "Hibernation", gv_pLAYER_05, 1);
+    UnitBehaviorAddPlayer(EventUnit(), "Hibernation3", gv_pLAYER_05, 1);
     UnitIssueOrder(gv_heroChristopher, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
     PointSet(PointFromId(1002152419), UnitGetPosition(gv_defeatedConstruct));
     gv_transmissionChristopherMovesForTheFirstTime = false;
@@ -6422,19 +6282,19 @@ bool gt_IncreaseConstructHealth_Func (bool testConds, bool runActions) {
     }
     if ((gv_objectiveGearCurrent == 1)) {
         lv_newMaximumHealth = 7000;
-        UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(PointFromId(1836751042), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(PointFromId(1836751042), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLifeMax, lv_newMaximumHealth);
             UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLife, lv_newMaximumHealth);
         }
         UnitGroupLoopEnd();
-        UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(PointFromId(1222831155), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(PointFromId(1222831155), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLifeMax, lv_newMaximumHealth);
             UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLife, lv_newMaximumHealth);
         }
         UnitGroupLoopEnd();
-        UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(PointFromId(687528844), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(PointFromId(687528844), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLifeMax, lv_newMaximumHealth);
             UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLife, lv_newMaximumHealth);
@@ -6444,13 +6304,13 @@ bool gt_IncreaseConstructHealth_Func (bool testConds, bool runActions) {
     else {
         if ((gv_objectiveGearCurrent == 2)) {
             lv_newMaximumHealth = 10000;
-            UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(PointFromId(1222831155), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(PointFromId(1222831155), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                 UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLifeMax, lv_newMaximumHealth);
                 UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLife, lv_newMaximumHealth);
             }
             UnitGroupLoopEnd();
-            UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(PointFromId(687528844), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(PointFromId(687528844), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                 UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLifeMax, lv_newMaximumHealth);
                 UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLife, lv_newMaximumHealth);
@@ -6460,7 +6320,7 @@ bool gt_IncreaseConstructHealth_Func (bool testConds, bool runActions) {
         else {
             if ((gv_objectiveGearCurrent == 3)) {
                 lv_newMaximumHealth = 14000;
-                UnitGroupLoopBegin(UnitGroup(null, 5, RegionCircle(PointFromId(687528844), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup(null, gv_pLAYER_05, RegionCircle(PointFromId(687528844), 2.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLifeMax, lv_newMaximumHealth);
                     UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLife, lv_newMaximumHealth);
@@ -7206,27 +7066,24 @@ bool gt_CreateTimerChristophersShipFirstTime_Func (bool testConds, bool runActio
     if (!runActions) {
         return true;
     }
-
-
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         lv_time = 460.0;
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             lv_time = 440.0;
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 lv_time = 420.0;
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     lv_time = 400.0;
                 }
             }
         }
     }
-
     TimerStart(gv_timerShip1, lv_time, false, c_timeGame);
     TimerWindowCreate(gv_timerShip1, StringExternal("DOCSTR_0106"), false, false);
     gv_timerWindowShip1 = TimerWindowLastCreated();
@@ -7250,19 +7107,19 @@ bool gt_CreateTimerChristophersShipSecondTime_Func (bool testConds, bool runActi
     if (!runActions) {
         return true;
     }
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         lv_time = 150.0;
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             lv_time = 140.0;
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 lv_time = 130.0;
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     lv_time = 120.0;
                 }
             }
@@ -7294,19 +7151,19 @@ bool gt_CreateTimerChristophersShipThirdTime_Func (bool testConds, bool runActio
     if (!runActions) {
         return true;
     }
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         lv_time = 170.0;
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             lv_time = 160.0;
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 lv_time = 150.0;
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     lv_time = 140.0;
                 }
             }
@@ -7338,19 +7195,19 @@ bool gt_CreateTimerChristophersShipFourthTime_Func (bool testConds, bool runActi
     if (!runActions) {
         return true;
     }
-    if ((custom_difficulty() == 1)) {
+    if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         lv_time = 170.0;
     }
     else {
-        if ((custom_difficulty() == 2)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
             lv_time = 160.0;
         }
         else {
-            if ((custom_difficulty() == 3)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                 lv_time = 150.0;
             }
             else {
-                if ((custom_difficulty() == 4)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                     lv_time = 140.0;
                 }
             }
@@ -7471,18 +7328,18 @@ bool gt_ShipAmbush1_Func (bool testConds, bool runActions) {
     gv_aISpawnWaveLocation = RegionFromId(12);
     Wait(1.0, c_timeGame);
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWaveShip(4);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWaveShip(5);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWaveShip(5);
                     }
                 }
@@ -7517,18 +7374,18 @@ bool gt_ShipAmbush2_Func (bool testConds, bool runActions) {
     gv_aISpawnWaveLocation = RegionFromId(12);
     Wait(1.0, c_timeGame);
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWaveShip(4);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWaveShip(5);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWaveShip(5);
                     }
                 }
@@ -7564,18 +7421,18 @@ bool gt_ShipAmbush3_Func (bool testConds, bool runActions) {
     gv_aISpawnWaveLocation = RegionFromId(4);
     Wait(1.0, c_timeGame);
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWaveShip(4);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWaveShip(5);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWaveShip(5);
                     }
                 }
@@ -7611,18 +7468,18 @@ bool gt_ShipAmbush4_Func (bool testConds, bool runActions) {
     gv_aISpawnWaveLocation = RegionFromId(4);
     Wait(1.0, c_timeGame);
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWaveShip(5);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWaveShip(6);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWaveShip(6);
                     }
                 }
@@ -7658,18 +7515,18 @@ bool gt_ShipAmbush5_Func (bool testConds, bool runActions) {
     gv_aISpawnWaveLocation = RegionFromId(6);
     Wait(1.0, c_timeGame);
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWaveShip(5);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWaveShip(6);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWaveShip(6);
                     }
                 }
@@ -7705,18 +7562,18 @@ bool gt_ShipAmbush6_Func (bool testConds, bool runActions) {
     gv_aISpawnWaveLocation = RegionFromId(6);
     Wait(1.0, c_timeGame);
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWaveShip(6);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWaveShip(7);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWaveShip(7);
                     }
                 }
@@ -7752,18 +7609,18 @@ bool gt_ShipAmbush7_Func (bool testConds, bool runActions) {
     gv_aISpawnWaveLocation = RegionFromId(1);
     Wait(1.0, c_timeGame);
     if ((libCOMI_gf_GameIsOver() == false)) {
-        if ((custom_difficulty() == 1)) {
+        if ((libCOMI_gf_GetMissionDifficulty() == 1)) {
         }
         else {
-            if ((custom_difficulty() == 2)) {
+            if ((libCOMI_gf_GetMissionDifficulty() == 2)) {
                 gf_SpawnAIWaveShip(6);
             }
             else {
-                if ((custom_difficulty() == 3)) {
+                if ((libCOMI_gf_GetMissionDifficulty() == 3)) {
                     gf_SpawnAIWaveShip(7);
                 }
                 else {
-                    if ((custom_difficulty() == 4)) {
+                    if ((libCOMI_gf_GetMissionDifficulty() == 4)) {
                         gf_SpawnAIWaveShip(7);
                     }
                 }
@@ -7801,7 +7658,6 @@ void InitTriggers () {
     gt_VictorySequence_Init();
     gt_VictoryFanfareQ_Init();
     gt_Victory_Init();
-    gt_DefeatEventPlayersBasesDestroyed_Init();
     gt_DefeatEventChristopherDies_Init();
     gt_DefeatEventShipDies_Init();
     gt_Defeat_Init();
