@@ -2,7 +2,7 @@
 // 
 // Generated Map Script
 // 
-// Name:   Big City Showdown
+// Name:   [ARC] Big City Showdown
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
@@ -20,15 +20,15 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
-const int gv_pLAYER_07_ENEMY = 7;
+const int gv_pLAYER_03_ENEMY = 10;
+const int gv_pLAYER_04_ENEMY = 11;
+const int gv_pLAYER_05_CITY = 12;
 
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
+int gv_pLAYER_01_USER;
+int gv_pLAYER_02_USER;
 playergroup gv_enemyGroup;
 point gv_victoryCompletePan;
 point gv_attackWaveA_Wave05Path;
@@ -47,6 +47,8 @@ int gv_bonusPing1;
 int gv_bonusPing2;
 
 void InitGlobals () {
+    gv_pLAYER_01_USER = 1;
+    gv_pLAYER_02_USER = 2;
     gv_enemyGroup = PlayerGroupEmpty();
     gv_victoryCompletePan = PointFromId(97154963);
     gv_bossPing = c_invalidPingId;
@@ -76,10 +78,6 @@ trigger gt_StartGameQ;
 trigger gt_EnemyAttackingQ;
 trigger gt_DefeatPrimaryObjectiveFailed;
 trigger gt_VictoryPrimaryObjectiveComplete;
-trigger gt_VictorySequence;
-trigger gt_VictoryFanfareQ;
-trigger gt_Victory;
-trigger gt_Defeat;
 trigger gt_SetupAttackWaveSpawn;
 trigger gt_AIAttackWaves;
 trigger gt_AttackWave01;
@@ -270,14 +268,12 @@ wave cai_wave_createdWave (int w, int p) {
 //--------------------------------------------------------------------------------------------------
 void cai_startall () {
     cai_start("aiF917F4D7", 7);
-    AICampaignStart(3);
-    AICampaignStart(4);
-    AICampaignStart(5);
     AICampaignStart(6);
     AICampaignStart(8);
     AICampaignStart(9);
     AICampaignStart(10);
     AICampaignStart(11);
+    AICampaignStart(12);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -360,17 +356,15 @@ bool gt_Init02Players_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    PlayerSetAlliance(7, c_allianceIdVision, 1, true);
-    PlayerSetAlliance(7, c_allianceIdVision, 2, true);
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
+    PlayerSetAlliance(7, c_allianceIdVision, gv_pLAYER_01_USER, true);
+    PlayerSetAlliance(7, c_allianceIdVision, gv_pLAYER_02_USER, true);
     PlayerSetAlliance(7, c_allianceIdVision, 6, true);
-    libNtve_gf_SetAlliance(5, 6, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(3, 8, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(4, 8, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(7, 8, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(3, 5, libNtve_ge_AllianceSetting_Neutral);
-    libNtve_gf_SetAlliance(4, 5, libNtve_ge_AllianceSetting_Neutral);
-    libNtve_gf_SetAlliance(8, 5, libNtve_ge_AllianceSetting_Neutral);
-    libNtve_gf_SetAlliance(6, 9, libNtve_ge_AllianceSetting_Neutral);
+    libNtve_gf_SetAlliance(gv_pLAYER_05_CITY, 6, libNtve_ge_AllianceSetting_Ally);
+    libNtve_gf_SetAlliance(7, gv_pLAYER_05_CITY, libNtve_ge_AllianceSetting_Enemy);
+    libNtve_gf_SetAlliance(4, gv_pLAYER_05_CITY, libNtve_ge_AllianceSetting_Neutral);
+    libNtve_gf_SetAlliance(8, gv_pLAYER_05_CITY, libNtve_ge_AllianceSetting_Neutral);
     libNtve_gf_SetUpgradeLevelForPlayer(8, "zerglingmovementspeed", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(8, "GlialReconstitution", 1);
     libNtve_gf_SetUpgradeLevelForPlayer(8, "Burrow", 1);
@@ -379,6 +373,7 @@ bool gt_Init02Players_Func (bool testConds, bool runActions) {
     PlayerModifyPropertyInt(8, c_playerPropMinerals, c_playerPropOperSetTo, 99999999);
     PlayerModifyPropertyInt(8, c_playerPropVespene, c_playerPropOperSetTo, 99999999);
     VisRevealerCreate(8, RegionFromId(11));
+    VisRevealerCreate(gv_pLAYER_01_USER, RegionFromId(11));
     return true;
 }
 
@@ -447,13 +442,7 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TriggerQueueEnter();
     TriggerExecute(gt_ObjectiveDefendTheCityCreate, true, true);
     TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/7922868E"), StringExternal("Param/Value/AF02628F"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
-    PlayerSetAlliance(5, c_allianceIdVision, 2, true);
-    PlayerSetAlliance(5, c_allianceIdVision, 1, true);
-    PlayerSetAlliance(6, c_allianceIdVision, 1, true);
-    PlayerSetAlliance(6, c_allianceIdVision, 2, true);
-    PlayerSetAlliance(8, c_allianceIdVision, 7, true);
-    VisRevealerCreate(1, RegionFromId(29));
-    VisRevealerCreate(2, RegionFromId(29));
+    VisRevealerCreate(gv_pLAYER_01_USER, RegionFromId(29));
     Wait(2.0, c_timeGame);
     TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/1536B8CC"), StringExternal("Param/Value/BBDCC195"), 10.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
     Wait(2.0, c_timeGame);
@@ -538,23 +527,11 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
+    libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
     TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/068E1300"), StringExternal("Param/Value/73572DB6"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraPan(gv_pLAYER_01_USER, RegionGetCenter(RegionEntireMap()), 1.5, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, RegionGetCenter(RegionEntireMap()), 1.5, -1, 10.0, false);
-    libCOMI_gf_WaitForMissionTransmission();
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Defeat, true, false);
+    libCOMI_gf_MoveCameraForAllPlayers(RegionGetCenter(RegionEntireMap()), 1.5);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverDefeat);
     return true;
 }
 
@@ -585,139 +562,19 @@ bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerExecute(gt_VictorySequence, true, false);
+    TriggerExecute(gt_ObjectiveDefendTheCityComplete, true, false);
+    libCOMI_gf_BeforeFanfare(c_gameOverVictory);
+    libCOMI_gf_SendMissionTransmission("PrimaryObjectiveVictory", false, -1);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/0EC7D41A"), StringExternal("Param/Value/83DB4745"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    libCOMI_gf_MoveCameraForAllPlayers(gv_victoryCompletePan, 1.5);
+    ;
+    libCOMI_gf_AfterFanfare(c_gameOverVictory);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryPrimaryObjectiveComplete_Init () {
     gt_VictoryPrimaryObjectiveComplete = TriggerCreate("gt_VictoryPrimaryObjectiveComplete_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Sequence
-//--------------------------------------------------------------------------------------------------
-bool gt_VictorySequence_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
-    Wait(2.0, c_timeReal);
-    TriggerExecute(gt_ObjectiveDefendTheCityComplete, true, false);
-    libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictorySequence_Init () {
-    gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory Fanfare Q
-//--------------------------------------------------------------------------------------------------
-bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TransmissionClearAll();
-    TriggerQueueEnter();
-    libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
-    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/0EC7D41A"), StringExternal("Param/Value/83DB4745"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
-    libCOMI_gf_SendMissionTransmission("PrimaryObjectiveVictory", false, -1);
-    UnitPauseAll(true);
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_01_USER, RegionRandomPoint(RegionFromId(12)), 2.0, -1, 10.0, false);
-    CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-    CameraPan(gv_pLAYER_02_USER, RegionRandomPoint(RegionFromId(12)), 2.0, -1, 10.0, false);
-    libCOMI_gf_WaitForMissionTransmission();
-    Wait(libCOMI_gv_campaignVictoryDelay, c_timeGame);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Victory, true, false);
-    TriggerQueueExit();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_VictoryFanfareQ_Init () {
-    gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Victory
-//--------------------------------------------------------------------------------------------------
-bool gt_Victory_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverVictory);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Victory_Init () {
-    gt_Victory = TriggerCreate("gt_Victory_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Defeat
-//--------------------------------------------------------------------------------------------------
-bool gt_Defeat_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Defeat_Init () {
-    gt_Defeat = TriggerCreate("gt_Defeat_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1088,7 +945,7 @@ bool gt_ObjectiveDefendTheCityCreate_Func (bool testConds, bool runActions) {
     ObjectiveCreate(StringExternal("Param/Value/D22FE649"), StringToText(""), c_objectiveStateActive, true);
     gv_defendTheCity2 = ObjectiveLastCreated();
     ObjectiveSetPriority(ObjectiveLastCreated(), 7);
-    auto53FB6007_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto53FB6007_g = UnitGroup(null, gv_pLAYER_05_CITY, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     auto53FB6007_u = UnitGroupCount(auto53FB6007_g, c_unitCountAll);
     for (;; auto53FB6007_u -= 1) {
         auto53FB6007_var = UnitGroupUnitFromEnd(auto53FB6007_g, auto53FB6007_u);
@@ -1281,7 +1138,7 @@ bool gt_ArmageddionResetAI_Func (bool testConds, bool runActions) {
     }
 
     Wait(4.0, c_timeGame);
-    UnitIssueOrder(gv_armageddonBoss, OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitGroupRandomUnit(UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive))), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_armageddonBoss, OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitGroupRandomUnit(UnitGroup(null, gv_pLAYER_05_CITY, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive))), c_orderQueueAddToEnd);
     return true;
 }
 
@@ -1303,7 +1160,7 @@ bool gt_ArmageddonAI_Func (bool testConds, bool runActions) {
 
     Wait(7.0, c_timeGame);
     while (true) {
-        UnitIssueOrder(gv_armageddonBoss, OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitGroupRandomUnit(UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive))), c_orderQueueAddToEnd);
+        UnitIssueOrder(gv_armageddonBoss, OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitGroupRandomUnit(UnitGroup(null, gv_pLAYER_05_CITY, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive))), c_orderQueueAddToEnd);
         Wait(19.0, c_timeGame);
     }
     return true;
@@ -1424,9 +1281,9 @@ bool gt_ArmageddonAI70_Func (bool testConds, bool runActions) {
 
     while (true) {
         Wait(4.0, c_timeGame);
-        UnitIssueOrder(gv_armageddonBoss, OrderTargetingUnit(AbilityCommand("ShadowYamato2", 0), UnitGroupUnit(UnitGroup(null, 5, RegionFromId(12), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1)), c_orderQueueReplace);
+        UnitIssueOrder(gv_armageddonBoss, OrderTargetingUnit(AbilityCommand("ShadowYamato2", 0), UnitGroupUnit(UnitGroup(null, gv_pLAYER_05_CITY, RegionFromId(12), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1)), c_orderQueueReplace);
         Wait(20.0, c_timeGame);
-        UnitIssueOrder(gv_armageddonBoss, OrderTargetingUnit(AbilityCommand("ShadowYamato2", 0), UnitGroupUnit(UnitGroup(null, 5, RegionFromId(12), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1)), c_orderQueueReplace);
+        UnitIssueOrder(gv_armageddonBoss, OrderTargetingUnit(AbilityCommand("ShadowYamato2", 0), UnitGroupUnit(UnitGroup(null, gv_pLAYER_05_CITY, RegionFromId(12), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1)), c_orderQueueReplace);
         Wait(40.0, c_timeGame);
     }
     return true;
@@ -3374,10 +3231,6 @@ void InitTriggers () {
     gt_EnemyAttackingQ_Init();
     gt_DefeatPrimaryObjectiveFailed_Init();
     gt_VictoryPrimaryObjectiveComplete_Init();
-    gt_VictorySequence_Init();
-    gt_VictoryFanfareQ_Init();
-    gt_Victory_Init();
-    gt_Defeat_Init();
     gt_SetupAttackWaveSpawn_Init();
     gt_AIAttackWaves_Init();
     gt_AttackWave01_Init();
