@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CValidatorCombine id="GehennaAttacks">
+        <CombineArray value="GehennaSingle"/>
+        <CombineArray value="GehennaFew"/>
+        <CombineArray value="GehennaSome"/>
+        <CombineArray value="GehennaMore"/>
+        <CombineArray value="GehennaMany"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="GehennaSingle">
+        <Type value="And"/>
+        <CombineArray value="GehennaTargetsSingle"/>
+        <CombineArray value="LessThanMarkerGehennaSingle"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="GehennaFew">
+        <Type value="And"/>
+        <CombineArray value="GehennaTargetsFew"/>
+        <CombineArray value="LessThanMarkerGehennaFew"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="GehennaSome">
+        <Type value="And"/>
+        <CombineArray value="GehennaTargetsSome"/>
+        <CombineArray value="LessThanMarkerGehennaSome"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="GehennaMore">
+        <Type value="And"/>
+        <CombineArray value="GehennaTargetsMore"/>
+        <CombineArray value="LessThanMarkerGehennaMore"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="GehennaMany">
+        <Type value="And"/>
+        <CombineArray value="GehennaTargetsMany"/>
+        <CombineArray value="noMarkers"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="GehennaTargetsSingle">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LE"/>
+        <Value value="1"/>
+        <Behavior value="GehennaTargets"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="GehennaTargetsFew">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LE"/>
+        <Value value="3"/>
+        <Behavior value="GehennaTargets"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="GehennaTargetsSome">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LE"/>
+        <Value value="7"/>
+        <Behavior value="GehennaTargets"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="GehennaTargetsMore">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LE"/>
+        <Value value="15"/>
+        <Behavior value="GehennaTargets"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="GehennaTargetsMany">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="16"/>
+        <Behavior value="GehennaTargets"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="AntiStructCampingBoth">
+        <CombineArray value="FragmentAntiCampDistance"/>
+        <CombineArray value="NoEnemyBuildingsClose15"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="HasPrecursorBig">
+        <Behavior value="VoidRiftTrainBigPrecursor"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="IsMutKhaydarinMonolith">
+        <Value value="MutatorAmonKhaydarinMonolith"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsNotCreepTumorActive">
+        <ResultFailed value="Error,CantTargetCreepTumor"/>
+        <Value value="CreepTumor"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsNotCreepTumorQueen">
+        <ResultFailed value="Error,CantTargetCreepTumor"/>
+        <Value value="CreepTumorQueen"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsMutPhotonCannon">
+        <Value value="MutatorAmonPhotonCannon"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="IsNotMutVerPhotonCannonOrKhaydarinMonolith">
+        <CombineArray value="IsMutPhotonCannon"/>
+        <CombineArray value="IsMutKhaydarinMonolith"/>
+        <Negate value="1"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareMarkerCount id="LessThanMarkerGehennaFew">
+        <ResultFailed value="AlreadyTargeted"/>
+        <Compare value="LE"/>
+        <Value value="8"/>
+    </CValidatorUnitCompareMarkerCount>
+    <CValidatorUnitCompareMarkerCount id="LessThanMarkerGehennaSome">
+        <ResultFailed value="AlreadyTargeted"/>
+        <Compare value="LE"/>
+        <Value value="4"/>
+    </CValidatorUnitCompareMarkerCount>
+    <CValidatorUnitCompareMarkerCount id="LessThanMarkerGehennaMore">
+        <ResultFailed value="AlreadyTargeted"/>
+        <Compare value="LE"/>
+        <Value value="2"/>
+    </CValidatorUnitCompareMarkerCount>
+    <CValidatorLocationEnumArea id="NoEnemyBuildingsClose15">
+        <ResultFailed value="Error,noEnemyClose6"/>
+        <AreaArray Count="0" Radius="15" Validator="IsStructure"/>
+        <Count value="4294967295"/>
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorUnitCompareBehaviorCount id="DoesNotHaveStrengthen2">
+        <ResultFailed value="Error,Buff"/>
+        <Compare value="LT"/>
+        <Value value="1"/>
+        <Behavior value="ExtractVoidEnergyBEH"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="DoesNotHaveReservoirBeingExtracted6">
+        <ResultFailed value="Error,Buff"/>
+        <Compare value="LT"/>
+        <Value value="5"/>
+        <Behavior value="ExtractVoidEnergyBEH"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitCompareBehaviorCount id="HasAlarakOvercharge">
+        <Behavior value="AlarakStructureOvercharge"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorUnitType id="IsSmallVoidShard_FD">
+        <Value value="VoidShardFragment"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsVoidEnergyReservoir">
+        <ResultNoUnit value="Error,VoidEnergyReservoir"/>
+        <Value value="VoidEnergyReservoir"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsVoidShard_FD">
+        <Value value="VoidShardAC"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorUnitCompareBehaviorCount id="NotReturning">
+        <Behavior value="LocalDefenderReturning"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorLocationEnumArea id="VoidShardTooClose2">
+        <ResultFailed value="Error,VoidShardsClose"/>
+        <AreaArray>
+            <Compare value="LE"/>
+            <Count value="0"/>
+            <Radius value="7"/>
+            <Validator value="isAnyShard"/>
+        </AreaArray>
+        <AreaArray>
+            <Compare value="GE"/>
+            <Count value="1"/>
+            <Radius value="13"/>
+            <Validator value="isAnyShard"/>
+        </AreaArray>
+        <Count value="4294967295"/>
+        <SearchFilters value="-;Neutral,Enemy,Missile,Dead,Hidden"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="FragmentAntiCampDistance">
+        <ResultFailed value="Error,VoidShardsClose"/>
+        <AreaArray>
+            <Compare value="GE"/>
+            <Count value="1"/>
+            <Radius value="20"/>
+            <Validator value="AntiStructCampingUnit"/>
+        </AreaArray>
+        <Count value="4294967295"/>
+        <SearchFilters value="-;Neutral,Enemy,Missile,Dead,Hidden"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorCombine id="isAlliedStructure">
+        <CombineArray value="TargetIsAllyorPlayer"/>
+        <CombineArray value="IsStructureTarget"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="AntiStructCampingUnit">
+        <CombineArray value="IsVoidEnergyReservoir"/>
+        <CombineArray value="IsVoidShard"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="isMalash">
+        <Value value="PitMalash"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="BarrierValidator">
+        <ResultFailed value="Error,BarrierVal"/>
+        <Type value="And"/>
+        <CombineArray value="noMalashClose10"/>
+        <CombineArray value="noEnemyClose6"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="StrengthenValidator">
+        <ResultFailed value="Error,Barrier"/>
+        <Type value="And"/>
+        <CombineArray value="DoesNotHaveStrengthen"/>
+        <CombineArray value="isBarrierWall_FD"/>
+        <CombineArray value="IsSmallVoidShard_FD"/>
+        <CombineArray value="IsVoidShard_FD"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareBehaviorCount id="DoesNotHaveStrengthen">
+        <ResultFailed value="Error,Buff"/>
+        <Compare value="LT"/>
+        <Value value="1"/>
+        <Behavior value="Empowered"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorCombine id="DuplicateValidator">
+        <ResultFailed value="Error,DuplicateValidator"/>
+        <CombineArray value="NotStructureOrIsSpiderMine"/>
+        <CombineArray value="NotReturning"/>
+        <Type value="And"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="IsEitherShard">
+        <CombineArray value="IsVoidShard"/>
+        <CombineArray value="IsSmallVoidShard"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="IsVoidShard">
+        <Value value="VoidShardAC"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="IsSmallVoidShard">
+        <Value value="VoidShardFragment"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="isAnyShard">
+        <CombineArray value="IsSmallVoidShard"/>
+        <CombineArray value="IsVoidShard"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="isBarrierWall_FD">
+        <ResultFailed value="Error,isBarrier"/>
+        <Value value="BarrierWall"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
+    <CValidatorCombine id="isEitherSpiderMine">
+        <CombineArray value="isSpiderMine"/>
+        <CombineArray value="isSpiderMine2"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="isSpiderMine">
+        <Value value="SpiderMineBurrowed"/>
+    </CValidatorUnitType>
+    <CValidatorUnitType id="isSpiderMine2">
+        <Value value="SpiderMine"/>
+    </CValidatorUnitType>
+    <CValidatorLocationEnumArea id="noEnemyClose6">
+        <ResultFailed value="Error,noEnemyClose10"/>
+        <AreaArray Compare="LE" Count="0" Radius="6"/>
+        <Count value="4294967295"/>
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="VoidShardTooClose">
+        <ResultFailed value="Error,VoidShardsClose"/>
+        <AreaArray>
+            <Compare value="GE"/>
+            <Count value="1"/>
+            <Radius value="17"/>
+            <Validator value="isAnyShard"/>
+        </AreaArray>
+        <Count value="4294967295"/>
+        <SearchFilters value="-;Neutral,Enemy,Missile,Dead,Hidden"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="EnemyBuildingsClose6">
+        <ResultFailed value="Error,noEnemyClose6"/>
+        <AreaArray>
+            <Compare value="GE"/>
+            <Count value="1"/>
+            <Radius value="6"/>
+            <Validator value="IsStructure"/>
+        </AreaArray>
+        <Count value="4294967295"/>
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Dead,Hidden"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="noEnemyClose10">
+        <ResultFailed value="Error,noEnemyClose10"/>
+        <AreaArray Compare="LE" Count="0" Radius="10"/>
+        <Count value="4294967295"/>
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="noMalashClose10">
+        <ResultFailed value="Error,noEnemyClose10"/>
+        <AreaArray>
+            <Compare value="LE"/>
+            <Count value="0"/>
+            <Radius value="10"/>
+            <Validator value="isMalash"/>
+        </AreaArray>
+        <Count value="4294967295"/>
+        <SearchFilters value="-;Missile,Dead,Hidden"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorUnitCompareMarkerCount id="LessThanMarkerGehennaSingle">
+        <ResultFailed value="AlreadyTargeted"/>
+        <Compare value="LE"/>
+        <Value value="16"/>
+    </CValidatorUnitCompareMarkerCount>
+</Catalog>

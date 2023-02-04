@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CActorUnit id="PlanetaryFortress2" parent="TerranBuildingEx" unitName="PlanetaryFortress2">
+        <Aliases value="_UnitHuge"/>
+        <Macros value="QueueAnim"/>
+        <Macros value="BuildingFlattenTerrainMacro"/>
+        <Macros value="MacroTownhallDeco_Terran"/>
+        <Macros value="TerranPlanetaryFortressPlayerDecalMacro"/>
+        <AcceptedHostedPropTransfers index="Decal" value="0"/>
+        <On Terms="ActorCreation" Send="AnimGroupApply A"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom CommandCenter; MorphTo PlanetaryFortress" Send="Create"/>
+        <On Terms="Behavior.ColonyInfestation.On" Send="Create InfestationCommandCenter"/>
+        <On Terms="Abil.*.TransportOccupy" Send="AnimPlay StandC Stand,Work,C PlayForever"/>
+        <On Terms="Abil.*.TransportEmpty" Send="AnimClear StandC"/>
+        <On Terms="UnitBirth.PlanetaryFortress2; PlayerHasClanDecal" Send="Create TerranClanFlag"/>
+        <On Terms="UnitBirth.PlanetaryFortress2; PlayerHasTrophy" Send="Create TerranPlayerTrophy"/>
+        <Model value="CommandCenter_CovertOps"/>
+        <Scale value="1.200000"/>
+        <DeathArray index="Normal" ModelLink="PlanetaryFortressDeath"/>
+        <DeathArray index="UnderConstruction" ModelLink="TerranLargeBuildingDeath" SoundLink="PlanetaryFortress_Explode"/>
+        <PortraitModel value="CommandCenterPortrait"/>
+        <BarOffset value="180"/>
+        <BarWidth value="200"/>
+        <GlossaryAnim value="Stand,A"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Terran-PlanetaryFortress.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\btn-building-terran-PlanetaryFortress.dds"/>
+        <NameOffset value="150"/>
+        <SoundArray index="Ready" value="PlanetaryFortress_Ready"/>
+        <SoundArray index="What" value="PlanetaryFortress_What"/>
+        <StatusHarvesterData Text="UI/HarvesterCountMinerals" SearchFilters="HarvestableResource;Player,Ally,Enemy" SearchRadius="8"/>
+        <UnitFlags index="StandAnimBirthVariation" value="0"/>
+        <UnitIcon value="Assets\Textures\btn-building-terran-PlanetaryFortress.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Terran-PlanetaryFortress.dds"/>
+        </Wireframe>
+    </CActorUnit>
+</Catalog>

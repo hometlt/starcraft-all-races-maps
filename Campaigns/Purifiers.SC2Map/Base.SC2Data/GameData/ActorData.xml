@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CActorUnit id="AdeptPurifier" parent="GenericUnitBase" unitName="AdeptPurifier">
+        <Aliases value="_UnitSmall"/>
+        <Macros value="PhysicsDeathsSwarmGround"/>
+        <Macros value="PhysicsDeathsVoidGround"/>
+        <Macros value="TerrainSquibAnimations"/>
+        <On Terms="UnitHeightUpdate.*.Land" Send="Create Adept_Land"/>
+        <On Terms="UnitHeightUpdate.*.Land" Send="Create Templar_LandSweetener"/>
+        <On Terms="Abil.AdeptPhaseShift.SourceCastStart; !UnitWalking" Send="$Spell"/>
+        <On Terms="Behavior.Hallucination.On" Send="Create HallucinationBirthSoundSmall"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit IsHallucination" Send="DeathCustomize Hallucination"/>
+        <On Terms="Effect.AdeptPhaseShiftTeleport.Stop" Send="Create AdeptSpiritIn"/>
+        <On Terms="Effect.AdeptPhaseShiftTeleport.Stop" Send="Create AdeptSpiritInSound"/>
+        <On Terms="Behavior.AdeptPhaseShiftCaster.On" Send="Create AdeptSpiritSpawn"/>
+        <On Terms="Behavior.AdeptPhaseShiftCaster.On" Send="AnimBracketStart Cover Cover,Start Cover Cover,End"/>
+        <On Terms="Behavior.AdeptPhaseShiftCaster.Off" Send="AnimBracketStop Cover"/>
+        <On Terms="UnitMovementUpdate.*.Walk; AnimPlaying Spell" Send="AnimClear Spell"/>
+        <On Terms="Signal.*.NeuralLinkStarted" Send="RefSetFromMsg ::actor.NeuralLinkSite ::Sender"/>
+        <On Terms="Effect.AdeptPhaseShiftTeleportSet.Start" Target="::actor.NeuralLinkSite" Send="Signal BreakLinkInstant"/>
+        <On Terms="UnitDeathCustomize; !ValidateUnit IsHallucination" Send="Create AdeptProtossSpiritDeathModel"/>
+        <On Terms="Effect.AdeptPhaseShiftTeleportSet.Start" Send="CombatRevealClearTimers"/>
+        <Model value="Adept"/>
+        <AnimBlendTime value="0.200000"/>
+        <ModelFlags index="OutlineEmitter" value="1"/>
+        <BuildModel value="AdeptWarpIn"/>
+        <DeathArray index="Normal" ModelLink="AdeptDeath" SoundLink="Adept_DeathFX"/>
+        <DeathCustoms ActorModel="AdeptDeathRagdoll" ModelLink="AdeptDeathRagdoll" Name="RagdollBasic">
+            <BodySquibs Name="BloodReduced"/>
+        </DeathCustoms>
+        <DeathCustoms Name="RagdollSiegeTank" InheritsFrom="RagdollBasic"/>
+        <DeathCustoms Name="RagdollNuke" InheritsFrom="RagdollBasic">
+            <BodySquibs Name="Fire"/>
+        </DeathCustoms>
+        <DeathCustoms Name="RagdollFire" InheritsFrom="RagdollBasic">
+            <BodySquibs Name="Fire"/>
+        </DeathCustoms>
+        <DeathCustoms Name="RagdollAcid" InheritsFrom="RagdollBasic">
+            <BodySquibs Name="Acid"/>
+        </DeathCustoms>
+        <DeathCustoms Name="RagdollBaneling" InheritsFrom="RagdollBasic">
+            <BodySquibs Name="Acid"/>
+        </DeathCustoms>
+        <DeathCustoms Name="RagdollUltraUnburrow" InheritsFrom="RagdollBasic"/>
+        <DeathCustoms Name="RagdollOverkillDPRH" InheritsFrom="RagdollBasic"/>
+        <DeathCustoms Name="RagdollOverkillDOI" InheritsFrom="RagdollBasic"/>
+        <DeathCustoms Name="RagdollMidair" InheritsFrom="RagdollBasic"/>
+        <DeathCustoms ActorModel="SpineCrawlerHurlDeathRagdollWithTeamColor" ModelLink="AdeptDeathRagdoll" Name="RagdollSpineCrawlerHurl">
+            <BodySquibs Name="None"/>
+        </DeathCustoms>
+        <DeathCustoms ModelLink="HallucinationDeath" SoundLink="Sentry_HallucinationDeathSmall" Name="Hallucination"/>
+        <PlacementModel value="AdeptPlacement"/>
+        <PlacementSound value="Protoss_BuildingPlacementSmall"/>
+        <PortraitModel value="AdeptPortrait"/>
+        <TerrainSquibs>
+            <MovementDistance value="0.150000,0.150000"/>
+            <IdlePeriod value="0.100000,0.250000"/>
+            <RangeUp value="0.600000"/>
+            <RangeDown value="0.600000"/>
+            <AttachQuery Methods="AMFilterCenter"/>
+            <Visuals TerrainPhysicsMaterial="Water" ActorModel="TerrainSquibHarnessContinuous" ModelLink="WaterRippleMedium"/>
+        </TerrainSquibs>
+        <WalkAnimMoveSpeed value="2.5"/>
+        <AbilSoundArray AbilCmd="AdeptPhaseShift,Execute" Sound="Adept_PsionicTransferVO"/>
+        <BarOffset value="60"/>
+        <BarWidth value="42"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-collection-adept-collectoredition.dds"/>
+        </GroupIcon>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-protoss-groundarmorlevel0.dds"/>
+        <SoundArray index="Ready" value="Adept_Ready"/>
+        <SoundArray index="Help" value="Adept_Help"/>
+        <SoundArray index="What" value="Adept_What"/>
+        <SoundArray index="Yes" value="Adept_Yes"/>
+        <SoundArray index="Attack" value="Adept_Attack"/>
+        <SoundArray index="Pissed" value="Adept_Pissed"/>
+        <UnitIcon value="Assets\Textures\btn-unit-collection-adept-collectoredition.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-collection-adept-collectoredition.dds"/>
+        </Wireframe>
+        <WireframeShield>
+            <Image value="Assets\Textures\wireframe-collection-adept-collectoredition-shield01.dds"/>
+            <Image value="Assets\Textures\wireframe-collection-adept-collectoredition-shield02.dds"/>
+            <Image value="Assets\Textures\wireframe-collection-adept-collectoredition-shield03.dds"/>
+        </WireframeShield>
+    </CActorUnit>
+    <CActorUnit id="ImmortalPurifier" parent="GenericUnitBase" unitName="ImmortalPurifier">
+        <Aliases value="_UnitLarge"/>
+        <Macros value="TerrainSquibAnimations"/>
+        <On index="63" Terms="WeaponStart.ImmortalPurifierCannons.AttackStart; WeaponTargetElevation GE 20.000000" Send="AnimBracketStart Attack Attack,Superior"/>
+        <On Terms="WeaponStart.ImmortalPurifierCannons.AttackStart; WeaponTargetElevation LE -20.000000" Send="AnimBracketStart Attack Attack,Inferior"/>
+        <On Terms="WeaponStart.ImmortalPurifierCannons.AttackStart" Send="AnimBracketStart Attack Attack"/>
+        <On Terms="WeaponStop.ImmortalPurifierCannons.AttackStop" Send="AnimBracketStop Attack"/>
+        <On Terms="WeaponStart.AnnihilatorParticleDisruptors.AttackStart; WeaponTargetElevation GE 20.000000" Send="AnimBracketStart Attack Attack,Superior"/>
+        <On Terms="WeaponStart.AnnihilatorParticleDisruptors.AttackStart; WeaponTargetElevation LE -20.000000" Send="AnimBracketStart Attack Attack,Inferior"/>
+        <On Terms="WeaponStart.AnnihilatorParticleDisruptors.AttackStart" Send="AnimBracketStart Attack Attack"/>
+        <On Terms="WeaponStop.AnnihilatorParticleDisruptors.AttackStop" Send="AnimBracketStop Attack"/>
+        <On Terms="Abil.attack.ReadyStop" Send="AnimGroupRemove Ready"/>
+        <On Terms="Effect.ImmortalShakurasShadowCannonLM.Start; ValidateEffect TargetIsAir" Send="AnimPlay Spell Attack,Superior"/>
+        <On Terms="Effect.ImmortalShakurasShadowCannonLM.Start; !ValidateEffect TargetIsAir" Send="AnimPlay Spell Attack"/>
+        <On Terms="UnitMovementUpdate.*.Walk" Send="AnimClear Attack"/>
+        <On Terms="UnitHeightUpdate.*.Land" Send="Create Immortal_Land"/>
+        <Model value="Purifier_Immortal"/>
+        <ModelFlags index="OutlineEmitter" value="1"/>
+        <BuildModel value="Purifier_ImmortalWarpIn"/>
+        <DeathArray index="Normal" ModelLink="Purifier_ImmortalDeath" SoundLink=""/>
+        <DeathCustoms ModelLink="HallucinationDeath" SoundLink="Sentry_HallucinationDeathMedium" Name="Hallucination"/>
+        <DeathCustoms ModelLink="ProtossLargeUnitDeathLow" Name="AntiGravProtoss"/>
+        <PlacementModel value="Purifier_ImmortalPlacement"/>
+        <PlacementSound value="Protoss_BuildingPlacementSmall"/>
+        <PortraitModel value="Purifier_ImmortalPortrait"/>
+        <TerrainSquibs>
+            <MovementDistance value="0.150000,0.150000"/>
+            <IdlePeriod value="0.100000,0.250000"/>
+            <RangeUp value="0.600000"/>
+            <RangeDown value="1.000000"/>
+            <AttachQuery Methods="AMFilterCenter"/>
+            <Visuals TerrainPhysicsMaterial="Water" ActorModel="TerrainSquibHarnessContinuous" ModelLink="WaterRippleImmortal"/>
+        </TerrainSquibs>
+        <WalkAnimMoveSpeed value="1.25"/>
+        <BarOffset value="80"/>
+        <BarWidth value="90"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-protoss-immortal-nerazim.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\BTN-Unit-Protoss-Immortal.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-protoss-groundarmorlevel0.dds"/>
+        <SoundArray index="Birth" value="Immortal_Birth"/>
+        <SoundArray index="Ready" value="Annihilator_Ready"/>
+        <SoundArray index="Help" value="Annihilator_Help"/>
+        <SoundArray index="What" value="Annihilator_What"/>
+        <SoundArray index="Yes" value="Annihilator_Yes"/>
+        <SoundArray index="Attack" value="Annihilator_Attack"/>
+        <SoundArray index="Pissed" value="Annihilator_Pissed"/>
+        <UnitIcon value="Assets\Textures\BTN-Unit-Protoss-Immortal-Nerazim.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-protoss-immortal-nerazim.dds"/>
+        </Wireframe>
+        <WireframeShield>
+            <Image value="Assets\Textures\Wireframe-Protoss-Immortal-Nerazim-Shield01.dds"/>
+            <Image value="Assets\Textures\Wireframe-Protoss-Immortal-Nerazim-Shield02.dds"/>
+            <Image value="Assets\Textures\Wireframe-Protoss-Immortal-Nerazim-Shield03.dds"/>
+        </WireframeShield>
+    </CActorUnit>
+    <CActorUnit id="MothershipCorePurifier" parent="GenericUnitStandard" unitName="MothershipCorePurifier">
+        <Macros value="PhysicsDeathsSwarmAir"/>
+        <Macros value="PhysicsDeathsVoidAir"/>
+        <On Terms="UnitHeightUpdate.*.Land" Send="Create MothershipCore_Land"/>
+        <On Terms="Behavior.MothershipCoreWeapon.On" Send="AnimGroupApply Work Stand,Work,Start Stand,Work,End"/>
+        <On Terms="Behavior.MothershipCoreWeapon.Off" Send="AnimGroupRemove Work"/>
+        <On Terms="Abil.MassRecall.SourceCastStart" Send="$Spell"/>
+        <On Terms="Abil.MothershipCoreEnergize.SourceCastStart" Send="$Spell"/>
+        <On Terms="UnitBirth.MothershipCorePurifier.Normal" Send="AnimPlay MorphStart Morph,End,A"/>
+        <On Terms="UnitBirth.MothershipCorePurifier.Normal" Send="Create ProtoWormholeTransitEndSound"/>
+        <On Terms="AbilMorph.*.Delay; MorphFrom MothershipCore" Send="TimerSet 99.000000 DelayWarpOut"/>
+        <On Terms="TimerExpired; TimerName DelayWarpOut" Send="AnimPlay Morph Stand,Morph,Start PlayForever,NonLooping"/>
+        <On Terms="AbilMorph.*.Cancel; MorphFrom MothershipCore" Send="AnimClear Morph"/>
+        <On Terms="AbilMorph.*.Cancel; MorphFrom MothershipCore" Send="TimerKill DelayWarpOut"/>
+        <On Terms="AbilMorph.*.Cancel; MorphFrom MothershipCore" Target="MothershipCoreMorphAddition" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom MothershipCore" Target="MothershipCoreMorphAddition" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Finish; MorphFrom MothershipCore" Send="Destroy"/>
+        <On Terms="Abil.MorphToMothership.Start" Send="Create MothershipCoreMorphAddition"/>
+        <On Terms="Abil.MorphToMothership.Start" Send="Create MothershipCore_UpgradeToMothershipStart"/>
+        <On Terms="Abil.MorphToMothership.Start" Send="Create MothershipCore_UpgradeToMothershipStart2"/>
+        <On Terms="Abil.MorphToMothership.Start" Send="Create MothershipCore_UpgradeToMothershipStart3"/>
+        <On Terms="Abil.MorphToMothership.Start" Send="Create MothershipCore_UpgradeToMothershipStart4"/>
+        <On Terms="ActorCreation" Send="AnimBracketStart GL_BSD GLbirth GLstand GLdeath"/>
+        <On Terms="UnitDeathCustomize; !ValidateUnit HasMothershipCoreWeapon" Send="DeathCustomize Variation0"/>
+        <On Terms="UnitDeathCustomize; Option Model Low" Send="DeathCustomize Low"/>
+        <On Terms="Behavior.MothershipCorePurifyNexus.On" Send="AnimGroupApply Work Stand,Work,Start Stand,Work,End"/>
+        <On Terms="Behavior.MothershipCorePurifyNexus.Off" Send="AnimGroupRemove Work"/>
+        <On Terms="Abil.MothershipCorePurifyNexus.SourceCastStart" Send="AnimPlay Spell Stand,Work,End"/>
+        <On Terms="Effect.MothershipCoreMassRecallTeleport.Start" Send="CombatRevealClearTimers"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit HasMothershipCoreRecalling" Send="ClearTintColor 0.600000"/>
+        <On Terms="UnitDeathCustomize; ValidateUnit HasMothershipCoreRecalling" Send="ClearOpacity"/>
+        <On Terms="Behavior.LightofAiur.On" Send="AnimGroupApply Work Stand,Work,Start Stand,Work,End"/>
+        <On Terms="Behavior.LightofAiur.Off" Send="AnimGroupRemove Work"/>
+        <On Terms="Abil.MothershipCorePurifyNexus.SourceCastStart" Send="AnimPlay Burrow Stand,Work,End"/>
+        <On Terms="Abil.LightofAiur.SourceCastStart" Send="AnimPlay Burrow Stand,Work,End"/>
+        <Model value="MothershipCore"/>
+        <ModelFlags index="AutomateGlobalLoops" value="0"/>
+        <ModelFlags index="OutlineEmitter" value="1"/>
+        <BuildModel value="MothershipCoreTeleportIn"/>
+        <DeathArray index="Normal" AnimProps="Death,A" ModelLink="" SoundLink="Mothership_Explode"/>
+        <DeathCustoms AnimProps="Death,B" SoundLink="Mothership_Explode" Name="Variation0"/>
+        <DeathCustoms ModelLink="ProtossMediumUnitDeathLow" Name="Low"/>
+        <DeathCustoms ActorModel="MothershipCoreDeathRagdollFlier" Name="RagdollBasic" PhysicsMatchKeysOrdered="BasicAir,Basic">
+            <BodySquibs Name="Basic" Model="ProtossTinyRobotSquibDeathRagdoll"/>
+        </DeathCustoms>
+        <DeathCustoms Name="RagdollNuke" InheritsFrom="RagdollBasic">
+            <BodySquibs Name="Fire"/>
+        </DeathCustoms>
+        <DeathCustoms Name="RagdollFire" InheritsFrom="RagdollBasic">
+            <BodySquibs Name="Fire"/>
+        </DeathCustoms>
+        <DeathCustoms Name="RagdollAcid" InheritsFrom="RagdollBasic">
+            <BodySquibs Name="Acid"/>
+        </DeathCustoms>
+        <DeathCustoms Name="RagdollOverkillDPRH" InheritsFrom="RagdollBasic"/>
+        <DeathCustoms Name="RagdollOverkillDOI" InheritsFrom="RagdollBasic"/>
+        <DeathCustoms Name="RagdollMidair" InheritsFrom="RagdollBasic"/>
+        <DeathActorModel value="UnitDeathModelWithDeathMotionFlier"/>
+        <PhysicsMatchKeysOrdered value="BasicAir,Basic"/>
+        <PlacementModel value="MothershipCore"/>
+        <PortraitModel value="MothershipCorePortrait"/>
+        <AbilSoundArray AbilCmd="MothershipCoreTeleport,Execute" Sound="Mothership_WormholeTransitVO"/>
+        <BarOffset value="125"/>
+        <BarWidth value="90"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Protoss-mothershipcore.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\btn-unit-protoss-mothershipcore.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-protoss-airarmorlevel0.dds"/>
+        <NameOffset value="130"/>
+        <SelectAbilCmd value="Vortex,Execute"/>
+        <SoundArray index="Birth" value="Mothership_Birth"/>
+        <SoundArray index="Ready" value="Mothership_Ready"/>
+        <SoundArray index="Help" value="Mothership_Help"/>
+        <SoundArray index="What" value="Mothership_What"/>
+        <SoundArray index="Yes" value="Mothership_Yes"/>
+        <SoundArray index="Attack" value="Mothership_Attack"/>
+        <SoundArray index="Pissed" value="Mothership_Pissed"/>
+        <SoundArray index="Movement" value="MothershipCore_Movement"/>
+        <UnitIcon value="Assets\Textures\btn-unit-protoss-mothershipcore.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Protoss-mothershipcore.dds"/>
+        </Wireframe>
+        <WireframeShield>
+            <Image value="Assets\Textures\Wireframe-Protoss-mothershipcore-Shield01.dds"/>
+            <Image value="Assets\Textures\Wireframe-Protoss-mothershipcore-Shield02.dds"/>
+            <Image value="Assets\Textures\Wireframe-Protoss-mothershipcore-Shield03.dds"/>
+        </WireframeShield>
+    </CActorUnit>
+    <CActorUnit id="PhotonCannonPurifier" parent="PhotonCannon" unitName="PhotonCannonPurifier">
+        <On index="0" Terms="UnitBirth.PhotonCannonPurifier"/>
+        <On index="1" Terms="UnitBirth.PhotonCannonPurifier"/>
+        <On index="2" Terms="UnitRevive.PhotonCannonPurifier"/>
+        <On index="3" Terms="UnitRevive.PhotonCannonPurifier"/>
+        <On index="4" Terms="UnitConstruction.PhotonCannonPurifier.Start"/>
+        <On index="5" Terms="UnitConstruction.PhotonCannonPurifier.Finish"/>
+        <Model value="Purifier_SiegeCannon"/>
+        <BuildModel value="Purifier_PhotonCannonBirth"/>
+        <DeathArray index="Normal" ModelLink="Purifier_PhotonCannonDeath"/>
+        <DeathCustoms index="5" ModelLink="Purifier_PhotonCannonDeathUnpowered"/>
+        <PlacementModel value="Purifier_SiegeCannonPlacement"/>
+        <HighlightTooltip value="Unit/Name/PhotonCannonPurifier"/>
+    </CActorUnit>
+    <CActorAction id="ImmortalPurifierAttackLeft" parent="GenericAttack" effectImpact="PurifierImmortal" effectLaunch="PurifierImmortalLeftLaunchMissile">
+        <LaunchAttachQuery Methods="AMFilterWeaponLeft"/>
+        <LaunchAssets Sound="WraithAWeaponBirth2"/>
+        <ImpactMap index="None" Model="WraithAirAttackImpact2" Sound="WraithAWeaponImpact2"/>
+    </CActorAction>
+    <CActorMissile id="ImmortalPurifierAttackLeftMissile" parent="GenericAttackMissile" unitName="ImmortalPurifierWeaponLeft">
+        <Model value="WraithAirWeaponLeft2"/>
+    </CActorMissile>
+    <CActorAction id="ImmortalPurifierAttackRight" parent="GenericAttack" effectImpact="PurifierImmortal" effectLaunch="PurifierImmortalRightLaunchMissile">
+        <LaunchAttachQuery Methods="AMFilterWeaponRight"/>
+        <LaunchAssets Sound="WraithAWeaponBirth2"/>
+        <ImpactMap index="None" Model="WraithAirAttackImpact2" Sound="WraithAWeaponImpact2"/>
+    </CActorAction>
+    <CActorMissile id="ImmortalPurifierAttackRightMissile" parent="GenericAttackMissile" unitName="ImmortalPurifierWeaponRight">
+        <Model value="WraithAirWeaponRight2"/>
+    </CActorMissile>
+</Catalog>

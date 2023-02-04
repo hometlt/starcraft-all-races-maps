@@ -1,0 +1,966 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CAbilEffectInstant id="AIChoice">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Arc value="360"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="AIChoice"/>
+    </CAbilEffectInstant>
+    <CAbilEffectInstant id="ChooseActiveHeroes">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="ChooseActiveHeroes"/>
+    </CAbilEffectInstant>
+    <CAbilEffectTarget id="GravitonPrison">
+        <Cost index="0">
+            <Cooldown TimeStart="15" TimeUse="15"/>
+        </Cost>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="HybridDominatorVoidPlasmaBlast">
+        <TargetFilters value="-;Player,Ally,Neutral,Missile,Item,Stasis,Dead,Hidden,Invulnerable"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="MutatorAmonKerriganApocalypse">
+        <Effect index="0" value="ApocalypseSet2"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="Empower">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="StrengthenAB"/>
+        <Cost>
+            <Charge>
+                <CountMax value="3"/>
+                <CountStart value="1"/>
+                <CountUse value="1"/>
+                <Link value="Abil/ApplyBuff"/>
+                <TimeStart value="45"/>
+                <TimeUse value="45"/>
+            </Charge>
+            <Cooldown Link="Abil/ApplyBuff"/>
+        </Cost>
+        <TargetFilters value="-;Enemy,RawResource,HarvestableResource,Missile,Destructible,Stasis,Dead,Hallucination,Invulnerable"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Empower"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="CreateBarrier">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="CreateBarrierWallCU"/>
+        <Cost>
+            <Charge>
+                <CountMax value="30"/>
+                <CountUse value="1"/>
+                <Link value="Abil/CreateBarrierWall"/>
+                <TimeStart value="7"/>
+                <TimeUse value="7"/>
+            </Charge>
+            <Cooldown Link="Abil/CreateBarrierWall"/>
+        </Cost>
+        <Placeholder value="BarrierWall"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <AINotifyEffect value="CreateBarrierWallCU"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Barrier2">
+            <Flags index="Continuous" value="1"/>
+            <Flags index="ShowInGlossary" value="0"/>
+        </CmdButtonArray>
+        <PlaceUnit value="BarrierWall"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="Duplicate">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="DuplicateDummy"/>
+        <TargetFilters value="-;Neutral,Enemy,Heroic,Missile,Stasis,Dead,Hidden,Invulnerable,MapBoss"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Duplicate"/>
+        <Cost>
+            <Charge CountMax="999" CountStart="10"/>
+        </Cost>
+    </CAbilEffectTarget>
+    <CAbilResearch id="HeroTrain">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InfoArray index="Research1" Time="3" Upgrade="Artanis">
+            <Resource index="Custom" value="2500"/>
+            <Cooldown Link="Abil/HeroTrain/Artanis"/>
+            <Button DefaultButtonFace="TrainArtanis" Requirements="Artanis"/>
+        </InfoArray>
+        <InfoArray index="Research2" Time="3" Upgrade="Karax">
+            <Resource index="Custom" value="2000"/>
+            <Cooldown Link="Abil/HeroTrain/Karax"/>
+            <Button DefaultButtonFace="TrainKarax" Requirements="Karax"/>
+        </InfoArray>
+        <InfoArray index="Research3" Time="3" Upgrade="Zeratul">
+            <Resource index="Custom" value="2000"/>
+            <Cooldown Link="Abil/HeroTrain/Zeratul"/>
+            <Button DefaultButtonFace="TrainZeratul" Requirements="Zeratul"/>
+        </InfoArray>
+        <InfoArray index="Research4" Time="3" Upgrade="Raynor">
+            <Resource index="Custom" value="500"/>
+            <Cooldown Link="Abil/HeroTrain/Raynor"/>
+            <Button DefaultButtonFace="TrainRaynor" Requirements="Raynor"/>
+        </InfoArray>
+        <InfoArray index="Research5" Time="3" Upgrade="Tychus">
+            <Resource index="Custom" value="500"/>
+            <Cooldown Link="Abil/HeroTrain/Tychus"/>
+            <Button DefaultButtonFace="TrainTychus" Requirements="Tychus"/>
+        </InfoArray>
+        <InfoArray index="Research6" Time="3" Upgrade="Nova">
+            <Resource index="Custom" value="1500"/>
+            <Cooldown Link="Abil/HeroTrain/Nova"/>
+            <Button DefaultButtonFace="TrainNova" Requirements="Nova"/>
+        </InfoArray>
+        <InfoArray index="Research7" Time="3" Upgrade="Zagara">
+            <Resource index="Custom" value="1500"/>
+            <Cooldown Link="Abil/HeroTrain/Zagara"/>
+            <Button DefaultButtonFace="TrainZagara" Requirements="Zagara"/>
+        </InfoArray>
+        <InfoArray index="Research8" Time="3" Upgrade="Dehaka">
+            <Resource index="Custom" value="500"/>
+            <Cooldown Link="Abil/HeroTrain/Dehaka"/>
+            <Button DefaultButtonFace="TrainDehaka" Requirements="Dehaka"/>
+        </InfoArray>
+        <InfoArray index="Research9" Time="3" Upgrade="Kerrigan">
+            <Resource index="Custom" value="2000"/>
+            <Cooldown Link="Abil/HeroTrain/Kerrigan"/>
+            <Button DefaultButtonFace="TrainKerrigan" Requirements="Kerrigan"/>
+        </InfoArray>
+    </CAbilResearch>
+    <CAbilEffectTarget id="MutatorAmonKerriganPrimalSlash">
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="MutatorAmonKerriganPsiStrikeWalk">
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <AutoCastValidatorArray value="BlackOpsAirstrikeMinimum3EnemyTargets"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="MutatorAmonTychusTossGrenade">
+        <Cost index="0">
+            <Charge>
+                <CountMax value="2"/>
+                <CountStart value="1"/>
+                <CountUse value="1"/>
+                <TimeStart value="25"/>
+                <TimeUse value="10"/>
+            </Charge>
+            <Cooldown TimeUse="0"/>
+        </Cost>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <AutoCastValidatorArray value="BlackOpsAirstrikeMinimum3EnemyTargets"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="MutatorAmonZagaraMassRoachDrop">
+        <Range index="0" value="10"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="MutatorRoachDrop"/>
+    </CAbilEffectTarget>
+    <CAbilResearch id="MutatorTrain">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InfoArray index="Research1" Upgrade="HardenedWill">
+            <Resource index="Custom" value="2500"/>
+            <Button DefaultButtonFace="HardenedWill" Requirements="HardenedWill"/>
+        </InfoArray>
+        <InfoArray index="Research2" Upgrade="JustDie">
+            <Resource index="Custom" value="3500"/>
+            <Button DefaultButtonFace="JustDie" Requirements="JustDie"/>
+        </InfoArray>
+        <InfoArray index="Research3" Upgrade="EminentDomain">
+            <Resource index="Custom" value="1000"/>
+            <Button DefaultButtonFace="EminentDomain" Requirements="EminentDomain"/>
+        </InfoArray>
+        <InfoArray index="Research4" Upgrade="MutuallyAssuredDestruction">
+            <Resource index="Custom" value="3500"/>
+            <Button DefaultButtonFace="MutuallyAssuredDestruction" Requirements="MutuallyAssuredDestruction"/>
+        </InfoArray>
+        <InfoArray index="Research5" Upgrade="PhotonOverload">
+            <Resource index="Custom" value="1500"/>
+            <Button DefaultButtonFace="PhotonOverload" Requirements="PhotonOverload"/>
+        </InfoArray>
+        <InfoArray index="Research6" Upgrade="Transmutation">
+            <Resource index="Custom" value="3500"/>
+            <Button DefaultButtonFace="Transmutation" Requirements="Transmutation"/>
+        </InfoArray>
+        <InfoArray index="Research7" Upgrade="WalkingInfested">
+            <Resource index="Custom" value="2000"/>
+            <Button DefaultButtonFace="WalkingInfested" Requirements="WalkingInfested"/>
+        </InfoArray>
+        <InfoArray index="Research8" Upgrade="Inspiration">
+            <Resource index="Custom" value="2000"/>
+            <Button DefaultButtonFace="Inspiration" Requirements="Inspiration"/>
+        </InfoArray>
+        <InfoArray index="Research9" Upgrade="Avenger">
+            <Resource index="Custom" value="3500"/>
+            <Button DefaultButtonFace="Avenger" Requirements="Avenger"/>
+        </InfoArray>
+        <InfoArray index="Research10" Upgrade="LongRange">
+            <Resource index="Custom" value="1500"/>
+            <Button DefaultButtonFace="LongRange" Requirements="LongRange"/>
+        </InfoArray>
+        <InfoArray index="Research11" Upgrade="AlienIncubation">
+            <Resource index="Custom" value="2000"/>
+            <Button DefaultButtonFace="AlienIncubation" Requirements="AlienIncubation"/>
+        </InfoArray>
+        <InfoArray index="Research12" Upgrade="Barrier">
+            <Resource index="Custom" value="1500"/>
+            <Button DefaultButtonFace="Barrier" Requirements="Barrier"/>
+        </InfoArray>
+        <InfoArray index="Research13" Upgrade="LifeLeech">
+            <Resource index="Custom" value="1000"/>
+            <Button DefaultButtonFace="LifeLeech" Requirements="LifeLeech"/>
+        </InfoArray>
+        <InfoArray index="Research14" Upgrade="MomentofSilence">
+            <Resource index="Custom" value="2500"/>
+            <Button DefaultButtonFace="MomentofSilence" Requirements="MomentofSilence"/>
+        </InfoArray>
+        <InfoArray index="Research15" Upgrade="SelfDestruction">
+            <Resource index="Custom" value="2000"/>
+            <Button DefaultButtonFace="SelfDestruction" Requirements="SelfDestruction"/>
+        </InfoArray>
+        <InfoArray index="Research16" Upgrade="Speedfreaks">
+            <Resource index="Custom" value="2500"/>
+            <Button DefaultButtonFace="Speedfreaks" Requirements="Speedfreaks"/>
+        </InfoArray>
+        <InfoArray index="Research17" Upgrade="WeMoveUnseen">
+            <Resource index="Custom" value="1500"/>
+            <Button DefaultButtonFace="WeMoveUnseen" Requirements="WeMoveUnseen"/>
+        </InfoArray>
+        <InfoArray index="Research18" Upgrade="Darkness">
+            <Resource index="Custom" value="3000"/>
+            <Button DefaultButtonFace="Darkness" Requirements="Darkness"/>
+        </InfoArray>
+        <InfoArray index="Research19" Upgrade="MissileCommand">
+            <Resource index="Custom" value="5000"/>
+            <Button DefaultButtonFace="MissileCommand" Requirements="MissileCommand"/>
+        </InfoArray>
+    </CAbilResearch>
+    <CAbilEffectInstant id="MutatorAmonArtanisAstralWind">
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectInstant>
+    <CAbilEffectTarget id="MutatorAmonArtanisLightningDash">
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <AutoCastRange value="5"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="MutatorAmonKhaydarinMonolith">
+        <Cost index="0">
+            <Charge>
+                <CountMax value="2"/>
+                <CountStart value="1"/>
+                <CountUse value="1"/>
+                <TimeStart value="35"/>
+                <TimeUse value="35"/>
+            </Charge>
+            <Cooldown TimeUse="0"/>
+        </Cost>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="MutatorAmonPhaseCannon">
+        <Cost index="0">
+            <Charge>
+                <CountMax value="5"/>
+                <CountStart value="1"/>
+                <CountUse value="1"/>
+                <TimeStart value="20"/>
+                <TimeUse value="20"/>
+            </Charge>
+            <Cooldown TimeUse="0"/>
+        </Cost>
+    </CAbilEffectTarget>
+    <CAbilEffectInstant id="MutatorAmonPrologueVoidArmor">
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <Cost index="0">
+            <Cooldown TimeUse="15"/>
+        </Cost>
+    </CAbilEffectInstant>
+    <CAbilEffectTarget id="MutatorAmonRaynorSnipe">
+        <Cost index="0">
+            <Charge>
+                <CountMax value="2"/>
+                <CountStart value="1"/>
+                <CountUse value="1"/>
+                <TimeStart value="15"/>
+                <TimeUse value="15"/>
+            </Charge>
+            <Cooldown TimeUse="0"/>
+        </Cost>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="MutatorAmonShadowBlade">
+        <Flags index="AllowMovement" value="1"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <AutoCastFilters value="Ground,Visible;Player,Ally,Neutral"/>
+        <AutoCastRange value="1"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="ExtractVoidEnergy">
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <Effect index="0" value="ExtractVoidEnergyCP"/>
+        <Flags index="AllowMovement" value="1"/>
+        <Flags index="NoDeceleration" value="1"/>
+        <Flags index="ReExecutable" value="1"/>
+        <Flags index="Smart" value="1"/>
+        <Flags index="TransportAcquirePassengers" value="1"/>
+        <Cost>
+            <Cooldown TimeStart="1" TimeUse="1"/>
+        </Cost>
+        <Range value="12"/>
+        <Arc value="360"/>
+        <CastOutroTime value="0.5"/>
+        <UseMarkerArray index="Approach" value="0"/>
+        <UseMarkerArray index="Prep" value="0"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="ExtractVoidEnergy"/>
+        <SmartValidatorArray value="DoesNotHaveReservoirBeingExtracted6"/>
+    </CAbilEffectTarget>
+    <CAbilResearch id="CustomMutatorTrain">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <InfoArray index="Research1" Upgrade="Bloodlust">
+            <Button DefaultButtonFace="Bloodlust" Requirements="Bloodlust"/>
+        </InfoArray>
+        <InfoArray index="Research2" Upgrade="DarkMirror">
+            <Button DefaultButtonFace="DarkMirror" Requirements="DarkMirror"/>
+        </InfoArray>
+        <InfoArray index="Research3" Upgrade="Endurance">
+            <Button DefaultButtonFace="Endurance" Requirements="Endurance"/>
+        </InfoArray>
+        <InfoArray index="Research4" Upgrade="GreatWall">
+            <Button DefaultButtonFace="GreatWall" Requirements="GreatWall"/>
+        </InfoArray>
+        <InfoArray index="Research5" Upgrade="Matryoshka">
+            <Button DefaultButtonFace="Matryoshka" Requirements="Matryoshka"/>
+        </InfoArray>
+        <InfoArray index="Research6" Upgrade="InfestationStation">
+            <Button DefaultButtonFace="InfestationStation" Requirements="InfestationStation"/>
+        </InfoArray>
+        <InfoArray index="Research7" Upgrade="LevelPlayingField">
+            <Button DefaultButtonFace="LevelPlayingField" Requirements="LevelPlayingField"/>
+        </InfoArray>
+        <InfoArray index="Research8" Upgrade="SupremeCommander">
+            <Button DefaultButtonFace="SupremeCommander" Requirements="SupremeCommander"/>
+        </InfoArray>
+        <InfoArray index="Research9" Upgrade="Necronomicon">
+            <Button DefaultButtonFace="Necronomicon" Requirements="Necronomicon"/>
+        </InfoArray>
+        <InfoArray index="Research10" Upgrade="NuclearMines">
+            <Button DefaultButtonFace="NuclearMines" Requirements="NuclearMines"/>
+        </InfoArray>
+        <InfoArray index="Research11" Upgrade="RipFieldGenerators">
+            <Button DefaultButtonFace="RipFieldGenerators" Requirements="RipFieldGenerators"/>
+        </InfoArray>
+        <InfoArray index="Research12" Upgrade="RepulsiveField">
+            <Button DefaultButtonFace="RepulsiveField" Requirements="RepulsiveField"/>
+        </InfoArray>
+    </CAbilResearch>
+    <CAbilEffectInstant id="Quicken">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Cost>
+            <Resource index="Custom" value="1000"/>
+            <Cooldown TimeStart="240" TimeUse="15"/>
+        </Cost>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Quicken"/>
+    </CAbilEffectInstant>
+    <CAbilEffectInstant id="StrengthenChampion">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Cost>
+            <Resource index="Custom" value="750"/>
+            <Cooldown TimeUse="15"/>
+        </Cost>
+        <CmdButtonArray index="Execute" DefaultButtonFace="StrengthenChampion"/>
+    </CAbilEffectInstant>
+    <CAbilRally id="Rally3P">
+        <OrderArray index="0">
+            <DisplayType value="Attack"/>
+            <Color value="255,255,0,0"/>
+            <Model value="Assets\UI\Feedback\WayPointRally\WayPointRally.m3"/>
+            <LineTexture value="Assets\Textures\WayPointLine.dds"/>
+        </OrderArray>
+        <EditorCategories value="Race:Neutral,AbilityorEffectType:Structures"/>
+    </CAbilRally>
+    <CAbilEffectTarget id="RepositionPlanetary">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Charge Link="Abil/RepositionMissileTurret"/>
+            <Cooldown Link="Abil/RepositionMissileTurret" TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <InterruptCost>
+            <Charge Link="Abil/RepositionSpore"/>
+            <Cooldown Link="Abil/RepositionSpore"/>
+        </InterruptCost>
+        <Placeholder value="PlanetaryFortress"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <Marker Link="Abil/RepositionSpore"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="PlanetaryFortress"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RepositionBunker">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Charge Link="Abil/RepositionMissileTurret"/>
+            <Cooldown Link="Abil/RepositionMissileTurret" TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <Placeholder value="Bunker"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="Bunker"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RepositionPylon">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Charge Link="Abil/RepositionMissileTurret"/>
+            <Cooldown Link="Abil/RepositionMissileTurret" TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <InterruptCost>
+            <Charge Link="Abil/RepositionSpore"/>
+            <Cooldown Link="Abil/RepositionSpore"/>
+        </InterruptCost>
+        <Placeholder value="Pylon"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <Marker Link="Abil/RepositionSpore"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="Pylon"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RepositionPhotonCannon">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Charge Link="Abil/RepositionMissileTurret"/>
+            <Cooldown Link="Abil/RepositionMissileTurret" TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <InterruptCost>
+            <Charge Link="Abil/RepositionSpore"/>
+            <Cooldown Link="Abil/RepositionSpore"/>
+        </InterruptCost>
+        <Placeholder value="PhotonCannon"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <Marker Link="Abil/RepositionSpore"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="PhotonCannon"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RepositionBileLauncher">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Charge Link="Abil/RepositionMissileTurret"/>
+            <Cooldown Link="Abil/RepositionMissileTurret" TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <InterruptCost>
+            <Charge Link="Abil/RepositionSpore"/>
+            <Cooldown Link="Abil/RepositionSpore"/>
+        </InterruptCost>
+        <Placeholder value="BileLauncherZagara"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <Marker Link="Abil/RepositionSpore"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="BileLauncherZagara"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RepositionSpine">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Charge Link="Abil/RepositionMissileTurret"/>
+            <Cooldown Link="Abil/RepositionMissileTurret" TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <Placeholder value="SpineCrawler"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="SpineCrawler"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RepositionSpore">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Charge Link="Abil/RepositionMissileTurret"/>
+            <Cooldown Link="Abil/RepositionMissileTurret" TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <Placeholder value="SporeCrawler"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="SporeCrawler"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RepositionSunken">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Charge Link="Abil/RepositionMissileTurret"/>
+            <Cooldown Link="Abil/RepositionMissileTurret" TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <InterruptCost>
+            <Charge Link="Abil/RepositionSpore"/>
+            <Cooldown Link="Abil/RepositionSpore"/>
+        </InterruptCost>
+        <Placeholder value="SunkenColony"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <Marker Link="Abil/RepositionSpore"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="SunkenColony"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RepositionShieldBattery">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Charge Link="Abil/RepositionMissileTurret"/>
+            <Cooldown Link="Abil/RepositionMissileTurret" TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <InterruptCost>
+            <Charge Link="Abil/RepositionSpore"/>
+            <Cooldown Link="Abil/RepositionSpore"/>
+        </InterruptCost>
+        <Placeholder value="ShieldBattery"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <Marker Link="Abil/RepositionSpore"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="ShieldBattery"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RepositionMonolith">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Charge Link="Abil/RepositionMissileTurret"/>
+            <Cooldown Link="Abil/RepositionMissileTurret" TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <InterruptCost>
+            <Charge Link="Abil/RepositionSpore"/>
+            <Cooldown Link="Abil/RepositionSpore"/>
+        </InterruptCost>
+        <Placeholder value="KhaydarinMonolith"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <Marker Link="Abil/RepositionSpore"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="KhaydarinMonolith"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="SummonVoidShardFragment">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="CreateShardCU"/>
+        <Cost>
+            <Resource index="Custom" value="200"/>
+            <Charge>
+                <CountMax value="10"/>
+                <CountStart value="5"/>
+                <CountUse value="1"/>
+                <Link value="Abil/CreateShard"/>
+                <TimeStart value="30"/>
+                <TimeUse value="30"/>
+            </Charge>
+            <Cooldown Link="Abil/CreateShard"/>
+        </Cost>
+        <Placeholder value="VoidShardFragment"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <CursorEffect value="CreateShardSearch"/>
+        <AINotifyEffect value="CreateShardCU"/>
+        <DefaultError value="Error"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="CreateShard"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="VoidShardFragment"/>
+        <AutoCastFilters value="-;Player,Ally"/>
+        <Flags index="RequireTargetVision" value="0"/>
+    </CAbilEffectTarget>
+    <CAbilTrain id="3PShardTrain">
+        <EditorCategories value="Race:Terran,AbilityorEffectType:Structures"/>
+        <Flags index="IgnoreUnitCost" value="1"/>
+        <InfoArray index="Train1">
+            <Resource index="Custom" value="250"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonOracle" Requirements="IsAmonProtoss"/>
+            <Unit value="Oracle"/>
+        </InfoArray>
+        <InfoArray index="Train2">
+            <Resource index="Custom" value="200"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonSentry" Requirements="IsAmonProtoss"/>
+            <Unit value="Sentry"/>
+        </InfoArray>
+        <InfoArray index="Train3">
+            <Resource index="Custom" value="700"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonReaver" Requirements="IsAmonProtoss"/>
+            <Unit value="Reaver"/>
+        </InfoArray>
+        <InfoArray index="Train4">
+            <Resource index="Custom" value="200"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonDragoon" Requirements="IsAmonProtoss"/>
+            <Unit value="Dragoon"/>
+        </InfoArray>
+        <InfoArray index="Train5">
+            <Resource index="Custom" value="750"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonArbiter" Requirements="IsAmonProtoss"/>
+            <Unit value="ArbiterMP"/>
+        </InfoArray>
+        <InfoArray index="Train6">
+            <Resource index="Custom" value="550"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonHighTemplar" Requirements="IsAmonProtoss"/>
+            <Unit value="HighTemplar"/>
+        </InfoArray>
+        <InfoArray index="Train7">
+            <Resource index="Custom" value="375"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonDisruptor" Requirements="IsAmonProtoss"/>
+            <Unit value="Disruptor"/>
+        </InfoArray>
+        <InfoArray index="Train8">
+            <Resource index="Custom" value="300"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonDarkTemplar" Requirements="IsAmonProtoss"/>
+            <Unit value="DarkTemplar"/>
+        </InfoArray>
+        <InfoArray index="Train9">
+            <Resource index="Custom" value="600"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonTempest" Requirements="IsAmonProtoss"/>
+            <Unit value="Tempest"/>
+        </InfoArray>
+        <InfoArray index="Train10">
+            <Resource index="Custom" value="375"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonLurker" Requirements="IsAmonZerg"/>
+            <Unit value="Lurker"/>
+        </InfoArray>
+        <InfoArray index="Train11">
+            <Resource index="Custom" value="325"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonInfestor" Requirements="IsAmonZerg"/>
+            <Unit value="Infestor"/>
+        </InfoArray>
+        <InfoArray index="Train12">
+            <Resource index="Custom" value="350"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonSwarmHost" Requirements="IsAmonZerg"/>
+            <Unit value="SwarmHostMP"/>
+        </InfoArray>
+        <InfoArray index="Train13">
+            <Resource index="Custom" value="225"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonSwarmQueen" Requirements="IsAmonZerg"/>
+            <Unit value="Queen"/>
+        </InfoArray>
+        <InfoArray index="Train14">
+            <Resource index="Custom" value="500"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonBroodQueen" Requirements="IsAmonZerg"/>
+            <Unit value="QueenClassic"/>
+        </InfoArray>
+        <InfoArray index="Train15">
+            <Resource index="Custom" value="175"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonHydralisk" Requirements="IsAmonZerg"/>
+            <Unit value="Hydralisk"/>
+        </InfoArray>
+        <InfoArray index="Train16">
+            <Resource index="Custom" value="300"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonCorruptor" Requirements="IsAmonZerg"/>
+            <Unit value="Corruptor"/>
+        </InfoArray>
+        <InfoArray index="Train17">
+            <Resource index="Custom" value="475"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonDevourer" Requirements="IsAmonZerg"/>
+            <Unit value="Devourer"/>
+        </InfoArray>
+        <InfoArray index="Train18">
+            <Resource index="Custom" value="400"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonViper" Requirements="IsAmonZerg"/>
+            <Unit value="Viper"/>
+        </InfoArray>
+        <InfoArray index="Train19">
+            <Resource index="Custom" value="300"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonVulture" Requirements="IsAmonTerran"/>
+            <Unit value="Vulture"/>
+        </InfoArray>
+        <InfoArray index="Train20">
+            <Resource index="Custom" value="350"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonGhost" Requirements="IsAmonTerran"/>
+            <Unit value="Ghost"/>
+        </InfoArray>
+        <InfoArray index="Train21">
+            <Resource index="Custom" value="400"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonScienceVessel" Requirements="IsAmonTerran"/>
+            <Unit value="ScienceVessel"/>
+        </InfoArray>
+        <InfoArray index="Train22">
+            <Resource index="Custom" value="250"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonBanshee" Requirements="IsAmonTerran"/>
+            <Unit value="Banshee"/>
+        </InfoArray>
+        <InfoArray index="Train23">
+            <Resource index="Custom" value="225"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonWidowMine" Requirements="IsAmonTerran"/>
+            <Unit value="WidowMine"/>
+        </InfoArray>
+        <InfoArray index="Train24">
+            <Resource index="Custom" value="1000"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonBattlecruiser" Requirements="IsAmonTerran"/>
+            <Unit value="Battlecruiser"/>
+        </InfoArray>
+        <InfoArray index="Train25">
+            <Resource index="Custom" value="500"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonLiberator" Requirements="IsAmonTerran"/>
+            <Unit value="Liberator"/>
+        </InfoArray>
+        <InfoArray index="Train26">
+            <Resource index="Custom" value="150"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonMedic" Requirements="IsAmonTerran"/>
+            <Unit value="Medic"/>
+        </InfoArray>
+        <InfoArray index="Train27">
+            <Resource index="Custom" value="400"/>
+            <Charge>
+                <CountMax value="15"/>
+                <CountUse value="1"/>
+                <Location value="Unit"/>
+                <TimeStart value="60"/>
+                <TimeUse value="60"/>
+            </Charge>
+            <Button DefaultButtonFace="SummonRaven" Requirements="IsAmonTerran"/>
+            <Unit value="Raven"/>
+        </InfoArray>
+    </CAbilTrain>
+    <CAbilEffectInstant id="VoidShardFragment" parent="SalvageBunkerRefund">
+        <Name value="Abil/Name/VoidShardFragment"/>
+        <Cost index="0">
+            <Resource index="Minerals" value="0"/>
+        </Cost>
+        <PrepTime value="5"/>
+        <ShowProgressArray index="Prep" value="1"/>
+        <ProgressButtonArray index="Prep" value="VoidShardSalvage"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="VoidShardSalvage"/>
+    </CAbilEffectInstant>
+    <CAbilEffectTarget id="SummonGehenna">
+        <EditorCategories value="AbilityorEffectType:Units,Race:Protoss"/>
+        <Effect index="0" value="GorgonTarget"/>
+        <Flags index="Transient" value="1"/>
+        <Cost>
+            <Charge Link="Abil/SummonGorgon"/>
+            <Cooldown Link="Abil/SummonGorgon" TimeStart="900" TimeUse="240"/>
+        </Cost>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <ProducedUnitArray value="GehennaCruiser"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="GehennaBattlecruiser"/>
+        <TargetFilters value="Structure;Neutral,Enemy,Destructible,Buried,Hidden"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RepositionMissileTurret">
+        <EditorCategories value="AbilityorEffectType:Units"/>
+        <Effect index="0" value="Teleport"/>
+        <Cost>
+            <Cooldown TimeStart="0.5" TimeUse="0.5"/>
+        </Cost>
+        <Placeholder value="MissileTurret"/>
+        <Range value="500"/>
+        <Arc value="360"/>
+        <AINotifyEffect value="Teleport"/>
+        <CmdButtonArray index="Execute" DefaultButtonFace="Reposition" Requirements="IsAmonForces"/>
+        <CmdButtonArray index="Cancel" DefaultButtonFace="Cancel"/>
+        <PlaceUnit value="MissileTurret"/>
+    </CAbilEffectTarget>
+    <CAbilEffectInstant id="VoidShardACShockwave">
+        <Cost>
+            <Charge Link="Abil/VoidShardACShockwave"/>
+            <Cooldown>
+                <Link value="Abil/VoidShardACShockwave"/>
+                <Location value="Unit"/>
+                <TimeStart value="15"/>
+                <TimeUse value="15"/>
+            </Cooldown>
+        </Cost>
+        <UninterruptibleArray index="Prep" value="1"/>
+        <UninterruptibleArray index="Channel" value="1"/>
+        <Effect index="0" value="3P_VoidShardACShockwaveCreatePersistent"/>
+        <PrepTime index="0" removed="1"/>
+    </CAbilEffectInstant>
+    <CAbilEffectTarget id="VoidShardACUnstableEnergy">
+        <Cost>
+            <Charge>
+                <CountMax value="2"/>
+                <CountUse value="1"/>
+                <Link value="Abil/VoidShardACUnstableEnergy"/>
+                <TimeStart value="15"/>
+                <TimeUse value="15"/>
+            </Charge>
+            <Cooldown Link="Abil/VoidShardACUnstableEnergy"/>
+        </Cost>
+        <Range index="0" value="30"/>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="VoidShardACVoidZone">
+        <Cost>
+            <Charge>
+                <CountMax value="1"/>
+                <CountUse value="1"/>
+                <Link value="Abil/VoidShardACVoidZone"/>
+                <TimeStart value="20"/>
+                <TimeUse value="20"/>
+            </Charge>
+            <Cooldown Link="Abil/VoidShardACVoidZone"/>
+        </Cost>
+        <Range index="0" value="10"/>
+    </CAbilEffectTarget>
+</Catalog>

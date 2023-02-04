@@ -1,0 +1,122 @@
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   Old Estate
+// 
+//==================================================================================================
+include "TriggerLibs/NativeLib"
+include "Lib46A145AD"
+include "LibARMP"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Map
+//--------------------------------------------------------------------------------------------------
+// Trigger Declarations
+trigger lib1_gt_OfflineDebug;
+
+//--------------------------------------------------------------------------------------------------
+// Library: Map
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib1_InitLibraries () {
+    libNtve_InitVariables();
+    lib46A145AD_InitVariables();
+    libARMP_InitVariables();
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Offline Debug
+//--------------------------------------------------------------------------------------------------
+bool lib1_gt_OfflineDebug_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_uSer;
+
+    // Automatic Variable Declarations
+    playergroup auto2189591B_g;
+    int auto2189591B_var;
+
+    // Variable Initialization
+    lv_uSer = 12;
+
+    // Conditions
+    if (testConds) {
+        if (!((GameIsOnline() == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libARMP_gf_SetPlayerRaceARC(1, "UPL");
+    libARMP_gf_SetPlayerRaceARC(1, "Dragon");
+    libARMP_gf_SetPlayerRaceARC(1, "Gen");
+    libARMP_gf_SetPlayerRaceARC(1, "NHbr");
+    libARMP_gf_SetPlayerRaceARC(1, "Keir");
+    libARMP_gf_SetPlayerRaceARC(1, "Prot");
+    libARMP_gf_SetPlayerRaceARC(1, "Terr");
+    libARMP_gf_SetPlayerRaceARC(1, "UED");
+    libARMP_gf_SetPlayerRaceARC(1, "Xayi");
+    libARMP_gf_SetPlayerRaceARC(1, "Zerg");
+    libARMP_gf_InitializeMeleeGame();
+    MeleeInitResources();
+    MeleeInitUnits();
+    MeleeInitAI();
+    MeleeInitOptions();
+    auto2189591B_g = PlayerGroupAll();
+    auto2189591B_var = -1;
+    while (true) {
+        auto2189591B_var = PlayerGroupNextPlayer(auto2189591B_g, auto2189591B_var);
+        if (auto2189591B_var < 0) { break; }
+        libNtve_gf_SetAlliance(lv_uSer, auto2189591B_var, libNtve_ge_AllianceSetting_AllyWithSharedVisionControlAndSpending);
+    }
+    lib46A145AD_gf_CreateAIDialog();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib1_gt_OfflineDebug_Init () {
+    lib1_gt_OfflineDebug = TriggerCreate("lib1_gt_OfflineDebug_Func");
+    TriggerAddEventMapInit(lib1_gt_OfflineDebug);
+}
+
+void lib1_InitTriggers () {
+    lib1_gt_OfflineDebug_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool lib1_InitLib_completed = false;
+
+void lib1_InitLib () {
+    if (lib1_InitLib_completed) {
+        return;
+    }
+
+    lib1_InitLib_completed = true;
+
+    lib1_InitLibraries();
+    lib1_InitTriggers();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+void InitLibs () {
+    libNtve_InitLib();
+    lib46A145AD_InitLib();
+    libARMP_InitLib();
+    lib1_InitLib();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitLibs();
+}

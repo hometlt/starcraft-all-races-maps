@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <!--                                                                                         -->
+    <!-- Resources                                                                               -->
+    <!--                                                                                         -->
+    <CActorUnit default="1" id="MineralBase">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="BattleStationMineralField">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="BattleStationMineralField750">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorSplat id="CreateShardSplat" parent="CursorSplat" abil="SummonVoidShardFragment">
+        <EditorCategories value=""/>
+        <Model value="GehennaCruiserRangeIndicator"/>
+        <Scale value="1.500000,1.500000,1.000000"/>
+    </CActorSplat>
+    <CActorAction id="MainShardAttack" parent="GenericAttack" effectImpact="VoidShardDamage" effectLaunch="MainShardMissile">
+        <LaunchAttachQuery Methods="AMFilterCenter" Fallback="Origin"/>
+        <LaunchAssets Sound="MainShard_AttackLaunch"/>
+        <ImpactSiteOps Ops="SOpAttachHarness SOpAttachVolumeStandard SOpForwardLaunchGuide"/>
+        <ImpactMap index="None" Sound="MainShard_AttackImpact"/>
+        <ImpactMap index="Flesh" ModelReaction="BloodTargetImpact"/>
+        <ImpactPhysics Name="DragoonPhaseDisruptorImpact" MatchKeys="Basic" Physics="DragoonAttackDeathForce"/>
+        <On Terms="ActorCreation" Send="SetTintColor {68,255,0 3.000000}"/>
+    </CActorAction>
+    <CActorMissile id="MainShardAttackMissile" parent="GenericAttackMissile" unitName="MainShardWeapon">
+        <On Terms="UnitBirth" Send="AnimSetTimeScaleAbsolute Lifetime 1.000000"/>
+        <On Terms="ActorCreation" Send="SetTintColor {68,255,0 3.000000}"/>
+        <Scale value="0.750000,1.250000,0.750000"/>
+    </CActorMissile>
+    <CActorRange id="ExtractVoidEnergyRange" parent="RangeAbil" abil="ExtractVoidEnergy"/>
+    <CActorSound id="ExtractVoidEnergySound" parent="SoundContinuous">
+        <On Terms="Abil.ExtractVoidEnergy.SourceChannelStart" Send="Create"/>
+        <On Terms="Abil.ExtractVoidEnergy.SourceChannelStop" Send="Destroy"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOverhead"/>
+    </CActorSound>
+    <CActorModelMaterial id="GlazeShadow">
+        <On index="9" removed="1"/>
+        <On index="10" removed="1"/>
+    </CActorModelMaterial>
+    <CActorModel id="AmonShardPowerUpModel" parent="ModelAnimationStyleContinuous">
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachWeapon"/>
+        <ModelFlags index="AllowHitTest" value="0"/>
+    </CActorModel>
+    <CActorSound id="AmonShard_ChargeSound" parent="SoundContinuous">
+        <On Terms="ActorCreation" Send="SoundSetPitch Linear 0.000000@0.000000,20.000000@3000.000000"/>
+        <Host Subject="_Unit"/>
+        <Sound value="VoidShard_Charge"/>
+        <Layers>
+            <Sound value="Void_Thrasher_Electric_Inhale_Vox"/>
+            <PitchSource value="Sound"/>
+            <PlayDelaySource value="Sound"/>
+            <VolumeSource value="Sound"/>
+            <Chance value="100"/>
+            <Pitch value="-5.000000,-5.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="6.000000,6.000000"/>
+        </Layers>
+    </CActorSound>
+    <CActorUnit id="LabMineralField">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="LabMineralField750">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="GorgonVoidRift" parent="GenericUnitStandard" unitName="GorgonVoidRift">
+        <On Terms="ActorCreation" Send="$Birth"/>
+        <On Terms="UnitBirth" Send="Create VoidRiftSoundLoop_AS"/>
+        <Model value="PnPHybridVoidRift"/>
+        <Scale value="1.500000"/>
+        <CreepHeightClass value="Small"/>
+        <BuildModel value="PnPHybridVoidRift"/>
+        <DeathArray index="Normal" ModelLink="PnPHybridVoidRift" SoundLink="VoidRift_Death_A"/>
+        <PlacementModel value="PylonPlacement"/>
+        <PlacementSound value="Protoss_BuildingPlacementSmall"/>
+        <PortraitActor value="AmonEx2Portrait"/>
+        <PortraitModel value="AmonEx2Portrait"/>
+        <BarOffset value="140"/>
+        <BarWidth value="160"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Protoss-VoidRift.dds"/>
+        </GroupIcon>
+        <LifeArmorIcon value="Assets\Textures\btn-amonshardsarmor.dds"/>
+        <MinimapIcon value="Assets\Textures\pingboss1.dds"/>
+        <MinimapIconScale value="0.080000"/>
+        <MinimapIconTintColor value="255,255,0,0"/>
+        <NameOffset value="130"/>
+        <SnapshotActor value="SnapshotAnimating"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Protoss-VoidRift.dds"/>
+            <Image value="Assets\Textures\wireframe-protoss-voidrift.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorSiteOpLocalOffset id="SOpLowerBy05">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.000000,0.000000,-0.500000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorModel id="GehennaCruiserMist" parent="ModelAddition">
+        <Scale value="0.500000,1.000000,0.250000"/>
+        <On Send="Create VoidVortex_ActorSoundLoop"/>
+        <On Terms="Behavior.CelestialBeamShadowTendril.On" Send="Create CelestialBeamShadowTendrilImpact"/>
+        <On Terms="Behavior.CelestialBeamShadowTendril.Off" Target="CelestialBeamShadowTendrilImpact" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetTintColor 130,0,0"/>
+        <Model value="ShadowCloud"/>
+    </CActorModel>
+    <CActorModel id="SupportUnit" parent="ModelAnimationStyleContinuous">
+        <Flags index="VisionTestCenterOnly" value="1"/>
+        <FilterPlayers index="1" value="1"/>
+        <FilterPlayers index="2" value="1"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <AcceptedTransfers index="Rotation" value="0"/>
+        <AcceptedHostedPropTransfers index="TeamColor" value="0"/>
+        <FogVisibility value="Hidden"/>
+        <On Terms="Behavior.SupportUnit.On" Send="Create"/>
+        <On Terms="Behavior.SupportUnit.Off" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetOpacity 0.700000"/>
+        <On Terms="ActorCreation" Send="SetTintColor 28,255,250"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOverhead SOpForwardDefault"/>
+        <Model value="LocalDefenderVisual"/>
+    </CActorModel>
+    <CActorModel id="LocalDefenderReturning" parent="ModelAnimationStyleContinuous">
+        <Flags index="VisionTestCenterOnly" value="1"/>
+        <FilterPlayers index="1" value="1"/>
+        <FilterPlayers index="2" value="1"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <AcceptedTransfers index="Rotation" value="0"/>
+        <AcceptedHostedPropTransfers index="TeamColor" value="0"/>
+        <FogVisibility value="Hidden"/>
+        <On Terms="Behavior.LocalDefenderReturning.On" Send="Create"/>
+        <On Terms="Behavior.LocalDefenderReturning.Off" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetOpacity 0.700000"/>
+        <On Terms="ActorCreation" Send="SetTintColor 255,0,0"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOverhead SOpForwardDefault"/>
+        <Model value="LocalDefenderVisual"/>
+        <Scale value="1.330000"/>
+    </CActorModel>
+    <CActorUnit id="MineralField">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="MineralField750">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorModel id="LocalDefender" parent="ModelAnimationStyleContinuous">
+        <Flags index="VisionTestCenterOnly" value="1"/>
+        <FilterPlayers index="1" value="1"/>
+        <FilterPlayers index="2" value="1"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <AcceptedTransfers index="Rotation" value="0"/>
+        <AcceptedHostedPropTransfers index="TeamColor" value="0"/>
+        <FogVisibility value="Hidden"/>
+        <On Terms="Behavior.LocalDefender.On" Send="Create"/>
+        <On Terms="Behavior.LocalDefender.Off" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="SetOpacity 0.700000"/>
+        <On Terms="ActorCreation" Send="SetTintColor 0,255,0"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOverhead SOpForwardDefault"/>
+        <Model value="LocalDefenderVisual"/>
+    </CActorModel>
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <!--                                                                                         -->
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <CActorUnit id="ProtossVespeneGeyser">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="PurifierMineralField">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="PurifierMineralField750">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="PurifierRichMineralField">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="PurifierRichMineralField750">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="PurifierVespeneGeyser">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!--                                                                                         -->
+    <!-- Neutral ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--                                                                                         -->
+    <!--                                                                                         -->
+    <CActorUnit id="RadioactiveMineralField">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="Reservoir" parent="GenericUnitStandardNoAutoSoundLinks" unitName="VoidEnergyReservoir">
+        <On Terms="ActorCreation" Send="SetLocalTintColor 255,255,255"/>
+        <Model value="Void_ShardFortress2"/>
+        <Scale value="0.600000"/>
+        <BuildModel value="Void_ShardFortress2"/>
+        <DeathArray index="Normal" ModelLink="ResourceDeath" SoundLink="ResourceDeathSound" VoiceLink=""/>
+        <PlacementModel value="Void_ShardFortress2"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-protoss-voidchasm.dds"/>
+        </GroupIcon>
+        <HighlightTooltip value="Unit/Name/Reservoir"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-terran-buildingarmor.dds"/>
+        <MinimapIcon value="Assets\Textures\icon-void-energy-small.dds"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Workers" value="0"/>
+        <StatusBarFlags index="Charges" value="1"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <UnitIcon value="Assets\Textures\wireframe-protoss-voidchasm.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-protoss-voidchasm.dds"/>
+        </Wireframe>
+        <MinimapRenderPriority value="Beacon"/>
+    </CActorUnit>
+    <CActorUnit id="CoopCasterAmon" parent="ProtossBuilding" unitName="CoopCasterAmon">
+        <Macros value="GlobalLoopMacro"/>
+        <Macros value="QueueAnim"/>
+        <Macros value="UnpoweredAnim"/>
+        <Macros value="BuildingFlattenTerrainMacro"/>
+        <Macros value="ProtossBuildingPowerUp"/>
+        <Model value="SoACaster"/>
+        <EventDataSound Name="BuildingWarpIn" Actor="UnitSound" Sound="Protoss_BuildingWarpIn"/>
+        <BuildModel value="SoACasterBirth"/>
+        <DeathArray index="Normal" ModelLink="SoACasterDeath" SoundLink="SoACaster_Explode"/>
+        <DeathArray index="UnderConstruction" ModelLink="ProtossWarpInDeath" SoundLink="Gateway_Explode"/>
+        <PlacementModel value="SoACaster"/>
+        <PlacementSound value="Protoss_BuildingPlacement"/>
+        <PortraitModel value="ExecutorPortrait"/>
+        <BarOffset value="140"/>
+        <BarWidth value="160"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-protoss-shipgeneratorsmall.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\btn-building-protoss-obelisk.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-armor-protoss-buildingplating.dds"/>
+        <NameOffset value="130"/>
+        <UnitIcon value="Assets\Textures\btn-building-protoss-obelisk.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-protoss-shipgeneratorsmall.dds"/>
+        </Wireframe>
+        <WireframeShield>
+            <Image value="Assets\Textures\wireframe-protoss-shipgeneratorsmall-shield01.dds"/>
+            <Image value="Assets\Textures\wireframe-protoss-shipgeneratorsmall-shield02.dds"/>
+            <Image value="Assets\Textures\wireframe-protoss-shipgeneratorsmall-shield03.dds"/>
+        </WireframeShield>
+    </CActorUnit>
+    <CActorModelMaterial id="EmpowerGlaze" parent="GlazeParent">
+        <On Terms="ActorCreation" Send="ModelMaterialApplyTo ::Main"/>
+        <On Terms="Behavior.Empowered.On" Send="Create"/>
+        <On Terms="Behavior.Empowered.Off" Send="Destroy"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+    </CActorModelMaterial>
+    <!--                                                                                         -->
+    <!-- Gehenna Cruiser                                                                                -->
+    <!--                                                                                         -->
+    <CActorUnit id="GehennaCruiser">
+        <On Terms="UnitDeath" Send="Create dfgdgfg"/>
+        <On Terms="ActorCreation" Send="Create GehennaCruiserMist"/>
+        <ModelFlags index="WireframeRender" value="1"/>
+        <DeathArray index="Normal" ModelLink="DeathVoidShadowGehenna" SoundLink="Death_VoidShadow_FireFlare"/>
+    </CActorUnit>
+    <CActorMissile id="MutatorAmonArtanis">
+        <StatusBarOn index="Shields" value="1"/>
+        <StatusBarOn index="Life" value="1"/>
+        <StatusBarOn index="Energy" value="1"/>
+        <StatusBarOn index="Progress" value="1"/>
+        <StatusBarOn index="Duration" value="1"/>
+    </CActorMissile>
+    <CActorMissile id="MutatorAmonDehaka">
+        <StatusBarOn index="Shields" value="1"/>
+        <StatusBarOn index="Life" value="1"/>
+        <StatusBarOn index="Energy" value="1"/>
+        <StatusBarOn index="Progress" value="1"/>
+        <StatusBarOn index="Duration" value="1"/>
+        <StatusBarOn index="Custom" value="1"/>
+    </CActorMissile>
+    <CActorUnit id="MutatorAmonKarax">
+        <StatusBarOn index="Shields" value="1"/>
+        <StatusBarOn index="Life" value="1"/>
+        <StatusBarOn index="Energy" value="1"/>
+        <StatusBarOn index="Progress" value="1"/>
+        <StatusBarOn index="Duration" value="1"/>
+    </CActorUnit>
+    <CActorMissile id="MutatorAmonKerrigan">
+        <StatusBarOn index="Custom" value="1"/>
+    </CActorMissile>
+    <CActorMissile id="MutatorAmonNova">
+        <HeroIcon value=""/>
+        <On Terms="Abil.EMP.SourceCastStart" Send="AnimBracketStart Spell Spell,E Spell,F Spell,G"/>
+    </CActorMissile>
+    <CActorUnit id="MutatorAmonRaynor">
+        <StatusBarOn index="Shields" value="1"/>
+        <StatusBarOn index="Life" value="1"/>
+        <StatusBarOn index="Energy" value="1"/>
+        <StatusBarOn index="Progress" value="1"/>
+        <StatusBarOn index="Duration" value="1"/>
+        <StatusBarOn index="Custom" value="1"/>
+    </CActorUnit>
+    <CActorUnit id="MutatorAmonTychus">
+        <StatusBarOn index="Shields" value="1"/>
+        <StatusBarOn index="Life" value="1"/>
+        <StatusBarOn index="Energy" value="1"/>
+        <StatusBarOn index="Progress" value="1"/>
+        <StatusBarOn index="Duration" value="1"/>
+        <StatusBarOn index="Custom" value="1"/>
+    </CActorUnit>
+    <CActorUnit id="MutatorAmonZeratul">
+        <StatusBarOn index="Shields" value="1"/>
+        <StatusBarOn index="Life" value="1"/>
+        <StatusBarOn index="Energy" value="1"/>
+        <StatusBarOn index="Progress" value="1"/>
+        <StatusBarOn index="Duration" value="1"/>
+        <StatusBarOn index="Custom" value="1"/>
+    </CActorUnit>
+    <CActorUnit id="RichMineralField">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="RichMineralField750">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="RichVespeneGeyser">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="RubbleWall" parent="GenericUnitStandardNoAutoSoundLinks" unitName="RubbleWall">
+        <On Terms="ActorCreation" Send="SetLocalTintColor 74,74,74"/>
+        <Scale value="1.600000,1.600000,0.600000"/>
+        <DeathArray index="Normal" ModelLink="DefenseWallDeath" SoundLink="DefenseWall_Death"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-terran-buildingarmor.dds"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+    </CActorUnit>
+    <CActorUnit id="BarrierWall" parent="GenericUnitStandardNoAutoSoundLinks" unitName="BarrierWall">
+        <On Terms="ActorCreation" Send="SetTintColor {244,242,242 1.700000} 0.000000 OneShot {} 300.000000"/>
+        <DeathArray index="Normal" ModelLink="SpacePlatformBarrierDeath01" SoundLink="BarrierDeath"/>
+        <GroupIcon>
+            <Image value="3p_wireframe_barrier.dds"/>
+        </GroupIcon>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-terran-buildingarmor.dds"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <UnitIcon value="3p_wireframe_barrier.dds"/>
+        <Wireframe>
+            <Image value="3p_wireframe_barrier.dds"/>
+        </Wireframe>
+        <BarHeight value="3"/>
+        <BarOffset value="50"/>
+        <BarWidth value="35"/>
+    </CActorUnit>
+    <CActorSiteOpLocalOffset id="SOpLowerBy2">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.000000,0.000000,-2.000000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorModel id="GehennaDeath" parent="UnitDeathModel">
+        <CopySource value="GehennaCruiser"/>
+        <Inherits index="BaseModelScale" value="0"/>
+        <AcceptedTransfers index="Textures" value="1"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOriginStationary SOpShadow"/>
+        <Model value="GehennaCruiserDeath"/>
+        <On Terms="ActorCreation" Send="HaloStart"/>
+        <On Terms="ActorCreation" Send="HaloSetColor 255,0,0"/>
+        <ModelFlags index="WireframeRender" value="1"/>
+    </CActorModel>
+    <CActorBeamSimple id="ExtractVoidEnergyBeam" parent="BeamSimpleAnimationStyleContinuous">
+        <AcceptedHostedPropTransfers index="BaseModelScale" value="0"/>
+        <AcceptedHostedPropTransfers index="CloakEffect" value="0"/>
+        <AcceptedHostedPropTransfers index="CreepEngulfment" value="0"/>
+        <AcceptedHostedPropTransfers index="Decal" value="0"/>
+        <AcceptedHostedPropTransfers index="LocalTintColor" value="0"/>
+        <AcceptedHostedPropTransfers index="ModelMaterials" value="0"/>
+        <AcceptedHostedPropTransfers index="Scale" value="0"/>
+        <AcceptedHostedPropTransfers index="TeamColor" value="0"/>
+        <AcceptedHostedPropTransfers index="TimeScale" value="0"/>
+        <AcceptedHostedPropTransfers index="TintColor" value="0"/>
+        <AcceptedHostedPropTransfers index="WarpGroup" value="0"/>
+        <On Terms="Effect.ExtractVoidEnergyCP.Start" Send="Create"/>
+        <On Terms="Effect.ExtractVoidEnergyCP.Stop" Send="AnimBracketStop BSD"/>
+        <On Terms="ActorCreation" Send="SetTintColor {255,5,0 1.500000} 0.000000 OneShot {} 200.000000"/>
+        <HostForProps Subject="_Unit" Scope="Target"/>
+        <ModelFlags index="AutomateGlobalLoops" value="1"/>
+        <HostLaunch Subject="_Unit" Scope="Target"/>
+        <HostLaunchSiteOps Ops="SOpAttachOverhead SOpLowerBy05"/>
+        <HostImpact Subject="_Unit" Scope="Caster"/>
+        <HostImpactSiteOps Ops="SOpAttachCenter SOpLowerBy2"/>
+        <FogVisibility value="Visible"/>
+    </CActorBeamSimple>
+    <CActorSiteOpLocalOffset id="SOpLowerBy08"/>
+    <!--                                                                                         -->
+    <!--                                                                                         -->
+    <!-- Global Config ========================================================================= -->
+    <!--                                                                                         -->
+    <!--                                                                                         -->
+    <CActorGlobalConfig id="SYSTEM_ActorConfig">
+        <MinimapRenderPriorityList index="0" value="ExpandToReservoir"/>
+        <MinimapRenderPriorityList index="1" value="Reservoir"/>
+        <MinimapRenderPriorityList index="2" value="Doodad"/>
+        <MinimapRenderPriorityList index="3" value="ObjectGroup"/>
+        <MinimapRenderPriorityList index="4" value="Normal"/>
+        <MinimapRenderPriorityList index="5" value="Merc"/>
+        <MinimapRenderPriorityList index="6" value="Pusher"/>
+        <MinimapRenderPriorityList index="7" value="Hero"/>
+        <MinimapRenderPriorityList value="Beacon"/>
+    </CActorGlobalConfig>
+    <CActorUnit id="ShakurasVespeneGeyser">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="SpacePlatformGeyser">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="TTychus05Objective">
+        <Scale value="0.800000"/>
+        <BarWidth value="80"/>
+    </CActorUnit>
+    <CActorRange id="TTychus05ObjectiveRadar">
+        <Range value="30.000000"/>
+    </CActorRange>
+    <CActorModel id="TTychus05ObjectiveShield">
+        <!--        <On Terms="ActorCreation" Send="SetOpacity 0.250000"/> -->
+        <On index="3" Send="SetScale 5.250000"/>
+    </CActorModel>
+    <CActorUnit id="TempleGeyser">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- TerrazineGeyser                                                                  -->
+    <!--                                                                                         -->
+    <CActorUnit id="TerrazineGeyser">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorUnit id="UmojanLabMineralField">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- Vespene                                                                                 -->
+    <!--                                                                                         -->
+    <CActorUnit id="VespeneGeyser">
+        <MinimapRenderPriority value="Reservoir"/>
+    </CActorUnit>
+    <CActorAction id="VoidRiftTrainBig" parent="GenericAttack" effectImpact="VoidRiftTrainBigPrecursorRB" effectLaunch="VoidRiftTrainBigLM">
+        <LaunchSiteOps Ops="SOpAttachOrigin SOpMoveDownBy1"/>
+        <LaunchAssets Model="" Sound="Hybrid_PlasmaBlastLaunch"/>
+        <ImpactSiteOps Ops="SOpAttachCenter"/>
+        <ShieldFlashType value="None"/>
+    </CActorAction>
+    <CActorModel id="VoidRiftTrainBigBirth" parent="ModelAnimationStyleOneShot">
+        <On Terms="ActorCreation" Send="SetTintColor {255,255,255 2.000000}"/>
+        <On Terms="ActorCreation" Send="Create VoidRiftTrainBirthSound"/>
+        <On Terms="ActorCreation" Target="_Selectable" Send="SetOpacity"/>
+        <On Terms="ActorCreation" Target="_Selectable" Send="SetOpacity 1.000000 0.500000"/>
+        <On Terms="Effect.VoidRiftTrainBigPrecursorRB.Start; At Target" Send="Create"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+        <AutoScaleFactor value="1.000000"/>
+    </CActorModel>
+    <CActorMissile id="VoidRiftTrainBigMissile" parent="GenericAttackMissile" unitName="VoidRiftTrainBigMissile">
+        <On Terms="ActorCreation" Send="SetTintColor {255,255,255 2.000000}"/>
+    </CActorMissile>
+    <CActorUnit id="VoidShardAC">
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-protoss-voidtendril.dds"/>
+        </GroupIcon>
+        <UnitIcon value="Assets\Textures\icon-void-energy-mediumS.dds"/>
+        <BarDistance value="60"/>
+        <BarHeight value="5"/>
+        <BarWidth value="90"/>
+        <On index="72" Terms="Effect.3P_VoidShardACShockwaveCreatePersistent.Start"/>
+        <On index="73" Terms="Effect.3P_VoidShardACShockwaveCreatePersistent.Stop"/>
+        <On Terms="WeaponStart.*.AttackStart" Send="Create KhaydarinMonolithPowerUpModel2"/>
+        <On Terms="WeaponStart.*.AttackStart" Send="Create AmonShard_ChargeSound"/>
+        <On Terms="WeaponStop.*.AttackStop" Target="KhaydarinMonolithPowerUpModel" Send="Destroy"/>
+        <On Terms="WeaponStop.*.AttackStop" Target="KhaydarinMonolith_ChargeSound" Send="Destroy"/>
+    </CActorUnit>
+    <CActorAction id="VoidShardAttack2" parent="GenericAttack" effectAttack="VoidShardDamageSet">
+        <LaunchAssets Sound="KhaydarinMonolith_AttackLaunch"/>
+        <Beam value="VoidShardBeam"/>
+        <BeamScope value="Caster"/>
+        <ImpactSiteOps Ops="SOpAttachHarness SOpAttachVolumeNoVizEnhance"/>
+        <ImpactMap index="None" Model="KhaydarinBeamAttackImpact" Sound="KhaydarinMonolith_AttackImpact"/>
+    </CActorAction>
+    <CActorAction id="ConnectBeam" parent="GenericAttack" effectAttack="ConnectBeamDummy" effectLaunch="ConnectBeamSet">
+        <LaunchSound value="ConnectBeamSound"/>
+        <Beam value="ConnectBeam2"/>
+        <BeamScope value="Caster"/>
+        <ImpactMap index="None" Model="" Sound="ConnectBeamSound" ModelReaction=""/>
+        <ImpactMap index="Shield" Sound="" ModelReaction=""/>
+    </CActorAction>
+    <CActorBeamSimple id="VoidShardBeam" parent="BeamSimpleAnimationStyleOneShot">
+        <Model value="BeamCaster4AttackBeam"/>
+        <Scale value="0.800000"/>
+        <HostLaunchSiteOps Ops="SOpLowerBy35"/>
+        <On Terms="ActorCreation" Send="SetTintColor 255,0,0"/>
+    </CActorBeamSimple>
+    <CActorSiteOpLocalOffset id="SOpHigherBy52">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.000000,0.000000,5.000000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorUnit id="SmallVoidShard" parent="GenericUnitStandardNoAutoSoundLinks" unitName="VoidShardFragment">
+        <Aliases value="_UnitHuge"/>
+        <On Terms="ActorCreation" Send="$Birth"/>
+        <On Terms="UnitDeath" Target="VoidShardACound" Send="Destroy"/>
+        <On Terms="Abil.VoidShardACShockwave.SourcePrepStart" Send="Create VoidShardACShockwaveWarning"/>
+        <On Terms="Abil.VoidShardACShockwave.SourceCastStop" Target="VoidShardACShockwaveWarning" Send="Destroy"/>
+        <Model value="SmallVoidShard"/>
+        <ModelFlags index="IgnoreWalkables" value="1"/>
+        <ModelFlags index="OutlineOccluder" value="1"/>
+        <BuildModel value="SmallVoidShard"/>
+        <DeathArray index="Normal" ModelLink="SmallVoidShardACDeath" SoundLink="VoidShardAC_Death_Base"/>
+        <PlacementModel value="SmallVoidShard"/>
+        <PortraitActor value="AmonEx2Portrait"/>
+        <PortraitModel value="AmonEx2Portrait"/>
+        <BarDistance value="50"/>
+        <BarHeight value="5"/>
+        <BarWidth value="65"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-protoss-voidtendril.dds"/>
+        </GroupIcon>
+        <HighlightTooltip value="Unit/Name/VoidShard"/>
+        <LifeArmorIcon value="Assets\Textures\btn-armor-protoss-buildingplating.dds"/>
+        <SnapshotActor value="SnapshotAnimating"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <UnitIcon value="Assets\Textures\wireframe-protoss-voidtendril.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-protoss-voidtendril.dds"/>
+        </Wireframe>
+        <WireframeShield>
+            <Image value="Assets\Textures\wireframe-protoss-voidtendril-shield01.dds"/>
+            <Image value="Assets\Textures\wireframe-protoss-voidtendril-shield02.dds"/>
+            <Image value="Assets\Textures\wireframe-protoss-voidtendril-shield03.dds"/>
+        </WireframeShield>
+        <StatusBarOn index="Progress" value="1"/>
+    </CActorUnit>
+    <CActorBeamSimple id="ConnectBeam2" parent="BeamSimpleAnimationStyleOneShot">
+        <On Terms="ActorCreation" Send="SetTintColor {255,50,23 3.000000}"/>
+        <On Terms="ActorCreation" Send="TimerSet 4.000000 ABC"/>
+        <On Terms="TimerExpired; TimerName ABC" Send="SetOpacity 0.000000 1.000000"/>
+        <On Terms="TimerExpired" Send="TimerSet 1.000000 DEF"/>
+        <On Terms="TimerExpired; TimerName DEF" Send="Destroy"/>
+        <Model value="ConnectBeam"/>
+        <HostLaunchSiteOps Ops="SOpAttachWeapon"/>
+        <HostLaunch Subject="_Unit" Scope="Target"/>
+    </CActorBeamSimple>
+    <CActorSiteOpLocalOffset id="SOpLowerBy35">
+        <EditorCategories value=""/>
+        <LocalOffset value="0.000000,0.000000,-3.500000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSound id="VoidShardFragmentImpact" parent="SoundOneShot">
+        <EditorCategories value=""/>
+        <On Terms="Effect.CreateShardCU.Start" Send="Create"/>
+    </CActorSound>
+</Catalog>
