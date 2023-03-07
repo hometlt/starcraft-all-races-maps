@@ -2,7 +2,7 @@
 // 
 // Generated Map Script
 // 
-// Name:   Galatea's Ascent
+// Name:   [ARC] Galatea's Ascent
 // 
 //==================================================================================================
 include "TriggerLibs/natives"
@@ -20,14 +20,12 @@ include "TriggerLibs/natives"
 include "TriggerLibs/natives"
 include "TriggerLibs/AI"
 include "TriggerLibs/Computer"
-
 //--------------------------------------------------------------------------------------------------
 // Globals
 //--------------------------------------------------------------------------------------------------
 point[17] aiF917F4D7_defGather;
 string[17] aiF917F4D7_customData;
 wave[17] aiF917F4D7_lastWave;
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave: 
 //--------------------------------------------------------------------------------------------------
@@ -36,19 +34,15 @@ wave[17] aiF917F4D7_wave1_lastWave;
 trigger aiF917F4D7_wave1_trigger = null;
 int aiF917F4D7_wave1_runPlayer;
 playergroup aiF917F4D7_wave1_runTarget;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave1_init () {
     int init_i;
-
     for (init_i = 0; init_i <= 16; init_i += 1) {
         aiF917F4D7_wave1_enabled[init_i] = true;
         aiF917F4D7_wave1_lastWave[init_i] = null;
     }
-
     aiF917F4D7_wave1_trigger = TriggerCreate("aiF917F4D7_wave1_runFunc");
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave1_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -56,7 +50,6 @@ void aiF917F4D7_wave1_enable (int p, bool val) {
     }
     aiF917F4D7_wave1_enabled[p] = val;
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave1_isEnabled (int p) {
     if (p < 0 || p >= 16) {
@@ -64,7 +57,6 @@ bool aiF917F4D7_wave1_isEnabled (int p) {
     }
     return aiF917F4D7_wave1_enabled[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_wave1_createdWave (int p) {
     if (p < 0 || p >= 16) {
@@ -72,7 +64,6 @@ wave aiF917F4D7_wave1_createdWave (int p) {
     }
     return aiF917F4D7_wave1_lastWave[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave1_runFunc (bool c, bool a) {
     int p = aiF917F4D7_wave1_runPlayer;
@@ -85,6 +76,9 @@ bool aiF917F4D7_wave1_runFunc (bool c, bool a) {
     int tf = 0;
     int td = 0;
 
+
+    TriggerDebugOutput(1,  IntToText(p), true);
+
     if (p < 0 || p >= 16) {
         return false;
     }
@@ -96,9 +90,7 @@ bool aiF917F4D7_wave1_runFunc (bool c, bool a) {
         }
         return true;
     }
-
     aiF917F4D7_customData[p] = "";
-
     ta = 0;
     if (d == 1) { ta = 3000; }
     if (d == 2) { ta = 3000; }
@@ -118,112 +110,87 @@ bool aiF917F4D7_wave1_runFunc (bool c, bool a) {
         ts = tg;
     }
     AIAttackWaveSetTargetPlayer(p, target);
-
     gatherPoint = aiF917F4D7_defGather[p];
     AIAttackWaveSetGatherPoint(p, gatherPoint);
-
     AIAttackWaveClearWaypoints(p);
-
     Wait(ts, c_timeAI);
     tf = 0;
     if (tf > 0) {
         Wait(tf, c_timeAI);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave1_run (int p, playergroup target, bool wait) {
     aiF917F4D7_wave1_runPlayer = p;
     aiF917F4D7_wave1_runTarget = PlayerGroupCopy(target);
-
     TriggerExecute(aiF917F4D7_wave1_trigger, false, wait);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave Wrappers
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave_enable (int w, int p, bool val) {
     if (w == 1) { aiF917F4D7_wave1_enable(p, val); }
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave_isEnabled (int w, int p) {
     if (w == 1) { return aiF917F4D7_wave1_isEnabled(p); }
     return false;
 }
-
 //--------------------------------------------------------------------------------------------------
 unitgroup aiF917F4D7_wave_createdUnits (int w, int p) {
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_wave_createdWave (int w, int p) {
     if (w == 1) { return aiF917F4D7_wave1_createdWave(p); }
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave_run (int w, int p, playergroup target, bool wait) {
     if (w == 1) { aiF917F4D7_wave1_run(p, target, wait); }
 }
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave Sequence
 //--------------------------------------------------------------------------------------------------
 trigger aiF917F4D7_waves_trigger = null;
 int aiF917F4D7_waves_runPlayer;
 playergroup aiF917F4D7_waves_runTarget;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_waves_init () {
     aiF917F4D7_waves_trigger = TriggerCreate("aiF917F4D7_waves_runFunc");
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_waves_runFunc (bool c, bool a) {
     int p = aiF917F4D7_waves_runPlayer;
     playergroup target = aiF917F4D7_waves_runTarget;
-
     if (p < 0 || p >= 16) {
         return false;
     }
-
     aiF917F4D7_wave1_run(p, target, true);
-
     while (true) {
         aiF917F4D7_wave1_run(p, target, true);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_waves_run (int p, playergroup target) {
     aiF917F4D7_waves_runPlayer = p;
     aiF917F4D7_waves_runTarget = PlayerGroupCopy(target);
-
     TriggerExecute(aiF917F4D7_waves_trigger, false, false);
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_waves_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
         return;
     }
-
     aiF917F4D7_wave1_enable(p, val);
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_waves_stop () {
     TriggerStop(aiF917F4D7_waves_trigger);
-
     TriggerStop(aiF917F4D7_wave1_trigger);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Configuration
 //--------------------------------------------------------------------------------------------------
@@ -233,7 +200,6 @@ void aiF917F4D7_setDefGather (int p, point val) {
     }
     aiF917F4D7_defGather[p] = val;
 }
-
 //--------------------------------------------------------------------------------------------------
 string aiF917F4D7_getCustomData (int p) {
     if (p < 0 || p >= 16) {
@@ -241,7 +207,6 @@ string aiF917F4D7_getCustomData (int p) {
     }
     return aiF917F4D7_customData[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_getLastWave (int p) {
     if (p < 0 || p >= 16) {
@@ -249,34 +214,26 @@ wave aiF917F4D7_getLastWave (int p) {
     }
     return aiF917F4D7_lastWave[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 // Start
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_initialized = false;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_start (int p) {
     int init_i;
-
     if (p < 0 || p >= 16) {
         return;
     }
     if (!aiF917F4D7_initialized) {
         aiF917F4D7_wave1_init();
         aiF917F4D7_waves_init();
-
         for (init_i = 0; init_i <= 16; init_i += 1) {
             aiF917F4D7_defGather[init_i] = PointFromId(423750316);
         }
-
         aiF917F4D7_initialized = true;
     }
-
     AICampaignStart(p);
 }
-
-
 //==================================================================================================
 // 
 // Generated Map Script
@@ -287,7 +244,6 @@ void aiF917F4D7_start (int p) {
 include "TriggerLibs/NativeLib"
 include "TriggerLibs/SwarmLib"
 include "LibCOMI"
-
 //--------------------------------------------------------------------------------------------------
 // Library Initialization
 //--------------------------------------------------------------------------------------------------
@@ -296,15 +252,14 @@ void InitLibs () {
     libHots_InitLib();
     libCOMI_InitLib();
 }
-
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
-const int gv_pLAYER_05_LOCALS = 5;
+int gv_pLAYER_01_USER = 1;
+int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 6;
+const int gv_pLAYER_04_ENEMY = 7;
+const int gv_pLAYER_05_LOCALS = 8;
 const int gv_dockingBaysCooldown = 60;
 const int gv_dockingBaysGracePeriod = 150;
 const int gv_dockingBaysCooldownFluctuation = 60;
@@ -323,7 +278,6 @@ const int gv_bONUS_SPAWN_PROBABILITY = 30;
 const int gv_aMON_BASE_ROOT = 0;
 const int gv_aMON_BASE_OUTPOST = 1;
 const int gv_aMON_BASE_DOCKING_BAY = 2;
-
 //--------------------------------------------------------------------------------------------------
 // Global Structures
 //--------------------------------------------------------------------------------------------------
@@ -340,14 +294,12 @@ struct gs_DockingBayRecord {
     int lv_mode;
     int lv_cutscene;
 };
-
 struct gs_AmonBase {
     region lv_location;
     int lv_type;
     int lv_initialOwner;
     bool lv_overrunStatus;
 };
-
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
@@ -381,10 +333,8 @@ int gv_objectiveE28094KillAeries;
 int gv_objectiveE28094DestroyPrometheus;
 int gv_objectiveE28094DestroyFirebird;
 int gv_objectiveE28094DestroyDevastatorBattlesuit;
-
 void InitGlobals () {
     int init_i;
-
     gv_enemyGroup = PlayerGroupEmpty();
     gv_dockingBaysYieldDelay = 9;
     gv_worthMineralCost = 1;
@@ -414,7 +364,6 @@ void InitGlobals () {
     gv_objectiveE28094DestroyFirebird = c_invalidObjectiveId;
     gv_objectiveE28094DestroyDevastatorBattlesuit = c_invalidObjectiveId;
 }
-
 //--------------------------------------------------------------------------------------------------
 // Global Function Declarations
 //--------------------------------------------------------------------------------------------------
@@ -443,7 +392,6 @@ int gf_GetRandomOverrunBase (int lp_amonPlayer);
 int gf_GetRandomNotOverrunBase (int lp_amonPlayer);
 int gf_GetBaseIndexbyDockingBayNumber (int lp_dockingBayNumber);
 bool gf_IsAmonBaseOverrun (int lp_baseIndex);
-
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
@@ -455,7 +403,6 @@ trigger gt_Init05Units;
 trigger gt_Init06MusicSound;
 trigger gt_Init07Environment;
 trigger gt_Init08Difficulties;
-trigger gt_DebugCantFail;
 trigger gt_StartGameQ;
 trigger gt_InitDockingBays;
 trigger gt_DockingBaysTransmissionandPing;
@@ -532,31 +479,25 @@ trigger gt_ObjectiveDestroyDevastatorBattlesuitE28094Create;
 trigger gt_ObjectiveDestroyDevastatorBattlesuitE28094Complete;
 trigger gt_ObjectiveDestroyDevastatorBattlesuitE28094Update;
 trigger gt_ObjectiveDestroyDevastatorBattlesuitE28094Failed;
-
 //--------------------------------------------------------------------------------------------------
 // Custom AI Functions
 //--------------------------------------------------------------------------------------------------
 string[17] cai_playerAI;
-
 //--------------------------------------------------------------------------------------------------
 void InitCustomAI () {
     int init_i;
-
     for (init_i = 0; init_i <= 16; init_i += 1) {
         cai_playerAI[init_i] = null;
     }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_start (string ai, int p) {
     if (p < 0 || p >= 16) {
         return;
     }
     cai_playerAI[p] = ai;
-
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_start(p); }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_setDefGather (int p, point val) {
     if (p < 0 || p >= 16) {
@@ -564,7 +505,6 @@ void cai_setDefGather (int p, point val) {
     }
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_setDefGather(p, val); }
 }
-
 //--------------------------------------------------------------------------------------------------
 string cai_getCustomData (int p) {
     if (p < 0 || p >= 16) {
@@ -573,7 +513,6 @@ string cai_getCustomData (int p) {
     if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getCustomData(p); }
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 wave cai_getLastWave (int p) {
     if (p < 0 || p >= 16) {
@@ -582,7 +521,6 @@ wave cai_getLastWave (int p) {
     if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getLastWave(p); }
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_waves_run (int p, playergroup target) {
     if (p < 0 || p >= 16) {
@@ -590,7 +528,6 @@ void cai_waves_run (int p, playergroup target) {
     }
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_run(p, target); }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_waves_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -598,12 +535,10 @@ void cai_waves_enable (int p, bool val) {
     }
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_enable(p, val); }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_waves_stop (string ai) {
     if (ai == "aiF917F4D7") { aiF917F4D7_waves_stop(); }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_wave_run (int w, int p, playergroup target, bool wait) {
     if (p < 0 || p >= 16) {
@@ -611,7 +546,6 @@ void cai_wave_run (int w, int p, playergroup target, bool wait) {
     }
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_run(w, p, target, wait); }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_wave_enable (int w, int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -619,7 +553,6 @@ void cai_wave_enable (int w, int p, bool val) {
     }
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_enable(w, p, val); }
 }
-
 //--------------------------------------------------------------------------------------------------
 bool cai_wave_isEnabled (int w, int p) {
     if (p < 0 || p >= 16) {
@@ -628,7 +561,6 @@ bool cai_wave_isEnabled (int w, int p) {
     if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_isEnabled(w, p); }
     return false;
 }
-
 //--------------------------------------------------------------------------------------------------
 unitgroup cai_wave_createdUnits (int w, int p) {
     if (p < 0 || p >= 16) {
@@ -637,7 +569,6 @@ unitgroup cai_wave_createdUnits (int w, int p) {
     if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdUnits(w, p); }
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 wave cai_wave_createdWave (int w, int p) {
     if (p < 0 || p >= 16) {
@@ -646,19 +577,16 @@ wave cai_wave_createdWave (int w, int p) {
     if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdWave(w, p); }
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_startall () {
-    AICampaignStart(3);
-    AICampaignStart(4);
-    AICampaignStart(5);
+    AICampaignStart(6);
+    AICampaignStart(7);
+    AICampaignStart(8);
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_runall () {
     playergroup target = PlayerGroupEmpty();
 }
-
 //--------------------------------------------------------------------------------------------------
 // Global Functions
 //--------------------------------------------------------------------------------------------------
@@ -667,15 +595,13 @@ bool gf_RollHybridWaveRetaliation () {
     fixed lv_missionTime;
     int lv_likelihood;
     int lv_roll;
-
     // Variable Initialization
     lv_missionTime = GameGetMissionTime();
     lv_likelihood = 320;
-
     // Implementation
     lv_likelihood -= FixedToInt((lv_missionTime - gv_lastAttackWave));
     lv_roll = RandomInt(0, 200);
-    TriggerDebugOutput(1, (StringExternal("Param/Value/C84C9300") + IntToText(lv_roll) + StringExternal("Param/Value/D116CCD3") + IntToText(lv_likelihood) + StringExternal("Param/Value/3EB26807")), true);
+    //TriggerDebugOutput(1, (StringExternal("Param/Value/C84C9300") + IntToText(lv_roll) + StringExternal("Param/Value/D116CCD3") + IntToText(lv_likelihood) + StringExternal("Param/Value/3EB26807")), true);
     if ((lv_likelihood < lv_roll)) {
         return true;
     }
@@ -683,14 +609,11 @@ bool gf_RollHybridWaveRetaliation () {
         return false;
     }
 }
-
 bool gf_RollHybridWaveRetaliation_Air () {
     // Variable Declarations
     fixed lv_missionTime;
-
     // Variable Initialization
     lv_missionTime = GameGetMissionTime();
-
     // Implementation
     if ((lv_missionTime <= 720.0)) {
         return false;
@@ -703,26 +626,21 @@ bool gf_RollHybridWaveRetaliation_Air () {
     }
     return false;
 }
-
 bool gf_RollForAmonReinforcements () {
     // Variable Declarations
     fixed lv_missionTime;
     int lv_roll;
     int lv_treshold;
-
     // Variable Initialization
     lv_missionTime = GameGetMissionTime();
     lv_treshold = 12;
-
     // Implementation
     lv_roll = RandomInt(0, 100);
     lv_treshold += FixedToInt((lv_missionTime / 30.0));
     return (lv_roll < lv_treshold);
 }
-
 int gf_WraithEscortQuantity (int lp_waveNumber) {
     int autoF045A6A2_val;
-
     // Implementation
     autoF045A6A2_val = lp_waveNumber;
     if (autoF045A6A2_val == 1) {
@@ -738,14 +656,11 @@ int gf_WraithEscortQuantity (int lp_waveNumber) {
         return 2;
     }
 }
-
 void gf_InitDockingBay (int lp_bayNumber, region lp_revealArea, region lp_controlArea, point lp_airlockPosition, int lp_owner) {
     // Variable Declarations
     int lv_bayArrayNumber;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
-
     // Implementation
     gv_dockingBays[lv_bayArrayNumber].lv_revealArea = lp_revealArea;
     gv_dockingBays[lv_bayArrayNumber].lv_controlArea = lp_controlArea;
@@ -756,27 +671,22 @@ void gf_InitDockingBay (int lp_bayNumber, region lp_revealArea, region lp_contro
     gv_dockingBays[lv_bayArrayNumber].lv_cooldown = (gv_dockingBaysGracePeriod + RandomInt(0, gv_dockingBaysCooldownFluctuation) + gv_dockingBaysCooldown);
     gf_TransferDockingBayOwnership(lp_bayNumber, lp_owner);
 }
-
 void gf_TransferDockingBayOwnership (int lp_bayNumber, int lp_newOwner) {
     // Variable Declarations
     int lv_bayArrayNumber;
     text lv_textTagText;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
     lv_textTagText = StringExternal("Param/Value/11509B64");
-
     // Implementation
     if ((gv_dockingBays[lv_bayArrayNumber].lv_revealer != null)) {
         libCOMI_gf_DestroyRevealerCoop(gv_dockingBays[lv_bayArrayNumber].lv_revealer);
     }
-
     libCOMI_gf_CreateRevealerCoop(lp_newOwner, gv_dockingBays[lv_bayArrayNumber].lv_revealArea);
     gv_dockingBays[lv_bayArrayNumber].lv_revealer = VisRevealerLastCreated();
     if (((PlayerGroupHasPlayer(gv_enemyGroup, gv_dockingBays[lv_bayArrayNumber].lv_owner) == true) || (PlayerGroupHasPlayer(gv_enemyGroup, lp_newOwner) == true))) {
         gv_dockingBays[lv_bayArrayNumber].lv_workerCount = 0;
     }
-
     gf_UpdateDockingBayTextTag(lp_bayNumber);
     if (((PlayerGroupHasPlayer(libCOMI_gf_HumanPlayers(), gv_dockingBays[lv_bayArrayNumber].lv_owner) == true) || (PlayerGroupHasPlayer(libCOMI_gf_HumanPlayers(), lp_newOwner) == true))) {
     }
@@ -790,21 +700,17 @@ void gf_TransferDockingBayOwnership (int lp_bayNumber, int lp_newOwner) {
     if ((PlayerGroupHasPlayer(gv_enemyGroup, lp_newOwner) != true)) {
         UnitBehaviorAdd(gf_FindDockingBayControlTower(lp_bayNumber), "RequestMinerals", gf_FindDockingBayControlTower(lp_bayNumber), 1);
     }
-
     gf_UpdateDockingBayWorkerBeacon(lp_bayNumber);
     gf_UpdateDockingBayPing(lp_bayNumber);
 }
-
 void gf_UpdateDockingBayTextTag (int lp_bayNumber) {
     // Variable Declarations
     int lv_bayArrayNumber;
     text lv_tempText;
     text lv_tempResource;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
     lv_tempResource = StringExternal("Param/Value/BE25450C");
-
     // Implementation
     if (((gv_dockingBays[lv_bayArrayNumber].lv_owner == gv_pLAYER_03_ENEMY) || (gv_dockingBays[lv_bayArrayNumber].lv_owner == gv_pLAYER_04_ENEMY)) && gf_DockingBayUncontested(lp_bayNumber)) {
         if ((gv_dockingBays[lv_bayArrayNumber].lv_textTag == c_textTagNone)) {
@@ -815,7 +721,6 @@ void gf_UpdateDockingBayTextTag (int lp_bayNumber) {
         }
         return ;
     }
-
     if (gf_DockingBayContested(lp_bayNumber)) {
         if ((gv_dockingBays[lv_bayArrayNumber].lv_textTag == c_textTagNone)) {
             TextTagCreate(StringExternal("Param/Value/5D03BB0C"), 24, UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 1.0, true, true, PlayerGroupAll());
@@ -833,7 +738,6 @@ void gf_UpdateDockingBayTextTag (int lp_bayNumber) {
         }
         return ;
     }
-
     if (gf_DockingBayBeingCaptured(lp_bayNumber)) {
         if ((gv_dockingBays[lv_bayArrayNumber].lv_textTag == c_textTagNone)) {
             TextTagCreate((StringExternal("Param/Value/6E406BEC") + IntToText(gv_dockingBays[lv_bayArrayNumber].lv_contestedPecent) + StringExternal("Param/Value/200D36C0")), 24, UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 1.0, true, true, PlayerGroupAll());
@@ -846,7 +750,6 @@ void gf_UpdateDockingBayTextTag (int lp_bayNumber) {
         TextTagShow(gv_dockingBays[lv_bayArrayNumber].lv_textTag, PlayerGroupAll(), true);
         return ;
     }
-
     if (((gv_dockingBays[lv_bayArrayNumber].lv_owner == gv_pLAYER_01_USER) || (gv_dockingBays[lv_bayArrayNumber].lv_owner == gv_pLAYER_02_USER)) && gf_DockingBayUncontested(lp_bayNumber)) {
         if ((UnitHasBehavior2(gf_FindDockingBayControlTower(lp_bayNumber), "RequestMinerals") == true)) {
             lv_tempResource = StringExternal("Param/Value/23AF5EFB");
@@ -876,52 +779,43 @@ void gf_UpdateDockingBayTextTag (int lp_bayNumber) {
         TextTagShow(gv_dockingBays[lv_bayArrayNumber].lv_textTag, PlayerGroupAll(), true);
         return ;
     }
-
 }
-
 void gf_UpdateDockingBayWorkerBeacon (int lp_bayNumber) {
     // Variable Declarations
     int lv_bayArrayNumber;
     text lv_tempText;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
-
     // Implementation
     if (((gv_dockingBays[lv_bayArrayNumber].lv_workerCount >= gv_dockingBaysWorkersMax) || (PlayerGroupHasPlayer(gv_enemyGroup, gv_dockingBays[lv_bayArrayNumber].lv_owner) == true))) {
-        TriggerDebugOutput(1, (StringExternal("Param/Value/1F9A9485") + IntToText(lp_bayNumber) + StringExternal("Param/Value/01D8E2C9")), true);
+        //TriggerDebugOutput(1, (StringExternal("Param/Value/1F9A9485") + IntToText(lp_bayNumber) + StringExternal("Param/Value/01D8E2C9")), true);
         TextTagShow(libHots_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1), PlayerGroupAll(), false);
         libNtve_gf_ShowHideUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), false);
     }
     else {
-        TriggerDebugOutput(1, (StringExternal("Param/Value/4C73ABEE") + IntToText(lp_bayNumber) + StringExternal("Param/Value/45D3A594")), true);
+        //TriggerDebugOutput(1, (StringExternal("Param/Value/4C73ABEE") + IntToText(lp_bayNumber) + StringExternal("Param/Value/45D3A594")), true);
         libNtve_gf_ShowHideUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), true);
         if ((libHots_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1) == c_textTagNone)) {
             TextTagCreate(StringExternal("Param/Value/F522B69F"), 18, UnitGetPosition(gf_FindDockingBayWorkerBeacon(lp_bayNumber)), 1.0, true, true, PlayerGroupSingle(gv_dockingBays[lv_bayArrayNumber].lv_owner));
             libHots_gf_StoreTextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1, TextTagLastCreated());
-            TriggerDebugOutput(1, (StringExternal("Param/Value/66479D13") + IntToText(lp_bayNumber) + StringExternal("Param/Value/FBCE8D13")), true);
+            //TriggerDebugOutput(1, (StringExternal("Param/Value/66479D13") + IntToText(lp_bayNumber) + StringExternal("Param/Value/FBCE8D13")), true);
         }
         else {
             TextTagShow(libHots_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1), PlayerGroupAll(), false);
             TextTagShow(libHots_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1), PlayerGroupSingle(gv_dockingBays[lv_bayArrayNumber].lv_owner), true);
-            TriggerDebugOutput(1, (StringExternal("Param/Value/4F892F72") + IntToText(lp_bayNumber) + StringExternal("Param/Value/3305CF08")), true);
+            //TriggerDebugOutput(1, (StringExternal("Param/Value/4F892F72") + IntToText(lp_bayNumber) + StringExternal("Param/Value/3305CF08")), true);
         }
     }
 }
-
 void gf_UpdateDockingBayPing (int lp_bayNumber) {
     int auto1476DBA7_ae;
     int auto1476DBA7_ai;
-
     // Variable Declarations
     int lv_i;
-
     // Variable Initialization
-
     // Implementation
     if (true) {
     }
-
     auto1476DBA7_ae = PlayerGroupCount(libCOMI_gf_HumanPlayers());
     auto1476DBA7_ai = 1;
     lv_i = 1;
@@ -929,7 +823,6 @@ void gf_UpdateDockingBayPing (int lp_bayNumber) {
         if ((libHots_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)) == c_invalidPingId)) {
             continue;
         }
-
         libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)));
         libCOMI_gf_CreatePingFacingAngleCoop(PlayerGroupEmpty(), UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 270.0, "PingCircle", ColorWithAlpha(0.00, 0.00, 0.00, 0.00), 65535.0);
         PingSetTooltip(PingLastCreated(), (StringExternal("Param/Value/4B91611D") + IntToText(lp_bayNumber)));
@@ -952,16 +845,12 @@ void gf_UpdateDockingBayPing (int lp_bayNumber) {
         libCOMI_gf_CreatePingFacingAngleCoop(PlayerGroupSingle(PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)), UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 270.0, "PingWarning", PingGetColor(libHots_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i))), 4.0);
     }
 }
-
 void gf_SetDockingBayPing (int lp_bayNumber) {
     int auto158C52AE_ae;
     int auto158C52AE_ai;
-
     // Variable Declarations
     int lv_i;
-
     // Variable Initialization
-
     // Implementation
     if (true) {
         auto158C52AE_ae = PlayerGroupCount(libCOMI_gf_HumanPlayers());
@@ -990,9 +879,7 @@ void gf_SetDockingBayPing (int lp_bayNumber) {
             libCOMI_gf_CreatePingFacingAngleCoop(PlayerGroupSingle(PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)), UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 270.0, "PingWarning", PingGetColor(libHots_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i))), 4.0);
         }
     }
-
 }
-
 int gf_DecideOwner (int lp_bayNumber) {
     unitgroup autoEA69A41B_g;
     int autoEA69A41B_u;
@@ -1002,7 +889,6 @@ int gf_DecideOwner (int lp_bayNumber) {
     int autoDDBA53BA_u;
     unitgroup auto8C047AD6_g;
     int auto8C047AD6_u;
-
     // Variable Declarations
     int lv_bayArrayNumber;
     unit lv_currentUnit;
@@ -1015,14 +901,12 @@ int gf_DecideOwner (int lp_bayNumber) {
     int lv_p3Worth;
     int lv_p4Worth;
     int lv_retVal;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
     lv_p1Units = UnitGroupEmpty();
     lv_p2Units = UnitGroupEmpty();
     lv_p3Units = UnitGroupEmpty();
     lv_p4Units = UnitGroupEmpty();
-
     // Implementation
     lv_p1Units = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", gv_pLAYER_01_USER, -1, gv_dockingBays[lv_bayArrayNumber].lv_controlArea, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 0);
     lv_p2Units = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", gv_pLAYER_02_USER, -1, gv_dockingBays[lv_bayArrayNumber].lv_controlArea, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 0);
@@ -1042,7 +926,7 @@ int gf_DecideOwner (int lp_bayNumber) {
             lv_p1Worth += (UnitTypeGetCost(UnitGetType(lv_currentUnit), c_unitCostVespene) * gv_worthGasCost);
         }
     }
-    TriggerDebugOutput(1, (StringExternal("Param/Value/EFB52FEA") + IntToText(UnitGroupCount(lv_p1Units, c_unitCountAlive)) + StringExternal("Param/Value/9E47E4D3") + IntToText(lv_p1Worth) + StringExternal("Param/Value/18336F02")), true);
+    //TriggerDebugOutput(1, (StringExternal("Param/Value/EFB52FEA") + IntToText(UnitGroupCount(lv_p1Units, c_unitCountAlive)) + StringExternal("Param/Value/9E47E4D3") + IntToText(lv_p1Worth) + StringExternal("Param/Value/18336F02")), true);
     lv_p2Worth = 0;
     autoC25C4320_g = lv_p2Units;
     autoC25C4320_u = 1;
@@ -1057,7 +941,7 @@ int gf_DecideOwner (int lp_bayNumber) {
             lv_p2Worth += (UnitTypeGetCost(UnitGetType(lv_currentUnit), c_unitCostVespene) * gv_worthGasCost);
         }
     }
-    TriggerDebugOutput(1, (StringExternal("Param/Value/FA09CD3D") + IntToText(UnitGroupCount(lv_p2Units, c_unitCountAlive)) + StringExternal("Param/Value/CA20246E") + IntToText(lv_p2Worth) + StringExternal("Param/Value/184722BB")), true);
+    //TriggerDebugOutput(1, (StringExternal("Param/Value/FA09CD3D") + IntToText(UnitGroupCount(lv_p2Units, c_unitCountAlive)) + StringExternal("Param/Value/CA20246E") + IntToText(lv_p2Worth) + StringExternal("Param/Value/184722BB")), true);
     lv_p3Worth = 0;
     autoDDBA53BA_g = lv_p3Units;
     autoDDBA53BA_u = 1;
@@ -1072,7 +956,7 @@ int gf_DecideOwner (int lp_bayNumber) {
             lv_p3Worth += (UnitTypeGetCost(UnitGetType(lv_currentUnit), c_unitCostVespene) * gv_worthGasCost);
         }
     }
-    TriggerDebugOutput(1, (StringExternal("Param/Value/A12BEEA3") + IntToText(UnitGroupCount(lv_p3Units, c_unitCountAlive)) + StringExternal("Param/Value/781F4D10") + IntToText(lv_p3Worth) + StringExternal("Param/Value/9457A624")), true);
+    //TriggerDebugOutput(1, (StringExternal("Param/Value/A12BEEA3") + IntToText(UnitGroupCount(lv_p3Units, c_unitCountAlive)) + StringExternal("Param/Value/781F4D10") + IntToText(lv_p3Worth) + StringExternal("Param/Value/9457A624")), true);
     lv_p4Worth = 0;
     auto8C047AD6_g = lv_p4Units;
     auto8C047AD6_u = 1;
@@ -1087,67 +971,58 @@ int gf_DecideOwner (int lp_bayNumber) {
             lv_p4Worth += (UnitTypeGetCost(UnitGetType(lv_currentUnit), c_unitCostVespene) * gv_worthGasCost);
         }
     }
-    TriggerDebugOutput(1, (StringExternal("Param/Value/33F0F44E") + IntToText(UnitGroupCount(lv_p4Units, c_unitCountAlive)) + StringExternal("Param/Value/FF11E68B") + IntToText(lv_p4Worth) + StringExternal("Param/Value/B2BBF8FA")), true);
+    //TriggerDebugOutput(1, (StringExternal("Param/Value/33F0F44E") + IntToText(UnitGroupCount(lv_p4Units, c_unitCountAlive)) + StringExternal("Param/Value/FF11E68B") + IntToText(lv_p4Worth) + StringExternal("Param/Value/B2BBF8FA")), true);
     if ((lv_p1Worth > lv_p2Worth)) {
-        TriggerDebugOutput(1, (StringExternal("Param/Value/DF005074") + IntToText(lp_bayNumber) + StringExternal("Param/Value/900CF8EB")), true);
+        //TriggerDebugOutput(1, (StringExternal("Param/Value/DF005074") + IntToText(lp_bayNumber) + StringExternal("Param/Value/900CF8EB")), true);
         lv_retVal = gv_pLAYER_01_USER;
     }
     else if ((lv_p1Worth < lv_p2Worth)) {
-        TriggerDebugOutput(1, (StringExternal("Param/Value/830F42E6") + IntToText(lp_bayNumber) + StringExternal("Param/Value/29DEAE51")), true);
+        //TriggerDebugOutput(1, (StringExternal("Param/Value/830F42E6") + IntToText(lp_bayNumber) + StringExternal("Param/Value/29DEAE51")), true);
         lv_retVal = gv_pLAYER_02_USER;
     }
     else if ((lv_p3Worth > lv_p4Worth)) {
-        TriggerDebugOutput(1, (StringExternal("Param/Value/2752912F") + IntToText(lp_bayNumber) + StringExternal("Param/Value/F7B35073")), true);
+        //TriggerDebugOutput(1, (StringExternal("Param/Value/2752912F") + IntToText(lp_bayNumber) + StringExternal("Param/Value/F7B35073")), true);
         lv_retVal = gv_pLAYER_03_ENEMY;
     }
     else if ((lv_p3Worth < lv_p4Worth)) {
-        TriggerDebugOutput(1, (StringExternal("Param/Value/5457B3C6") + IntToText(lp_bayNumber) + StringExternal("Param/Value/8E86AE86")), true);
+        //TriggerDebugOutput(1, (StringExternal("Param/Value/5457B3C6") + IntToText(lp_bayNumber) + StringExternal("Param/Value/8E86AE86")), true);
         lv_retVal = gv_pLAYER_04_ENEMY;
     }
     else if ((lv_p1Worth != 0) && (lv_p1Worth == lv_p2Worth)) {
-        TriggerDebugOutput(1, (StringExternal("Param/Value/01AF9D85") + IntToText(lp_bayNumber) + StringExternal("Param/Value/DB6A66A9")), true);
+        //TriggerDebugOutput(1, (StringExternal("Param/Value/01AF9D85") + IntToText(lp_bayNumber) + StringExternal("Param/Value/DB6A66A9")), true);
         lv_retVal = RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER);
     }
     else if ((lv_p1Worth == 0) && (lv_p1Worth == lv_p2Worth)) {
-        TriggerDebugOutput(1, (StringExternal("Param/Value/34AD6290") + IntToText(lp_bayNumber) + StringExternal("Param/Value/9E7B7831")), true);
+        //TriggerDebugOutput(1, (StringExternal("Param/Value/34AD6290") + IntToText(lp_bayNumber) + StringExternal("Param/Value/9E7B7831")), true);
         lv_retVal = RandomInt(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY);
     }
     return lv_retVal;
 }
-
 unit gf_FindDockingBayControlTower (int lp_bayNumber) {
     // Variable Declarations
     int lv_bayArrayNumber;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
-
     // Implementation
     return UnitGroupUnit(UnitGroup("ControlTower", c_playerAny, gv_dockingBays[lv_bayArrayNumber].lv_controlArea, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), 1);
 }
-
 unit gf_FindDockingBayWorkerBeacon (int lp_bayNumber) {
     // Variable Declarations
     int lv_bayArrayNumber;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
-
     // Implementation
     return UnitGroupUnit(UnitGroup("Beacon_Terran", c_playerAny, gv_dockingBays[lv_bayArrayNumber].lv_controlArea, UnitFilter(0, 0, 0, 0), 0), 1);
 }
-
 bool gf_DockingBayContested (int lp_bayNumber) {
     // Variable Declarations
     int lv_bayArrayNumber;
     unitgroup lv_alliedUnit;
     unitgroup lv_hostileUnit;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
     lv_alliedUnit = UnitGroupEmpty();
     lv_hostileUnit = UnitGroupEmpty();
-
     // Implementation
     lv_alliedUnit = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", gv_dockingBays[lv_bayArrayNumber].lv_owner, c_unitAllianceAlly, gv_dockingBays[lv_bayArrayNumber].lv_controlArea, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 1);
     lv_hostileUnit = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", gv_dockingBays[lv_bayArrayNumber].lv_owner, c_unitAllianceEnemy, gv_dockingBays[lv_bayArrayNumber].lv_controlArea, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 1);
@@ -1158,18 +1033,15 @@ bool gf_DockingBayContested (int lp_bayNumber) {
         return false;
     }
 }
-
 bool gf_DockingBayUncontested (int lp_bayNumber) {
     // Variable Declarations
     int lv_bayArrayNumber;
     unitgroup lv_alliedUnit;
     unitgroup lv_hostileUnit;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
     lv_alliedUnit = UnitGroupEmpty();
     lv_hostileUnit = UnitGroupEmpty();
-
     // Implementation
     lv_alliedUnit = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", gv_dockingBays[lv_bayArrayNumber].lv_owner, c_unitAllianceAlly, gv_dockingBays[lv_bayArrayNumber].lv_controlArea, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 1);
     lv_hostileUnit = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", gv_dockingBays[lv_bayArrayNumber].lv_owner, c_unitAllianceEnemy, gv_dockingBays[lv_bayArrayNumber].lv_controlArea, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 1);
@@ -1180,18 +1052,15 @@ bool gf_DockingBayUncontested (int lp_bayNumber) {
         return false;
     }
 }
-
 bool gf_DockingBayBeingCaptured (int lp_bayNumber) {
     // Variable Declarations
     int lv_bayArrayNumber;
     unitgroup lv_alliedUnit;
     unitgroup lv_hostileUnit;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
     lv_alliedUnit = UnitGroupEmpty();
     lv_hostileUnit = UnitGroupEmpty();
-
     // Implementation
     lv_alliedUnit = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", gv_dockingBays[lv_bayArrayNumber].lv_owner, c_unitAllianceAlly, gv_dockingBays[lv_bayArrayNumber].lv_controlArea, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 1);
     lv_hostileUnit = libNtve_gf_UnitsInRegionWithAllianceToPlayerMatchingCondition(null, "", "", gv_dockingBays[lv_bayArrayNumber].lv_owner, c_unitAllianceEnemy, gv_dockingBays[lv_bayArrayNumber].lv_controlArea, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 1);
@@ -1202,35 +1071,27 @@ bool gf_DockingBayBeingCaptured (int lp_bayNumber) {
         return false;
     }
 }
-
 bool gf_DockingBayShuttleArrivalisDue (int lp_bayNumber) {
     // Variable Declarations
     int lv_bayArrayNumber;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
-
     // Implementation
     return (gv_dockingBays[lv_bayArrayNumber].lv_cooldown <= 0);
 }
-
 bool gf_DockingBayShuttleYieldisDue (int lp_bayNumber) {
     // Variable Declarations
     int lv_bayArrayNumber;
-
     // Variable Initialization
     lv_bayArrayNumber = (lp_bayNumber - 1);
-
     // Implementation
     return ((gv_dockingBays[lv_bayArrayNumber].lv_cooldown <= (gv_dockingBaysCooldown - gv_dockingBaysYieldDelay)) && (gv_dockingBays[lv_bayArrayNumber].lv_mode != gv_mODE_UNSPECIFIED));
 }
-
 void gf_DispatchAttackWave (int lp_baseIndexSource, int lp_baseIndexTarget) {
     unitgroup autoF099EB9D_g;
     int autoF099EB9D_u;
     unitgroup auto08217716_g;
     int auto08217716_u;
-
     // Variable Declarations
     fixed lv_missionTime;
     int lv_attackTarget;
@@ -1239,11 +1100,9 @@ void gf_DispatchAttackWave (int lp_baseIndexSource, int lp_baseIndexTarget) {
     int lv_techBucket_MinorAttack;
     int lv_techBucket_Retaliation;
     unit lv_tempUnit;
-
     // Variable Initialization
     lv_missionTime = GameGetMissionTime();
     lv_attackTarget = 13;
-
     // Implementation
     /// ======= Set Resource and Tech Buckets Based on Mission Time ====== ///
     //lv_resourceBucket_MinorAttack
@@ -1290,7 +1149,7 @@ void gf_DispatchAttackWave (int lp_baseIndexSource, int lp_baseIndexTarget) {
     if (gf_RollHybridWaveRetaliation()) {
         lv_attackTarget = gf_GetRandomOverrunBase(gv_amonBases[lp_baseIndexSource].lv_initialOwner);
         if (gf_RollHybridWaveRetaliation_Air()) {
-            TriggerDebugOutput(1, (StringExternal("Param/Value/00178BB2") + IntToText(lp_baseIndexSource) + StringExternal("Param/Value/B4299903") + IntToText(lp_baseIndexTarget) + StringExternal("Param/Value/919E7355")), true);
+            //TriggerDebugOutput(1, (StringExternal("Param/Value/00178BB2") + IntToText(lp_baseIndexSource) + StringExternal("Param/Value/B4299903") + IntToText(lp_baseIndexTarget) + StringExternal("Param/Value/919E7355")), true);
             libCOMI_gf_CreateCoopDropForceinTransportsatLocationandWaitforthemtospawn(gv_amonBases[lp_baseIndexSource].lv_initialOwner, gv_amonBases[lp_baseIndexSource].lv_initialOwner, lv_resourceBucket_Retaliation, lv_techBucket_Retaliation, RegionGetCenter(gv_amonBases[lp_baseIndexSource].lv_location), "Medivac");
             libCOMI_gf_EnableDisableCoopAIWavePings(false);
             libCOMI_gf_PingMinimapCampaign(libCOMI_gf_HumanPlayers(), RegionGetCenter(gv_amonBases[lp_baseIndexSource].lv_location), 2.0, Color(100.00, 0.00, 0.00));
@@ -1351,7 +1210,7 @@ void gf_DispatchAttackWave (int lp_baseIndexSource, int lp_baseIndexTarget) {
             gv_playerWarnFlag = true;
         }
         else {
-            TriggerDebugOutput(1, (StringExternal("Param/Value/71BD8C4D") + IntToText(lp_baseIndexSource) + StringExternal("Param/Value/D7BEBBCA") + IntToText(lp_baseIndexTarget) + StringExternal("Param/Value/17A376E7")), true);
+            //TriggerDebugOutput(1, (StringExternal("Param/Value/71BD8C4D") + IntToText(lp_baseIndexSource) + StringExternal("Param/Value/D7BEBBCA") + IntToText(lp_baseIndexTarget) + StringExternal("Param/Value/17A376E7")), true);
             libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_amonBases[lp_baseIndexSource].lv_initialOwner, gv_amonBases[lp_baseIndexSource].lv_initialOwner, lv_resourceBucket_Retaliation, lv_techBucket_Retaliation, RegionGetCenter(gv_amonBases[lp_baseIndexSource].lv_location), (gv_amonBases[lp_baseIndexSource].lv_type != gv_aMON_BASE_DOCKING_BAY));
             libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
             UnitGroupIssueOrder(libCOMI_gf_LastCreatedCoopAttackForce(), OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(gv_amonBases[lv_attackTarget].lv_location)), c_orderQueueReplace);
@@ -1368,16 +1227,14 @@ void gf_DispatchAttackWave (int lp_baseIndexSource, int lp_baseIndexTarget) {
     }
     else {
         if ((gv_amonBases[lp_baseIndexSource].lv_type == gv_aMON_BASE_DOCKING_BAY)) {
-            TriggerDebugOutput(1, (StringExternal("Param/Value/C399BE95") + IntToText(lp_baseIndexSource) + StringExternal("Param/Value/20EA26CB")), true);
+            //TriggerDebugOutput(1, (StringExternal("Param/Value/C399BE95") + IntToText(lp_baseIndexSource) + StringExternal("Param/Value/20EA26CB")), true);
             libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_amonBases[lp_baseIndexSource].lv_initialOwner, gv_amonBases[lp_baseIndexSource].lv_initialOwner, lv_resourceBucket_MinorAttack, lv_techBucket_MinorAttack, RegionGetCenter(gv_amonBases[lp_baseIndexSource].lv_location), (gv_amonBases[lp_baseIndexSource].lv_type != gv_aMON_BASE_DOCKING_BAY));
             libCOMI_gf_EnableDisableCoopAIWavePings(false);
             libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
             UnitGroupIssueOrder(libCOMI_gf_LastCreatedCoopAttackForce(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(451941872))), c_orderQueueReplace);
         }
-
     }
 }
-
 void gf_InitAmonBase (int lp_baseIndex, int lp_amonPlayer, region lp_location, int lp_type) {
     // Implementation
     gv_amonBases[lp_baseIndex].lv_initialOwner = lp_amonPlayer;
@@ -1385,16 +1242,12 @@ void gf_InitAmonBase (int lp_baseIndex, int lp_amonPlayer, region lp_location, i
     gv_amonBases[lp_baseIndex].lv_overrunStatus = false;
     gv_amonBases[lp_baseIndex].lv_type = lp_type;
 }
-
 void gf_UpdateAmonBasesOverrunStatus () {
     int auto20192092_ae;
     int auto20192092_ai;
-
     // Variable Declarations
     int lv_i;
-
     // Variable Initialization
-
     // Implementation
     auto20192092_ae = 13;
     auto20192092_ai = 1;
@@ -1403,21 +1256,17 @@ void gf_UpdateAmonBasesOverrunStatus () {
         gv_amonBases[lv_i].lv_overrunStatus = gf_IsAmonBaseOverrun(lv_i);
     }
 }
-
 int gf_GetRandomOverrunBase (int lp_amonPlayer) {
     int auto2CFDA84A_ae;
     int auto2CFDA84A_ai;
     int autoA6E60342_ae;
     int autoA6E60342_ai;
-
     // Variable Declarations
     int lv_i;
     int lv_overrunBaseTotal;
     int lv_overrunBaseChoice;
     int lv_overrunBaseCurrent;
-
     // Variable Initialization
-
     // Implementation
     gf_UpdateAmonBasesOverrunStatus();
     auto2CFDA84A_ae = 13;
@@ -1427,7 +1276,6 @@ int gf_GetRandomOverrunBase (int lp_amonPlayer) {
         if ((gv_amonBases[lv_i].lv_overrunStatus == true)) {
             lv_overrunBaseTotal += 1;
         }
-
     }
     lv_overrunBaseChoice = RandomInt(0, (lv_overrunBaseTotal - 1));
     autoA6E60342_ae = 13;
@@ -1443,21 +1291,17 @@ int gf_GetRandomOverrunBase (int lp_amonPlayer) {
     }
     return 13;
 }
-
 int gf_GetRandomNotOverrunBase (int lp_amonPlayer) {
     int auto5758AAEB_ae;
     int auto5758AAEB_ai;
     int autoDD01FE75_ae;
     int autoDD01FE75_ai;
-
     // Variable Declarations
     int lv_i;
     int lv_notOverrunBaseTotal;
     int lv_notOverrunBaseChoice;
     int lv_notOverrunBaseCurrent;
-
     // Variable Initialization
-
     // Implementation
     gf_UpdateAmonBasesOverrunStatus();
     auto5758AAEB_ae = 13;
@@ -1467,7 +1311,6 @@ int gf_GetRandomNotOverrunBase (int lp_amonPlayer) {
         if ((gv_amonBases[lv_i].lv_overrunStatus != true)) {
             lv_notOverrunBaseTotal += 1;
         }
-
     }
     lv_notOverrunBaseChoice = RandomInt(0, (lv_notOverrunBaseTotal - 1));
     autoDD01FE75_ae = 13;
@@ -1483,10 +1326,8 @@ int gf_GetRandomNotOverrunBase (int lp_amonPlayer) {
     }
     return 0;
 }
-
 int gf_GetBaseIndexbyDockingBayNumber (int lp_dockingBayNumber) {
     int auto563E3145_val;
-
     // Implementation
     auto563E3145_val = lp_dockingBayNumber;
     if (auto563E3145_val == 1) {
@@ -1511,17 +1352,14 @@ int gf_GetBaseIndexbyDockingBayNumber (int lp_dockingBayNumber) {
         return 0;
     }
 }
-
 bool gf_IsAmonBaseOverrun (int lp_baseIndex) {
     // Variable Declarations
     unitgroup lv_amonForces;
     unitgroup lv_amonBuidings;
     unit lv_controlTower;
-
     // Variable Initialization
     lv_amonForces = UnitGroupEmpty();
     lv_amonBuidings = UnitGroupEmpty();
-
     // Implementation
     if ((gv_amonBases[lp_baseIndex].lv_type == gv_aMON_BASE_ROOT)) {
         return false;
@@ -1540,88 +1378,35 @@ bool gf_IsAmonBaseOverrun (int lp_baseIndex) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 01 Load Data
 //--------------------------------------------------------------------------------------------------
 bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init01LoadData_Init () {
     gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
     TriggerAddEventMapInit(gt_Init01LoadData);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 02 Players
 //--------------------------------------------------------------------------------------------------
 bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    playergroup autoE0EF2853_g;
-    int autoE0EF2853_p;
-    playergroup autoB969537F_g;
-    int autoB969537F_p;
-
-    // Variable Declarations
-    int lv_playerIterEnemy;
-    int lv_playerIterAlly;
-
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_03_ENEMY);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_04_ENEMY);
-    libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    autoE0EF2853_g = gv_enemyGroup; 
-    autoE0EF2853_p = 1;
-    for ( ; autoE0EF2853_p <= PlayerGroupCount(autoE0EF2853_g) ; autoE0EF2853_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p)) ) {
-        lv_playerIterEnemy = PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-        PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
-        libNtve_gf_SetAlliance(lv_playerIterEnemy, gv_pLAYER_05_LOCALS, libNtve_ge_AllianceSetting_Enemy);
-        autoB969537F_g = libCOMI_gf_HumanPlayers();
-        autoB969537F_p = 1;
-        for ( ; autoB969537F_p <= PlayerGroupCount(autoB969537F_g) ; autoB969537F_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoB969537F_g, autoB969537F_p)) ) {
-            lv_playerIterAlly = PlayerGroupPlayer(autoB969537F_g, autoB969537F_p);
-            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-            libNtve_gf_SetAlliance(lv_playerIterAlly, gv_pLAYER_05_LOCALS, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-        }
-    }
-    PlayerSetAlliance(gv_pLAYER_03_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
-    PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_03_ENEMY, true);
-    libCOMI_gf_SetAlliedCommandersstartingResources();
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init02Players_Init () {
     gt_Init02Players = TriggerCreate("gt_Init02Players_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
     TriggerExecute(gt_Init02Players, true, false);
-    UISetSelectionTypeEnabled(libCOMI_gf_HumanPlayers(), c_localSelectionTypeUnknown, true);
     TriggerExecute(gt_Init04Technology, true, false);
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
@@ -1631,140 +1416,60 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_StartGameQ, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init03LoadingComplete_Init () {
     gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 04 Technology
 //--------------------------------------------------------------------------------------------------
 bool gt_Init04Technology_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init04Technology_Init () {
     gt_Init04Technology = TriggerCreate("gt_Init04Technology_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 05 Units
 //--------------------------------------------------------------------------------------------------
 bool gt_Init05Units_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_01_USER);
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_02_USER);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init05Units_Init () {
     gt_Init05Units = TriggerCreate("gt_Init05Units_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 06 Music/Sound
 //--------------------------------------------------------------------------------------------------
 bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init06MusicSound_Init () {
     gt_Init06MusicSound = TriggerCreate("gt_Init06MusicSound_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 07 Environment
 //--------------------------------------------------------------------------------------------------
 bool gt_Init07Environment_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    GameTimeOfDaySet("08:00:00");
-    VisExploreArea(gv_pLAYER_01_USER, RegionFromId(49), true, false);
-    VisExploreArea(gv_pLAYER_02_USER, RegionFromId(49), true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init07Environment_Init () {
     gt_Init07Environment = TriggerCreate("gt_Init07Environment_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 08 Difficulties
 //--------------------------------------------------------------------------------------------------
 bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    fixed lv_bonusObjectiveLife;
-    fixed lv_mainObjectiveLife;
-
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_01_USER) == 4)) {
-    }
-
-    if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_02_USER) == 4)) {
-    }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init08Difficulties_Init () {
     gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
 }
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Debug - Can't Fail
-//--------------------------------------------------------------------------------------------------
-bool gt_DebugCantFail_Func (bool testConds, bool runActions) {
-    // Conditions
-    if (testConds) {
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    UIDisplayMessage(libCOMI_gf_HumanPlayers(), c_messageAreaChat, StringExternal("Param/Value/EA68A0A3"));
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_DebugCantFail_Init () {
-    gt_DebugCantFail = TriggerCreate("gt_DebugCantFail_Func");
-    TriggerAddEventChatMessage(gt_DebugCantFail, c_playerAny, "cantfail", false);
-}
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Start Game Q
 //--------------------------------------------------------------------------------------------------
@@ -1772,14 +1477,11 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     // Variable Declarations
     region lv_enemyBase;
     int lv_i;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/068743D5"), null, PlayerStartLocation(gv_pLAYER_01_USER));
     UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/187E0E6E"), null, PlayerStartLocation(gv_pLAYER_02_USER));
     Wait(7.0, c_timeReal);
@@ -1794,12 +1496,10 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_StartGameQ_Init () {
     gt_StartGameQ = TriggerCreate("gt_StartGameQ_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init Docking Bays
 //--------------------------------------------------------------------------------------------------
@@ -1808,41 +1508,34 @@ bool gt_InitDockingBays_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     gf_InitDockingBay(1, RegionFromId(10), RegionFromId(18), PointFromId(1065545146), gv_pLAYER_03_ENEMY);
     gf_InitDockingBay(2, RegionFromId(11), RegionFromId(19), PointFromId(393228597), gv_pLAYER_04_ENEMY);
     gf_InitDockingBay(3, RegionFromId(12), RegionFromId(20), PointFromId(1289254239), gv_pLAYER_03_ENEMY);
     gf_InitDockingBay(4, RegionFromId(15), RegionFromId(21), PointFromId(1934244573), gv_pLAYER_03_ENEMY);
     gf_InitDockingBay(5, RegionFromId(16), RegionFromId(22), PointFromId(1003710136), gv_pLAYER_04_ENEMY);
     gf_InitDockingBay(6, RegionFromId(17), RegionFromId(23), PointFromId(2057217452), gv_pLAYER_04_ENEMY);
-    TriggerDebugOutput(1, StringExternal("Param/Value/9E21937B"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/9E21937B"), true);
     TriggerEnable(gt_ProcDockingBays, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_InitDockingBays_Init () {
     gt_InitDockingBays = TriggerCreate("gt_InitDockingBays_Func");
     TriggerAddEventMapInit(gt_InitDockingBays);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Docking Bays Transmission and Ping
 //--------------------------------------------------------------------------------------------------
 bool gt_DockingBaysTransmissionandPing_Func (bool testConds, bool runActions) {
     int auto1FA9FE14_ae;
     int auto1FA9FE14_ai;
-
     // Variable Declarations
     int lv_i;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     SoundPlayForPlayer(SoundLink("UI_TerranPing", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TriggerExecute(gt_BaysActiveTransmission, true, false);
@@ -1854,20 +1547,17 @@ bool gt_DockingBaysTransmissionandPing_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_DockingBaysTransmissionandPing_Init () {
     gt_DockingBaysTransmissionandPing = TriggerCreate("gt_DockingBaysTransmissionandPing_Func");
     TriggerAddEventTimePeriodic(gt_DockingBaysTransmissionandPing, (IntToFixed(gv_dockingBaysGracePeriod) + 1.0), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Proc Docking Bays
 //--------------------------------------------------------------------------------------------------
 bool gt_ProcDockingBays_Func (bool testConds, bool runActions) {
     int autoB560AD25_ae;
     int autoB560AD25_ai;
-
     // Variable Declarations
     int lv_currentDockingBayNumber;
     int lv_currentDockingBayArrayNumber;
@@ -1875,25 +1565,21 @@ bool gt_ProcDockingBays_Func (bool testConds, bool runActions) {
     int lv_workersAvailable;
     int lv_workerToLoadIndex;
     int lv_sourceBaseIndex;
-
     // Variable Initialization
     lv_currentDockingBayNumber = 1;
     lv_workersAtBeacon = UnitGroupEmpty();
     lv_workerToLoadIndex = 1;
     lv_sourceBaseIndex = 3;
-
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     autoB560AD25_ae = 5;
     autoB560AD25_ai = 1;
     lv_currentDockingBayArrayNumber = 0;
@@ -1909,30 +1595,24 @@ bool gt_ProcDockingBays_Func (bool testConds, bool runActions) {
                 gf_TransferDockingBayOwnership(lv_currentDockingBayNumber, gv_pLAYER_01_USER);
             }
         }
-
         if ((UnitGetOwner(gf_FindDockingBayControlTower(lv_currentDockingBayNumber)) != gv_dockingBays[lv_currentDockingBayArrayNumber].lv_owner)) {
             gf_TransferDockingBayOwnership(lv_currentDockingBayNumber, UnitGetOwner(gf_FindDockingBayControlTower(lv_currentDockingBayNumber)));
         }
-
         gf_UpdateDockingBayTextTag(lv_currentDockingBayNumber);
         if ((gv_dockingBays[lv_currentDockingBayArrayNumber].lv_contestedPecent >= 100) && gf_DockingBayBeingCaptured(lv_currentDockingBayNumber)) {
             gf_TransferDockingBayOwnership(lv_currentDockingBayNumber, gf_DecideOwner(lv_currentDockingBayNumber));
             SoundPlayForPlayer(SoundLink("UI_TerranPing", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
-            TriggerDebugOutput(1, (StringExternal("Param/Value/B013D2B2") + IntToText(lv_currentDockingBayNumber) + StringExternal("Param/Value/96847724")), true);
+            //TriggerDebugOutput(1, (StringExternal("Param/Value/B013D2B2") + IntToText(lv_currentDockingBayNumber) + StringExternal("Param/Value/96847724")), true);
             if ((PlayerGroupHasPlayer(libCOMI_gf_HumanPlayers(), gv_dockingBays[lv_currentDockingBayArrayNumber].lv_owner) == true)) {
                 TriggerExecute(gt_BayCapturedTransmission, true, false);
             }
-
         }
-
         if ((gv_dockingBays[lv_currentDockingBayArrayNumber].lv_contestedPecent < 100) && gf_DockingBayBeingCaptured(lv_currentDockingBayNumber)) {
             gv_dockingBays[lv_currentDockingBayArrayNumber].lv_contestedPecent += gv_dockingBaysCaptureSpeed;
         }
-
         if (gf_DockingBayUncontested(lv_currentDockingBayNumber)) {
             gv_dockingBays[lv_currentDockingBayArrayNumber].lv_contestedPecent = 0;
         }
-
         if (gf_DockingBayShuttleArrivalisDue(lv_currentDockingBayNumber)) {
             CutsceneCreateNew("Cutscenes\\ShuttleArrival.SC2Cutscene", gv_dockingBays[lv_currentDockingBayArrayNumber].lv_airlockPosition, 0.0, PlayerGroupAll(), true);
             gv_dockingBays[lv_currentDockingBayArrayNumber].lv_cutscene = CutsceneLastCreated();
@@ -1946,9 +1626,8 @@ bool gt_ProcDockingBays_Func (bool testConds, bool runActions) {
                 gv_dockingBays[lv_currentDockingBayArrayNumber].lv_mode = gv_mODE_REINFORCEMENTS;
             }
             gv_dockingBays[lv_currentDockingBayArrayNumber].lv_cooldown = gv_dockingBaysCooldown;
-            TriggerDebugOutput(1, (StringExternal("Param/Value/4E74C34E") + IntToText(lv_currentDockingBayNumber) + StringExternal("Param/Value/4CCE09D0")), true);
+            //TriggerDebugOutput(1, (StringExternal("Param/Value/4E74C34E") + IntToText(lv_currentDockingBayNumber) + StringExternal("Param/Value/4CCE09D0")), true);
         }
-
         if (gf_DockingBayShuttleYieldisDue(lv_currentDockingBayNumber)) {
             if ((PlayerGroupHasPlayer(libCOMI_gf_HumanPlayers(), gv_dockingBays[lv_currentDockingBayArrayNumber].lv_owner) == true) && (gv_dockingBays[lv_currentDockingBayArrayNumber].lv_mode == gv_mODE_MINERALS)) {
                 libCOMI_gf_GivePlayerResources(PointWithOffset(libNtve_gf_PointWithZOffset(gv_dockingBays[lv_currentDockingBayArrayNumber].lv_airlockPosition, 20.0), 0.5, 0.5), libCOMI_ge_CacheResourceType_Mineral, (gv_dockingBays[lv_currentDockingBayArrayNumber].lv_workerCount * gv_dockingBaysRateMinerals), null, null, gv_dockingBays[lv_currentDockingBayArrayNumber].lv_owner);
@@ -1960,38 +1639,33 @@ bool gt_ProcDockingBays_Func (bool testConds, bool runActions) {
                 gf_DispatchAttackWave(gf_GetBaseIndexbyDockingBayNumber(lv_currentDockingBayNumber), gf_GetRandomOverrunBase(PlayerGroupPlayer(gv_enemyGroup, RandomInt(1, 2))));
             }
             gv_dockingBays[lv_currentDockingBayArrayNumber].lv_mode = gv_mODE_UNSPECIFIED;
-            TriggerDebugOutput(1, (StringExternal("Param/Value/0EA88B95") + IntToText(lv_currentDockingBayNumber) + StringExternal("Param/Value/B6B7CD40")), true);
+            //TriggerDebugOutput(1, (StringExternal("Param/Value/0EA88B95") + IntToText(lv_currentDockingBayNumber) + StringExternal("Param/Value/B6B7CD40")), true);
         }
-
         if ((PlayerGroupHasPlayer(gv_enemyGroup, gv_dockingBays[lv_currentDockingBayArrayNumber].lv_owner) != true)) {
             lv_workersAtBeacon = UnitGroupSearch(null, gv_dockingBays[lv_currentDockingBayArrayNumber].lv_owner, UnitGetPosition(gf_FindDockingBayWorkerBeacon(lv_currentDockingBayNumber)), 2.0, UnitFilter((1 << c_targetFilterWorker), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
             lv_workersAvailable = UnitGroupCount(lv_workersAtBeacon, c_unitCountAlive);
             lv_workerToLoadIndex = 1;
         }
-
         while ((PlayerGroupHasPlayer(gv_enemyGroup, gv_dockingBays[lv_currentDockingBayArrayNumber].lv_owner) != true) && ((lv_workersAvailable >= lv_workerToLoadIndex) && (gv_dockingBays[lv_currentDockingBayArrayNumber].lv_workerCount < gv_dockingBaysWorkersMax))) {
             if ((UnitGetOwner(UnitGroupUnit(lv_workersAtBeacon, lv_workerToLoadIndex)) != gv_dockingBays[lv_currentDockingBayArrayNumber].lv_owner)) {
                 lv_workerToLoadIndex += 1;
                 continue;
             }
-
             UnitRemove(UnitGroupUnit(lv_workersAtBeacon, lv_workerToLoadIndex));
             lv_workerToLoadIndex += 1;
             gv_dockingBays[lv_currentDockingBayArrayNumber].lv_workerCount += 1;
-            TriggerDebugOutput(1, (StringExternal("Param/Value/F3AEDE80") + IntToText(lv_currentDockingBayNumber) + StringExternal("Param/Value/04CD8214") + IntToText(gv_dockingBays[lv_currentDockingBayArrayNumber].lv_workerCount) + StringExternal("Param/Value/FE607156")), true);
+            //TriggerDebugOutput(1, (StringExternal("Param/Value/F3AEDE80") + IntToText(lv_currentDockingBayNumber) + StringExternal("Param/Value/04CD8214") + IntToText(gv_dockingBays[lv_currentDockingBayArrayNumber].lv_workerCount) + StringExternal("Param/Value/FE607156")), true);
             gf_UpdateDockingBayWorkerBeacon(lv_currentDockingBayNumber);
         }
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ProcDockingBays_Init () {
     gt_ProcDockingBays = TriggerCreate("gt_ProcDockingBays_Func");
     TriggerEnable(gt_ProcDockingBays, false);
     TriggerAddEventTimePeriodic(gt_ProcDockingBays, 1.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Initial Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2000,7 +1674,6 @@ bool gt_InitialTransmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_Intro1", true, -1);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_Intro2", true, -1);
@@ -2008,12 +1681,10 @@ bool gt_InitialTransmission_Func (bool testConds, bool runActions) {
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_InitialTransmission_Init () {
     gt_InitialTransmission = TriggerCreate("gt_InitialTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Initial Transmission 2
 //--------------------------------------------------------------------------------------------------
@@ -2022,18 +1693,15 @@ bool gt_InitialTransmission2_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("PrimaryObjectiveRevealed", true, PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), RandomInt(1, PlayerGroupCount(libCOMI_gf_HumanPlayers()))));
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_InitialTransmission2_Init () {
     gt_InitialTransmission2 = TriggerCreate("gt_InitialTransmission2_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bays Active Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2042,19 +1710,16 @@ bool gt_BaysActiveTransmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_BaysActive", true, -1);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BaysActiveTransmission_Init () {
     gt_BaysActiveTransmission = TriggerCreate("gt_BaysActiveTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bay Captured Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2065,24 +1730,20 @@ bool gt_BayCapturedTransmission_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_BayClaimed", true, -1);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BayCapturedTransmission_Init () {
     gt_BayCapturedTransmission = TriggerCreate("gt_BayCapturedTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Enemy Attacking Q
 //--------------------------------------------------------------------------------------------------
@@ -2092,21 +1753,17 @@ bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
         if (!((gv_playerWarnFlag == true))) {
             return false;
         }
-
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerQueueEnter();
     gv_playerWarnFlag = false;
@@ -2118,13 +1775,11 @@ bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_EnemyAttackingQ_Init () {
     gt_EnemyAttackingQ = TriggerCreate("gt_EnemyAttackingQ_Func");
     TriggerAddEventUnitCreated(gt_EnemyAttackingQ, null, null, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Status 4500 Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2133,7 +1788,6 @@ bool gt_Status4500Transmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     if ((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 4500.0)) {
         TriggerQueueEnter();
@@ -2148,13 +1802,11 @@ bool gt_Status4500Transmission_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Status4500Transmission_Init () {
     gt_Status4500Transmission = TriggerCreate("gt_Status4500Transmission_Func");
     TriggerAddEventUnitAttacked2(gt_Status4500Transmission, UnitRefFromUnit(UnitFromId(451941872)), null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Status 2500 Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2163,7 +1815,6 @@ bool gt_Status2500Transmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     if ((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 2500.0)) {
         TriggerQueueEnter();
@@ -2178,13 +1829,11 @@ bool gt_Status2500Transmission_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Status2500Transmission_Init () {
     gt_Status2500Transmission = TriggerCreate("gt_Status2500Transmission_Func");
     TriggerAddEventUnitAttacked2(gt_Status2500Transmission, UnitRefFromUnit(UnitFromId(451941872)), null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Status 1500 Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2193,7 +1842,6 @@ bool gt_Status1500Transmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     if ((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 1500.0)) {
         TriggerQueueEnter();
@@ -2208,13 +1856,11 @@ bool gt_Status1500Transmission_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Status1500Transmission_Init () {
     gt_Status1500Transmission = TriggerCreate("gt_Status1500Transmission_Func");
     TriggerAddEventUnitAttacked2(gt_Status1500Transmission, UnitRefFromUnit(UnitFromId(451941872)), null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Status 500 Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2223,7 +1869,6 @@ bool gt_Status500Transmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     if ((UnitGetPropertyFixed(EventUnit(), c_unitPropLife, c_unitPropCurrent) <= 500.0)) {
         TriggerQueueEnter();
@@ -2238,13 +1883,11 @@ bool gt_Status500Transmission_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Status500Transmission_Init () {
     gt_Status500Transmission = TriggerCreate("gt_Status500Transmission_Func");
     TriggerAddEventUnitAttacked2(gt_Status500Transmission, UnitRefFromUnit(UnitFromId(451941872)), null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective Under Attack
 //--------------------------------------------------------------------------------------------------
@@ -2253,7 +1896,6 @@ bool gt_ObjectiveUnderAttack_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("EscortUnderAttack", true, -1);
@@ -2262,13 +1904,11 @@ bool gt_ObjectiveUnderAttack_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveUnderAttack_Init () {
     gt_ObjectiveUnderAttack = TriggerCreate("gt_ObjectiveUnderAttack_Func");
     TriggerAddEventUnitAttacked2(gt_ObjectiveUnderAttack, UnitRefFromUnit(UnitFromId(451941872)), null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus A ??? Arrival Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2277,7 +1917,6 @@ bool gt_BonusAE28094ArrivalTransmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_BonusA_Arrive1", true, -1);
@@ -2286,12 +1925,10 @@ bool gt_BonusAE28094ArrivalTransmission_Func (bool testConds, bool runActions) {
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusAE28094ArrivalTransmission_Init () {
     gt_BonusAE28094ArrivalTransmission = TriggerCreate("gt_BonusAE28094ArrivalTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus A ??? Complete Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2300,7 +1937,6 @@ bool gt_BonusAE28094CompleteTransmission_Func (bool testConds, bool runActions) 
     if (!runActions) {
         return true;
     }
-
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_BonusA_Complete", true, -1);
@@ -2308,12 +1944,10 @@ bool gt_BonusAE28094CompleteTransmission_Func (bool testConds, bool runActions) 
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusAE28094CompleteTransmission_Init () {
     gt_BonusAE28094CompleteTransmission = TriggerCreate("gt_BonusAE28094CompleteTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus A ??? Expire Warning Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2322,7 +1956,6 @@ bool gt_BonusAE28094ExpireWarningTransmission_Func (bool testConds, bool runActi
     if (!runActions) {
         return true;
     }
-
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_BonusA_ExpiryWarning", true, -1);
@@ -2330,12 +1963,10 @@ bool gt_BonusAE28094ExpireWarningTransmission_Func (bool testConds, bool runActi
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusAE28094ExpireWarningTransmission_Init () {
     gt_BonusAE28094ExpireWarningTransmission = TriggerCreate("gt_BonusAE28094ExpireWarningTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus A ??? Expired Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2344,7 +1975,6 @@ bool gt_BonusAE28094ExpiredTransmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_BonusA_Expired", true, -1);
@@ -2352,12 +1982,10 @@ bool gt_BonusAE28094ExpiredTransmission_Func (bool testConds, bool runActions) {
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusAE28094ExpiredTransmission_Init () {
     gt_BonusAE28094ExpiredTransmission = TriggerCreate("gt_BonusAE28094ExpiredTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B ??? Arrival Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2366,7 +1994,6 @@ bool gt_BonusBE28094ArrivalTransmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_BonusB_Arrive1", true, -1);
@@ -2375,12 +2002,10 @@ bool gt_BonusBE28094ArrivalTransmission_Func (bool testConds, bool runActions) {
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBE28094ArrivalTransmission_Init () {
     gt_BonusBE28094ArrivalTransmission = TriggerCreate("gt_BonusBE28094ArrivalTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B ??? Complete Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2389,7 +2014,6 @@ bool gt_BonusBE28094CompleteTransmission_Func (bool testConds, bool runActions) 
     if (!runActions) {
         return true;
     }
-
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_BonusB_Complete", true, -1);
@@ -2397,12 +2021,10 @@ bool gt_BonusBE28094CompleteTransmission_Func (bool testConds, bool runActions) 
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBE28094CompleteTransmission_Init () {
     gt_BonusBE28094CompleteTransmission = TriggerCreate("gt_BonusBE28094CompleteTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B ??? Expire Warning Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2411,7 +2033,6 @@ bool gt_BonusBE28094ExpireWarningTransmission_Func (bool testConds, bool runActi
     if (!runActions) {
         return true;
     }
-
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_BonusB_ExpiryWarning", true, -1);
@@ -2419,12 +2040,10 @@ bool gt_BonusBE28094ExpireWarningTransmission_Func (bool testConds, bool runActi
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBE28094ExpireWarningTransmission_Init () {
     gt_BonusBE28094ExpireWarningTransmission = TriggerCreate("gt_BonusBE28094ExpireWarningTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B ??? Expired Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2433,7 +2052,6 @@ bool gt_BonusBE28094ExpiredTransmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("ac_GalateasAscent_BonusB_Expired", true, -1);
@@ -2441,12 +2059,10 @@ bool gt_BonusBE28094ExpiredTransmission_Func (bool testConds, bool runActions) {
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBE28094ExpiredTransmission_Init () {
     gt_BonusBE28094ExpiredTransmission = TriggerCreate("gt_BonusBE28094ExpiredTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aeries Arrive Transmission
 //--------------------------------------------------------------------------------------------------
@@ -2455,7 +2071,6 @@ bool gt_AeriesArriveTransmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerQueueEnter();
     Wait(10.0, c_timeReal);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -2464,24 +2079,20 @@ bool gt_AeriesArriveTransmission_Func (bool testConds, bool runActions) {
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AeriesArriveTransmission_Init () {
     gt_AeriesArriveTransmission = TriggerCreate("gt_AeriesArriveTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Defeat Transmission
 //--------------------------------------------------------------------------------------------------
 bool gt_DefeatTransmission_Func (bool testConds, bool runActions) {
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_DefeatTransmission_Init () {
     gt_DefeatTransmission = TriggerCreate("gt_DefeatTransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Ion Cannon Scramble
 //--------------------------------------------------------------------------------------------------
@@ -2490,19 +2101,15 @@ bool gt_IonCannonScramble_Func (bool testConds, bool runActions) {
     int auto324B387C_u;
     unitgroup autoCE7BEE82_g;
     int autoCE7BEE82_u;
-
     // Variable Declarations
     unitgroup lv_amonForces;
     unit lv_u;
-
     // Variable Initialization
     lv_amonForces = UnitGroupAlliance(gv_pLAYER_03_ENEMY, c_unitAllianceAlly, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterStructure) | (1 << c_targetFilterWorker) | (1 << c_targetFilterMissile) | (1 << c_targetFilterUncommandable), (1 << (c_targetFilterUnderConstruction - 32)) | (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32)) | (1 << (c_targetFilterMapBoss - 32))), 0);
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     auto324B387C_g = lv_amonForces;
     auto324B387C_u = 1;
@@ -2533,13 +2140,11 @@ bool gt_IonCannonScramble_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_IonCannonScramble_Init () {
     gt_IonCannonScramble = TriggerCreate("gt_IonCannonScramble_Func");
     TriggerAddEventUnitDamaged(gt_IonCannonScramble, UnitRefFromUnit(UnitFromId(574703814)), c_unitDamageTypeAny, c_unitDamageNonFatal, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aeries Birth
 //--------------------------------------------------------------------------------------------------
@@ -2550,18 +2155,14 @@ bool gt_AeriesBirth_Func (bool testConds, bool runActions) {
     int autoD1BBBDD0_u;
     int autoABA0C9BF_ae;
     int autoABA0C9BF_ai;
-
     // Variable Declarations
     int lv_i;
     unit lv_u;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(gt_ProcAmonBases, false);
     TriggerEnable(gt_TheShowdown, false);
     TriggerEnable(gt_BonusProc, false);
@@ -2598,7 +2199,6 @@ bool gt_AeriesBirth_Func (bool testConds, bool runActions) {
             UnitKill(lv_u);
             Wait(0.05, c_timeGame);
         }
-
     }
     autoD1BBBDD0_g = UnitGroupAlliance(PlayerGroupPlayer(gv_enemyGroup, 1), c_unitAllianceAlly, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 0);
     autoD1BBBDD0_u = 1;
@@ -2608,7 +2208,6 @@ bool gt_AeriesBirth_Func (bool testConds, bool runActions) {
             UnitKill(lv_u);
             Wait(0.05, c_timeGame);
         }
-
     }
     Wait(1.0, c_timeGame);
     autoABA0C9BF_ae = 6;
@@ -2623,18 +2222,15 @@ bool gt_AeriesBirth_Func (bool testConds, bool runActions) {
                 gf_TransferDockingBayOwnership(lv_i, PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), 2));
             }
         }
-
     }
     SoundPlayForPlayer(SoundLink("TUIWarningPing", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AeriesBirth_Init () {
     gt_AeriesBirth = TriggerCreate("gt_AeriesBirth_Func");
     TriggerAddEventUnitDied(gt_AeriesBirth, UnitRefFromUnit(UnitFromId(574703814)));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aeries Taunt
 //--------------------------------------------------------------------------------------------------
@@ -2645,12 +2241,10 @@ bool gt_AeriesTaunt_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -2661,7 +2255,6 @@ bool gt_AeriesTaunt_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AeriesTaunt_Init () {
     gt_AeriesTaunt = TriggerCreate("gt_AeriesTaunt_Func");
@@ -2670,7 +2263,6 @@ void gt_AeriesTaunt_Init () {
     TriggerAddEventUnitDamaged(gt_AeriesTaunt, UnitRefFromVariable("gv_aeries"), c_unitDamageTypeAny, c_unitDamageNonFatal, null);
     TriggerAddEventTimePeriodic(gt_AeriesTaunt, 30.0, c_timeReal);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Aeries Proc
 //--------------------------------------------------------------------------------------------------
@@ -2679,24 +2271,20 @@ bool gt_AeriesProc_Func (bool testConds, bool runActions) {
     point lv_aeriesLoc;
     point lv_galateaLoc;
     fixed lv_offset;
-
     // Variable Initialization
     lv_aeriesLoc = UnitGetPosition(gv_aeries);
     lv_galateaLoc = UnitGetPosition(UnitFromId(451941872));
     lv_offset = 25.0;
-
     // Conditions
     if (testConds) {
         if (!((gv_aeries != null))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     while ((DistanceBetweenPoints(lv_aeriesLoc, lv_galateaLoc) > (lv_offset + 0.0))) {
         libCOMI_gf_CreatePingWithPointFacingCoop(libCOMI_gf_HumanPlayers(), "PingArrow", libNtve_gf_PointOffsetTowardsPoint(lv_aeriesLoc, lv_offset, lv_galateaLoc), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 8.0, gv_pLAYER_03_ENEMY);
         PingSetRotation(PingLastCreated(), ATan2((PointGetX(UnitGetPosition(gv_aeries)) - PointGetX(UnitGetPosition(UnitFromId(451941872)))), (PointGetY(UnitGetPosition(gv_aeries)) - PointGetY(UnitGetPosition(UnitFromId(451941872))))));
@@ -2713,14 +2301,12 @@ bool gt_AeriesProc_Func (bool testConds, bool runActions) {
     SoundPlayForPlayer(SoundLink("TUIWarningPing", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AeriesProc_Init () {
     gt_AeriesProc = TriggerCreate("gt_AeriesProc_Func");
     TriggerEnable(gt_AeriesProc, false);
     TriggerAddEventTimePeriodic(gt_AeriesProc, 10.0, c_timeReal);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: The Showdown
 //--------------------------------------------------------------------------------------------------
@@ -2729,7 +2315,6 @@ bool gt_TheShowdown_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     Wait(RandomFixed(0.0, gv_sHOWDOWN_WINDOW), c_timeGame);
     UnitKill(UnitFromId(574703814));
@@ -2739,17 +2324,14 @@ bool gt_TheShowdown_Func (bool testConds, bool runActions) {
             UnitBehaviorAdd(gv_aeries, "VoidEmpower", gv_aeries, 1);
             break;
         }
-
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_TheShowdown_Init () {
     gt_TheShowdown = TriggerCreate("gt_TheShowdown_Func");
     TriggerAddEventTimePeriodic(gt_TheShowdown, FixedToInt(gv_sHOWDOWN_START), c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus Proc
 //--------------------------------------------------------------------------------------------------
@@ -2757,27 +2339,22 @@ bool gt_BonusProc_Func (bool testConds, bool runActions) {
     // Variable Declarations
     fixed lv_missionTime;
     int lv_roll;
-
     // Variable Initialization
     lv_missionTime = GameGetMissionTime();
-
     // Conditions
     if (testConds) {
         if (!((GameGetMissionTime() >= gv_bONUS_OBJECTIVE_SPAWN_START))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((gv_bonusADevastatorBattlesuit != null) && (gv_bonusBFirebird != null) && (gv_bonusBPrometheus != null)) {
         TriggerEnable(TriggerGetCurrent(), false);
         return true;
     }
-
     if ((lv_missionTime >= gv_bONUS_OBJECTIVE_SPAWN_DEADLINE)) {
         lv_roll = 0;
     }
@@ -2804,16 +2381,13 @@ bool gt_BonusProc_Func (bool testConds, bool runActions) {
             }
         }
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusProc_Init () {
     gt_BonusProc = TriggerCreate("gt_BonusProc_Func");
     TriggerAddEventTimePeriodic(gt_BonusProc, 10.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus A Create
 //--------------------------------------------------------------------------------------------------
@@ -2822,8 +2396,7 @@ bool gt_BonusACreate_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
-    TriggerDebugOutput(1, StringExternal("Param/Value/4780C3E6"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/4780C3E6"), true);
     TriggerEnable(TriggerGetCurrent(), false);
     libNtve_gf_CreateUnitsWithDefaultFacing(1, "DevastatorBattlesuit", c_unitCreateIgnorePlacement, PlayerGroupPlayer(gv_enemyGroup, RandomInt(1, 2)), PointFromId(804273588));
     gv_bonusADevastatorBattlesuit = UnitLastCreated();
@@ -2839,12 +2412,10 @@ bool gt_BonusACreate_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_BonusAE28094ArrivalTransmission, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusACreate_Init () {
     gt_BonusACreate = TriggerCreate("gt_BonusACreate_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus A Expiry Reminder
 //--------------------------------------------------------------------------------------------------
@@ -2854,37 +2425,30 @@ bool gt_BonusAExpiryReminder_Func (bool testConds, bool runActions) {
         if (!((gv_bonusADevastatorBattlesuit != null))) {
             return false;
         }
-
         if (!((ObjectiveGetState(gv_objectiveE28094DestroyDevastatorBattlesuit) == c_objectiveStateActive))) {
             return false;
         }
-
         if (!((TimerGetDuration(gv_timer_A) <= 120.0))) {
             return false;
         }
-
         if (!((TimerGetDuration(gv_timer_A) != 0.0))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_BonusAE28094ExpireWarningTransmission, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusAExpiryReminder_Init () {
     gt_BonusAExpiryReminder = TriggerCreate("gt_BonusAExpiryReminder_Func");
     TriggerEnable(gt_BonusAExpiryReminder, false);
     TriggerAddEventTimePeriodic(gt_BonusAExpiryReminder, 5.0, c_timeReal);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus A Expire
 //--------------------------------------------------------------------------------------------------
@@ -2895,30 +2459,25 @@ bool gt_BonusAExpire_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
-    TriggerDebugOutput(1, StringExternal("Param/Value/570935FB"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/570935FB"), true);
     TriggerExecute(gt_ObjectiveDestroyDevastatorBattlesuitE28094Failed, true, false);
     libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_bonusADevastatorBattlesuit, 1));
     libNtve_gf_ShowHideUnit(gv_bonusADevastatorBattlesuit, false);
     if ((UnitIsAlive(UnitFromId(574703814)) == true)) {
         TriggerExecute(gt_BonusAE28094ExpiredTransmission, true, false);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusAExpire_Init () {
     gt_BonusAExpire = TriggerCreate("gt_BonusAExpire_Func");
     TriggerEnable(gt_BonusAExpire, false);
     TriggerAddEventTimer(gt_BonusAExpire, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus A Pause Timer
 //--------------------------------------------------------------------------------------------------
@@ -2927,24 +2486,21 @@ bool gt_BonusAPauseTimer_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
-    TriggerDebugOutput(1, StringExternal("Param/Value/372A3E46"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/372A3E46"), true);
     TriggerEnable(TriggerGetCurrent(), false);
     TimerPause(gv_timer_A, true);
     Wait(5.0, c_timeGame);
     TimerPause(gv_timer_A, false);
     TriggerEnable(TriggerGetCurrent(), true);
-    TriggerDebugOutput(1, StringExternal("Param/Value/E13EE088"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/E13EE088"), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusAPauseTimer_Init () {
     gt_BonusAPauseTimer = TriggerCreate("gt_BonusAPauseTimer_Func");
     TriggerEnable(gt_BonusAPauseTimer, false);
     TriggerAddEventUnitDamaged(gt_BonusAPauseTimer, UnitRefFromVariable("gv_bonusADevastatorBattlesuit"), c_unitDamageTypeAny, c_unitDamageEither, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus A Complete
 //--------------------------------------------------------------------------------------------------
@@ -2953,8 +2509,7 @@ bool gt_BonusAComplete_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
-    TriggerDebugOutput(1, StringExternal("Param/Value/F94F0BD3"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/F94F0BD3"), true);
     libNtve_gf_StopTimer(gv_timer_A);
     TriggerExecute(gt_ObjectiveDestroyDevastatorBattlesuitE28094Complete, true, false);
     TriggerEnable(gt_BonusACreate, false);
@@ -2964,14 +2519,12 @@ bool gt_BonusAComplete_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_BonusAE28094CompleteTransmission, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusAComplete_Init () {
     gt_BonusAComplete = TriggerCreate("gt_BonusAComplete_Func");
     TriggerEnable(gt_BonusAComplete, false);
     TriggerAddEventUnitDied(gt_BonusAComplete, UnitRefFromVariable("gv_bonusADevastatorBattlesuit"));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B Create
 //--------------------------------------------------------------------------------------------------
@@ -2980,8 +2533,7 @@ bool gt_BonusBCreate_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
-    TriggerDebugOutput(1, StringExternal("Param/Value/D6E108E0"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/D6E108E0"), true);
     TriggerEnable(TriggerGetCurrent(), false);
     libNtve_gf_CreateUnitsWithDefaultFacing(1, "PrometheusBattlecruiser", c_unitCreateIgnorePlacement, PlayerGroupPlayer(gv_enemyGroup, RandomInt(1, 2)), PointFromId(511808657));
     gv_bonusBPrometheus = UnitLastCreated();
@@ -3004,12 +2556,10 @@ bool gt_BonusBCreate_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_BonusBE28094ArrivalTransmission, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBCreate_Init () {
     gt_BonusBCreate = TriggerCreate("gt_BonusBCreate_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B Proc
 //--------------------------------------------------------------------------------------------------
@@ -3018,14 +2568,12 @@ bool gt_BonusBProc_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     if ((UnitMoverExists(EventUnitDamageSourceUnit(), "Fly") != true)) {
         Wait(1.0, c_timeGame);
         TriggerEnable(TriggerGetCurrent(), true);
         return true;
     }
-
     if ((gv_bonusBReinforcements1 <= 0) && (UnitGetPropertyFixed(gv_bonusBPrometheus, c_unitPropLife, c_unitPropCurrent) <= 1500.0)) {
         gv_bonusBReinforcements1 += 1;
         libNtve_gf_CreateUnitsWithDefaultFacing(gf_WraithEscortQuantity(gv_bonusBReinforcements1), "Wraith", 0, gv_pLAYER_03_ENEMY, PointFromId(627362617));
@@ -3060,7 +2608,6 @@ bool gt_BonusBProc_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBProc_Init () {
     gt_BonusBProc = TriggerCreate("gt_BonusBProc_Func");
@@ -3068,7 +2615,6 @@ void gt_BonusBProc_Init () {
     TriggerAddEventUnitDamaged(gt_BonusBProc, UnitRefFromVariable("gv_bonusBPrometheus"), c_unitDamageTypeAny, c_unitDamageEither, null);
     TriggerAddEventUnitDamaged(gt_BonusBProc, UnitRefFromVariable("gv_bonusBFirebird"), c_unitDamageTypeAny, c_unitDamageEither, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B Expiry Reminder
 //--------------------------------------------------------------------------------------------------
@@ -3078,37 +2624,30 @@ bool gt_BonusBExpiryReminder_Func (bool testConds, bool runActions) {
         if (!(((gv_bonusBPrometheus != null) || (gv_bonusBFirebird != null)))) {
             return false;
         }
-
         if (!((TimerGetDuration(gv_timer_B) <= 120.0))) {
             return false;
         }
-
         if (!((TimerGetDuration(gv_timer_B) != 0.0))) {
             return false;
         }
-
         if (!((ObjectiveGetState(gv_objectiveE28094DestroyDevastatorBattlesuit) == c_objectiveStateActive))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_BonusBE28094ExpireWarningTransmission, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBExpiryReminder_Init () {
     gt_BonusBExpiryReminder = TriggerCreate("gt_BonusBExpiryReminder_Func");
     TriggerEnable(gt_BonusBExpiryReminder, false);
     TriggerAddEventTimePeriodic(gt_BonusBExpiryReminder, 5.0, c_timeReal);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B Expire
 //--------------------------------------------------------------------------------------------------
@@ -3119,13 +2658,11 @@ bool gt_BonusBExpire_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
-    TriggerDebugOutput(1, StringExternal("Param/Value/2AB29ECB"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/2AB29ECB"), true);
     TriggerExecute(gt_ObjectiveDestroyPrometheusE28094Failed, true, false);
     TriggerExecute(gt_ObjectiveDestroyFirebirdE28094Failed, true, false);
     libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_bonusBPrometheus, 1));
@@ -3135,17 +2672,14 @@ bool gt_BonusBExpire_Func (bool testConds, bool runActions) {
     if ((UnitIsAlive(UnitFromId(574703814)) == true)) {
         TriggerExecute(gt_BonusBE28094ExpiredTransmission, true, false);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBExpire_Init () {
     gt_BonusBExpire = TriggerCreate("gt_BonusBExpire_Func");
     TriggerEnable(gt_BonusBExpire, false);
     TriggerAddEventTimer(gt_BonusBExpire, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B Pause Timer
 //--------------------------------------------------------------------------------------------------
@@ -3154,17 +2688,15 @@ bool gt_BonusBPauseTimer_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
-    TriggerDebugOutput(1, StringExternal("Param/Value/786E8160"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/786E8160"), true);
     TimerPause(gv_timer_B, true);
     Wait(5.0, c_timeGame);
     TimerPause(gv_timer_B, false);
     TriggerEnable(TriggerGetCurrent(), true);
-    TriggerDebugOutput(1, StringExternal("Param/Value/DDA3BB1E"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/DDA3BB1E"), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBPauseTimer_Init () {
     gt_BonusBPauseTimer = TriggerCreate("gt_BonusBPauseTimer_Func");
@@ -3172,7 +2704,6 @@ void gt_BonusBPauseTimer_Init () {
     TriggerAddEventUnitDamaged(gt_BonusBPauseTimer, UnitRefFromVariable("gv_bonusBFirebird"), c_unitDamageTypeAny, c_unitDamageEither, null);
     TriggerAddEventUnitDamaged(gt_BonusBPauseTimer, UnitRefFromVariable("gv_bonusBPrometheus"), c_unitDamageTypeAny, c_unitDamageEither, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B Complete 1
 //--------------------------------------------------------------------------------------------------
@@ -3181,29 +2712,25 @@ bool gt_BonusBComplete1_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
-    TriggerDebugOutput(1, StringExternal("Param/Value/896D3E98"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/896D3E98"), true);
     TriggerExecute(gt_ObjectiveDestroyPrometheusE28094Complete, true, false);
     TriggerEnable(gt_BonusBComplete1, false);
     if ((TriggerIsEnabled(gt_BonusBComplete1) != true) && (TriggerIsEnabled(gt_BonusBComplete2) != true)) {
-        TriggerDebugOutput(1, StringExternal("Param/Value/59D2E84F"), true);
+        //TriggerDebugOutput(1, StringExternal("Param/Value/59D2E84F"), true);
         libNtve_gf_StopTimer(gv_timer_B);
         TriggerEnable(gt_BonusBCreate, false);
         TriggerEnable(gt_BonusBExpire, false);
         TriggerEnable(gt_BonusBPauseTimer, false);
         TriggerExecute(gt_BonusBE28094CompleteTransmission, true, false);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBComplete1_Init () {
     gt_BonusBComplete1 = TriggerCreate("gt_BonusBComplete1_Func");
     TriggerEnable(gt_BonusBComplete1, false);
     TriggerAddEventUnitDied(gt_BonusBComplete1, UnitRefFromVariable("gv_bonusBPrometheus"));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus B Complete 2
 //--------------------------------------------------------------------------------------------------
@@ -3212,29 +2739,25 @@ bool gt_BonusBComplete2_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
-    TriggerDebugOutput(1, StringExternal("Param/Value/95B8FF1B"), true);
+    //TriggerDebugOutput(1, StringExternal("Param/Value/95B8FF1B"), true);
     TriggerExecute(gt_ObjectiveDestroyFirebirdE28094Complete, true, false);
     TriggerEnable(gt_BonusBComplete2, false);
     if ((TriggerIsEnabled(gt_BonusBComplete1) != true) && (TriggerIsEnabled(gt_BonusBComplete2) != true)) {
-        TriggerDebugOutput(1, StringExternal("Param/Value/959EB35C"), true);
+        //TriggerDebugOutput(1, StringExternal("Param/Value/959EB35C"), true);
         libNtve_gf_StopTimer(gv_timer_B);
         TriggerEnable(gt_BonusBCreate, false);
         TriggerEnable(gt_BonusBExpire, false);
         TriggerEnable(gt_BonusBPauseTimer, false);
         TriggerExecute(gt_BonusBE28094CompleteTransmission, true, false);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusBComplete2_Init () {
     gt_BonusBComplete2 = TriggerCreate("gt_BonusBComplete2_Func");
     TriggerEnable(gt_BonusBComplete2, false);
     TriggerAddEventUnitDied(gt_BonusBComplete2, UnitRefFromVariable("gv_bonusBFirebird"));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Start AI
 //--------------------------------------------------------------------------------------------------
@@ -3243,18 +2766,15 @@ bool gt_StartAI_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libCOMI_gf_StartCoopAI(gv_pLAYER_03_ENEMY, gv_pLAYER_01_USER);
     libCOMI_gf_StartCoopAI(gv_pLAYER_04_ENEMY, gv_pLAYER_02_USER);
     AIStart(gv_pLAYER_05_LOCALS, true, 45);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_StartAI_Init () {
     gt_StartAI = TriggerCreate("gt_StartAI_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init Amon Bases
 //--------------------------------------------------------------------------------------------------
@@ -3263,7 +2783,6 @@ bool gt_InitAmonBases_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     gf_InitAmonBase(0, gv_pLAYER_03_ENEMY, RegionFromId(5), gv_aMON_BASE_ROOT);
     gf_InitAmonBase(1, gv_pLAYER_03_ENEMY, RegionFromId(3), gv_aMON_BASE_OUTPOST);
     gf_InitAmonBase(2, gv_pLAYER_03_ENEMY, RegionFromId(1), gv_aMON_BASE_OUTPOST);
@@ -3281,32 +2800,26 @@ bool gt_InitAmonBases_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_ProcAmonBases, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_InitAmonBases_Init () {
     gt_InitAmonBases = TriggerCreate("gt_InitAmonBases_Func");
     TriggerAddEventMapInit(gt_InitAmonBases);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Proc Amon Bases
 //--------------------------------------------------------------------------------------------------
 bool gt_ProcAmonBases_Func (bool testConds, bool runActions) {
     int auto9F2950CF_ae;
     int auto9F2950CF_ai;
-
     // Variable Declarations
     int lv_i;
     bool lv_allDockingBaysOverrun;
-
     // Variable Initialization
     lv_allDockingBaysOverrun = true;
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gf_UpdateAmonBasesOverrunStatus();
     auto9F2950CF_ae = 13;
     auto9F2950CF_ai = 1;
@@ -3315,7 +2828,6 @@ bool gt_ProcAmonBases_Func (bool testConds, bool runActions) {
         if ((gv_amonBases[lv_i].lv_overrunStatus == false) && (gv_amonBases[lv_i].lv_type == gv_aMON_BASE_DOCKING_BAY)) {
             lv_allDockingBaysOverrun = false;
         }
-
     }
     if ((lv_allDockingBaysOverrun == true)) {
         gf_DispatchAttackWave(gf_GetRandomNotOverrunBase(PlayerGroupPlayer(gv_enemyGroup, RandomInt(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY))), gf_GetRandomOverrunBase(PlayerGroupPlayer(gv_enemyGroup, RandomInt(1, 2))));
@@ -3325,14 +2837,12 @@ bool gt_ProcAmonBases_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ProcAmonBases_Init () {
     gt_ProcAmonBases = TriggerCreate("gt_ProcAmonBases_Func");
     TriggerEnable(gt_ProcAmonBases, false);
     TriggerAddEventTimePeriodic(gt_ProcAmonBases, 15.0, c_timeAI);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Ping Cleanup
 //--------------------------------------------------------------------------------------------------
@@ -3341,17 +2851,14 @@ bool gt_PingCleanup_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_PingCleanup_Init () {
     gt_PingCleanup = TriggerCreate("gt_PingCleanup_Func");
     TriggerAddEventUnitDied(gt_PingCleanup, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Defeat Galatea Destroyed
 //--------------------------------------------------------------------------------------------------
@@ -3361,17 +2868,14 @@ bool gt_DefeatGalateaDestroyed_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerEnable(gt_AeriesProc, false);
     TriggerEnable(gt_ProcDockingBays, false);
@@ -3398,13 +2902,11 @@ bool gt_DefeatGalateaDestroyed_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_Defeat, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_DefeatGalateaDestroyed_Init () {
     gt_DefeatGalateaDestroyed = TriggerCreate("gt_DefeatGalateaDestroyed_Func");
     TriggerAddEventUnitDied(gt_DefeatGalateaDestroyed, UnitRefFromUnit(UnitFromId(451941872)));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Victory Aeries Dead
 //--------------------------------------------------------------------------------------------------
@@ -3414,17 +2916,14 @@ bool gt_VictoryAeriesDead_Func (bool testConds, bool runActions) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv_victoryCompletePan = UnitGetPosition(EventUnit());
     TriggerExecute(gt_ObjectiveKillAeriesE28094Complete, true, false);
     TriggerExecute(gt_ObjectiveGalateaMustSurviveE28094Complete, true, false);
@@ -3432,14 +2931,12 @@ bool gt_VictoryAeriesDead_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_VictorySequence, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryAeriesDead_Init () {
     gt_VictoryAeriesDead = TriggerCreate("gt_VictoryAeriesDead_Func");
     TriggerEnable(gt_VictoryAeriesDead, false);
     TriggerAddEventUnitDied(gt_VictoryAeriesDead, UnitRefFromVariable("gv_aeries"));
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Victory Sequence
 //--------------------------------------------------------------------------------------------------
@@ -3449,29 +2946,24 @@ bool gt_VictorySequence_Func (bool testConds, bool runActions) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
     Wait(2.0, c_timeReal);
     libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_VictorySequence_Init () {
     gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Victory Fanfare Q
 //--------------------------------------------------------------------------------------------------
@@ -3480,7 +2972,6 @@ bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TransmissionClearAll();
     TriggerQueueEnter();
     libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
@@ -3504,12 +2995,10 @@ bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryFanfareQ_Init () {
     gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Victory
 //--------------------------------------------------------------------------------------------------
@@ -3520,22 +3009,18 @@ bool gt_Victory_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_EndCampaignMission(c_gameOverVictory);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Victory_Init () {
     gt_Victory = TriggerCreate("gt_Victory_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Defeat
 //--------------------------------------------------------------------------------------------------
@@ -3546,22 +3031,18 @@ bool gt_Defeat_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Defeat_Init () {
     gt_Defeat = TriggerCreate("gt_Defeat_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy the Ion Cannon ??? Create
 //--------------------------------------------------------------------------------------------------
@@ -3572,12 +3053,10 @@ bool gt_ObjectiveDestroytheIonCannonE28094Create_Func (bool testConds, bool runA
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_CreateObjectiveCampaign("AC_GalateasAscent_Primary_IonCannon");
     gv_objectiveE28094DestroytheIonCannon = ObjectiveLastCreated();
@@ -3587,12 +3066,10 @@ bool gt_ObjectiveDestroytheIonCannonE28094Create_Func (bool testConds, bool runA
     TriggerExecute(gt_ObjectiveDestroytheIonCannonE28094Update, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroytheIonCannonE28094Create_Init () {
     gt_ObjectiveDestroytheIonCannonE28094Create = TriggerCreate("gt_ObjectiveDestroytheIonCannonE28094Create_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy the Ion Cannon ??? Complete
 //--------------------------------------------------------------------------------------------------
@@ -3603,12 +3080,10 @@ bool gt_ObjectiveDestroytheIonCannonE28094Complete_Func (bool testConds, bool ru
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_ObjectiveDestroytheIonCannonE28094Create, true, false);
     libCOMI_gf_SetMissionObjectiveProgress("AC_GalateasAscent_Primary_IonCannon", 1);
@@ -3617,24 +3092,20 @@ bool gt_ObjectiveDestroytheIonCannonE28094Complete_Func (bool testConds, bool ru
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroytheIonCannonE28094Complete_Init () {
     gt_ObjectiveDestroytheIonCannonE28094Complete = TriggerCreate("gt_ObjectiveDestroytheIonCannonE28094Complete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy the Ion Cannon ??? Update
 //--------------------------------------------------------------------------------------------------
 bool gt_ObjectiveDestroytheIonCannonE28094Update_Func (bool testConds, bool runActions) {
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroytheIonCannonE28094Update_Init () {
     gt_ObjectiveDestroytheIonCannonE28094Update = TriggerCreate("gt_ObjectiveDestroytheIonCannonE28094Update_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy the Ion Cannon ??? Failed
 //--------------------------------------------------------------------------------------------------
@@ -3645,24 +3116,20 @@ bool gt_ObjectiveDestroytheIonCannonE28094Failed_Func (bool testConds, bool runA
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_ObjectiveDestroytheIonCannonE28094Create, true, false);
     ObjectiveSetState(gv_objectiveE28094DestroytheIonCannon, c_objectiveStateFailed);
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroytheIonCannonE28094Failed_Init () {
     gt_ObjectiveDestroytheIonCannonE28094Failed = TriggerCreate("gt_ObjectiveDestroytheIonCannonE28094Failed_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Galatea Must Survive ??? Create
 //--------------------------------------------------------------------------------------------------
@@ -3673,12 +3140,10 @@ bool gt_ObjectiveGalateaMustSurviveE28094Create_Func (bool testConds, bool runAc
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_CreateObjectiveCampaign("AC_GalateasAscent_Primary_Galatea");
     gv_objectiveE28094GalateaMustSurvive = ObjectiveLastCreated();
@@ -3691,12 +3156,10 @@ bool gt_ObjectiveGalateaMustSurviveE28094Create_Func (bool testConds, bool runAc
     TriggerExecute(gt_ObjectiveGalateaMustSurviveE28094Update, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveGalateaMustSurviveE28094Create_Init () {
     gt_ObjectiveGalateaMustSurviveE28094Create = TriggerCreate("gt_ObjectiveGalateaMustSurviveE28094Create_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Galatea Must Survive ??? Complete
 //--------------------------------------------------------------------------------------------------
@@ -3707,12 +3170,10 @@ bool gt_ObjectiveGalateaMustSurviveE28094Complete_Func (bool testConds, bool run
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_ObjectiveGalateaMustSurviveE28094Create, true, false);
     libCOMI_gf_SetMissionObjectiveProgress("AC_GalateasAscent_Primary_Galatea", 1);
@@ -3721,12 +3182,10 @@ bool gt_ObjectiveGalateaMustSurviveE28094Complete_Func (bool testConds, bool run
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveGalateaMustSurviveE28094Complete_Init () {
     gt_ObjectiveGalateaMustSurviveE28094Complete = TriggerCreate("gt_ObjectiveGalateaMustSurviveE28094Complete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Galatea Must Survive ??? Update
 //--------------------------------------------------------------------------------------------------
@@ -3735,20 +3194,17 @@ bool gt_ObjectiveGalateaMustSurviveE28094Update_Func (bool testConds, bool runAc
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_ObjectiveGalateaMustSurviveE28094Create, true, false);
     libCOMI_gf_SetProgressBarProgress(FixedToInt(UnitGetPropertyFixed(UnitFromId(451941872), c_unitPropLife, c_unitPropCurrent)));
     libCOMI_gf_SetProgressBarLabel((IntToText(FixedToInt(UnitGetPropertyFixed(UnitFromId(451941872), c_unitPropLife, c_unitPropCurrent))) + StringExternal("Param/Value/F79FB5A9")));
     Wait(1.0, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveGalateaMustSurviveE28094Update_Init () {
     gt_ObjectiveGalateaMustSurviveE28094Update = TriggerCreate("gt_ObjectiveGalateaMustSurviveE28094Update_Func");
     TriggerAddEventUnitDamaged(gt_ObjectiveGalateaMustSurviveE28094Update, UnitRefFromUnit(UnitFromId(451941872)), c_unitDamageTypeAny, c_unitDamageEither, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Galatea Must Survive ??? Failed
 //--------------------------------------------------------------------------------------------------
@@ -3759,24 +3215,20 @@ bool gt_ObjectiveGalateaMustSurviveE28094Failed_Func (bool testConds, bool runAc
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_ObjectiveGalateaMustSurviveE28094Create, true, false);
     ObjectiveSetState(gv_objectiveE28094GalateaMustSurvive, c_objectiveStateFailed);
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveGalateaMustSurviveE28094Failed_Init () {
     gt_ObjectiveGalateaMustSurviveE28094Failed = TriggerCreate("gt_ObjectiveGalateaMustSurviveE28094Failed_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Kill Aeries ??? Create
 //--------------------------------------------------------------------------------------------------
@@ -3787,12 +3239,10 @@ bool gt_ObjectiveKillAeriesE28094Create_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_CreateObjectiveCampaign("AC_GalateasAscent_Primary_Aeries");
     gv_objectiveE28094KillAeries = ObjectiveLastCreated();
@@ -3801,12 +3251,10 @@ bool gt_ObjectiveKillAeriesE28094Create_Func (bool testConds, bool runActions) {
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveKillAeriesE28094Create_Init () {
     gt_ObjectiveKillAeriesE28094Create = TriggerCreate("gt_ObjectiveKillAeriesE28094Create_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Kill Aeries ??? Complete
 //--------------------------------------------------------------------------------------------------
@@ -3817,12 +3265,10 @@ bool gt_ObjectiveKillAeriesE28094Complete_Func (bool testConds, bool runActions)
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_ObjectiveKillAeriesE28094Create, true, false);
     libCOMI_gf_SetMissionObjectiveProgress("AC_GalateasAscent_Primary_Aeries", 1);
@@ -3831,25 +3277,21 @@ bool gt_ObjectiveKillAeriesE28094Complete_Func (bool testConds, bool runActions)
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveKillAeriesE28094Complete_Init () {
     gt_ObjectiveKillAeriesE28094Complete = TriggerCreate("gt_ObjectiveKillAeriesE28094Complete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Kill Aeries ??? Update
 //--------------------------------------------------------------------------------------------------
 bool gt_ObjectiveKillAeriesE28094Update_Func (bool testConds, bool runActions) {
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveKillAeriesE28094Update_Init () {
     gt_ObjectiveKillAeriesE28094Update = TriggerCreate("gt_ObjectiveKillAeriesE28094Update_Func");
     TriggerAddEventTimePeriodic(gt_ObjectiveKillAeriesE28094Update, 1.0, c_timeReal);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Kill Aeries ??? Failed
 //--------------------------------------------------------------------------------------------------
@@ -3860,26 +3302,21 @@ bool gt_ObjectiveKillAeriesE28094Failed_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     if ((gv_objectiveE28094KillAeries != c_invalidObjectiveId)) {
         ObjectiveSetState(gv_objectiveE28094KillAeries, c_objectiveStateFailed);
         Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveKillAeriesE28094Failed_Init () {
     gt_ObjectiveKillAeriesE28094Failed = TriggerCreate("gt_ObjectiveKillAeriesE28094Failed_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Prometheus ??? Create
 //--------------------------------------------------------------------------------------------------
@@ -3890,12 +3327,10 @@ bool gt_ObjectiveDestroyPrometheusE28094Create_Func (bool testConds, bool runAct
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_CreateObjectiveCampaign("AC_GalateasAscent_BonusB_01");
     gv_objectiveE28094DestroyPrometheus = ObjectiveLastCreated();
@@ -3906,12 +3341,10 @@ bool gt_ObjectiveDestroyPrometheusE28094Create_Func (bool testConds, bool runAct
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyPrometheusE28094Create_Init () {
     gt_ObjectiveDestroyPrometheusE28094Create = TriggerCreate("gt_ObjectiveDestroyPrometheusE28094Create_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Prometheus ??? Complete
 //--------------------------------------------------------------------------------------------------
@@ -3921,17 +3354,14 @@ bool gt_ObjectiveDestroyPrometheusE28094Complete_Func (bool testConds, bool runA
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((gv_objectiveE28094DestroyPrometheus != c_invalidObjectiveId))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerEnable(gt_ObjectiveDestroyPrometheusE28094Failed, false);
     libCOMI_gf_SetMissionObjectiveProgress("AC_GalateasAscent_BonusB_01", 1);
@@ -3940,12 +3370,10 @@ bool gt_ObjectiveDestroyPrometheusE28094Complete_Func (bool testConds, bool runA
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyPrometheusE28094Complete_Init () {
     gt_ObjectiveDestroyPrometheusE28094Complete = TriggerCreate("gt_ObjectiveDestroyPrometheusE28094Complete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Prometheus ??? Update
 //--------------------------------------------------------------------------------------------------
@@ -3956,16 +3384,13 @@ bool gt_ObjectiveDestroyPrometheusE28094Update_Func (bool testConds, bool runAct
             return false;
         }
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyPrometheusE28094Update_Init () {
     gt_ObjectiveDestroyPrometheusE28094Update = TriggerCreate("gt_ObjectiveDestroyPrometheusE28094Update_Func");
     TriggerAddEventTimePeriodic(gt_ObjectiveDestroyPrometheusE28094Update, 1.0, c_timeReal);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Prometheus ??? Failed
 //--------------------------------------------------------------------------------------------------
@@ -3975,32 +3400,26 @@ bool gt_ObjectiveDestroyPrometheusE28094Failed_Func (bool testConds, bool runAct
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((gv_objectiveE28094DestroyPrometheus != c_invalidObjectiveId))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerEnable(gt_ObjectiveDestroyPrometheusE28094Complete, false);
     if ((gv_objectiveE28094DestroyDevastatorBattlesuit != c_invalidObjectiveId)) {
         ObjectiveSetState(gv_objectiveE28094DestroyPrometheus, c_objectiveStateFailed);
         Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyPrometheusE28094Failed_Init () {
     gt_ObjectiveDestroyPrometheusE28094Failed = TriggerCreate("gt_ObjectiveDestroyPrometheusE28094Failed_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Firebird ??? Create
 //--------------------------------------------------------------------------------------------------
@@ -4011,12 +3430,10 @@ bool gt_ObjectiveDestroyFirebirdE28094Create_Func (bool testConds, bool runActio
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_CreateObjectiveCampaign("AC_GalateasAscent_BonusB_02");
     gv_objectiveE28094DestroyFirebird = ObjectiveLastCreated();
@@ -4027,12 +3444,10 @@ bool gt_ObjectiveDestroyFirebirdE28094Create_Func (bool testConds, bool runActio
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyFirebirdE28094Create_Init () {
     gt_ObjectiveDestroyFirebirdE28094Create = TriggerCreate("gt_ObjectiveDestroyFirebirdE28094Create_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Firebird ??? Complete
 //--------------------------------------------------------------------------------------------------
@@ -4042,17 +3457,14 @@ bool gt_ObjectiveDestroyFirebirdE28094Complete_Func (bool testConds, bool runAct
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((gv_objectiveE28094DestroyFirebird != c_invalidObjectiveId))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerEnable(gt_ObjectiveDestroyFirebirdE28094Failed, false);
     libCOMI_gf_SetMissionObjectiveProgress("AC_GalateasAscent_BonusB_02", 1);
@@ -4061,12 +3473,10 @@ bool gt_ObjectiveDestroyFirebirdE28094Complete_Func (bool testConds, bool runAct
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyFirebirdE28094Complete_Init () {
     gt_ObjectiveDestroyFirebirdE28094Complete = TriggerCreate("gt_ObjectiveDestroyFirebirdE28094Complete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Firebird ??? Update
 //--------------------------------------------------------------------------------------------------
@@ -4077,16 +3487,13 @@ bool gt_ObjectiveDestroyFirebirdE28094Update_Func (bool testConds, bool runActio
             return false;
         }
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyFirebirdE28094Update_Init () {
     gt_ObjectiveDestroyFirebirdE28094Update = TriggerCreate("gt_ObjectiveDestroyFirebirdE28094Update_Func");
     TriggerAddEventTimePeriodic(gt_ObjectiveDestroyFirebirdE28094Update, 1.0, c_timeReal);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Firebird ??? Failed
 //--------------------------------------------------------------------------------------------------
@@ -4096,32 +3503,26 @@ bool gt_ObjectiveDestroyFirebirdE28094Failed_Func (bool testConds, bool runActio
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((gv_objectiveE28094DestroyFirebird != c_invalidObjectiveId))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerEnable(gt_ObjectiveDestroyFirebirdE28094Complete, false);
     if ((gv_objectiveE28094DestroyFirebird != c_invalidObjectiveId)) {
         ObjectiveSetState(gv_objectiveE28094DestroyFirebird, c_objectiveStateFailed);
         Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyFirebirdE28094Failed_Init () {
     gt_ObjectiveDestroyFirebirdE28094Failed = TriggerCreate("gt_ObjectiveDestroyFirebirdE28094Failed_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Devastator Battlesuit ??? Create
 //--------------------------------------------------------------------------------------------------
@@ -4132,12 +3533,10 @@ bool gt_ObjectiveDestroyDevastatorBattlesuitE28094Create_Func (bool testConds, b
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_CreateObjectiveCampaign("AC_GalateasAscent_BonusA");
     gv_objectiveE28094DestroyDevastatorBattlesuit = ObjectiveLastCreated();
@@ -4148,12 +3547,10 @@ bool gt_ObjectiveDestroyDevastatorBattlesuitE28094Create_Func (bool testConds, b
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyDevastatorBattlesuitE28094Create_Init () {
     gt_ObjectiveDestroyDevastatorBattlesuitE28094Create = TriggerCreate("gt_ObjectiveDestroyDevastatorBattlesuitE28094Create_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Devastator Battlesuit ??? Complete
 //--------------------------------------------------------------------------------------------------
@@ -4163,17 +3560,14 @@ bool gt_ObjectiveDestroyDevastatorBattlesuitE28094Complete_Func (bool testConds,
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((gv_objectiveE28094DestroyDevastatorBattlesuit != c_invalidObjectiveId))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerEnable(gt_ObjectiveDestroyDevastatorBattlesuitE28094Failed, false);
     libCOMI_gf_SetMissionObjectiveProgress("AC_GalateasAscent_BonusA", 1);
@@ -4182,12 +3576,10 @@ bool gt_ObjectiveDestroyDevastatorBattlesuitE28094Complete_Func (bool testConds,
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyDevastatorBattlesuitE28094Complete_Init () {
     gt_ObjectiveDestroyDevastatorBattlesuitE28094Complete = TriggerCreate("gt_ObjectiveDestroyDevastatorBattlesuitE28094Complete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Devastator Battlesuit ??? Update
 //--------------------------------------------------------------------------------------------------
@@ -4198,16 +3590,13 @@ bool gt_ObjectiveDestroyDevastatorBattlesuitE28094Update_Func (bool testConds, b
             return false;
         }
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyDevastatorBattlesuitE28094Update_Init () {
     gt_ObjectiveDestroyDevastatorBattlesuitE28094Update = TriggerCreate("gt_ObjectiveDestroyDevastatorBattlesuitE28094Update_Func");
     TriggerAddEventTimePeriodic(gt_ObjectiveDestroyDevastatorBattlesuitE28094Update, 1.0, c_timeReal);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective -- Destroy Devastator Battlesuit ??? Failed
 //--------------------------------------------------------------------------------------------------
@@ -4217,32 +3606,26 @@ bool gt_ObjectiveDestroyDevastatorBattlesuitE28094Failed_Func (bool testConds, b
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((gv_objectiveE28094DestroyDevastatorBattlesuit != c_invalidObjectiveId))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerEnable(gt_ObjectiveDestroyDevastatorBattlesuitE28094Complete, false);
     if ((gv_objectiveE28094DestroyDevastatorBattlesuit != c_invalidObjectiveId)) {
         ObjectiveSetState(gv_objectiveE28094DestroyDevastatorBattlesuit, c_objectiveStateFailed);
         Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveDestroyDevastatorBattlesuitE28094Failed_Init () {
     gt_ObjectiveDestroyDevastatorBattlesuitE28094Failed = TriggerCreate("gt_ObjectiveDestroyDevastatorBattlesuitE28094Failed_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
@@ -4255,7 +3638,6 @@ void InitTriggers () {
     gt_Init06MusicSound_Init();
     gt_Init07Environment_Init();
     gt_Init08Difficulties_Init();
-    gt_DebugCantFail_Init();
     gt_StartGameQ_Init();
     gt_InitDockingBays_Init();
     gt_DockingBaysTransmissionandPing_Init();
@@ -4333,7 +3715,6 @@ void InitTriggers () {
     gt_ObjectiveDestroyDevastatorBattlesuitE28094Update_Init();
     gt_ObjectiveDestroyDevastatorBattlesuitE28094Failed_Init();
 }
-
 //--------------------------------------------------------------------------------------------------
 // Map Initialization
 //--------------------------------------------------------------------------------------------------

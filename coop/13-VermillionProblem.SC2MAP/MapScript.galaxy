@@ -7,6 +7,7 @@
 //==================================================================================================
 include "TriggerLibs/NativeLib"
 include "TriggerLibs/SwarmLib"
+include "LibARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -15,6 +16,7 @@ include "LibCOMI"
 void InitLibs () {
     libNtve_InitLib();
     libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -1479,7 +1481,7 @@ bool auto_gf_SendHunterWave_TriggerFunc (bool testConds, bool runActions) {
     for ( ; ( (auto788AB3A1_ai >= 0 && lv_playerGroupIter <= auto788AB3A1_ae) || (auto788AB3A1_ai < 0 && lv_playerGroupIter >= auto788AB3A1_ae) ) ; lv_playerGroupIter += auto788AB3A1_ai ) {
         lv_transportType = libCOMI_gf_CoopAIUnitCategory(libCOMI_ge_UnitCategory_Transport, gv_pLAYER_03_Player01_Bullies);
         UnitCreate(1, lv_transportType, 0, gv_pLAYER_03_Player01_Bullies, lp_spawnLocation, libNtve_gf_RandomAngle());
-        lv_transportCargoCapacity = libCOMI_gf_GetUnitCargoSize(UnitLastCreated());
+        lv_transportCargoCapacity = libARRA_gf_GetUnitCargoSize(UnitLastCreated());
         lv_transportCount = RoundI(Floor((lv_cargoTotal[lv_playerGroupIter] / lv_transportCargoCapacity)));
         UnitCreate(lv_transportCount, lv_transportType, 0, PlayerGroupPlayer(lv_huntAttackPlayers, lv_playerGroupIter), lp_spawnLocation, libNtve_gf_RandomAngle());
         auto05EB28E1_g = UnitLastCreatedGroup();
@@ -1581,10 +1583,18 @@ point gf_GetBaseDropLocation (point lp_startingLocation) {
 
 void gf_UpdateStatScore (int lp_player, fixed lp_time) {
     // Automatic Variable Declarations
+    playergroup autoFADED9B1_g;
+    int autoFADED9B1_var;
+
     // Implementation
     gv_statScore_WorkerTime[lp_player] += lp_time;
-    PlayerScoreValueSetFromInt(gv_pLAYER_01_USER, "Veridia", FixedToInt(gv_statScore_WorkerTime[gv_pLAYER_01_USER]));
-    PlayerScoreValueSetFromInt(gv_pLAYER_02_USER, "Veridia", FixedToInt(gv_statScore_WorkerTime[gv_pLAYER_02_USER]));
+    autoFADED9B1_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    autoFADED9B1_var = -1;
+    while (true) {
+        autoFADED9B1_var = PlayerGroupNextPlayer(autoFADED9B1_g, autoFADED9B1_var);
+        if (autoFADED9B1_var < 0) { break; }
+        PlayerScoreValueSetFromInt(autoFADED9B1_var, "Veridia", FixedToInt(gv_statScore_WorkerTime[autoFADED9B1_var]));
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2117,8 +2127,8 @@ bool gt_FuelCellPickedUp_Func (bool testConds, bool runActions) {
 
     // Variable Declarations
     unit lv_carryingUnit;
-    int[3] lv_carryingPing;
-    int[3] lv_workerPath;
+    int[16] lv_carryingPing;
+    int[16] lv_workerPath;
     point lv_lastKnownLocation;
     bool lv_lavaDeath;
     string lv_crystalPingModel;
@@ -2129,9 +2139,11 @@ bool gt_FuelCellPickedUp_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
     playergroup autoE6A53393_g;
     int autoE6A53393_var;
+    playergroup auto68FC0ED0_g;
+    int auto68FC0ED0_var;
 
     // Variable Initialization
-    for (init_i = 0; init_i <= 2; init_i += 1) {
+    for (init_i = 0; init_i <= 15; init_i += 1) {
         lv_carryingPing[init_i] = c_invalidPingId;
     }
 
@@ -2199,10 +2211,14 @@ bool gt_FuelCellPickedUp_Func (bool testConds, bool runActions) {
         TriggerExecute(gt_TransmissionFuelCellCarrierDiesQ, true, false);
     }
 
-    PingDestroy(lv_carryingPing[gv_pLAYER_01_USER]);
-    PingDestroy(lv_carryingPing[gv_pLAYER_02_USER]);
-    PathDestroy(lv_workerPath[gv_pLAYER_01_USER]);
-    PathDestroy(lv_workerPath[gv_pLAYER_02_USER]);
+    auto68FC0ED0_g = libCOMI_gf_GetAlliedCommandersPlayers();
+    auto68FC0ED0_var = -1;
+    while (true) {
+        auto68FC0ED0_var = PlayerGroupNextPlayer(auto68FC0ED0_g, auto68FC0ED0_var);
+        if (auto68FC0ED0_var < 0) { break; }
+        PingDestroy(lv_carryingPing[auto68FC0ED0_var]);
+        PathDestroy(lv_workerPath[auto68FC0ED0_var]);
+    }
     UnitGroupRemove(gv_crystalCarriers, lv_carryingUnit);
     return true;
 }
@@ -2223,6 +2239,13 @@ bool gt_FuelCellDropped_Func (bool testConds, bool runActions) {
     // Automatic Variable Declarations
     // Variable Initialization
 
+    // Conditions
+    if (testConds) {
+        if (!((PlayerGroupHasPlayer(libCOMI_gf_GetAlliedCommandersPlayers(), EventPlayer()) == true))) {
+            return false;
+        }
+    }
+
     // Actions
     if (!runActions) {
         return true;
@@ -2242,8 +2265,7 @@ bool gt_FuelCellDropped_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_FuelCellDropped_Init () {
     gt_FuelCellDropped = TriggerCreate("gt_FuelCellDropped_Func");
-    TriggerAddEventPlayerEffectUsed(gt_FuelCellDropped, gv_pLAYER_01_USER, "FuelCellPickupUnitCreateLinkDummy");
-    TriggerAddEventPlayerEffectUsed(gt_FuelCellDropped, gv_pLAYER_02_USER, "FuelCellPickupUnitCreateLinkDummy");
+    TriggerAddEventPlayerEffectUsed(gt_FuelCellDropped, c_playerAny, "FuelCellPickupUnitCreateLinkDummy");
 }
 
 //--------------------------------------------------------------------------------------------------

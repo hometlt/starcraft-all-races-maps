@@ -834,11 +834,11 @@
             //--------------------------------------------------------------------------------------------------
             // Constants
             //--------------------------------------------------------------------------------------------------
-            const int gv_pLAYER_01_USER = 1;
-            const int gv_pLAYER_02_USER = 2;
-            const int gv_pLAYER_03_ENEMY = 3;
-            const int gv_pLAYER_04_ENEMY = 4;
-            const int gv_pLAYER_05ODIN = 5;
+            int gv_pLAYER_01_USER = 1;
+            int gv_pLAYER_02_USER = 2;
+            const int gv_pLAYER_03_ENEMY = 6;
+            const int gv_pLAYER_04_ENEMY = 7;
+            const int gv_pLAYER_05ODIN = 8;
             //--------------------------------------------------------------------------------------------------
             // Global Variables
             //--------------------------------------------------------------------------------------------------
@@ -1022,7 +1022,6 @@
             trigger gt_ObtainWeaponryPartsCrucioShockCannon;
             trigger gt_ObtainWeaponryPartsInfernalFlamethrower;
             trigger gt_ObtainWeaponryPartsDetector;
-            trigger gt_TipReadyQ;
             trigger gt_EnemyAttackingQ;
             trigger gt_AmonSendingForcestoOdinQ;
             trigger gt_TruckDepartingQ;
@@ -1295,6 +1294,8 @@
                 if (!runActions) {
                     return true;
                 }
+                gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+                gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
                 PlayerModifyPropertyInt(gv_pLAYER_05ODIN, c_playerPropTerrazine, c_playerPropOperAdd, 66);
                 PlayerModifyPropertyInt(gv_pLAYER_05ODIN, c_playerPropTerrazine, c_playerPropOperAdd, 108);
                 PlayerModifyPropertyInt(gv_pLAYER_05ODIN, c_playerPropTerrazine, c_playerPropOperAdd, 105);
@@ -1680,7 +1681,6 @@
                 }
                 TriggerExecute(gt_SetOdinTrackPointVariable, true, false);
                 TriggerExecute(gt_SetOdinLanePointVariable, true, false);
-                TriggerExecute(gt_TipReadyQ, true, false);
                 Wait(5.0, c_timeReal);
                 TriggerQueueEnter();
                 TriggerExecute(gt_ObjectiveEscortOdinCreate, true, true);
@@ -4327,37 +4327,6 @@
                 gt_ObtainWeaponryPartsDetector = TriggerCreate(&quot;gt_ObtainWeaponryPartsDetector_Func&quot;);
             }
             //--------------------------------------------------------------------------------------------------
-            // Trigger: Tip Ready Q
-            //--------------------------------------------------------------------------------------------------
-            bool gt_TipReadyQ_Func (bool testConds, bool runActions) {
-                // Conditions
-                if (testConds) {
-                    if (!((libCOMI_gf_PlayerInCinematicModeCampaign() == false))) {
-                        return false;
-                    }
-                    if (!((libCOMI_gf_GameIsOver() == false))) {
-                        return false;
-                    }
-                    if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-                        return false;
-                    }
-                }
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                TriggerEnable(TriggerGetCurrent(), false);
-                TriggerQueueEnter();
-                libCOMI_gf_DisplayMissionTip();
-                Wait(libCOMI_gv_campaignHintDelay, c_timeReal);
-                TriggerQueueExit();
-                return true;
-            }
-            //--------------------------------------------------------------------------------------------------
-            void gt_TipReadyQ_Init () {
-                gt_TipReadyQ = TriggerCreate(&quot;gt_TipReadyQ_Func&quot;);
-            }
-            //--------------------------------------------------------------------------------------------------
             // Trigger: Enemy Attacking Q
             //--------------------------------------------------------------------------------------------------
             bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
@@ -6332,7 +6301,6 @@
                 gt_ObtainWeaponryPartsCrucioShockCannon_Init();
                 gt_ObtainWeaponryPartsInfernalFlamethrower_Init();
                 gt_ObtainWeaponryPartsDetector_Init();
-                gt_TipReadyQ_Init();
                 gt_EnemyAttackingQ_Init();
                 gt_AmonSendingForcestoOdinQ_Init();
                 gt_TruckDepartingQ_Init();

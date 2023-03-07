@@ -7,6 +7,7 @@
 //==================================================================================================
 include "TriggerLibs/NativeLib"
 include "TriggerLibs/SwarmLib"
+include "LibARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -15,6 +16,7 @@ include "LibCOMI"
 void InitLibs () {
     libNtve_InitLib();
     libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -308,7 +310,6 @@ abilcmd gf_GetUnitTypeSuperWarpGateCommand (string lp_warpInType);
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
-trigger gt_CharExample;
 trigger gt_InfestMercs;
 trigger gt_CreateColonyShipPings;
 trigger gt_MissionProgression;
@@ -2291,7 +2292,7 @@ bool auto_gf_BurrowAndRemoveInfestedWaveUnit_TriggerFunc (bool testConds, bool r
 
     lv_typeOfInfestedUnit = UnitGetType(lp_infestedUnit);
     while ((UnitIsAlive(lp_infestedUnit) == true)) {
-        if ((libCOMI_gf_GetUnitRace(lp_infestedUnit) == "Prot")) {
+        if ((libARRA_gf_GetUnitRace(lp_infestedUnit) == "Prot")) {
             gf_WarpOutProtossUnit(lp_infestedUnit);
             return true;
         }
@@ -2304,7 +2305,7 @@ bool auto_gf_BurrowAndRemoveInfestedWaveUnit_TriggerFunc (bool testConds, bool r
                 break;
             }
         }
-        else if ((lv_typeOfInfestedUnit != "NovaInfestedSiegeTank") && (lv_typeOfInfestedUnit != "NovaInfestedSiegeTankUprooted") && ((libCOMI_gf_GetUnitRace(lp_infestedUnit) == "Zerg") || (lv_typeOfInfestedUnit == "InfestedCivilian") || (lv_typeOfInfestedUnit == "InfestedExploder") || (lv_typeOfInfestedUnit == "InfestedTerranCampaign") || (lv_typeOfInfestedUnit == "InfestedAbomination") || (lv_typeOfInfestedUnit == "NovaInfestedBanshee"))) {
+        else if ((lv_typeOfInfestedUnit != "NovaInfestedSiegeTank") && (lv_typeOfInfestedUnit != "NovaInfestedSiegeTankUprooted") && ((libARRA_gf_GetUnitRace(lp_infestedUnit) == "Zerg") || (lv_typeOfInfestedUnit == "InfestedCivilian") || (lv_typeOfInfestedUnit == "InfestedExploder") || (lv_typeOfInfestedUnit == "InfestedTerranCampaign") || (lv_typeOfInfestedUnit == "InfestedAbomination") || (lv_typeOfInfestedUnit == "NovaInfestedBanshee"))) {
             if ((lv_typeOfInfestedUnit == UnitGetType(lp_infestedUnit))) {
                 UnitIssueOrder(lp_infestedUnit, Order(AbilityCommand("BurrowZerglingDown", 0)), c_orderQueueReplace);
                 UnitIssueOrder(lp_infestedUnit, Order(AbilityCommand("BurrowInfestedCivilianDown", 0)), c_orderQueueReplace);
@@ -4246,102 +4247,6 @@ abilcmd gf_GetUnitTypeSuperWarpGateCommand (string lp_warpInType) {
         breakpoint;
     }
     return lv_warpAbilCmd;
-}
-
-//--------------------------------------------------------------------------------------------------
-// Trigger: Char Example
-//--------------------------------------------------------------------------------------------------
-bool gt_CharExample_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    int lv_missionTimeScoreMax;
-    int lv_missionParTime;
-    int lv_objectiveScoreMax;
-    int lv_bonusObjectiveParTime;
-    int lv_bonusScoreMax;
-    int lv_timeScore;
-    int lv_logicFrames;
-    fixed lv_bonusScoreReal;
-    int lv_objectiveScore;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-    lv_missionTimeScoreMax = 100000;
-    lv_missionParTime = 30;
-    lv_objectiveScoreMax = 100000;
-    lv_bonusObjectiveParTime = 20;
-    lv_bonusScoreMax = 50000;
-
-    // Conditions
-    if (testConds) {
-        if (!((GameCheatsEnabled(c_gameCheatCategoryDevelopment) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    DialogCreate(300, 250, c_anchorBottomLeft, 0, 375, true);
-    DialogSetVisible(DialogLastCreated(), PlayerGroupAll(), true);
-    lv_bonusScoreReal = lv_bonusScoreMax;
-    while ((libCOMI_gf_GameIsOver() == false)) {
-        if (true) {
-            lv_bonusScoreReal -= libCOMI_gf_LeaderboardObjectDurationModifierValue(lv_bonusScoreMax, lv_bonusObjectiveParTime);
-        }
-
-        lv_logicFrames += 1;
-        lv_timeScore = libCOMI_gf_LeaderboardTimeScore(lv_missionTimeScoreMax, lv_missionParTime);
-        TextExpressionSetToken("Param/Expression/A04A8E86", "A", FixedToText(lv_timeScore, 0));
-        TextExpressionSetToken("Param/Expression/A04A8E86", "B", FixedToText(lv_bonusScoreReal, 0));
-        TextExpressionSetToken("Param/Expression/A04A8E86", "C", IntToText(lv_objectiveScore));
-        DialogSetTitle(DialogLastCreated(), TextExpressionAssemble("Param/Expression/A04A8E86"));
-        Wait(0.0625, c_timeGame);
-    }
-    if (true) {
-        lv_bonusScoreReal = 0.0;
-    }
-
-    if (true) {
-        lv_bonusScoreReal = 0.0;
-    }
-    else {
-        if ((lv_bonusScoreReal < 1000.0)) {
-            lv_bonusScoreReal = 1000.0;
-        }
-
-    }
-    if (((lv_timeScore <= 0))) {
-        lv_timeScore = 0;
-    }
-    else {
-        if ((lv_timeScore <= 1000)) {
-            lv_timeScore = 1000;
-        }
-
-    }
-    if (((lv_objectiveScore <= 0))) {
-        lv_objectiveScore = 0;
-    }
-    else {
-        if ((lv_objectiveScore <= 1000)) {
-            lv_objectiveScore = 1000;
-        }
-
-    }
-    libCOMI_gf_SetMissionScore("MSCompletionSpeed", lv_timeScore, gv_pLAYER_01_USER);
-    libCOMI_gf_SetMissionScore("MSCompletionSpeed", lv_timeScore, gv_pLAYER_02_USER);
-    libCOMI_gf_SetMissionScore("MSFortressLifeRemaining", lv_objectiveScore, gv_pLAYER_01_USER);
-    libCOMI_gf_SetMissionScore("MSFortressLifeRemaining", lv_objectiveScore, gv_pLAYER_02_USER);
-    libCOMI_gf_SetMissionScore("MSBonusSpeed", FixedToInt(lv_bonusScoreReal), gv_pLAYER_01_USER);
-    libCOMI_gf_SetMissionScore("MSBonusSpeed", FixedToInt(lv_bonusScoreReal), gv_pLAYER_02_USER);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_CharExample_Init () {
-    gt_CharExample = TriggerCreate("gt_CharExample_Func");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -7473,6 +7378,7 @@ void gt_RemoveStolenRageWaveUnit_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_SetupProtossAIWarpInUnits_Func (bool testConds, bool runActions) {
     // Variable Declarations
+    string lv_faction;
     int lv_allowableDifficulty;
 
     // Automatic Variable Declarations
@@ -7480,20 +7386,21 @@ bool gt_SetupProtossAIWarpInUnits_Func (bool testConds, bool runActions) {
     int auto441E4F38_var;
 
     // Variable Initialization
+    lv_faction = (libCOMI_gf_GetEnemyFaction());
 
     // Actions
     if (!runActions) {
         return true;
     }
 
-    gv_tier01_AliasZealot = UserDataGetUnit("CoopAICommanderTiers", libCOMI_gf_CM_CoopAI_GetTechLevel(gv_pLAYER_03_AMON_Claimers, libCOMI_ge_CoopAITechLevelBuckets__1Early), "PhaseUnits", 1);
-    gv_tier02_AliasStalker = UserDataGetUnit("CoopAICommanderTiers", libCOMI_gf_CM_CoopAI_GetTechLevel(gv_pLAYER_03_AMON_Claimers, libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid), "PhaseUnits", 1);
-    gv_tier03_AliasImmortal = UserDataGetUnit("CoopAICommanderTiers", libCOMI_gf_CM_CoopAI_GetTechLevel(gv_pLAYER_03_AMON_Claimers, libCOMI_ge_CoopAITechLevelBuckets__3Mid), "PhaseUnits", 1);
+    gv_tier01_AliasZealot = UserDataGetUnit("Replacements", "Zealot", lv_faction + "Unit", 1);
+    gv_tier02_AliasStalker = UserDataGetUnit("Replacements", "Stalker", lv_faction + "Unit", 1);
+    gv_tier03_AliasImmortal = UserDataGetUnit("Replacements", "Immortal", lv_faction + "Unit", 1);
     auto441E4F38_var = 1;
     for ( ; auto441E4F38_var <= auto441E4F38_ae; auto441E4F38_var += 1 ) {
-        lv_allowableDifficulty = UserDataGetInt("CoopAICommanderTiers", libCOMI_gf_CM_CoopAI_GetTechLevel(gv_pLAYER_03_AMON_Claimers, libCOMI_ge_CoopAITechLevelBuckets__5Late), "minDifficulty", auto441E4F38_var);
+        lv_allowableDifficulty = 4;
         if ((libCOMI_gf_MinimumDifficultyValueCoopInteger(1, 2, 3, 4, 5, 6) >= lv_allowableDifficulty)) {
-            gv_tier04_AliasColossus = UserDataGetUnit("CoopAICommanderTiers", libCOMI_gf_CM_CoopAI_GetTechLevel(gv_pLAYER_03_AMON_Claimers, libCOMI_ge_CoopAITechLevelBuckets__5Late), "PhaseUnits", auto441E4F38_var);
+            gv_tier04_AliasColossus = UserDataGetUnit("Replacements", "Colossus", lv_faction + "Unit", 1);
             break;
         }
 
@@ -9760,7 +9667,6 @@ void gt_StartGameQ_Init () {
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
-    gt_CharExample_Init();
     gt_InfestMercs_Init();
     gt_CreateColonyShipPings_Init();
     gt_MissionProgression_Init();

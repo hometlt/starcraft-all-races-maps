@@ -22,8 +22,8 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
+const int gv_pLAYER_03_ENEMY = 6;
+const int gv_pLAYER_04_ENEMY = 7;
 
 //--------------------------------------------------------------------------------------------------
 // Global Variables
@@ -249,9 +249,9 @@ wave cai_wave_createdWave (int w, int p) {
 
 //--------------------------------------------------------------------------------------------------
 void cai_startall () {
-    AICampaignStart(3);
-    AICampaignStart(4);
-    AICampaignStart(5);
+    AICampaignStart(6);
+    AICampaignStart(7);
+    AICampaignStart(8);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -920,7 +920,7 @@ bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    if ((TransmissionPlayerHasActiveTransmission(1) == false) && (TransmissionPlayerHasActiveTransmission(2) == false)) {
+    if ((TransmissionPlayerHasActiveTransmission(gv_pLAYER_01_USER) == false) && (TransmissionPlayerHasActiveTransmission(gv_pLAYER_02_USER) == false)) {
         libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
         libCOMI_gf_SendMissionTransmission("AttackWave", true, RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER));
         libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
@@ -929,7 +929,7 @@ bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
         lv_inQueue = true;
         lv_position = gv_queue;
         gv_queue += 1;
-        while (!((lv_position == gv_pos) && (TransmissionPlayerHasActiveTransmission(1) == false) && (TransmissionPlayerHasActiveTransmission(2) == false))) {
+        while (!((lv_position == gv_pos) && (TransmissionPlayerHasActiveTransmission(gv_pLAYER_01_USER) == false) && (TransmissionPlayerHasActiveTransmission(gv_pLAYER_02_USER) == false))) {
             Wait(1.0, c_timeGame);
         }
         libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -2274,15 +2274,6 @@ bool gt_MapInitialization_Func (bool testConds, bool runActions) {
     unitgroup auto86493734_g;
     int auto86493734_u;
     unit auto86493734_var;
-    unitgroup auto0E115A8F_g;
-    int auto0E115A8F_u;
-    unit auto0E115A8F_var;
-    unitgroup auto382F7B2D_g;
-    int auto382F7B2D_u;
-    unit auto382F7B2D_var;
-    unitgroup auto06D03CB1_g;
-    int auto06D03CB1_u;
-    unit auto06D03CB1_var;
 
     // Variable Initialization
 
@@ -2310,50 +2301,11 @@ bool gt_MapInitialization_Func (bool testConds, bool runActions) {
         if (auto86493734_var == null) { break; }
         libNtve_gf_MakeUnitInvulnerable(auto86493734_var, true);
     }
-    libCOMI_gf_SetAllianceCoop(1, 5, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-    libCOMI_gf_SetAllianceCoop(2, 5, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-    libCOMI_gf_SetAllianceCoop(3, 5, libNtve_ge_AllianceSetting_Enemy);
-    libCOMI_gf_SetAllianceCoop(4, 5, libNtve_ge_AllianceSetting_Enemy);
     if (((libCOMI_gf_DifficultyLevelForPlayerCoop(1) == 4) || (libCOMI_gf_DifficultyLevelForPlayerCoop(1) == 6) || (libCOMI_gf_DifficultyLevelForPlayerCoop(1) == 5) || (libCOMI_gf_DifficultyLevelForPlayerCoop(2) == 4) || (libCOMI_gf_DifficultyLevelForPlayerCoop(2) == 6) || (libCOMI_gf_DifficultyLevelForPlayerCoop(2) == 5))) {
         UnitSetPropertyFixed(UnitFromId(1541558661), c_unitPropLifeRegen, 1.7);
     }
     else {
         UnitSetPropertyFixed(UnitFromId(1541558661), c_unitPropLifeRegen, 1.3888);
-        auto0E115A8F_g = UnitGroup("Ultralisk", c_playerAny, RegionFromId(9), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-        auto0E115A8F_u = UnitGroupCount(auto0E115A8F_g, c_unitCountAll);
-        for (;; auto0E115A8F_u -= 1) {
-            auto0E115A8F_var = UnitGroupUnitFromEnd(auto0E115A8F_g, auto0E115A8F_u);
-            if (auto0E115A8F_var == null) { break; }
-            if ((ModI(lv_unitRemove, 4) == 1)) {
-                UnitRemove(auto0E115A8F_var);
-            }
-
-            lv_unitRemove += 1;
-        }
-        lv_unitRemove *= 0;
-        auto382F7B2D_g = UnitGroup("Hydralisk", c_playerAny, RegionFromId(9), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-        auto382F7B2D_u = UnitGroupCount(auto382F7B2D_g, c_unitCountAll);
-        for (;; auto382F7B2D_u -= 1) {
-            auto382F7B2D_var = UnitGroupUnitFromEnd(auto382F7B2D_g, auto382F7B2D_u);
-            if (auto382F7B2D_var == null) { break; }
-            if ((ModI(lv_unitRemove, 4) == 1)) {
-                UnitRemove(auto382F7B2D_var);
-            }
-
-            lv_unitRemove += 1;
-        }
-        lv_unitRemove *= 0;
-        auto06D03CB1_g = UnitGroup("Mutalisk", c_playerAny, RegionFromId(9), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-        auto06D03CB1_u = UnitGroupCount(auto06D03CB1_g, c_unitCountAll);
-        for (;; auto06D03CB1_u -= 1) {
-            auto06D03CB1_var = UnitGroupUnitFromEnd(auto06D03CB1_g, auto06D03CB1_u);
-            if (auto06D03CB1_var == null) { break; }
-            if ((ModI(lv_unitRemove, 4) == 1)) {
-                UnitRemove(auto06D03CB1_var);
-            }
-
-            lv_unitRemove += 1;
-        }
     }
     gv_currentTemple = UnitFromId(741869992);
     libNtve_gf_CreateActorAtPoint("TempleActivatedSign", libNtve_gf_PointFromXYZ(PointGetX(UnitGetPosition(gv_currentTemple)), PointGetY(UnitGetPosition(gv_currentTemple)), 2.8));
@@ -2366,15 +2318,15 @@ bool gt_MapInitialization_Func (bool testConds, bool runActions) {
     gf_TransmissionSend(StringExternal("Param/Value/FC46CF05"), StringToText(""), StringToText(""), StringToText(""), StringToText(""), StringToText(""), 1, 14.5, SoundLink("Intro1", -1));
     ObjectiveCreateForPlayers(StringExternal("Param/Value/5AC9BB18"), StringExternal("Param/Value/6AF8A3FD"), c_objectiveStateActive, true, PlayerGroupAll());
     gv_templeObjective = ObjectiveLastCreated();
-    VisRevealArea(1, RegionCircle(UnitGetPosition(gv_currentTemple), 5.0), 0.1, false);
-    VisRevealArea(2, RegionCircle(UnitGetPosition(gv_currentTemple), 5.0), 0.1, false);
+    VisRevealArea(gv_pLAYER_01_USER, RegionCircle(UnitGetPosition(gv_currentTemple), 5.0), 0.1, false);
+    VisRevealArea(gv_pLAYER_02_USER, RegionCircle(UnitGetPosition(gv_currentTemple), 5.0), 0.1, false);
     libNtve_gf_MakeUnitInvulnerable(gv_currentTemple, false);
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(gv_currentTemple), StringExternal("Param/Value/8A6264A6"));
     gv_templePing = PingLastCreated();
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(gv_wall), StringExternal("Param/Value/E9B82512"));
     ObjectiveCreateForPlayers(StringExternal("Param/Value/2215452D"), StringExternal("Param/Value/BAB5829F"), c_objectiveStateActive, true, PlayerGroupAll());
     gv_defendWallObjective = ObjectiveLastCreated();
-    while (!((TransmissionPlayerHasActiveTransmission(1) == false) && (TransmissionPlayerHasActiveTransmission(2) == false))) {
+    while (!((TransmissionPlayerHasActiveTransmission(gv_pLAYER_01_USER) == false) && (TransmissionPlayerHasActiveTransmission(gv_pLAYER_02_USER) == false))) {
         Wait(1.0, c_timeGame);
     }
     gf_TransmissionSend(StringExternal("Param/Value/F4874F5E"), StringToText(""), StringToText(""), StringToText(""), StringToText(""), StringToText(""), 1, 14.5, SoundLink("Intro12", -1));
@@ -2383,8 +2335,8 @@ bool gt_MapInitialization_Func (bool testConds, bool runActions) {
     PingSetUnit(PingLastCreated(), UnitFromId(1541558661));
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/52D61894"));
     libHots_gf_StorePingForUnit(UnitFromId(1541558661), 1, PingLastCreated());
-    VisRevealArea(1, RegionCircle(UnitGetPosition(UnitFromId(1541558661)), 3.0), 0.1, false);
-    VisRevealArea(2, RegionCircle(UnitGetPosition(UnitFromId(1541558661)), 5.0), 0.1, false);
+    VisRevealArea(gv_pLAYER_01_USER, RegionCircle(UnitGetPosition(UnitFromId(1541558661)), 3.0), 0.1, false);
+    VisRevealArea(gv_pLAYER_02_USER, RegionCircle(UnitGetPosition(UnitFromId(1541558661)), 5.0), 0.1, false);
     TriggerExecute(gt_TemplesSet, true, false);
     return true;
 }

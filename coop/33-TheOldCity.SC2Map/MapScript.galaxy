@@ -2,7 +2,7 @@
 // 
 // Generated Map Script
 // 
-// Name:   RTC 2017: The Old City v1.0
+// Name:   [ARC] The Old City
 // 
 //==================================================================================================
 include "TriggerLibs/natives"
@@ -20,14 +20,12 @@ include "TriggerLibs/natives"
 include "TriggerLibs/natives"
 include "TriggerLibs/AI"
 include "TriggerLibs/Computer"
-
 //--------------------------------------------------------------------------------------------------
 // Globals
 //--------------------------------------------------------------------------------------------------
 point[17] aiF917F4D7_defGather;
 string[17] aiF917F4D7_customData;
 wave[17] aiF917F4D7_lastWave;
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave: 
 //--------------------------------------------------------------------------------------------------
@@ -36,19 +34,15 @@ wave[17] aiF917F4D7_wave1_lastWave;
 trigger aiF917F4D7_wave1_trigger = null;
 int aiF917F4D7_wave1_runPlayer;
 playergroup aiF917F4D7_wave1_runTarget;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave1_init () {
     int init_i;
-
     for (init_i = 0; init_i <= 16; init_i += 1) {
         aiF917F4D7_wave1_enabled[init_i] = true;
         aiF917F4D7_wave1_lastWave[init_i] = null;
     }
-
     aiF917F4D7_wave1_trigger = TriggerCreate("aiF917F4D7_wave1_runFunc");
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave1_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -56,7 +50,6 @@ void aiF917F4D7_wave1_enable (int p, bool val) {
     }
     aiF917F4D7_wave1_enabled[p] = val;
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave1_isEnabled (int p) {
     if (p < 0 || p >= 16) {
@@ -64,7 +57,6 @@ bool aiF917F4D7_wave1_isEnabled (int p) {
     }
     return aiF917F4D7_wave1_enabled[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_wave1_createdWave (int p) {
     if (p < 0 || p >= 16) {
@@ -72,7 +64,6 @@ wave aiF917F4D7_wave1_createdWave (int p) {
     }
     return aiF917F4D7_wave1_lastWave[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave1_runFunc (bool c, bool a) {
     int p = aiF917F4D7_wave1_runPlayer;
@@ -84,7 +75,6 @@ bool aiF917F4D7_wave1_runFunc (bool c, bool a) {
     int ts = 0;
     int tf = 0;
     int td = 0;
-
     if (p < 0 || p >= 16) {
         return false;
     }
@@ -96,9 +86,7 @@ bool aiF917F4D7_wave1_runFunc (bool c, bool a) {
         }
         return true;
     }
-
     aiF917F4D7_customData[p] = "";
-
     ta = 0;
     tg = 0;
     ts = ta;
@@ -108,29 +96,22 @@ bool aiF917F4D7_wave1_runFunc (bool c, bool a) {
         ts = tg;
     }
     AIAttackWaveSetTargetPlayer(p, target);
-
     gatherPoint = aiF917F4D7_defGather[p];
     AIAttackWaveSetGatherPoint(p, gatherPoint);
-
     AIAttackWaveClearWaypoints(p);
-
     Wait(ts, c_timeAI);
     tf = 0;
     if (tf > 0) {
         Wait(tf, c_timeAI);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave1_run (int p, playergroup target, bool wait) {
     aiF917F4D7_wave1_runPlayer = p;
     aiF917F4D7_wave1_runTarget = PlayerGroupCopy(target);
-
     TriggerExecute(aiF917F4D7_wave1_trigger, false, wait);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave: 
 //--------------------------------------------------------------------------------------------------
@@ -139,19 +120,15 @@ wave[17] aiF917F4D7_wave2_lastWave;
 trigger aiF917F4D7_wave2_trigger = null;
 int aiF917F4D7_wave2_runPlayer;
 playergroup aiF917F4D7_wave2_runTarget;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave2_init () {
     int init_i;
-
     for (init_i = 0; init_i <= 16; init_i += 1) {
         aiF917F4D7_wave2_enabled[init_i] = true;
         aiF917F4D7_wave2_lastWave[init_i] = null;
     }
-
     aiF917F4D7_wave2_trigger = TriggerCreate("aiF917F4D7_wave2_runFunc");
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave2_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -159,7 +136,6 @@ void aiF917F4D7_wave2_enable (int p, bool val) {
     }
     aiF917F4D7_wave2_enabled[p] = val;
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave2_isEnabled (int p) {
     if (p < 0 || p >= 16) {
@@ -167,7 +143,6 @@ bool aiF917F4D7_wave2_isEnabled (int p) {
     }
     return aiF917F4D7_wave2_enabled[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_wave2_createdWave (int p) {
     if (p < 0 || p >= 16) {
@@ -175,7 +150,6 @@ wave aiF917F4D7_wave2_createdWave (int p) {
     }
     return aiF917F4D7_wave2_lastWave[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave2_runFunc (bool c, bool a) {
     int p = aiF917F4D7_wave2_runPlayer;
@@ -187,7 +161,6 @@ bool aiF917F4D7_wave2_runFunc (bool c, bool a) {
     int ts = 0;
     int tf = 0;
     int td = 0;
-
     if (p < 0 || p >= 16) {
         return false;
     }
@@ -199,9 +172,7 @@ bool aiF917F4D7_wave2_runFunc (bool c, bool a) {
         }
         return true;
     }
-
     aiF917F4D7_customData[p] = "";
-
     ta = 0;
     if (d == 1) { ta = 180; }
     if (d == 2) { ta = 180; }
@@ -217,29 +188,22 @@ bool aiF917F4D7_wave2_runFunc (bool c, bool a) {
         ts = tg;
     }
     AIAttackWaveSetTargetPlayer(p, target);
-
     gatherPoint = aiF917F4D7_defGather[p];
     AIAttackWaveSetGatherPoint(p, gatherPoint);
-
     AIAttackWaveClearWaypoints(p);
-
     Wait(ts, c_timeAI);
     tf = 0;
     if (tf > 0) {
         Wait(tf, c_timeAI);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave2_run (int p, playergroup target, bool wait) {
     aiF917F4D7_wave2_runPlayer = p;
     aiF917F4D7_wave2_runTarget = PlayerGroupCopy(target);
-
     TriggerExecute(aiF917F4D7_wave2_trigger, false, wait);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave: 
 //--------------------------------------------------------------------------------------------------
@@ -248,19 +212,15 @@ wave[17] aiF917F4D7_wave3_lastWave;
 trigger aiF917F4D7_wave3_trigger = null;
 int aiF917F4D7_wave3_runPlayer;
 playergroup aiF917F4D7_wave3_runTarget;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave3_init () {
     int init_i;
-
     for (init_i = 0; init_i <= 16; init_i += 1) {
         aiF917F4D7_wave3_enabled[init_i] = true;
         aiF917F4D7_wave3_lastWave[init_i] = null;
     }
-
     aiF917F4D7_wave3_trigger = TriggerCreate("aiF917F4D7_wave3_runFunc");
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave3_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -268,7 +228,6 @@ void aiF917F4D7_wave3_enable (int p, bool val) {
     }
     aiF917F4D7_wave3_enabled[p] = val;
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave3_isEnabled (int p) {
     if (p < 0 || p >= 16) {
@@ -276,7 +235,6 @@ bool aiF917F4D7_wave3_isEnabled (int p) {
     }
     return aiF917F4D7_wave3_enabled[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_wave3_createdWave (int p) {
     if (p < 0 || p >= 16) {
@@ -284,7 +242,6 @@ wave aiF917F4D7_wave3_createdWave (int p) {
     }
     return aiF917F4D7_wave3_lastWave[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave3_runFunc (bool c, bool a) {
     int p = aiF917F4D7_wave3_runPlayer;
@@ -296,7 +253,6 @@ bool aiF917F4D7_wave3_runFunc (bool c, bool a) {
     int ts = 0;
     int tf = 0;
     int td = 0;
-
     if (p < 0 || p >= 16) {
         return false;
     }
@@ -308,9 +264,7 @@ bool aiF917F4D7_wave3_runFunc (bool c, bool a) {
         }
         return true;
     }
-
     aiF917F4D7_customData[p] = "";
-
     ta = 0;
     if (d == 1) { ta = 180; }
     if (d == 2) { ta = 180; }
@@ -326,29 +280,22 @@ bool aiF917F4D7_wave3_runFunc (bool c, bool a) {
         ts = tg;
     }
     AIAttackWaveSetTargetPlayer(p, target);
-
     gatherPoint = aiF917F4D7_defGather[p];
     AIAttackWaveSetGatherPoint(p, gatherPoint);
-
     AIAttackWaveClearWaypoints(p);
-
     Wait(ts, c_timeAI);
     tf = 0;
     if (tf > 0) {
         Wait(tf, c_timeAI);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave3_run (int p, playergroup target, bool wait) {
     aiF917F4D7_wave3_runPlayer = p;
     aiF917F4D7_wave3_runTarget = PlayerGroupCopy(target);
-
     TriggerExecute(aiF917F4D7_wave3_trigger, false, wait);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave: 
 //--------------------------------------------------------------------------------------------------
@@ -357,19 +304,15 @@ wave[17] aiF917F4D7_wave4_lastWave;
 trigger aiF917F4D7_wave4_trigger = null;
 int aiF917F4D7_wave4_runPlayer;
 playergroup aiF917F4D7_wave4_runTarget;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave4_init () {
     int init_i;
-
     for (init_i = 0; init_i <= 16; init_i += 1) {
         aiF917F4D7_wave4_enabled[init_i] = true;
         aiF917F4D7_wave4_lastWave[init_i] = null;
     }
-
     aiF917F4D7_wave4_trigger = TriggerCreate("aiF917F4D7_wave4_runFunc");
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave4_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -377,7 +320,6 @@ void aiF917F4D7_wave4_enable (int p, bool val) {
     }
     aiF917F4D7_wave4_enabled[p] = val;
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave4_isEnabled (int p) {
     if (p < 0 || p >= 16) {
@@ -385,7 +327,6 @@ bool aiF917F4D7_wave4_isEnabled (int p) {
     }
     return aiF917F4D7_wave4_enabled[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_wave4_createdWave (int p) {
     if (p < 0 || p >= 16) {
@@ -393,7 +334,6 @@ wave aiF917F4D7_wave4_createdWave (int p) {
     }
     return aiF917F4D7_wave4_lastWave[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave4_runFunc (bool c, bool a) {
     int p = aiF917F4D7_wave4_runPlayer;
@@ -405,7 +345,6 @@ bool aiF917F4D7_wave4_runFunc (bool c, bool a) {
     int ts = 0;
     int tf = 0;
     int td = 0;
-
     if (p < 0 || p >= 16) {
         return false;
     }
@@ -417,9 +356,7 @@ bool aiF917F4D7_wave4_runFunc (bool c, bool a) {
         }
         return true;
     }
-
     aiF917F4D7_customData[p] = "";
-
     ta = 0;
     if (d == 1) { ta = 180; }
     if (d == 2) { ta = 180; }
@@ -435,29 +372,22 @@ bool aiF917F4D7_wave4_runFunc (bool c, bool a) {
         ts = tg;
     }
     AIAttackWaveSetTargetPlayer(p, target);
-
     gatherPoint = aiF917F4D7_defGather[p];
     AIAttackWaveSetGatherPoint(p, gatherPoint);
-
     AIAttackWaveClearWaypoints(p);
-
     Wait(ts, c_timeAI);
     tf = 0;
     if (tf > 0) {
         Wait(tf, c_timeAI);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave4_run (int p, playergroup target, bool wait) {
     aiF917F4D7_wave4_runPlayer = p;
     aiF917F4D7_wave4_runTarget = PlayerGroupCopy(target);
-
     TriggerExecute(aiF917F4D7_wave4_trigger, false, wait);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave: 
 //--------------------------------------------------------------------------------------------------
@@ -466,19 +396,15 @@ wave[17] aiF917F4D7_wave5_lastWave;
 trigger aiF917F4D7_wave5_trigger = null;
 int aiF917F4D7_wave5_runPlayer;
 playergroup aiF917F4D7_wave5_runTarget;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave5_init () {
     int init_i;
-
     for (init_i = 0; init_i <= 16; init_i += 1) {
         aiF917F4D7_wave5_enabled[init_i] = true;
         aiF917F4D7_wave5_lastWave[init_i] = null;
     }
-
     aiF917F4D7_wave5_trigger = TriggerCreate("aiF917F4D7_wave5_runFunc");
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave5_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -486,7 +412,6 @@ void aiF917F4D7_wave5_enable (int p, bool val) {
     }
     aiF917F4D7_wave5_enabled[p] = val;
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave5_isEnabled (int p) {
     if (p < 0 || p >= 16) {
@@ -494,7 +419,6 @@ bool aiF917F4D7_wave5_isEnabled (int p) {
     }
     return aiF917F4D7_wave5_enabled[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_wave5_createdWave (int p) {
     if (p < 0 || p >= 16) {
@@ -502,7 +426,6 @@ wave aiF917F4D7_wave5_createdWave (int p) {
     }
     return aiF917F4D7_wave5_lastWave[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave5_runFunc (bool c, bool a) {
     int p = aiF917F4D7_wave5_runPlayer;
@@ -514,7 +437,6 @@ bool aiF917F4D7_wave5_runFunc (bool c, bool a) {
     int ts = 0;
     int tf = 0;
     int td = 0;
-
     if (p < 0 || p >= 16) {
         return false;
     }
@@ -526,9 +448,7 @@ bool aiF917F4D7_wave5_runFunc (bool c, bool a) {
         }
         return true;
     }
-
     aiF917F4D7_customData[p] = "";
-
     ta = 0;
     if (d == 1) { ta = 180; }
     if (d == 2) { ta = 180; }
@@ -544,29 +464,22 @@ bool aiF917F4D7_wave5_runFunc (bool c, bool a) {
         ts = tg;
     }
     AIAttackWaveSetTargetPlayer(p, target);
-
     gatherPoint = aiF917F4D7_defGather[p];
     AIAttackWaveSetGatherPoint(p, gatherPoint);
-
     AIAttackWaveClearWaypoints(p);
-
     Wait(ts, c_timeAI);
     tf = 0;
     if (tf > 0) {
         Wait(tf, c_timeAI);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave5_run (int p, playergroup target, bool wait) {
     aiF917F4D7_wave5_runPlayer = p;
     aiF917F4D7_wave5_runTarget = PlayerGroupCopy(target);
-
     TriggerExecute(aiF917F4D7_wave5_trigger, false, wait);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave: 
 //--------------------------------------------------------------------------------------------------
@@ -575,19 +488,15 @@ wave[17] aiF917F4D7_wave6_lastWave;
 trigger aiF917F4D7_wave6_trigger = null;
 int aiF917F4D7_wave6_runPlayer;
 playergroup aiF917F4D7_wave6_runTarget;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave6_init () {
     int init_i;
-
     for (init_i = 0; init_i <= 16; init_i += 1) {
         aiF917F4D7_wave6_enabled[init_i] = true;
         aiF917F4D7_wave6_lastWave[init_i] = null;
     }
-
     aiF917F4D7_wave6_trigger = TriggerCreate("aiF917F4D7_wave6_runFunc");
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave6_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -595,7 +504,6 @@ void aiF917F4D7_wave6_enable (int p, bool val) {
     }
     aiF917F4D7_wave6_enabled[p] = val;
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave6_isEnabled (int p) {
     if (p < 0 || p >= 16) {
@@ -603,7 +511,6 @@ bool aiF917F4D7_wave6_isEnabled (int p) {
     }
     return aiF917F4D7_wave6_enabled[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_wave6_createdWave (int p) {
     if (p < 0 || p >= 16) {
@@ -611,7 +518,6 @@ wave aiF917F4D7_wave6_createdWave (int p) {
     }
     return aiF917F4D7_wave6_lastWave[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave6_runFunc (bool c, bool a) {
     int p = aiF917F4D7_wave6_runPlayer;
@@ -623,7 +529,6 @@ bool aiF917F4D7_wave6_runFunc (bool c, bool a) {
     int ts = 0;
     int tf = 0;
     int td = 0;
-
     if (p < 0 || p >= 16) {
         return false;
     }
@@ -635,9 +540,7 @@ bool aiF917F4D7_wave6_runFunc (bool c, bool a) {
         }
         return true;
     }
-
     aiF917F4D7_customData[p] = "";
-
     ta = 0;
     if (d == 1) { ta = 180; }
     if (d == 2) { ta = 180; }
@@ -653,29 +556,22 @@ bool aiF917F4D7_wave6_runFunc (bool c, bool a) {
         ts = tg;
     }
     AIAttackWaveSetTargetPlayer(p, target);
-
     gatherPoint = aiF917F4D7_defGather[p];
     AIAttackWaveSetGatherPoint(p, gatherPoint);
-
     AIAttackWaveClearWaypoints(p);
-
     Wait(ts, c_timeAI);
     tf = 0;
     if (tf > 0) {
         Wait(tf, c_timeAI);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave6_run (int p, playergroup target, bool wait) {
     aiF917F4D7_wave6_runPlayer = p;
     aiF917F4D7_wave6_runTarget = PlayerGroupCopy(target);
-
     TriggerExecute(aiF917F4D7_wave6_trigger, false, wait);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave: 
 //--------------------------------------------------------------------------------------------------
@@ -684,19 +580,15 @@ wave[17] aiF917F4D7_wave7_lastWave;
 trigger aiF917F4D7_wave7_trigger = null;
 int aiF917F4D7_wave7_runPlayer;
 playergroup aiF917F4D7_wave7_runTarget;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave7_init () {
     int init_i;
-
     for (init_i = 0; init_i <= 16; init_i += 1) {
         aiF917F4D7_wave7_enabled[init_i] = true;
         aiF917F4D7_wave7_lastWave[init_i] = null;
     }
-
     aiF917F4D7_wave7_trigger = TriggerCreate("aiF917F4D7_wave7_runFunc");
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave7_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -704,7 +596,6 @@ void aiF917F4D7_wave7_enable (int p, bool val) {
     }
     aiF917F4D7_wave7_enabled[p] = val;
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave7_isEnabled (int p) {
     if (p < 0 || p >= 16) {
@@ -712,7 +603,6 @@ bool aiF917F4D7_wave7_isEnabled (int p) {
     }
     return aiF917F4D7_wave7_enabled[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_wave7_createdWave (int p) {
     if (p < 0 || p >= 16) {
@@ -720,7 +610,6 @@ wave aiF917F4D7_wave7_createdWave (int p) {
     }
     return aiF917F4D7_wave7_lastWave[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave7_runFunc (bool c, bool a) {
     int p = aiF917F4D7_wave7_runPlayer;
@@ -732,7 +621,6 @@ bool aiF917F4D7_wave7_runFunc (bool c, bool a) {
     int ts = 0;
     int tf = 0;
     int td = 0;
-
     if (p < 0 || p >= 16) {
         return false;
     }
@@ -744,9 +632,7 @@ bool aiF917F4D7_wave7_runFunc (bool c, bool a) {
         }
         return true;
     }
-
     aiF917F4D7_customData[p] = "";
-
     ta = 0;
     if (d == 1) { ta = 180; }
     if (d == 2) { ta = 180; }
@@ -762,29 +648,22 @@ bool aiF917F4D7_wave7_runFunc (bool c, bool a) {
         ts = tg;
     }
     AIAttackWaveSetTargetPlayer(p, target);
-
     gatherPoint = aiF917F4D7_defGather[p];
     AIAttackWaveSetGatherPoint(p, gatherPoint);
-
     AIAttackWaveClearWaypoints(p);
-
     Wait(ts, c_timeAI);
     tf = 0;
     if (tf > 0) {
         Wait(tf, c_timeAI);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave7_run (int p, playergroup target, bool wait) {
     aiF917F4D7_wave7_runPlayer = p;
     aiF917F4D7_wave7_runTarget = PlayerGroupCopy(target);
-
     TriggerExecute(aiF917F4D7_wave7_trigger, false, wait);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave Wrappers
 //--------------------------------------------------------------------------------------------------
@@ -797,7 +676,6 @@ void aiF917F4D7_wave_enable (int w, int p, bool val) {
     if (w == 6) { aiF917F4D7_wave6_enable(p, val); }
     if (w == 7) { aiF917F4D7_wave7_enable(p, val); }
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_wave_isEnabled (int w, int p) {
     if (w == 1) { return aiF917F4D7_wave1_isEnabled(p); }
@@ -809,12 +687,10 @@ bool aiF917F4D7_wave_isEnabled (int w, int p) {
     if (w == 7) { return aiF917F4D7_wave7_isEnabled(p); }
     return false;
 }
-
 //--------------------------------------------------------------------------------------------------
 unitgroup aiF917F4D7_wave_createdUnits (int w, int p) {
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_wave_createdWave (int w, int p) {
     if (w == 1) { return aiF917F4D7_wave1_createdWave(p); }
@@ -826,7 +702,6 @@ wave aiF917F4D7_wave_createdWave (int w, int p) {
     if (w == 7) { return aiF917F4D7_wave7_createdWave(p); }
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_wave_run (int w, int p, playergroup target, bool wait) {
     if (w == 1) { aiF917F4D7_wave1_run(p, target, wait); }
@@ -837,28 +712,23 @@ void aiF917F4D7_wave_run (int w, int p, playergroup target, bool wait) {
     if (w == 6) { aiF917F4D7_wave6_run(p, target, wait); }
     if (w == 7) { aiF917F4D7_wave7_run(p, target, wait); }
 }
-
 //--------------------------------------------------------------------------------------------------
 // Attack Wave Sequence
 //--------------------------------------------------------------------------------------------------
 trigger aiF917F4D7_waves_trigger = null;
 int aiF917F4D7_waves_runPlayer;
 playergroup aiF917F4D7_waves_runTarget;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_waves_init () {
     aiF917F4D7_waves_trigger = TriggerCreate("aiF917F4D7_waves_runFunc");
 }
-
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_waves_runFunc (bool c, bool a) {
     int p = aiF917F4D7_waves_runPlayer;
     playergroup target = aiF917F4D7_waves_runTarget;
-
     if (p < 0 || p >= 16) {
         return false;
     }
-
     aiF917F4D7_wave1_run(p, target, true);
     aiF917F4D7_wave2_run(p, target, true);
     aiF917F4D7_wave3_run(p, target, true);
@@ -866,28 +736,22 @@ bool aiF917F4D7_waves_runFunc (bool c, bool a) {
     aiF917F4D7_wave5_run(p, target, true);
     aiF917F4D7_wave6_run(p, target, true);
     aiF917F4D7_wave7_run(p, target, true);
-
     while (true) {
         aiF917F4D7_wave7_run(p, target, true);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_waves_run (int p, playergroup target) {
     aiF917F4D7_waves_runPlayer = p;
     aiF917F4D7_waves_runTarget = PlayerGroupCopy(target);
-
     TriggerExecute(aiF917F4D7_waves_trigger, false, false);
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_waves_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
         return;
     }
-
     aiF917F4D7_wave1_enable(p, val);
     aiF917F4D7_wave2_enable(p, val);
     aiF917F4D7_wave3_enable(p, val);
@@ -896,11 +760,9 @@ void aiF917F4D7_waves_enable (int p, bool val) {
     aiF917F4D7_wave6_enable(p, val);
     aiF917F4D7_wave7_enable(p, val);
 }
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_waves_stop () {
     TriggerStop(aiF917F4D7_waves_trigger);
-
     TriggerStop(aiF917F4D7_wave1_trigger);
     TriggerStop(aiF917F4D7_wave2_trigger);
     TriggerStop(aiF917F4D7_wave3_trigger);
@@ -909,7 +771,6 @@ void aiF917F4D7_waves_stop () {
     TriggerStop(aiF917F4D7_wave6_trigger);
     TriggerStop(aiF917F4D7_wave7_trigger);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Configuration
 //--------------------------------------------------------------------------------------------------
@@ -919,7 +780,6 @@ void aiF917F4D7_setDefGather (int p, point val) {
     }
     aiF917F4D7_defGather[p] = val;
 }
-
 //--------------------------------------------------------------------------------------------------
 string aiF917F4D7_getCustomData (int p) {
     if (p < 0 || p >= 16) {
@@ -927,7 +787,6 @@ string aiF917F4D7_getCustomData (int p) {
     }
     return aiF917F4D7_customData[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 wave aiF917F4D7_getLastWave (int p) {
     if (p < 0 || p >= 16) {
@@ -935,16 +794,13 @@ wave aiF917F4D7_getLastWave (int p) {
     }
     return aiF917F4D7_lastWave[p];
 }
-
 //--------------------------------------------------------------------------------------------------
 // Start
 //--------------------------------------------------------------------------------------------------
 bool aiF917F4D7_initialized = false;
-
 //--------------------------------------------------------------------------------------------------
 void aiF917F4D7_start (int p) {
     int init_i;
-
     if (p < 0 || p >= 16) {
         return;
     }
@@ -957,18 +813,13 @@ void aiF917F4D7_start (int p) {
         aiF917F4D7_wave6_init();
         aiF917F4D7_wave7_init();
         aiF917F4D7_waves_init();
-
         for (init_i = 0; init_i <= 16; init_i += 1) {
             aiF917F4D7_defGather[init_i] = PointFromId(0);
         }
-
         aiF917F4D7_initialized = true;
     }
-
     AICampaignStart(p);
 }
-
-
 //==================================================================================================
 // 
 // Generated Map Script
@@ -978,7 +829,6 @@ void aiF917F4D7_start (int p) {
 //==================================================================================================
 include "TriggerLibs/NativeLib"
 include "LibCOMI"
-
 //--------------------------------------------------------------------------------------------------
 // Library Initialization
 //--------------------------------------------------------------------------------------------------
@@ -986,18 +836,16 @@ void InitLibs () {
     libNtve_InitLib();
     libCOMI_InitLib();
 }
-
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
 const int gv_pLAYER_00_NEUTRAL = 0;
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
+int gv_pLAYER_01_USER = 1;
+int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 6;
+const int gv_pLAYER_04_ENEMY = 7;
 const fixed gv_cOUNTDOWN_SECONDS = 90.0;
 const int gv_mAX_ALLOWED_RAIDS = 3;
-
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
@@ -1021,7 +869,6 @@ region[3][11] gv_attackSpawn;
 int gv_objectiveRemnantAreas;
 int gv_objectiveNoMoreThanRaided;
 int gv_bonusDestroySensorTower;
-
 void InitGlobals () {
     gv_enemyGroup = PlayerGroupEmpty();
     gv_sensorTowerPing = c_invalidPingId;
@@ -1033,7 +880,6 @@ void InitGlobals () {
     gv_objectiveNoMoreThanRaided = c_invalidObjectiveId;
     gv_bonusDestroySensorTower = c_invalidObjectiveId;
 }
-
 //--------------------------------------------------------------------------------------------------
 // Global Function Declarations
 //--------------------------------------------------------------------------------------------------
@@ -1041,7 +887,6 @@ void gf_RunMissionEvent (trigger lp_missionEventTrigger, fixed lp_missionEventTi
 void gf_PlayGhostTransmission (soundlink lp_soundLink, text lp_text, fixed lp_time);
 point gf_AttackWaveSpawn ();
 void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time);
-
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
@@ -1129,31 +974,25 @@ trigger gt_BonusDestroySensorTowerCreate;
 trigger gt_BonusDestroySensorTowerComplete;
 trigger gt_BonusDestroySensorTowerUpdate;
 trigger gt_BonusDestroySensorTowerFailed;
-
 //--------------------------------------------------------------------------------------------------
 // Custom AI Functions
 //--------------------------------------------------------------------------------------------------
 string[17] cai_playerAI;
-
 //--------------------------------------------------------------------------------------------------
 void InitCustomAI () {
     int init_i;
-
     for (init_i = 0; init_i <= 16; init_i += 1) {
         cai_playerAI[init_i] = null;
     }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_start (string ai, int p) {
     if (p < 0 || p >= 16) {
         return;
     }
     cai_playerAI[p] = ai;
-
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_start(p); }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_setDefGather (int p, point val) {
     if (p < 0 || p >= 16) {
@@ -1161,7 +1000,6 @@ void cai_setDefGather (int p, point val) {
     }
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_setDefGather(p, val); }
 }
-
 //--------------------------------------------------------------------------------------------------
 string cai_getCustomData (int p) {
     if (p < 0 || p >= 16) {
@@ -1170,7 +1008,6 @@ string cai_getCustomData (int p) {
     if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getCustomData(p); }
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 wave cai_getLastWave (int p) {
     if (p < 0 || p >= 16) {
@@ -1179,7 +1016,6 @@ wave cai_getLastWave (int p) {
     if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getLastWave(p); }
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_waves_run (int p, playergroup target) {
     if (p < 0 || p >= 16) {
@@ -1187,7 +1023,6 @@ void cai_waves_run (int p, playergroup target) {
     }
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_run(p, target); }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_waves_enable (int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -1195,12 +1030,10 @@ void cai_waves_enable (int p, bool val) {
     }
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_enable(p, val); }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_waves_stop (string ai) {
     if (ai == "aiF917F4D7") { aiF917F4D7_waves_stop(); }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_wave_run (int w, int p, playergroup target, bool wait) {
     if (p < 0 || p >= 16) {
@@ -1208,7 +1041,6 @@ void cai_wave_run (int w, int p, playergroup target, bool wait) {
     }
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_run(w, p, target, wait); }
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_wave_enable (int w, int p, bool val) {
     if (p < 0 || p >= 16) {
@@ -1216,7 +1048,6 @@ void cai_wave_enable (int w, int p, bool val) {
     }
     if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_enable(w, p, val); }
 }
-
 //--------------------------------------------------------------------------------------------------
 bool cai_wave_isEnabled (int w, int p) {
     if (p < 0 || p >= 16) {
@@ -1225,7 +1056,6 @@ bool cai_wave_isEnabled (int w, int p) {
     if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_isEnabled(w, p); }
     return false;
 }
-
 //--------------------------------------------------------------------------------------------------
 unitgroup cai_wave_createdUnits (int w, int p) {
     if (p < 0 || p >= 16) {
@@ -1234,7 +1064,6 @@ unitgroup cai_wave_createdUnits (int w, int p) {
     if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdUnits(w, p); }
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 wave cai_wave_createdWave (int w, int p) {
     if (p < 0 || p >= 16) {
@@ -1243,40 +1072,32 @@ wave cai_wave_createdWave (int w, int p) {
     if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdWave(w, p); }
     return null;
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_startall () {
     AICampaignStart(3);
     AICampaignStart(4);
 }
-
 //--------------------------------------------------------------------------------------------------
 void cai_runall () {
     playergroup target = PlayerGroupEmpty();
 }
-
 //--------------------------------------------------------------------------------------------------
 // Global Functions
 //--------------------------------------------------------------------------------------------------
 trigger auto_gf_RunMissionEvent_Trigger = null;
 trigger auto_gf_RunMissionEvent_lp_missionEventTrigger;
 fixed auto_gf_RunMissionEvent_lp_missionEventTime;
-
 void gf_RunMissionEvent (trigger lp_missionEventTrigger, fixed lp_missionEventTime) {
     auto_gf_RunMissionEvent_lp_missionEventTrigger = lp_missionEventTrigger;
     auto_gf_RunMissionEvent_lp_missionEventTime = lp_missionEventTime;
-
     if (auto_gf_RunMissionEvent_Trigger == null) {
         auto_gf_RunMissionEvent_Trigger = TriggerCreate("auto_gf_RunMissionEvent_TriggerFunc");
     }
-
     TriggerExecute(auto_gf_RunMissionEvent_Trigger, false, false);
 }
-
 bool auto_gf_RunMissionEvent_TriggerFunc (bool testConds, bool runActions) {
     trigger lp_missionEventTrigger = auto_gf_RunMissionEvent_lp_missionEventTrigger;
     fixed lp_missionEventTime = auto_gf_RunMissionEvent_lp_missionEventTime;
-
     // Implementation
     while (!((GameGetMissionTime() >= lp_missionEventTime))) {
         Wait(0.5, c_timeAI);
@@ -1284,10 +1105,8 @@ bool auto_gf_RunMissionEvent_TriggerFunc (bool testConds, bool runActions) {
     if ((libCOMI_gf_GameIsOver() == false)) {
         TriggerExecute(lp_missionEventTrigger, true, false);
     }
-
     return true;
 }
-
 void gf_PlayGhostTransmission (soundlink lp_soundLink, text lp_text, fixed lp_time) {
     // Implementation
     TransmissionClearAll();
@@ -1300,38 +1119,29 @@ void gf_PlayGhostTransmission (soundlink lp_soundLink, text lp_text, fixed lp_ti
     TransmissionClearAll();
     TriggerStop(gt_ShowGhostPortrait);
 }
-
 point gf_AttackWaveSpawn () {
     // Variable Declarations
     int lv_mapSide;
     int lv_spawnLocationIter;
-
     // Variable Initialization
-
     // Implementation
     lv_mapSide = RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER);
     return RegionGetCenter(RegionFromId(9));
 }
-
 trigger auto_gf_RunAttackWaveatMissionTime_Trigger = null;
 trigger auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
 fixed auto_gf_RunAttackWaveatMissionTime_lp_time;
-
 void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time) {
     auto_gf_RunAttackWaveatMissionTime_lp_attackWave = lp_attackWave;
     auto_gf_RunAttackWaveatMissionTime_lp_time = lp_time;
-
     if (auto_gf_RunAttackWaveatMissionTime_Trigger == null) {
         auto_gf_RunAttackWaveatMissionTime_Trigger = TriggerCreate("auto_gf_RunAttackWaveatMissionTime_TriggerFunc");
     }
-
     TriggerExecute(auto_gf_RunAttackWaveatMissionTime_Trigger, false, false);
 }
-
 bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runActions) {
     trigger lp_attackWave = auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
     fixed lp_time = auto_gf_RunAttackWaveatMissionTime_lp_time;
-
     // Implementation
     while (!((lp_time <= GameGetMissionTime()))) {
         Wait(0.3, c_timeAI);
@@ -1339,10 +1149,8 @@ bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runAct
     if ((libCOMI_gf_GameIsOver() == false)) {
         TriggerExecute(lp_attackWave, true, false);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 01 Load Data
 //--------------------------------------------------------------------------------------------------
@@ -1352,71 +1160,26 @@ bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
         return true;
 		}
 		
-    TriggerExecute(gt_Init02Players, true, false);
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init01LoadData_Init () {
     gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
     TriggerAddEventMapInit(gt_Init01LoadData);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 02 Players
 //--------------------------------------------------------------------------------------------------
 bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    playergroup autoE0EF2853_g;
-    int autoE0EF2853_p;
-    playergroup autoB969537F_g;
-    int autoB969537F_p;
-
-    // Variable Declarations
-    int lv_playerIterEnemy;
-    int lv_playerIterAlly;
-
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_03_ENEMY);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_04_ENEMY);
-    libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    autoE0EF2853_g = gv_enemyGroup; 
-    autoE0EF2853_p = 1;
-    for ( ; autoE0EF2853_p <= PlayerGroupCount(autoE0EF2853_g) ; autoE0EF2853_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p)) ) {
-        lv_playerIterEnemy = PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-        PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
-        autoB969537F_g = libCOMI_gf_HumanPlayers();
-        autoB969537F_p = 1;
-        for ( ; autoB969537F_p <= PlayerGroupCount(autoB969537F_g) ; autoB969537F_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoB969537F_g, autoB969537F_p)) ) {
-            lv_playerIterAlly = PlayerGroupPlayer(autoB969537F_g, autoB969537F_p);
-            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-        }
-    }
-    PlayerSetAlliance(gv_pLAYER_03_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
-    PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_03_ENEMY, true);
-    libCOMI_gf_SetAlliedCommandersstartingResources();
-    PlayerSetDifficulty(gv_pLAYER_01_USER, 2);
-    PlayerSetDifficulty(gv_pLAYER_02_USER, 2);
-    PlayerSetDifficulty(gv_pLAYER_03_ENEMY, 2);
-    PlayerSetDifficulty(gv_pLAYER_04_ENEMY, 2);
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init02Players_Init () {
     gt_Init02Players = TriggerCreate("gt_Init02Players_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
@@ -1425,94 +1188,62 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
+    TriggerExecute(gt_Init02Players, true, false);
     TriggerExecute(gt_Init04Technology, true, false);
-    libCOMI_gf_PurchaseStorymodeTech();
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
     TriggerExecute(gt_Init07Environment, true, false);
     TriggerExecute(gt_Init08Difficulties, true, false);
-    libCOMI_gf_PlayMapIntroZoom(true);
     TriggerExecute(gt_StartAI, true, false);
     TriggerExecute(gt_StartGameQ, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init03LoadingComplete_Init () {
     gt_Init03LoadingComplete = TriggerCreate("gt_Init03LoadingComplete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 04 Technology
 //--------------------------------------------------------------------------------------------------
 bool gt_Init04Technology_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init04Technology_Init () {
     gt_Init04Technology = TriggerCreate("gt_Init04Technology_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 05 Units
 //--------------------------------------------------------------------------------------------------
 bool gt_Init05Units_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_01_USER);
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_02_USER);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init05Units_Init () {
     gt_Init05Units = TriggerCreate("gt_Init05Units_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 06 Music/Sound
 //--------------------------------------------------------------------------------------------------
 bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init06MusicSound_Init () {
     gt_Init06MusicSound = TriggerCreate("gt_Init06MusicSound_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 07 Environment
 //--------------------------------------------------------------------------------------------------
 bool gt_Init07Environment_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
     GameTimeOfDaySet("00");
     GameSetToDLighting("KorhalNight");
-    VisExploreArea(gv_pLAYER_01_USER, RegionFromId(49), true, false);
-    VisExploreArea(gv_pLAYER_02_USER, RegionFromId(49), true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init07Environment_Init () {
     gt_Init07Environment = TriggerCreate("gt_Init07Environment_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 08 Difficulties
 //--------------------------------------------------------------------------------------------------
@@ -1520,46 +1251,34 @@ bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
     // Variable Declarations
     fixed lv_bonusObjectiveLife;
     fixed lv_mainObjectiveLife;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_01_USER) == 4)) {
         UnitRemove(UnitFromId(211));
     }
-
     if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_02_USER) == 4)) {
         UnitRemove(UnitFromId(134));
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Init08Difficulties_Init () {
     gt_Init08Difficulties = TriggerCreate("gt_Init08Difficulties_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Start Game Q
 //--------------------------------------------------------------------------------------------------
 bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     // Variable Declarations
     region lv_enemyBase;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
-    UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/068743D5"), null, PlayerStartLocation(gv_pLAYER_01_USER));
-    UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/187E0E6E"), null, PlayerStartLocation(gv_pLAYER_02_USER));
     Wait(4.0, c_timeReal);
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -1574,54 +1293,44 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_StartGameQ_Init () {
     gt_StartGameQ = TriggerCreate("gt_StartGameQ_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Auto Update Remnant Area Count
 //--------------------------------------------------------------------------------------------------
 bool gt_AutoUpdateRemnantAreaCount_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_totalRemantAreas;
-
     // Variable Initialization
-
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_totalRemantAreas += TechTreeUnitCount(gv_pLAYER_00_NEUTRAL, "Beacon_Nova", c_techCountQueuedOrBetter);
     gv_remnantAreasCount = lv_totalRemantAreas;
     if ((lv_totalRemantAreas == 0)) {
         TriggerEnable(TriggerGetCurrent(), false);
         TriggerExecute(gt_VictoryPrimaryObjectiveComplete, true, false);
     }
-
     TriggerExecute(gt_ObjectiveRemnantAreasUpdate, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AutoUpdateRemnantAreaCount_Init () {
     gt_AutoUpdateRemnantAreaCount = TriggerCreate("gt_AutoUpdateRemnantAreaCount_Func");
     TriggerAddEventTimePeriodic(gt_AutoUpdateRemnantAreaCount, 0.5, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Auto Update Raided Areas
 //--------------------------------------------------------------------------------------------------
@@ -1631,21 +1340,17 @@ bool gt_AutoUpdateRaidedAreas_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((gv_remnantAreasRaided <= gv_mAX_ALLOWED_RAIDS))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     gv_remnantAreasRaided = (gv_remnantAreasRaided + 1);
     TriggerExecute(gt_ObjectiveRemnantAreasUpdate, true, false);
@@ -1662,13 +1367,11 @@ bool gt_AutoUpdateRaidedAreas_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AutoUpdateRaidedAreas_Init () {
     gt_AutoUpdateRaidedAreas = TriggerCreate("gt_AutoUpdateRaidedAreas_Func");
     TriggerAddEventTimer(gt_AutoUpdateRaidedAreas, gv_beaconTimerEnemy);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Hide Active Area
 //--------------------------------------------------------------------------------------------------
@@ -1677,17 +1380,14 @@ bool gt_HideActiveArea_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libCOMI_gf_ShowHidePingCoop(gv_remnantPing, false);
     libNtve_gf_ShowHideUnit(RegionGetAttachUnit(RegionFromName(gv_remnantActiveRegion)), false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_HideActiveArea_Init () {
     gt_HideActiveArea = TriggerCreate("gt_HideActiveArea_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: bonus objective handler
 //--------------------------------------------------------------------------------------------------
@@ -1697,49 +1397,40 @@ bool gt_bonusobjectivehandler_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Bonus Objective")), gv_pLAYER_03_ENEMY) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     if ((UnitIsAlive(gv_sensorTower) != true)) {
         libCOMI_gf_DestroyPingCoop(gv_sensorTowerPing);
         TriggerExecute(gt_BonusDestroySensorTowerComplete, true, false);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_bonusobjectivehandler_Init () {
     gt_bonusobjectivehandler = TriggerCreate("gt_bonusobjectivehandler_Func");
     TriggerAddEventUnitDied(gt_bonusobjectivehandler, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Ping Next Beacon
 //--------------------------------------------------------------------------------------------------
 bool gt_PingNextBeacon_Func (bool testConds, bool runActions) {
     int auto55B1C539_val;
-
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_Beacontimer, true, false);
     TriggerExecute(gt_Beacontimerenemy, true, false);
     TimerRestart(gv_beaconTimer);
@@ -1824,21 +1515,17 @@ bool gt_PingNextBeacon_Func (bool testConds, bool runActions) {
     if ((gv_remnantCurrentBeacon > 1) && (gv_remnantCurrentBeacon <= 7) && (gv_remnantAreasRaided < gv_mAX_ALLOWED_RAIDS)) {
         gf_PlayGhostTransmission(SoundLink("001GhostHighlightNextObjective", -1), StringExternal("Param/Value/64FDA3EA"), 3.0);
     }
-
     if ((gv_remnantCurrentBeacon == 5)) {
         Wait(5.0, c_timeGame);
         gf_PlayGhostTransmission(SoundLink("001GhostHighlightBonus", -1), StringExternal("Param/Value/82B1B9A2"), 4.5);
         TriggerExecute(gt_BonusDestroySensorTowerCreate, true, true);
     }
-
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_PingNextBeacon_Init () {
     gt_PingNextBeacon = TriggerCreate("gt_PingNextBeacon_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Attach regions
 //--------------------------------------------------------------------------------------------------
@@ -1847,7 +1534,6 @@ bool gt_Attachregions_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     RegionAttachToUnit(RegionFromId(10), UnitFromId(1372509776), Point(0.0, 0.0));
     RegionAttachToUnit(RegionFromId(11), UnitFromId(1429961494), Point(0.0, 0.0));
     RegionAttachToUnit(RegionFromId(12), UnitFromId(176127085), Point(0.0, 0.0));
@@ -1857,13 +1543,11 @@ bool gt_Attachregions_Func (bool testConds, bool runActions) {
     RegionAttachToUnit(RegionFromId(18), UnitFromId(82102772), Point(0.0, 0.0));
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Attachregions_Init () {
     gt_Attachregions = TriggerCreate("gt_Attachregions_Func");
     TriggerAddEventTimeElapsed(gt_Attachregions, 0.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon timer
 //--------------------------------------------------------------------------------------------------
@@ -1874,12 +1558,10 @@ bool gt_Beacontimer_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TimerStart(gv_beaconTimer, gv_cOUNTDOWN_SECONDS, false, c_timeGame);
     libCOMI_gf_TimerWindowCreate(gv_beaconTimer, StringExternal("Param/Value/D2B868DE"), true, false);
@@ -1889,17 +1571,14 @@ bool gt_Beacontimer_Func (bool testConds, bool runActions) {
         if ((TimerIsPaused(gv_beaconTimer) == false) && (TimerGetRemaining(gv_beaconTimer) <= 0.0)) {
             TriggerExecute(gt_PingNextBeacon, true, false);
         }
-
         Wait(0.1, c_timeGame);
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beacontimer_Init () {
     gt_Beacontimer = TriggerCreate("gt_Beacontimer_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon timer enemy
 //--------------------------------------------------------------------------------------------------
@@ -1910,12 +1589,10 @@ bool gt_Beacontimerenemy_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TimerStart(gv_beaconTimerEnemy, gv_cOUNTDOWN_SECONDS, false, c_timeGame);
     libCOMI_gf_TimerWindowCreate(gv_beaconTimerEnemy, StringExternal("Param/Value/A28C9847"), true, false);
@@ -1926,12 +1603,10 @@ bool gt_Beacontimerenemy_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beacontimerenemy_Init () {
     gt_Beacontimerenemy = TriggerCreate("gt_Beacontimerenemy_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit enters
 //--------------------------------------------------------------------------------------------------
@@ -1941,17 +1616,14 @@ bool gt_Beaconregionunitenters_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 001")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_Beacontimer, true, false);
     TriggerExecute(gt_Beacontimerenemy, true, false);
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 001"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
@@ -1965,21 +1637,17 @@ bool gt_Beaconregionunitenters_Func (bool testConds, bool runActions) {
     if ((TimerIsPaused(gv_beaconTimer) == true)) {
         TimerPause(gv_beaconTimer, false);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == true)) {
         TimerPause(gv_beaconTimerEnemy, false);
     }
-
     TriggerExecute(gt_Beaconregioncheck, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitenters_Init () {
     gt_Beaconregionunitenters = TriggerCreate("gt_Beaconregionunitenters_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitenters, null, RegionFromName("Beacon Region 001"), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit leaves
 //--------------------------------------------------------------------------------------------------
@@ -1989,37 +1657,30 @@ bool gt_Beaconregionunitleaves_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 001")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 001"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 001"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     if ((TimerIsPaused(gv_beaconTimer) == false)) {
         TimerPause(gv_beaconTimer, true);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == false)) {
         TimerPause(gv_beaconTimerEnemy, true);
     }
-
     TriggerExecute(gt_Beaconregioncheck, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitleaves_Init () {
     gt_Beaconregionunitleaves = TriggerCreate("gt_Beaconregionunitleaves_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitleaves, null, RegionFromName("Beacon Region 001"), false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit dies
 //--------------------------------------------------------------------------------------------------
@@ -2029,29 +1690,24 @@ bool gt_Beaconregionunitdies_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 001")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 001"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 001"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     TriggerExecute(gt_Beaconregioncheck, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitdies_Init () {
     gt_Beaconregionunitdies = TriggerCreate("gt_Beaconregionunitdies_Func");
     TriggerAddEventUnitDied(gt_Beaconregionunitdies, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - check
 //--------------------------------------------------------------------------------------------------
@@ -2061,17 +1717,14 @@ bool gt_Beaconregioncheck_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 001")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     while ((libCOMI_gf_GameIsOver() == false)) {
         if ((gv___countPlayers > 0)) {
@@ -2090,12 +1743,10 @@ bool gt_Beaconregioncheck_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregioncheck_Init () {
     gt_Beaconregioncheck = TriggerCreate("gt_Beaconregioncheck_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - send waves
 //--------------------------------------------------------------------------------------------------
@@ -2103,31 +1754,25 @@ bool gt_Beaconregionsendwaves_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 001")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
-
         if (!(((GameGetMissionTime() > 240.0) || (gv___searchInitiated == true)))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     gv___sendingWaveToObjective = true;
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
@@ -2141,13 +1786,11 @@ bool gt_Beaconregionsendwaves_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionsendwaves_Init () {
     gt_Beaconregionsendwaves = TriggerCreate("gt_Beaconregionsendwaves_Func");
     TriggerAddEventTimePeriodic(gt_Beaconregionsendwaves, 60.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit enters 2
 //--------------------------------------------------------------------------------------------------
@@ -2157,17 +1800,14 @@ bool gt_Beaconregionunitenters2_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 002")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_Beacontimer, true, false);
     TriggerExecute(gt_Beacontimerenemy, true, false);
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 002"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
@@ -2181,21 +1821,17 @@ bool gt_Beaconregionunitenters2_Func (bool testConds, bool runActions) {
     if ((TimerIsPaused(gv_beaconTimer) == true)) {
         TimerPause(gv_beaconTimer, false);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == true)) {
         TimerPause(gv_beaconTimerEnemy, false);
     }
-
     TriggerExecute(gt_Beaconregioncheck2, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitenters2_Init () {
     gt_Beaconregionunitenters2 = TriggerCreate("gt_Beaconregionunitenters2_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitenters2, null, RegionFromName("Beacon Region 002"), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit leaves 2
 //--------------------------------------------------------------------------------------------------
@@ -2205,37 +1841,30 @@ bool gt_Beaconregionunitleaves2_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 002")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 002"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 002"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     if ((TimerIsPaused(gv_beaconTimer) == false)) {
         TimerPause(gv_beaconTimer, true);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == false)) {
         TimerPause(gv_beaconTimerEnemy, true);
     }
-
     TriggerExecute(gt_Beaconregioncheck2, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitleaves2_Init () {
     gt_Beaconregionunitleaves2 = TriggerCreate("gt_Beaconregionunitleaves2_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitleaves2, null, RegionFromName("Beacon Region 002"), false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit dies 2
 //--------------------------------------------------------------------------------------------------
@@ -2245,29 +1874,24 @@ bool gt_Beaconregionunitdies2_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 002")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 002"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 002"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     TriggerExecute(gt_Beaconregioncheck2, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitdies2_Init () {
     gt_Beaconregionunitdies2 = TriggerCreate("gt_Beaconregionunitdies2_Func");
     TriggerAddEventUnitDied(gt_Beaconregionunitdies2, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - check 2
 //--------------------------------------------------------------------------------------------------
@@ -2277,17 +1901,14 @@ bool gt_Beaconregioncheck2_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 002")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     while ((libCOMI_gf_GameIsOver() == false)) {
         if ((gv___countPlayers > 0)) {
@@ -2306,12 +1927,10 @@ bool gt_Beaconregioncheck2_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregioncheck2_Init () {
     gt_Beaconregioncheck2 = TriggerCreate("gt_Beaconregioncheck2_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - send waves 2
 //--------------------------------------------------------------------------------------------------
@@ -2319,31 +1938,25 @@ bool gt_Beaconregionsendwaves2_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 002")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
-
         if (!(((GameGetMissionTime() > 240.0) || (gv___searchInitiated == true)))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     gv___sendingWaveToObjective = true;
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
@@ -2357,13 +1970,11 @@ bool gt_Beaconregionsendwaves2_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionsendwaves2_Init () {
     gt_Beaconregionsendwaves2 = TriggerCreate("gt_Beaconregionsendwaves2_Func");
     TriggerAddEventTimePeriodic(gt_Beaconregionsendwaves2, 60.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit enters 3
 //--------------------------------------------------------------------------------------------------
@@ -2373,17 +1984,14 @@ bool gt_Beaconregionunitenters3_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 003")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_Beacontimer, true, false);
     TriggerExecute(gt_Beacontimerenemy, true, false);
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 003"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
@@ -2397,21 +2005,17 @@ bool gt_Beaconregionunitenters3_Func (bool testConds, bool runActions) {
     if ((TimerIsPaused(gv_beaconTimer) == true)) {
         TimerPause(gv_beaconTimer, false);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == true)) {
         TimerPause(gv_beaconTimerEnemy, false);
     }
-
     TriggerExecute(gt_Beaconregioncheck3, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitenters3_Init () {
     gt_Beaconregionunitenters3 = TriggerCreate("gt_Beaconregionunitenters3_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitenters3, null, RegionFromName("Beacon Region 003"), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit leaves 3
 //--------------------------------------------------------------------------------------------------
@@ -2421,37 +2025,30 @@ bool gt_Beaconregionunitleaves3_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 003")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 003"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 003"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     if ((TimerIsPaused(gv_beaconTimer) == false)) {
         TimerPause(gv_beaconTimer, true);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == false)) {
         TimerPause(gv_beaconTimerEnemy, true);
     }
-
     TriggerExecute(gt_Beaconregioncheck3, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitleaves3_Init () {
     gt_Beaconregionunitleaves3 = TriggerCreate("gt_Beaconregionunitleaves3_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitleaves3, null, RegionFromName("Beacon Region 003"), false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit dies 3
 //--------------------------------------------------------------------------------------------------
@@ -2461,29 +2058,24 @@ bool gt_Beaconregionunitdies3_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 003")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 003"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 003"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     TriggerExecute(gt_Beaconregioncheck3, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitdies3_Init () {
     gt_Beaconregionunitdies3 = TriggerCreate("gt_Beaconregionunitdies3_Func");
     TriggerAddEventUnitDied(gt_Beaconregionunitdies3, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - check 3
 //--------------------------------------------------------------------------------------------------
@@ -2493,17 +2085,14 @@ bool gt_Beaconregioncheck3_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 003")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     while ((libCOMI_gf_GameIsOver() == false)) {
         if ((gv___countPlayers > 0)) {
@@ -2522,12 +2111,10 @@ bool gt_Beaconregioncheck3_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregioncheck3_Init () {
     gt_Beaconregioncheck3 = TriggerCreate("gt_Beaconregioncheck3_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - send waves 3
 //--------------------------------------------------------------------------------------------------
@@ -2535,31 +2122,25 @@ bool gt_Beaconregionsendwaves3_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 003")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
-
         if (!(((GameGetMissionTime() > 240.0) || (gv___searchInitiated == true)))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     gv___sendingWaveToObjective = true;
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
@@ -2573,13 +2154,11 @@ bool gt_Beaconregionsendwaves3_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionsendwaves3_Init () {
     gt_Beaconregionsendwaves3 = TriggerCreate("gt_Beaconregionsendwaves3_Func");
     TriggerAddEventTimePeriodic(gt_Beaconregionsendwaves3, 60.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit enters 4
 //--------------------------------------------------------------------------------------------------
@@ -2589,17 +2168,14 @@ bool gt_Beaconregionunitenters4_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 004")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_Beacontimer, true, false);
     TriggerExecute(gt_Beacontimerenemy, true, false);
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 004"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
@@ -2613,21 +2189,17 @@ bool gt_Beaconregionunitenters4_Func (bool testConds, bool runActions) {
     if ((TimerIsPaused(gv_beaconTimer) == true)) {
         TimerPause(gv_beaconTimer, false);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == true)) {
         TimerPause(gv_beaconTimerEnemy, false);
     }
-
     TriggerExecute(gt_Beaconregioncheck4, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitenters4_Init () {
     gt_Beaconregionunitenters4 = TriggerCreate("gt_Beaconregionunitenters4_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitenters4, null, RegionFromName("Beacon Region 004"), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit leaves 4
 //--------------------------------------------------------------------------------------------------
@@ -2637,37 +2209,30 @@ bool gt_Beaconregionunitleaves4_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 004")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 004"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 004"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     if ((TimerIsPaused(gv_beaconTimer) == false)) {
         TimerPause(gv_beaconTimer, true);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == false)) {
         TimerPause(gv_beaconTimerEnemy, true);
     }
-
     TriggerExecute(gt_Beaconregioncheck4, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitleaves4_Init () {
     gt_Beaconregionunitleaves4 = TriggerCreate("gt_Beaconregionunitleaves4_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitleaves4, null, RegionFromName("Beacon Region 004"), false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit dies 4
 //--------------------------------------------------------------------------------------------------
@@ -2677,29 +2242,24 @@ bool gt_Beaconregionunitdies4_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 004")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 004"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 004"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     TriggerExecute(gt_Beaconregioncheck4, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitdies4_Init () {
     gt_Beaconregionunitdies4 = TriggerCreate("gt_Beaconregionunitdies4_Func");
     TriggerAddEventUnitDied(gt_Beaconregionunitdies4, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - check 4
 //--------------------------------------------------------------------------------------------------
@@ -2709,17 +2269,14 @@ bool gt_Beaconregioncheck4_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 004")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     while ((libCOMI_gf_GameIsOver() == false)) {
         if ((gv___countPlayers > 0)) {
@@ -2738,12 +2295,10 @@ bool gt_Beaconregioncheck4_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregioncheck4_Init () {
     gt_Beaconregioncheck4 = TriggerCreate("gt_Beaconregioncheck4_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - send waves 4
 //--------------------------------------------------------------------------------------------------
@@ -2751,31 +2306,25 @@ bool gt_Beaconregionsendwaves4_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 004")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
-
         if (!(((GameGetMissionTime() > 240.0) || (gv___searchInitiated == true)))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     gv___sendingWaveToObjective = true;
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
@@ -2789,13 +2338,11 @@ bool gt_Beaconregionsendwaves4_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionsendwaves4_Init () {
     gt_Beaconregionsendwaves4 = TriggerCreate("gt_Beaconregionsendwaves4_Func");
     TriggerAddEventTimePeriodic(gt_Beaconregionsendwaves4, 60.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit enters 5
 //--------------------------------------------------------------------------------------------------
@@ -2805,17 +2352,14 @@ bool gt_Beaconregionunitenters5_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 005")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_Beacontimer, true, false);
     TriggerExecute(gt_Beacontimerenemy, true, false);
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 005"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
@@ -2829,21 +2373,17 @@ bool gt_Beaconregionunitenters5_Func (bool testConds, bool runActions) {
     if ((TimerIsPaused(gv_beaconTimer) == true)) {
         TimerPause(gv_beaconTimer, false);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == true)) {
         TimerPause(gv_beaconTimerEnemy, false);
     }
-
     TriggerExecute(gt_Beaconregioncheck5, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitenters5_Init () {
     gt_Beaconregionunitenters5 = TriggerCreate("gt_Beaconregionunitenters5_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitenters5, null, RegionFromName("Beacon Region 005"), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit leaves 5
 //--------------------------------------------------------------------------------------------------
@@ -2853,37 +2393,30 @@ bool gt_Beaconregionunitleaves5_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 005")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 005"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 005"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     if ((TimerIsPaused(gv_beaconTimer) == false)) {
         TimerPause(gv_beaconTimer, true);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == false)) {
         TimerPause(gv_beaconTimerEnemy, true);
     }
-
     TriggerExecute(gt_Beaconregioncheck5, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitleaves5_Init () {
     gt_Beaconregionunitleaves5 = TriggerCreate("gt_Beaconregionunitleaves5_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitleaves5, null, RegionFromName("Beacon Region 005"), false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit dies 5
 //--------------------------------------------------------------------------------------------------
@@ -2893,29 +2426,24 @@ bool gt_Beaconregionunitdies5_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 005")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 005"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 005"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     TriggerExecute(gt_Beaconregioncheck5, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitdies5_Init () {
     gt_Beaconregionunitdies5 = TriggerCreate("gt_Beaconregionunitdies5_Func");
     TriggerAddEventUnitDied(gt_Beaconregionunitdies5, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - check 5
 //--------------------------------------------------------------------------------------------------
@@ -2925,17 +2453,14 @@ bool gt_Beaconregioncheck5_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 005")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     while ((libCOMI_gf_GameIsOver() == false)) {
         if ((gv___countPlayers > 0)) {
@@ -2954,12 +2479,10 @@ bool gt_Beaconregioncheck5_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregioncheck5_Init () {
     gt_Beaconregioncheck5 = TriggerCreate("gt_Beaconregioncheck5_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - send waves 5
 //--------------------------------------------------------------------------------------------------
@@ -2967,31 +2490,25 @@ bool gt_Beaconregionsendwaves5_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 005")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
-
         if (!(((GameGetMissionTime() > 240.0) || (gv___searchInitiated == true)))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     gv___sendingWaveToObjective = true;
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
@@ -3005,13 +2522,11 @@ bool gt_Beaconregionsendwaves5_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionsendwaves5_Init () {
     gt_Beaconregionsendwaves5 = TriggerCreate("gt_Beaconregionsendwaves5_Func");
     TriggerAddEventTimePeriodic(gt_Beaconregionsendwaves5, 60.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit enters 6
 //--------------------------------------------------------------------------------------------------
@@ -3021,17 +2536,14 @@ bool gt_Beaconregionunitenters6_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 006")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_Beacontimer, true, false);
     TriggerExecute(gt_Beacontimerenemy, true, false);
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 006"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
@@ -3045,21 +2557,17 @@ bool gt_Beaconregionunitenters6_Func (bool testConds, bool runActions) {
     if ((TimerIsPaused(gv_beaconTimer) == true)) {
         TimerPause(gv_beaconTimer, false);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == true)) {
         TimerPause(gv_beaconTimerEnemy, false);
     }
-
     TriggerExecute(gt_Beaconregioncheck6, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitenters6_Init () {
     gt_Beaconregionunitenters6 = TriggerCreate("gt_Beaconregionunitenters6_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitenters6, null, RegionFromName("Beacon Region 006"), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit leaves 6
 //--------------------------------------------------------------------------------------------------
@@ -3069,37 +2577,30 @@ bool gt_Beaconregionunitleaves6_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 006")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 006"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 006"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     if ((TimerIsPaused(gv_beaconTimer) == false)) {
         TimerPause(gv_beaconTimer, true);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == false)) {
         TimerPause(gv_beaconTimerEnemy, true);
     }
-
     TriggerExecute(gt_Beaconregioncheck6, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitleaves6_Init () {
     gt_Beaconregionunitleaves6 = TriggerCreate("gt_Beaconregionunitleaves6_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitleaves6, null, RegionFromName("Beacon Region 006"), false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit dies 6
 //--------------------------------------------------------------------------------------------------
@@ -3109,29 +2610,24 @@ bool gt_Beaconregionunitdies6_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 006")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 006"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 006"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     TriggerExecute(gt_Beaconregioncheck6, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitdies6_Init () {
     gt_Beaconregionunitdies6 = TriggerCreate("gt_Beaconregionunitdies6_Func");
     TriggerAddEventUnitDied(gt_Beaconregionunitdies6, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - check 6
 //--------------------------------------------------------------------------------------------------
@@ -3141,17 +2637,14 @@ bool gt_Beaconregioncheck6_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 006")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     while ((libCOMI_gf_GameIsOver() == false)) {
         if ((gv___countPlayers > 0)) {
@@ -3170,12 +2663,10 @@ bool gt_Beaconregioncheck6_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregioncheck6_Init () {
     gt_Beaconregioncheck6 = TriggerCreate("gt_Beaconregioncheck6_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - send waves 6
 //--------------------------------------------------------------------------------------------------
@@ -3183,31 +2674,25 @@ bool gt_Beaconregionsendwaves6_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 006")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
-
         if (!(((GameGetMissionTime() > 240.0) || (gv___searchInitiated == true)))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     gv___sendingWaveToObjective = true;
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
@@ -3221,13 +2706,11 @@ bool gt_Beaconregionsendwaves6_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionsendwaves6_Init () {
     gt_Beaconregionsendwaves6 = TriggerCreate("gt_Beaconregionsendwaves6_Func");
     TriggerAddEventTimePeriodic(gt_Beaconregionsendwaves6, 60.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit enters 7
 //--------------------------------------------------------------------------------------------------
@@ -3237,17 +2720,14 @@ bool gt_Beaconregionunitenters7_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 007")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_Beacontimer, true, false);
     TriggerExecute(gt_Beacontimerenemy, true, false);
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 007"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
@@ -3261,21 +2741,17 @@ bool gt_Beaconregionunitenters7_Func (bool testConds, bool runActions) {
     if ((TimerIsPaused(gv_beaconTimer) == true)) {
         TimerPause(gv_beaconTimer, false);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == true)) {
         TimerPause(gv_beaconTimerEnemy, false);
     }
-
     TriggerExecute(gt_Beaconregioncheck7, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitenters7_Init () {
     gt_Beaconregionunitenters7 = TriggerCreate("gt_Beaconregionunitenters7_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitenters7, null, RegionFromName("Beacon Region 007"), true);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit leaves 7
 //--------------------------------------------------------------------------------------------------
@@ -3285,37 +2761,30 @@ bool gt_Beaconregionunitleaves7_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 007")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 007"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 007"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     if ((TimerIsPaused(gv_beaconTimer) == false)) {
         TimerPause(gv_beaconTimer, true);
     }
-
     if ((TimerIsPaused(gv_beaconTimerEnemy) == false)) {
         TimerPause(gv_beaconTimerEnemy, true);
     }
-
     TriggerExecute(gt_Beaconregioncheck7, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitleaves7_Init () {
     gt_Beaconregionunitleaves7 = TriggerCreate("gt_Beaconregionunitleaves7_Func");
     TriggerAddEventUnitRegion(gt_Beaconregionunitleaves7, null, RegionFromName("Beacon Region 007"), false);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - unit dies 7
 //--------------------------------------------------------------------------------------------------
@@ -3325,29 +2794,24 @@ bool gt_Beaconregionunitdies7_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 007")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     gv___countPlayers = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceAlly, RegionFromName("Beacon Region 007"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv___countEnemies = UnitCountAlliance(gv_pLAYER_01_USER, c_unitAllianceEnemy, RegionFromName("Beacon Region 007"), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     TriggerExecute(gt_Beaconregioncheck7, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionunitdies7_Init () {
     gt_Beaconregionunitdies7 = TriggerCreate("gt_Beaconregionunitdies7_Func");
     TriggerAddEventUnitDied(gt_Beaconregionunitdies7, null);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - check 7
 //--------------------------------------------------------------------------------------------------
@@ -3357,17 +2821,14 @@ bool gt_Beaconregioncheck7_Func (bool testConds, bool runActions) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 007")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     while ((libCOMI_gf_GameIsOver() == false)) {
         if ((gv___countPlayers > 0)) {
@@ -3386,12 +2847,10 @@ bool gt_Beaconregioncheck7_Func (bool testConds, bool runActions) {
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregioncheck7_Init () {
     gt_Beaconregioncheck7 = TriggerCreate("gt_Beaconregioncheck7_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Beacon region - send waves 7
 //--------------------------------------------------------------------------------------------------
@@ -3399,31 +2858,25 @@ bool gt_Beaconregionsendwaves7_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libNtve_gf_UnitIsVisibleToPlayer(RegionGetAttachUnit(RegionFromName("Beacon Region 007")), gv_pLAYER_00_NEUTRAL) == true))) {
             return false;
         }
-
         if (!(((GameGetMissionTime() > 240.0) || (gv___searchInitiated == true)))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     gv___sendingWaveToObjective = true;
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
@@ -3437,13 +2890,11 @@ bool gt_Beaconregionsendwaves7_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Beaconregionsendwaves7_Init () {
     gt_Beaconregionsendwaves7 = TriggerCreate("gt_Beaconregionsendwaves7_Func");
     TriggerAddEventTimePeriodic(gt_Beaconregionsendwaves7, 60.0, c_timeGame);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Enemy Attacking - Setup event
 //--------------------------------------------------------------------------------------------------
@@ -3453,17 +2904,14 @@ bool gt_EnemyAttackingSetupevent_Func (bool testConds, bool runActions) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -3474,14 +2922,12 @@ bool gt_EnemyAttackingSetupevent_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_EnemyAttackingSetupevent_Init () {
     gt_EnemyAttackingSetupevent = TriggerCreate("gt_EnemyAttackingSetupevent_Func");
     TriggerAddEventPlayerAIWave(gt_EnemyAttackingSetupevent, gv_pLAYER_03_ENEMY);
     TriggerAddEventPlayerAIWave(gt_EnemyAttackingSetupevent, gv_pLAYER_04_ENEMY);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Enemty Attacking - Send transmission
 //--------------------------------------------------------------------------------------------------
@@ -3491,17 +2937,14 @@ bool gt_EnemtyAttackingSendtransmission_Func (bool testConds, bool runActions) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     if ((gv___sendingWaveToObjective == true)) {
@@ -3515,12 +2958,10 @@ bool gt_EnemtyAttackingSendtransmission_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_EnemtyAttackingSendtransmission_Init () {
     gt_EnemtyAttackingSendtransmission = TriggerCreate("gt_EnemtyAttackingSendtransmission_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Show Ghost Portrait
 //--------------------------------------------------------------------------------------------------
@@ -3529,48 +2970,39 @@ bool gt_ShowGhostPortrait_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     while (true) {
         libNtve_gf_SendTransmissionSimple(TransmissionSource(), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("acAttackWave_Raynor_0212", -1), 0.0, c_transmissionDurationAdd, false);
         Wait(4.0, c_timeReal);
     }
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ShowGhostPortrait_Init () {
     gt_ShowGhostPortrait = TriggerCreate("gt_ShowGhostPortrait_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Defeat Base Dead
 //--------------------------------------------------------------------------------------------------
 bool gt_DefeatBaseDead_Func (bool testConds, bool runActions) {
     // Variable Declarations
     point lv_cameraTarget;
-
     // Variable Initialization
-
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!(((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_01_USER, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true) || (libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_02_USER, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true)))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
     TransmissionClearAll();
@@ -3603,24 +3035,20 @@ bool gt_DefeatBaseDead_Func (bool testConds, bool runActions) {
         CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
         CameraPan(gv_pLAYER_01_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
     }
-
     if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_02_USER)) == false)) {
         CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
         CameraPan(gv_pLAYER_02_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
     }
-
     Wait(4.0, c_timeReal);
     UISetCursorVisible(PlayerGroupAll(), true);
     TriggerExecute(gt_Defeat, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_DefeatBaseDead_Init () {
     gt_DefeatBaseDead = TriggerCreate("gt_DefeatBaseDead_Func");
     TriggerAddEventTimePeriodic(gt_DefeatBaseDead, 1.0, c_timeAI);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Defeat No More Than X areas Raided Failed
 //--------------------------------------------------------------------------------------------------
@@ -3630,21 +3058,17 @@ bool gt_DefeatNoMoreThanXareasRaidedFailed_Func (bool testConds, bool runActions
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
-
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((gv_remnantAreasRaided >= gv_mAX_ALLOWED_RAIDS))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
     TransmissionClearAll();
@@ -3668,13 +3092,11 @@ bool gt_DefeatNoMoreThanXareasRaidedFailed_Func (bool testConds, bool runActions
     TriggerExecute(gt_Defeat, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_DefeatNoMoreThanXareasRaidedFailed_Init () {
     gt_DefeatNoMoreThanXareasRaidedFailed = TriggerCreate("gt_DefeatNoMoreThanXareasRaidedFailed_Func");
     TriggerAddEventTimer(gt_DefeatNoMoreThanXareasRaidedFailed, gv_beaconTimerEnemy);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Victory Primary Objective Complete
 //--------------------------------------------------------------------------------------------------
@@ -3684,27 +3106,22 @@ bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_VictorySequence, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryPrimaryObjectiveComplete_Init () {
     gt_VictoryPrimaryObjectiveComplete = TriggerCreate("gt_VictoryPrimaryObjectiveComplete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Victory Sequence
 //--------------------------------------------------------------------------------------------------
@@ -3714,17 +3131,14 @@ bool gt_VictorySequence_Func (bool testConds, bool runActions) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
             return false;
         }
-
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
     Wait(2.0, c_timeReal);
@@ -3732,12 +3146,10 @@ bool gt_VictorySequence_Func (bool testConds, bool runActions) {
     libCOMI_gf_RunMissionVictorySequence(gt_VictoryFanfareQ);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_VictorySequence_Init () {
     gt_VictorySequence = TriggerCreate("gt_VictorySequence_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Victory Fanfare Q
 //--------------------------------------------------------------------------------------------------
@@ -3746,7 +3158,6 @@ bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TransmissionClearAll();
     TriggerQueueEnter();
     libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
@@ -3771,12 +3182,10 @@ bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
     TriggerQueueExit();
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_VictoryFanfareQ_Init () {
     gt_VictoryFanfareQ = TriggerCreate("gt_VictoryFanfareQ_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Victory
 //--------------------------------------------------------------------------------------------------
@@ -3787,22 +3196,18 @@ bool gt_Victory_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_EndCampaignMission(c_gameOverVictory);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Victory_Init () {
     gt_Victory = TriggerCreate("gt_Victory_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Defeat
 //--------------------------------------------------------------------------------------------------
@@ -3813,22 +3218,18 @@ bool gt_Defeat_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_EndCampaignMission(c_gameOverDefeat);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_Defeat_Init () {
     gt_Defeat = TriggerCreate("gt_Defeat_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Start AI
 //--------------------------------------------------------------------------------------------------
@@ -3837,33 +3238,27 @@ bool gt_StartAI_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     libCOMI_gf_StartCoopAI(gv_pLAYER_03_ENEMY, gv_pLAYER_01_USER);
     libCOMI_gf_StartCoopAI(gv_pLAYER_04_ENEMY, gv_pLAYER_02_USER);
     TriggerExecute(gt_SetupAttackWaveSpawn, true, false);
     TriggerExecute(gt_AIAttackWaves, true, false);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_StartAI_Init () {
     gt_StartAI = TriggerCreate("gt_StartAI_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Setup Attack Wave Spawn
 //--------------------------------------------------------------------------------------------------
 bool gt_SetupAttackWaveSpawn_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_spawnLocationIter;
-
     // Variable Initialization
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_spawnLocationIter += 1;
     gv_attackSpawn[gv_pLAYER_01_USER][lv_spawnLocationIter] = RegionFromId(7);
     lv_spawnLocationIter += 1;
@@ -3886,12 +3281,10 @@ bool gt_SetupAttackWaveSpawn_Func (bool testConds, bool runActions) {
     gv_attackSpawn[gv_pLAYER_02_USER][lv_spawnLocationIter] = RegionFromId(14);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_SetupAttackWaveSpawn_Init () {
     gt_SetupAttackWaveSpawn = TriggerCreate("gt_SetupAttackWaveSpawn_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: AI Attack Waves
 //--------------------------------------------------------------------------------------------------
@@ -3900,7 +3293,6 @@ bool gt_AIAttackWaves_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     gf_RunAttackWaveatMissionTime(gt_AttackWave01, (2.0 * 60.0));
     gf_RunAttackWaveatMissionTime(gt_AttackWave02, (5.0 * 60.0));
     gf_RunAttackWaveatMissionTime(gt_AttackWave03, (8.0 * 60.0));
@@ -3911,12 +3303,10 @@ bool gt_AIAttackWaves_Func (bool testConds, bool runActions) {
     gf_RunAttackWaveatMissionTime(gt_AttackWave07, (22.0 * 60.0));
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AIAttackWaves_Init () {
     gt_AIAttackWaves = TriggerCreate("gt_AIAttackWaves_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Attack Wave 01
 //--------------------------------------------------------------------------------------------------
@@ -3924,35 +3314,28 @@ bool gt_AttackWave01_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_03_ENEMY) != 1))) {
             return false;
         }
-
         if (!((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_03_ENEMY) != 2))) {
             return false;
         }
-
         if (!((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY) != 1))) {
             return false;
         }
-
         if (!((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_04_ENEMY) != 2))) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
     AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
@@ -3961,12 +3344,10 @@ bool gt_AttackWave01_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AttackWave01_Init () {
     gt_AttackWave01 = TriggerCreate("gt_AttackWave01_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Attack Wave 02
 //--------------------------------------------------------------------------------------------------
@@ -3974,16 +3355,13 @@ bool gt_AttackWave02_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__2Smaller;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__2EarlyMid;
     AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
@@ -3992,12 +3370,10 @@ bool gt_AttackWave02_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AttackWave02_Init () {
     gt_AttackWave02 = TriggerCreate("gt_AttackWave02_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Attack Wave 03
 //--------------------------------------------------------------------------------------------------
@@ -4008,16 +3384,13 @@ bool gt_AttackWave03_Func (bool testConds, bool runActions) {
     int lv_numberOfStructures_ExpLeft;
     int lv_numberOfStructures_ExpRight;
     point lv_attackPathWaypoint;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__3Small;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__3Mid;
     PlayerGroupLoopBegin(libCOMI_gf_HumanPlayers());
@@ -4055,12 +3428,10 @@ bool gt_AttackWave03_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AttackWave03_Init () {
     gt_AttackWave03 = TriggerCreate("gt_AttackWave03_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Attack Wave 04
 //--------------------------------------------------------------------------------------------------
@@ -4070,16 +3441,13 @@ bool gt_AttackWave04_Func (bool testConds, bool runActions) {
     int lv_techBucket;
     int lv_attackingAI;
     int lv_defendingPlayer;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__4Medium;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__4LateMid;
     AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
@@ -4088,12 +3456,10 @@ bool gt_AttackWave04_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AttackWave04_Init () {
     gt_AttackWave04 = TriggerCreate("gt_AttackWave04_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Attack Wave 05
 //--------------------------------------------------------------------------------------------------
@@ -4104,16 +3470,13 @@ bool gt_AttackWave05_Func (bool testConds, bool runActions) {
     int lv_numberOfStructures_ExpLeft;
     int lv_numberOfStructures_ExpRight;
     point lv_attackPathWaypoint;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__1Smallest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__1Early;
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__5Large;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets__5Late;
     lv_attackPathWaypoint = gv_attackWaveA_Wave05Path;
@@ -4124,12 +3487,10 @@ bool gt_AttackWave05_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AttackWave05_Init () {
     gt_AttackWave05 = TriggerCreate("gt_AttackWave05_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Attack Wave 06
 //--------------------------------------------------------------------------------------------------
@@ -4137,16 +3498,13 @@ bool gt_AttackWave06_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__6Larger;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel06;
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__6Larger;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel06;
     AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
@@ -4155,12 +3513,10 @@ bool gt_AttackWave06_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AttackWave06_Init () {
     gt_AttackWave06 = TriggerCreate("gt_AttackWave06_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Attack Wave 07
 //--------------------------------------------------------------------------------------------------
@@ -4168,16 +3524,13 @@ bool gt_AttackWave07_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_resourceBucket;
     int lv_techBucket;
-
     // Variable Initialization
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__7Largest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel07;
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     lv_resourceBucket = libCOMI_ge_CoopAIAttackWaveBuckets__7Largest;
     lv_techBucket = libCOMI_ge_CoopAITechLevelBuckets_TechLevel07;
     AIAttackWaveSetTargetPoint(gv_pLAYER_03_ENEMY, PointFromId(249));
@@ -4186,12 +3539,10 @@ bool gt_AttackWave07_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_AttackWave07_Init () {
     gt_AttackWave07 = TriggerCreate("gt_AttackWave07_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective - RemnantAreas - Create
 //--------------------------------------------------------------------------------------------------
@@ -4202,12 +3553,10 @@ bool gt_ObjectiveRemnantAreasCreate_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_CreateObjectiveCampaign("RemnantAreas");
     libCOMI_gf_SetObjectiveRequiredCountCampaign("RemnantAreas", gv_remnantAreasCount);
@@ -4217,12 +3566,10 @@ bool gt_ObjectiveRemnantAreasCreate_Func (bool testConds, bool runActions) {
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveRemnantAreasCreate_Init () {
     gt_ObjectiveRemnantAreasCreate = TriggerCreate("gt_ObjectiveRemnantAreasCreate_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective - RemnantAreas - Update
 //--------------------------------------------------------------------------------------------------
@@ -4231,19 +3578,16 @@ bool gt_ObjectiveRemnantAreasUpdate_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_ObjectiveRemnantAreasCreate, true, false);
     libCOMI_gf_SetMissionObjectiveProgress("RemnantAreas", gv_remnantAreasCount);
     TextExpressionSetToken("Param/Expression/7794940D", "StructureCount", IntToText(gv_remnantAreasCount));
     ObjectiveSetName(gv_objectiveRemnantAreas, TextExpressionAssemble("Param/Expression/7794940D"));
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveRemnantAreasUpdate_Init () {
     gt_ObjectiveRemnantAreasUpdate = TriggerCreate("gt_ObjectiveRemnantAreasUpdate_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective - RemnantAreas - Complete
 //--------------------------------------------------------------------------------------------------
@@ -4254,24 +3598,20 @@ bool gt_ObjectiveRemnantAreasComplete_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_ObjectiveRemnantAreasCreate, true, false);
     ObjectiveSetState(gv_objectiveRemnantAreas, c_objectiveStateCompleted);
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveRemnantAreasComplete_Init () {
     gt_ObjectiveRemnantAreasComplete = TriggerCreate("gt_ObjectiveRemnantAreasComplete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective - RemnantAreas - Failed
 //--------------------------------------------------------------------------------------------------
@@ -4282,24 +3622,20 @@ bool gt_ObjectiveRemnantAreasFailed_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_ObjectiveRemnantAreasCreate, true, false);
     ObjectiveSetState(gv_objectiveRemnantAreas, c_objectiveStateFailed);
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveRemnantAreasFailed_Init () {
     gt_ObjectiveRemnantAreasFailed = TriggerCreate("gt_ObjectiveRemnantAreasFailed_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective - NoMoreThanRaided - Create
 //--------------------------------------------------------------------------------------------------
@@ -4310,12 +3646,10 @@ bool gt_ObjectiveNoMoreThanRaidedCreate_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_CreateObjectiveCampaign("RemnantAreas2");
     libCOMI_gf_SetObjectiveRequiredCountCampaign("RemnantAreas2", 1);
@@ -4325,12 +3659,10 @@ bool gt_ObjectiveNoMoreThanRaidedCreate_Func (bool testConds, bool runActions) {
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveNoMoreThanRaidedCreate_Init () {
     gt_ObjectiveNoMoreThanRaidedCreate = TriggerCreate("gt_ObjectiveNoMoreThanRaidedCreate_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective - NoMoreThanRaided - Update
 //--------------------------------------------------------------------------------------------------
@@ -4339,7 +3671,6 @@ bool gt_ObjectiveNoMoreThanRaidedUpdate_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_ObjectiveRemnantAreasCreate, true, false);
     libCOMI_gf_SetMissionObjectiveProgress("RemnantAreas2", gv_remnantAreasRaided);
     TextExpressionSetToken("Param/Expression/2C14649C", "MaxRaidAllowed", IntToText(gv_mAX_ALLOWED_RAIDS));
@@ -4347,12 +3678,10 @@ bool gt_ObjectiveNoMoreThanRaidedUpdate_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objectiveNoMoreThanRaided, TextExpressionAssemble("Param/Expression/2C14649C"));
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveNoMoreThanRaidedUpdate_Init () {
     gt_ObjectiveNoMoreThanRaidedUpdate = TriggerCreate("gt_ObjectiveNoMoreThanRaidedUpdate_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective - NoMoreThanRaided - Complete
 //--------------------------------------------------------------------------------------------------
@@ -4363,24 +3692,20 @@ bool gt_ObjectiveNoMoreThanRaidedComplete_Func (bool testConds, bool runActions)
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_ObjectiveNoMoreThanRaidedCreate, true, false);
     ObjectiveSetState(gv_objectiveNoMoreThanRaided, c_objectiveStateCompleted);
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveNoMoreThanRaidedComplete_Init () {
     gt_ObjectiveNoMoreThanRaidedComplete = TriggerCreate("gt_ObjectiveNoMoreThanRaidedComplete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective - NoMoreThanRaided - Failed
 //--------------------------------------------------------------------------------------------------
@@ -4391,24 +3716,20 @@ bool gt_ObjectiveNoMoreThanRaidedFailed_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_ObjectiveNoMoreThanRaidedCreate, true, false);
     ObjectiveSetState(gv_objectiveNoMoreThanRaided, c_objectiveStateFailed);
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_ObjectiveNoMoreThanRaidedFailed_Init () {
     gt_ObjectiveNoMoreThanRaidedFailed = TriggerCreate("gt_ObjectiveNoMoreThanRaidedFailed_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus - Destroy Sensor Tower - Create
 //--------------------------------------------------------------------------------------------------
@@ -4419,12 +3740,10 @@ bool gt_BonusDestroySensorTowerCreate_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gf_CreateObjectiveCampaign("PlaceholderSecondary2");
     gv_bonusDestroySensorTower = ObjectiveLastCreated();
@@ -4446,12 +3765,10 @@ bool gt_BonusDestroySensorTowerCreate_Func (bool testConds, bool runActions) {
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusDestroySensorTowerCreate_Init () {
     gt_BonusDestroySensorTowerCreate = TriggerCreate("gt_BonusDestroySensorTowerCreate_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus - Destroy Sensor Tower - Complete
 //--------------------------------------------------------------------------------------------------
@@ -4462,24 +3779,20 @@ bool gt_BonusDestroySensorTowerComplete_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_BonusDestroySensorTowerCreate, true, false);
     ObjectiveSetState(gv_bonusDestroySensorTower, c_objectiveStateCompleted);
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusDestroySensorTowerComplete_Init () {
     gt_BonusDestroySensorTowerComplete = TriggerCreate("gt_BonusDestroySensorTowerComplete_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus - Destroy Sensor Tower - Update
 //--------------------------------------------------------------------------------------------------
@@ -4488,17 +3801,14 @@ bool gt_BonusDestroySensorTowerUpdate_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     TriggerExecute(gt_BonusDestroySensorTowerCreate, true, false);
     ObjectiveSetName(gv_bonusDestroySensorTower, StringExternal("Param/Value/66C3D570"));
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusDestroySensorTowerUpdate_Init () {
     gt_BonusDestroySensorTowerUpdate = TriggerCreate("gt_BonusDestroySensorTowerUpdate_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Bonus - Destroy Sensor Tower - Failed
 //--------------------------------------------------------------------------------------------------
@@ -4509,24 +3819,20 @@ bool gt_BonusDestroySensorTowerFailed_Func (bool testConds, bool runActions) {
             return false;
         }
     }
-
     // Actions
     if (!runActions) {
         return true;
     }
-
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_BonusDestroySensorTowerCreate, true, false);
     ObjectiveSetState(gv_bonusDestroySensorTower, c_objectiveStateFailed);
     Wait(libCOMI_gv_campaignObjectiveDelay, c_timeReal);
     return true;
 }
-
 //--------------------------------------------------------------------------------------------------
 void gt_BonusDestroySensorTowerFailed_Init () {
     gt_BonusDestroySensorTowerFailed = TriggerCreate("gt_BonusDestroySensorTowerFailed_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
@@ -4616,7 +3922,6 @@ void InitTriggers () {
     gt_BonusDestroySensorTowerUpdate_Init();
     gt_BonusDestroySensorTowerFailed_Init();
 }
-
 //--------------------------------------------------------------------------------------------------
 // Map Initialization
 //--------------------------------------------------------------------------------------------------

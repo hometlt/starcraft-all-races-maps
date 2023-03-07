@@ -8,14 +8,14 @@
 include "TriggerLibs/natives"
 
 //--------------------------------------------------------------------------------------------------
-// Custom Script: Untitled Custom Script 001
+// Custom Script: Triggers
 //--------------------------------------------------------------------------------------------------
 //==================================================================================================
-// 
+//
 // Generated AI Script
-// 
+//
 // AI Name: Hybrid Wave AI
-// 
+//
 //==================================================================================================
 include "TriggerLibs/natives"
 include "TriggerLibs/AI"
@@ -27,7 +27,7 @@ point[17] aiF917F4D7_defGather;
 string[17] aiF917F4D7_customData;
 wave[17] aiF917F4D7_lastWave;
 //--------------------------------------------------------------------------------------------------
-// Attack Wave: 
+// Attack Wave:
 //--------------------------------------------------------------------------------------------------
 bool[17] aiF917F4D7_wave1_enabled;
 wave[17] aiF917F4D7_wave1_lastWave;
@@ -113,7 +113,7 @@ void aiF917F4D7_wave1_run (int p, playergroup target, bool wait) {
     TriggerExecute(aiF917F4D7_wave1_trigger, false, wait);
 }
 //--------------------------------------------------------------------------------------------------
-// Attack Wave: 
+// Attack Wave:
 //--------------------------------------------------------------------------------------------------
 bool[17] aiF917F4D7_wave2_enabled;
 wave[17] aiF917F4D7_wave2_lastWave;
@@ -205,7 +205,7 @@ void aiF917F4D7_wave2_run (int p, playergroup target, bool wait) {
     TriggerExecute(aiF917F4D7_wave2_trigger, false, wait);
 }
 //--------------------------------------------------------------------------------------------------
-// Attack Wave: 
+// Attack Wave:
 //--------------------------------------------------------------------------------------------------
 bool[17] aiF917F4D7_wave3_enabled;
 wave[17] aiF917F4D7_wave3_lastWave;
@@ -297,7 +297,7 @@ void aiF917F4D7_wave3_run (int p, playergroup target, bool wait) {
     TriggerExecute(aiF917F4D7_wave3_trigger, false, wait);
 }
 //--------------------------------------------------------------------------------------------------
-// Attack Wave: 
+// Attack Wave:
 //--------------------------------------------------------------------------------------------------
 bool[17] aiF917F4D7_wave4_enabled;
 unitgroup[17] aiF917F4D7_wave4_lastUnits;
@@ -428,7 +428,7 @@ void aiF917F4D7_wave4_run (int p, playergroup target, bool wait) {
     TriggerExecute(aiF917F4D7_wave4_trigger, false, wait);
 }
 //--------------------------------------------------------------------------------------------------
-// Attack Wave: 
+// Attack Wave:
 //--------------------------------------------------------------------------------------------------
 bool[17] aiF917F4D7_wave5_enabled;
 wave[17] aiF917F4D7_wave5_lastWave;
@@ -529,7 +529,7 @@ void aiF917F4D7_wave5_run (int p, playergroup target, bool wait) {
     TriggerExecute(aiF917F4D7_wave5_trigger, false, wait);
 }
 //--------------------------------------------------------------------------------------------------
-// Attack Wave: 
+// Attack Wave:
 //--------------------------------------------------------------------------------------------------
 bool[17] aiF917F4D7_wave6_enabled;
 wave[17] aiF917F4D7_wave6_lastWave;
@@ -621,7 +621,7 @@ void aiF917F4D7_wave6_run (int p, playergroup target, bool wait) {
     TriggerExecute(aiF917F4D7_wave6_trigger, false, wait);
 }
 //--------------------------------------------------------------------------------------------------
-// Attack Wave: 
+// Attack Wave:
 //--------------------------------------------------------------------------------------------------
 bool[17] aiF917F4D7_wave7_enabled;
 wave[17] aiF917F4D7_wave7_lastWave;
@@ -885,11 +885,11 @@ void aiF917F4D7_start (int p) {
     AICampaignStart(p);
 }
 //==================================================================================================
-// 
+//
 // Generated Map Script
-// 
+//
 // Name:   Construction Yard
-// 
+//
 //==================================================================================================
 include "TriggerLibs/NativeLib"
 include "LibCOMI"
@@ -903,10 +903,11 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
+int gv_pLAYER_01_USER = 1;
+int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 6;
+const int gv_pLAYER_04_ENEMY = 7;
+const int gv_pLAYER_05_COLONISTS = 8;
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
@@ -970,7 +971,15 @@ int gv_objectiveBuildUp6Camps;
 int gv_objectiveDoNotLoose2ormore;
 int gv_objectiveSecondaryObjectiveScience;
 int gv_objectiveSecondaryObjectiveWar;
+
+timer gv_launchTrainTimer;
+timer gv_launchTrainTimer2;
+
+
+
 void InitGlobals () {
+    gv_launchTrainTimer = TimerCreate();
+    gv_launchTrainTimer2 = TimerCreate();
     gv_enemyGroup = PlayerGroupEmpty();
     gv_allEnemyStructures = UnitGroupEmpty();
     gv_colonistsOnRoute = UnitGroupEmpty();
@@ -1271,7 +1280,7 @@ wave cai_wave_createdWave (int w, int p) {
 void cai_startall () {
     AICampaignStart(3);
     AICampaignStart(4);
-    AICampaignStart(5);
+    AICampaignStart(gv_pLAYER_05_COLONISTS);
 }
 //--------------------------------------------------------------------------------------------------
 void cai_runall () {
@@ -1307,7 +1316,7 @@ void gf_CreateAPC () {
     int autoB4667391_n;
     int autoB4667391_i;
     // Implementation
-    libNtve_gf_UnitCreateFacingPoint(1, "ColonistTransport", 0, 5, PointFromId(1583439995), PointFromId(1156133171));
+    libNtve_gf_UnitCreateFacingPoint(1, "ColonistTransport", 0, gv_pLAYER_05_COLONISTS, PointFromId(1583439995), PointFromId(1156133171));
     gv_aPCUnit = UnitLastCreated();
     libNtve_gf_MakeUnitInvulnerable(gv_aPCUnit, true);
     libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingSquare", UnitGetPosition(gv_aPCUnit), ColorWithAlpha(100.00, 100.00, 50.20, 0.00), 180.0);
@@ -1323,21 +1332,21 @@ void gf_CreateAPC () {
     autoB4667391_n = 6;
     for (autoB4667391_i = 1; autoB4667391_i <= autoB4667391_n; autoB4667391_i += 1) {
         if ((RandomFixed(0.0, 100.0) >= 55.0)) {
-            libNtve_gf_UnitCreateFacingPoint(1, "Colonist", 0, 5, PointFromId(1583439995), UnitGetPosition(gv_aPCUnit));
+            libNtve_gf_UnitCreateFacingPoint(1, "Colonist", 0, gv_pLAYER_05_COLONISTS, PointFromId(1583439995), UnitGetPosition(gv_aPCUnit));
             UnitGroupAdd(gv_colonistsOnRoute, UnitLastCreated());
         }
         else {
-            libNtve_gf_UnitCreateFacingPoint(1, "ColonistFemale", 0, 5, PointFromId(1583439995), UnitGetPosition(gv_aPCUnit));
+            libNtve_gf_UnitCreateFacingPoint(1, "ColonistFemale", 0, gv_pLAYER_05_COLONISTS, PointFromId(1583439995), UnitGetPosition(gv_aPCUnit));
             UnitGroupAdd(gv_colonistsOnRoute, UnitLastCreated());
         }
     }
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroupSearch("Colonist", 5, PointFromId(1583439995), 10.0, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroupSearch("Colonist", gv_pLAYER_05_COLONISTS, PointFromId(1583439995), 10.0, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, gv_aPCUnit), c_orderQueueReplace);
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroupSearch("ColonistFemale", 5, PointFromId(1583439995), 10.0, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroupSearch("ColonistFemale", gv_pLAYER_05_COLONISTS, PointFromId(1583439995), 10.0, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, gv_aPCUnit), c_orderQueueReplace);
     }
@@ -1354,85 +1363,85 @@ void gf_SecondaryObjectiveConstruction (region lp_region, point lp_turretPoint, 
     // Variable Initialization
     // Implementation
     lv_sCVUnit = UnitFromId(1399152966);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bunker1Point);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunker1Point);
     Wait(2.0, c_timeGame);
     UnitKill(UnitLastCreated());
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_bunker1Point);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunker1Point);
     lv_bunker1Unit = UnitLastCreated();
     UnitSetState(lv_bunker1Unit, c_unitStateTargetable, false);
     UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_bunker1Unit), c_orderQueueReplace);
-    while (!((UnitIsAlive(lv_sCVUnit) == true) && (UnitFilterMatch(lv_bunker1Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false))) {
+    while (!((UnitIsAlive(lv_sCVUnit) == true) && (UnitFilterMatch(lv_bunker1Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false))) {
         Wait(1.0, c_timeGame);
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_cCCreatePoint);
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_cCCreatePoint);
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, lp_cCCreatePoint);
-    UnitGroupLoopBegin(UnitGroup("Marine", 5, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_cCCreatePoint);
+    UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunker1Unit), c_orderQueueAddToEnd);
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bunker2Point);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunker2Point);
     Wait(2.0, c_timeGame);
     UnitKill(UnitLastCreated());
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_bunker2Point);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunker2Point);
     lv_bunker2Unit = UnitLastCreated();
     UnitSetState(lv_bunker2Unit, c_unitStateTargetable, false);
     UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_bunker2Unit), c_orderQueueReplace);
-    while (!((UnitIsAlive(lv_sCVUnit) == true) && (UnitFilterMatch(lv_bunker2Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false))) {
+    while (!((UnitIsAlive(lv_sCVUnit) == true) && (UnitFilterMatch(lv_bunker2Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false))) {
         Wait(1.0, c_timeGame);
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_cCCreatePoint);
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_cCCreatePoint);
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, lp_cCCreatePoint);
-    UnitGroupLoopBegin(UnitGroup("Marine", 5, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_cCCreatePoint);
+    UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunker2Unit), c_orderQueueAddToEnd);
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_turretPoint);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turretPoint);
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_turretPoint);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turretPoint);
     lv_turretUnit = UnitLastCreated();
     UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_turretUnit), c_orderQueueAddToEnd);
-    while (!((UnitIsAlive(lv_sCVUnit) == true) && (UnitFilterMatch(lv_turretUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))) {
+    while (!((UnitIsAlive(lv_sCVUnit) == true) && (UnitFilterMatch(lv_turretUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))) {
         Wait(1.0, c_timeGame);
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_siegeTankPoint);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_siegeTankPoint);
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "SiegeTankSieged", c_unitCreateIgnorePlacement, 5, lp_siegeTankPoint);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_cCCreatePoint);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "SiegeTankSieged", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_siegeTankPoint);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_cCCreatePoint);
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_region, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "CommandCenter", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_cCCreatePoint);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "CommandCenter", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_cCCreatePoint);
     lv_cCUnit = UnitLastCreated();
     UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_cCUnit), c_orderQueueAddToEnd);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement, 5, RegionGetCenter(lp_region));
-    while (!((UnitIsAlive(lv_sCVUnit) == true) && (UnitFilterMatch(lv_cCUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false))) {
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, RegionGetCenter(lp_region));
+    while (!((UnitIsAlive(lv_sCVUnit) == true) && (UnitFilterMatch(lv_cCUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false))) {
         Wait(1.0, c_timeGame);
     }
     UnitIssueOrder(lv_cCUnit, Order(AbilityCommand("UpgradeToPlanetaryFortress", 0)), c_orderQueueReplace);
@@ -1504,12 +1513,12 @@ void gf_APCisinCampConstrucion (region lp_campRegion, int lp_aIPlayerID, int lp_
                 for (auto67757219_i = 1; auto67757219_i <= auto67757219_n; auto67757219_i += 1) {
                     UnitGroupLoopBegin(gv_colonistsOnRoute);
                     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                        lv_randomHut = UnitGroupRandomUnit(UnitGroup("NovaColonistHut", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
+                        lv_randomHut = UnitGroupRandomUnit(UnitGroup("NovaColonistHut",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
                         UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_randomHut), c_orderQueueAddToEnd);
                     }
                     UnitGroupLoopEnd();
                 }
-                UnitGroupLoopBegin(UnitGroup(null, 5, lp_campRegion, UnitFilter((1 << c_targetFilterStructure), (1 << (c_targetFilterInvulnerable - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup(null,gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter((1 << c_targetFilterStructure), (1 << (c_targetFilterInvulnerable - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     libNtve_gf_MakeUnitInvulnerable(UnitGroupLoopCurrent(), false);
                 }
@@ -1524,76 +1533,76 @@ void gf_APCisinCampConstrucion (region lp_campRegion, int lp_aIPlayerID, int lp_
                 gv_colonistsOnRoute = UnitGroupEmpty();
                 lv_sCVUnit = UnitFromId(1063682192);
                 TriggerExecute(lp_attackWaveTrigger, true, false);
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_supplyPoint1);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint1);
                 Wait(2.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_supplyPoint1);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint1);
                 lv_supply1Unit = UnitLastCreated();
                 libNtve_gf_KillModel(lv_supply1Model);
                 UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                 UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
                 UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_supply1Unit), c_orderQueueReplace);
-                while (!(((UnitIsAlive(lv_supply1Unit) == false) || ((UnitIsAlive(lv_supply1Unit) == true) && (UnitFilterMatch(lv_supply1Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))))) {
+                while (!(((UnitIsAlive(lv_supply1Unit) == false) || ((UnitIsAlive(lv_supply1Unit) == true) && (UnitFilterMatch(lv_supply1Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))))) {
                     Wait(1.0, c_timeGame);
                 }
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_supplyPoint2);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint2);
                 Wait(2.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_supplyPoint2);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint2);
                 lv_supply2Unit = UnitLastCreated();
                 libNtve_gf_KillModel(lv_supply2Model);
                 UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                 UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
                 UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_supply2Unit), c_orderQueueReplace);
-                while (!(((UnitIsAlive(lv_supply2Unit) == false) || ((UnitIsAlive(lv_supply2Unit) == true) && (UnitFilterMatch(lv_supply2Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))))) {
+                while (!(((UnitIsAlive(lv_supply2Unit) == false) || ((UnitIsAlive(lv_supply2Unit) == true) && (UnitFilterMatch(lv_supply2Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))))) {
                     Wait(1.0, c_timeGame);
                 }
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
                 Wait(2.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
                 lv_bunkerUnit = UnitLastCreated();
                 libNtve_gf_KillModel(lv_bunkerModel);
                 UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                 UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
                 UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
-                libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
+                libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
                 Wait(2.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitKill(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
-                while (!(((UnitIsAlive(lv_bunkerUnit) == false) || ((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))))) {
+                libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
+                while (!(((UnitIsAlive(lv_bunkerUnit) == false) || ((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))))) {
                     Wait(1.0, c_timeGame);
                 }
-                UnitGroupLoopBegin(UnitGroup("Marine", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueAddToEnd);
                 }
                 UnitGroupLoopEnd();
                 if ((lp_turretYesNo == true)) {
-                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_turretPoint);
+                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turretPoint);
                     Wait(2.0, c_timeGame);
-                    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                         UnitRemove(UnitGroupLoopCurrent());
                     }
                     UnitGroupLoopEnd();
-                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_turretPoint);
+                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turretPoint);
                     lv_turretUnit = UnitLastCreated();
                     libNtve_gf_KillModel(lv_turretModel);
                     UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
@@ -1602,19 +1611,19 @@ void gf_APCisinCampConstrucion (region lp_campRegion, int lp_aIPlayerID, int lp_
                 }
                 if ((lp_customStructureYesNo == true)) {
                     if ((lp_turretYesNo == true)) {
-                        while (!(((UnitIsAlive(lv_turretUnit) == false) || ((UnitIsAlive(lv_turretUnit) == true) && (UnitFilterMatch(lv_turretUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))))) {
+                        while (!(((UnitIsAlive(lv_turretUnit) == false) || ((UnitIsAlive(lv_turretUnit) == true) && (UnitFilterMatch(lv_turretUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))))) {
                             Wait(1.0, c_timeGame);
                         }
                         auto14A999F9_val = lp_customStructureType;
                         if (auto14A999F9_val == "Barracks") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             Wait(3.0, c_timeGame);
-                            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                                 UnitRemove(UnitGroupLoopCurrent());
                             }
                             UnitGroupLoopEnd();
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             libNtve_gf_KillModel(lv_customStructureModel);
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
@@ -1622,14 +1631,14 @@ void gf_APCisinCampConstrucion (region lp_campRegion, int lp_aIPlayerID, int lp_
                             UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_factoryUnit), c_orderQueueAddToEnd);
                         }
                         else if (auto14A999F9_val == "Factory") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             Wait(3.0, c_timeGame);
-                            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                                 UnitRemove(UnitGroupLoopCurrent());
                             }
                             UnitGroupLoopEnd();
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             libNtve_gf_KillModel(lv_customStructureModel);
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
@@ -1640,12 +1649,12 @@ void gf_APCisinCampConstrucion (region lp_campRegion, int lp_aIPlayerID, int lp_
                         }
                     }
                     else {
-                        while (!((UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))) {
+                        while (!((UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))) {
                             Wait(1.0, c_timeGame);
                         }
                         auto2C1E0D39_val = lp_customStructureType;
                         if (auto2C1E0D39_val == "Barracks") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             libNtve_gf_KillModel(lv_customStructureModel);
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
@@ -1653,7 +1662,7 @@ void gf_APCisinCampConstrucion (region lp_campRegion, int lp_aIPlayerID, int lp_
                             UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_factoryUnit), c_orderQueueAddToEnd);
                         }
                         else if (auto2C1E0D39_val == "Factory") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             libNtve_gf_KillModel(lv_customStructureModel);
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
@@ -1665,15 +1674,15 @@ void gf_APCisinCampConstrucion (region lp_campRegion, int lp_aIPlayerID, int lp_
                     }
                 }
                 lv_sCVUnit = null;
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
                 Wait(2.0, c_timeGame);
                 UnitKill(UnitLastCreated());
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
                 gv_campConstructionCompleted = 1;
                 TriggerExecute(gt_HansonCampCaptured, true, false);
                 TriggerSendEvent(lp_genericEvent);
@@ -1734,104 +1743,104 @@ void gf_BonusCampBuild (bool lp_bigCampYesNo, bool lp_buildTurretYesNo, bool lp_
         lv_turretModel2 = libNtve_gf_ActorLastCreated();
         libNtve_gf_CreateModelAtPoint("CommandCenterPlacement", lp_planetary);
         lv_d0A1D0A1Model = libNtve_gf_ActorLastCreated();
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
         Wait(2.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitRemove(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
         lv_bunkerUnit = UnitLastCreated();
         libNtve_gf_KillModel(lv_bunkerModel);
         UnitSetState(lv_bunkerUnit, c_unitStateTargetable, false);
         UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
-        while (!(((UnitIsAlive(lv_bunkerUnit) == false) || ((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_bonusSCVUnit) == true))))) {
+        while (!(((UnitIsAlive(lv_bunkerUnit) == false) || ((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_bonusSCVUnit) == true))))) {
             Wait(1.0, c_timeGame);
         }
-        libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bonusMarines);
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bonusMarines);
         Wait(2.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitKill(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, lp_bonusMarines);
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bonusMarines);
         Wait(1.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("Marine", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bunkerPoint2);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint2);
         Wait(2.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitRemove(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_bunkerPoint2);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint2);
         lv_bunkerUnit = UnitLastCreated();
         libNtve_gf_KillModel(lv_bunkerModel2);
         UnitSetState(lv_bunkerUnit, c_unitStateTargetable, false);
         UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
-        while (!(((UnitIsAlive(lv_bunkerUnit) == false) || ((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_bonusSCVUnit) == true))))) {
+        while (!(((UnitIsAlive(lv_bunkerUnit) == false) || ((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_bonusSCVUnit) == true))))) {
             Wait(1.0, c_timeGame);
         }
-        libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bonusMarines);
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bonusMarines);
         Wait(2.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitKill(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, lp_bonusMarines);
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bonusMarines);
         Wait(1.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("Marine", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_turret);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret);
         Wait(2.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitRemove(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_turret);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret);
         lv_turretUnit = UnitLastCreated();
         libNtve_gf_KillModel(lv_turretModel);
         UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
         UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_turretUnit), c_orderQueueReplace);
-        while (!(((UnitIsAlive(lv_turretUnit) == false) || ((UnitIsAlive(lv_turretUnit) == true) && (UnitFilterMatch(lv_turretUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_bonusSCVUnit) == true))))) {
+        while (!(((UnitIsAlive(lv_turretUnit) == false) || ((UnitIsAlive(lv_turretUnit) == true) && (UnitFilterMatch(lv_turretUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_bonusSCVUnit) == true))))) {
             Wait(1.0, c_timeGame);
         }
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_turret2);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret2);
         Wait(2.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitRemove(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_turret2);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret2);
         lv_turretUnit = UnitLastCreated();
         libNtve_gf_KillModel(lv_turretModel2);
         UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
         UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_turretUnit), c_orderQueueReplace);
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_planetary);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_planetary);
         Wait(2.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitRemove(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "CommandCenter", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_planetary);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "CommandCenter", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_planetary);
         lv_cCUnit = UnitLastCreated();
         libNtve_gf_KillModel(lv_d0A1D0A1Model);
         UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
         UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_cCUnit), c_orderQueueReplace);
-        while (!(((UnitIsAlive(lv_cCUnit) == false) || ((UnitIsAlive(lv_cCUnit) == true) && (UnitFilterMatch(lv_cCUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false))))) {
+        while (!(((UnitIsAlive(lv_cCUnit) == false) || ((UnitIsAlive(lv_cCUnit) == true) && (UnitFilterMatch(lv_cCUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false))))) {
             Wait(1.0, c_timeGame);
         }
         if ((UnitIsAlive(lv_cCUnit) == true)) {
@@ -1857,106 +1866,106 @@ void gf_BonusCampBuild (bool lp_bigCampYesNo, bool lp_buildTurretYesNo, bool lp_
             Wait(1.0, c_timeGame);
         }
         if ((lp_supplyDepotsYesNo == true)) {
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_supplyPoint1);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint1);
             Wait(2.0, c_timeGame);
-            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                 UnitRemove(UnitGroupLoopCurrent());
             }
             UnitGroupLoopEnd();
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_supplyPoint1);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint1);
             lv_supply1Unit = UnitLastCreated();
             libNtve_gf_KillModel(lv_supply1Model);
             UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
             UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_supply1Unit), c_orderQueueReplace);
-            while (!(((UnitIsAlive(lv_supply1Unit) == false) || ((UnitIsAlive(lv_supply1Unit) == true) && (UnitFilterMatch(lv_supply1Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_bonusSCVUnit) == true))))) {
+            while (!(((UnitIsAlive(lv_supply1Unit) == false) || ((UnitIsAlive(lv_supply1Unit) == true) && (UnitFilterMatch(lv_supply1Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_bonusSCVUnit) == true))))) {
                 Wait(1.0, c_timeGame);
             }
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_supplyPoint2);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint2);
             Wait(2.0, c_timeGame);
-            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                 UnitRemove(UnitGroupLoopCurrent());
             }
             UnitGroupLoopEnd();
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_supplyPoint2);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint2);
             lv_supply2Unit = UnitLastCreated();
             libNtve_gf_KillModel(lv_supply2Model);
             UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
             UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_supply2Unit), c_orderQueueReplace);
-            while (!(((UnitIsAlive(lv_supply2Unit) == false) || ((UnitIsAlive(lv_supply2Unit) == true) && (UnitFilterMatch(lv_supply2Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_bonusSCVUnit) == true))))) {
+            while (!(((UnitIsAlive(lv_supply2Unit) == false) || ((UnitIsAlive(lv_supply2Unit) == true) && (UnitFilterMatch(lv_supply2Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_bonusSCVUnit) == true))))) {
                 Wait(1.0, c_timeGame);
             }
         }
-        libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bonusMarines);
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bonusMarines);
         Wait(2.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitKill(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, lp_bonusMarines);
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bonusMarines);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
         Wait(2.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitRemove(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
         lv_bunkerUnit = UnitLastCreated();
         libNtve_gf_KillModel(lv_bunkerModel);
         UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
         UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
-        while (!(((UnitIsAlive(lv_bunkerUnit) == false) || ((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_bonusSCVUnit) == true))))) {
+        while (!(((UnitIsAlive(lv_bunkerUnit) == false) || ((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_bonusSCVUnit) == true))))) {
             Wait(1.0, c_timeGame);
         }
-        UnitGroupLoopBegin(UnitGroup("Marine", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
         }
         UnitGroupLoopEnd();
         if ((lp_buildTurretYesNo == true)) {
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_turret);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret);
             Wait(2.0, c_timeGame);
-            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                 UnitRemove(UnitGroupLoopCurrent());
             }
             UnitGroupLoopEnd();
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_turret);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret);
             lv_turretUnit = UnitLastCreated();
             libNtve_gf_KillModel(lv_turretModel);
             UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
             UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_turretUnit), c_orderQueueReplace);
-            while (!(((UnitIsAlive(lv_turretUnit) == false) || ((UnitIsAlive(lv_turretUnit) == true) && (UnitFilterMatch(lv_turretUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_bonusSCVUnit) == true))))) {
+            while (!(((UnitIsAlive(lv_turretUnit) == false) || ((UnitIsAlive(lv_turretUnit) == true) && (UnitFilterMatch(lv_turretUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_bonusSCVUnit) == true))))) {
                 Wait(1.0, c_timeGame);
             }
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_turret2);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret2);
             Wait(2.0, c_timeGame);
-            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                 UnitRemove(UnitGroupLoopCurrent());
             }
             UnitGroupLoopEnd();
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_turret2);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret2);
             lv_turretUnit = UnitLastCreated();
             libNtve_gf_KillModel(lv_turretModel2);
             UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
             UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_turretUnit), c_orderQueueReplace);
         }
         if ((lp_siegeTankYesNo == true)) {
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_turret);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret);
             Wait(2.0, c_timeGame);
-            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                 UnitRemove(UnitGroupLoopCurrent());
             }
             UnitGroupLoopEnd();
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "SiegeTankSieged", c_unitCreateIgnorePlacement, 5, lp_siegeTankPoint);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "SiegeTankSieged", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_siegeTankPoint);
         }
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement, 5, lp_bonusMarines);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bonusMarines);
 }
 void gf_APCisinCampConstrucionBackup2 (region lp_campRegion, int lp_aIPlayerID, int lp_campsPassedIndex, point lp_parkPoint, point lp_campPointDropPod, point lp_supplyPoint1, point lp_supplyPoint2, point lp_bunkerPoint, bool lp_turretYesNo, point lp_turretPoint, bool lp_customStructureYesNo, string lp_customStructureType, point lp_customStructurePoint, trigger lp_deadCampTrigger, unitgroup lp_structuresUnitGroup) {
     string auto5863E3B5_val;
@@ -2024,12 +2033,12 @@ void gf_APCisinCampConstrucionBackup2 (region lp_campRegion, int lp_aIPlayerID, 
                 for (autoE5E359B6_i = 1; autoE5E359B6_i <= autoE5E359B6_n; autoE5E359B6_i += 1) {
                     UnitGroupLoopBegin(gv_colonistsOnRoute);
                     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                        lv_randomHut = UnitGroupRandomUnit(UnitGroup("NovaColonistHut", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
+                        lv_randomHut = UnitGroupRandomUnit(UnitGroup("NovaColonistHut",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
                         UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_randomHut), c_orderQueueAddToEnd);
                     }
                     UnitGroupLoopEnd();
                 }
-                UnitGroupLoopBegin(UnitGroup(null, 5, lp_campRegion, UnitFilter((1 << c_targetFilterStructure), (1 << (c_targetFilterInvulnerable - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup(null,gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter((1 << c_targetFilterStructure), (1 << (c_targetFilterInvulnerable - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     libNtve_gf_MakeUnitInvulnerable(UnitGroupLoopCurrent(), false);
                 }
@@ -2042,76 +2051,76 @@ void gf_APCisinCampConstrucionBackup2 (region lp_campRegion, int lp_aIPlayerID, 
                 gv_aPCisOnRoute = 0;
                 gv_colonistsOnRoute = UnitGroupEmpty();
                 lv_sCVUnit = UnitFromId(1063682192);
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_supplyPoint1);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint1);
                 Wait(2.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_supplyPoint1);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint1);
                 lv_supply1Unit = UnitLastCreated();
                 libNtve_gf_KillModel(lv_supply1Model);
                 UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                 UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
                 UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_supply1Unit), c_orderQueueReplace);
-                while (!(((UnitIsAlive(lv_supply1Unit) == false) || ((UnitIsAlive(lv_supply1Unit) == true) && (UnitFilterMatch(lv_supply1Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))))) {
+                while (!(((UnitIsAlive(lv_supply1Unit) == false) || ((UnitIsAlive(lv_supply1Unit) == true) && (UnitFilterMatch(lv_supply1Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))))) {
                     Wait(1.0, c_timeGame);
                 }
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_supplyPoint2);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint2);
                 Wait(2.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_supplyPoint2);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint2);
                 lv_supply2Unit = UnitLastCreated();
                 libNtve_gf_KillModel(lv_supply2Model);
                 UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                 UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
                 UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_supply2Unit), c_orderQueueReplace);
-                while (!(((UnitIsAlive(lv_supply2Unit) == false) || ((UnitIsAlive(lv_supply2Unit) == true) && (UnitFilterMatch(lv_supply2Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))))) {
+                while (!(((UnitIsAlive(lv_supply2Unit) == false) || ((UnitIsAlive(lv_supply2Unit) == true) && (UnitFilterMatch(lv_supply2Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))))) {
                     Wait(1.0, c_timeGame);
                 }
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
                 Wait(2.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
                 lv_bunkerUnit = UnitLastCreated();
                 libNtve_gf_KillModel(lv_bunkerModel);
                 UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                 UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
                 UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
-                libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
+                libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
                 Wait(2.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitKill(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
-                while (!(((UnitIsAlive(lv_bunkerUnit) == false) || ((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))))) {
+                libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
+                while (!(((UnitIsAlive(lv_bunkerUnit) == false) || ((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))))) {
                     Wait(1.0, c_timeGame);
                 }
-                UnitGroupLoopBegin(UnitGroup("Marine", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueAddToEnd);
                 }
                 UnitGroupLoopEnd();
                 if ((lp_turretYesNo == true)) {
-                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_turretPoint);
+                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turretPoint);
                     Wait(2.0, c_timeGame);
-                    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                         UnitRemove(UnitGroupLoopCurrent());
                     }
                     UnitGroupLoopEnd();
-                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_turretPoint);
+                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turretPoint);
                     lv_turretUnit = UnitLastCreated();
                     libNtve_gf_KillModel(lv_turretModel);
                     UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
@@ -2120,19 +2129,19 @@ void gf_APCisinCampConstrucionBackup2 (region lp_campRegion, int lp_aIPlayerID, 
                 }
                 if ((lp_customStructureYesNo == true)) {
                     if ((lp_turretYesNo == true)) {
-                        while (!(((UnitIsAlive(lv_turretUnit) == false) || ((UnitIsAlive(lv_turretUnit) == true) && (UnitFilterMatch(lv_turretUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))))) {
+                        while (!(((UnitIsAlive(lv_turretUnit) == false) || ((UnitIsAlive(lv_turretUnit) == true) && (UnitFilterMatch(lv_turretUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))))) {
                             Wait(1.0, c_timeGame);
                         }
                         auto297A4BBB_val = lp_customStructureType;
                         if (auto297A4BBB_val == "Barracks") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             Wait(3.0, c_timeGame);
-                            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                                 UnitRemove(UnitGroupLoopCurrent());
                             }
                             UnitGroupLoopEnd();
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             libNtve_gf_KillModel(lv_customStructureModel);
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
@@ -2140,14 +2149,14 @@ void gf_APCisinCampConstrucionBackup2 (region lp_campRegion, int lp_aIPlayerID, 
                             UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_factoryUnit), c_orderQueueAddToEnd);
                         }
                         else if (auto297A4BBB_val == "Factory") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             Wait(3.0, c_timeGame);
-                            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                                 UnitRemove(UnitGroupLoopCurrent());
                             }
                             UnitGroupLoopEnd();
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             libNtve_gf_KillModel(lv_customStructureModel);
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
@@ -2158,12 +2167,12 @@ void gf_APCisinCampConstrucionBackup2 (region lp_campRegion, int lp_aIPlayerID, 
                         }
                     }
                     else {
-                        while (!((UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))) {
+                        while (!((UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))) {
                             Wait(1.0, c_timeGame);
                         }
                         autoFFDEA4AD_val = lp_customStructureType;
                         if (autoFFDEA4AD_val == "Barracks") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             libNtve_gf_KillModel(lv_customStructureModel);
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
@@ -2171,7 +2180,7 @@ void gf_APCisinCampConstrucionBackup2 (region lp_campRegion, int lp_aIPlayerID, 
                             UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_factoryUnit), c_orderQueueAddToEnd);
                         }
                         else if (autoFFDEA4AD_val == "Factory") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             libNtve_gf_KillModel(lv_customStructureModel);
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
@@ -2183,15 +2192,15 @@ void gf_APCisinCampConstrucionBackup2 (region lp_campRegion, int lp_aIPlayerID, 
                     }
                 }
                 lv_sCVUnit = null;
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
                 Wait(2.0, c_timeGame);
                 UnitKill(UnitLastCreated());
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
                 gv_campConstructionCompleted = 1;
             }
         }
@@ -2240,12 +2249,12 @@ void gf_APCisinCampConstrucionBackup (region lp_campRegion, int lp_aIPlayerID, i
                 for (autoE7E00BBD_i = 1; autoE7E00BBD_i <= autoE7E00BBD_n; autoE7E00BBD_i += 1) {
                     UnitGroupLoopBegin(gv_colonistsOnRoute);
                     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                        lv_randomHut = UnitGroupRandomUnit(UnitGroup("NovaColonistHut", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
+                        lv_randomHut = UnitGroupRandomUnit(UnitGroup("NovaColonistHut",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive);
                         UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_randomHut), c_orderQueueAddToEnd);
                     }
                     UnitGroupLoopEnd();
                 }
-                UnitGroupLoopBegin(UnitGroup(null, 5, lp_campRegion, UnitFilter((1 << c_targetFilterStructure), (1 << (c_targetFilterInvulnerable - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup(null,gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter((1 << c_targetFilterStructure), (1 << (c_targetFilterInvulnerable - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     libNtve_gf_MakeUnitInvulnerable(UnitGroupLoopCurrent(), false);
                     UnitGroupAdd(lv_localUnitGroup, UnitGroupLoopCurrent());
@@ -2259,73 +2268,73 @@ void gf_APCisinCampConstrucionBackup (region lp_campRegion, int lp_aIPlayerID, i
                 gv_aPCisOnRoute = 0;
                 gv_colonistsOnRoute = UnitGroupEmpty();
                 lv_sCVUnit = UnitFromId(1063682192);
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_supplyPoint1);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint1);
                 Wait(3.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_supplyPoint1);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint1);
                 lv_supply1Unit = UnitLastCreated();
                 UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                 UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
                 UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_supply1Unit), c_orderQueueReplace);
-                while (!((UnitIsAlive(lv_supply1Unit) == true) && (UnitFilterMatch(lv_supply1Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))) {
+                while (!((UnitIsAlive(lv_supply1Unit) == true) && (UnitFilterMatch(lv_supply1Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))) {
                     Wait(1.0, c_timeGame);
                 }
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_supplyPoint2);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint2);
                 Wait(3.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_supplyPoint2);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint2);
                 lv_supply2Unit = UnitLastCreated();
                 UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                 UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
                 UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_supply2Unit), c_orderQueueReplace);
-                while (!((UnitIsAlive(lv_supply2Unit) == true) && (UnitFilterMatch(lv_supply2Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))) {
+                while (!((UnitIsAlive(lv_supply2Unit) == true) && (UnitFilterMatch(lv_supply2Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))) {
                     Wait(1.0, c_timeGame);
                 }
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
                 Wait(3.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
                 lv_bunkerUnit = UnitLastCreated();
                 UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                 UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
                 UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
-                libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
+                libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
                 Wait(3.0, c_timeGame);
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitKill(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
-                while (!((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))) {
+                libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
+                while (!((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))) {
                     Wait(1.0, c_timeGame);
                 }
-                UnitGroupLoopBegin(UnitGroup("Marine", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueAddToEnd);
                 }
                 UnitGroupLoopEnd();
                 if ((lp_turretYesNo == true)) {
-                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_turretPoint);
+                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turretPoint);
                     Wait(3.0, c_timeGame);
-                    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                         UnitRemove(UnitGroupLoopCurrent());
                     }
                     UnitGroupLoopEnd();
-                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_turretPoint);
+                    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turretPoint);
                     lv_turretUnit = UnitLastCreated();
                     UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                     UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
@@ -2333,33 +2342,33 @@ void gf_APCisinCampConstrucionBackup (region lp_campRegion, int lp_aIPlayerID, i
                 }
                 if ((lp_customStructureYesNo == true)) {
                     if ((lp_turretYesNo == true)) {
-                        while (!((UnitIsAlive(lv_turretUnit) == true) && (UnitFilterMatch(lv_turretUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))) {
+                        while (!((UnitIsAlive(lv_turretUnit) == true) && (UnitFilterMatch(lv_turretUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))) {
                             Wait(1.0, c_timeGame);
                         }
                         autoB1566A8D_val = lp_customStructureType;
                         if (autoB1566A8D_val == "Barracks") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             Wait(3.0, c_timeGame);
-                            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                                 UnitRemove(UnitGroupLoopCurrent());
                             }
                             UnitGroupLoopEnd();
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                             UnitSetState(lv_factoryUnit, c_unitStateTargetable, false);
                             UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_factoryUnit), c_orderQueueAddToEnd);
                         }
                         else if (autoB1566A8D_val == "Factory") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             Wait(3.0, c_timeGame);
-                            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                                 UnitRemove(UnitGroupLoopCurrent());
                             }
                             UnitGroupLoopEnd();
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                             UnitSetState(lv_factoryUnit, c_unitStateTargetable, false);
@@ -2369,19 +2378,19 @@ void gf_APCisinCampConstrucionBackup (region lp_campRegion, int lp_aIPlayerID, i
                         }
                     }
                     else {
-                        while (!((UnitGroupHasUnit(UnitGroupIdle(5, false), lv_sCVUnit) == true))) {
+                        while (!((UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_sCVUnit) == true))) {
                             Wait(1.0, c_timeGame);
                         }
                         auto777CAD56_val = lp_customStructureType;
                         if (auto777CAD56_val == "Barracks") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Barracks", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                             UnitSetState(lv_factoryUnit, c_unitStateTargetable, false);
                             UnitIssueOrder(lv_sCVUnit, OrderTargetingUnit(null, lv_factoryUnit), c_orderQueueAddToEnd);
                         }
                         else if (auto777CAD56_val == "Factory") {
-                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_customStructurePoint);
+                            libNtve_gf_CreateUnitsWithDefaultFacing(1, "Factory", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_customStructurePoint);
                             lv_factoryUnit = UnitLastCreated();
                             UnitGroupAdd(lv_localUnitGroup, UnitLastCreated());
                             UnitSetState(lv_factoryUnit, c_unitStateTargetable, false);
@@ -2392,15 +2401,15 @@ void gf_APCisinCampConstrucionBackup (region lp_campRegion, int lp_aIPlayerID, i
                     }
                 }
                 lv_sCVUnit = null;
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
                 Wait(2.0, c_timeGame);
                 UnitKill(UnitLastCreated());
-                UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+                UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     UnitRemove(UnitGroupLoopCurrent());
                 }
                 UnitGroupLoopEnd();
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement, 5, lp_campPointDropPod);
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_campPointDropPod);
                 gv_campConstructionCompleted = 1;
             }
         }
@@ -2445,81 +2454,81 @@ void gf_BonusCampBuildBackup (bool lp_buildSupplyYesNo, bool lp_buildTurretYesNo
             Wait(1.0, c_timeGame);
         }
         if ((lp_buildSupplyYesNo == true)) {
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_supplyPoint1);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint1);
             Wait(2.0, c_timeGame);
-            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                 UnitRemove(UnitGroupLoopCurrent());
             }
             UnitGroupLoopEnd();
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_supplyPoint1);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint1);
             lv_supply1Unit = UnitLastCreated();
             libNtve_gf_KillModel(lv_supply1Model);
             UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
             UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_supply1Unit), c_orderQueueReplace);
-            while (!((UnitIsAlive(lv_supply1Unit) == true) && (UnitFilterMatch(lv_supply1Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_bonusSCVUnit) == true))) {
+            while (!((UnitIsAlive(lv_supply1Unit) == true) && (UnitFilterMatch(lv_supply1Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_bonusSCVUnit) == true))) {
                 Wait(1.0, c_timeGame);
             }
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_supplyPoint2);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint2);
             Wait(2.0, c_timeGame);
-            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_campRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                 UnitRemove(UnitGroupLoopCurrent());
             }
             UnitGroupLoopEnd();
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_supplyPoint2);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "SupplyDepot", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_supplyPoint2);
             lv_supply2Unit = UnitLastCreated();
             libNtve_gf_KillModel(lv_supply2Model);
             UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
             UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_supply2Unit), c_orderQueueReplace);
-            while (!((UnitIsAlive(lv_supply2Unit) == true) && (UnitFilterMatch(lv_supply2Unit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_bonusSCVUnit) == true))) {
+            while (!((UnitIsAlive(lv_supply2Unit) == true) && (UnitFilterMatch(lv_supply2Unit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_bonusSCVUnit) == true))) {
                 Wait(1.0, c_timeGame);
             }
         }
-        libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bonusMarines);
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bonusMarines);
         Wait(2.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitKill(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, lp_bonusMarines);
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+        libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bonusMarines);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
         Wait(3.0, c_timeGame);
-        UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitRemove(UnitGroupLoopCurrent());
         }
         UnitGroupLoopEnd();
-        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_bunkerPoint);
+        libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bunkerPoint);
         lv_bunkerUnit = UnitLastCreated();
         libNtve_gf_KillModel(lv_bunkerModel);
         UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
         UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
-        while (!((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), lv_bonusSCVUnit) == true))) {
+        while (!((UnitIsAlive(lv_bunkerUnit) == true) && (UnitFilterMatch(lv_bunkerUnit,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), lv_bonusSCVUnit) == true))) {
             Wait(1.0, c_timeGame);
         }
-        UnitGroupLoopBegin(UnitGroup("Marine", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+        UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
             UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunkerUnit), c_orderQueueReplace);
         }
         UnitGroupLoopEnd();
         if ((lp_buildTurretYesNo == true)) {
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, lp_turret);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret);
             Wait(2.0, c_timeGame);
-            UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+            UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, lp_bonusRegion, UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
             for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                 UnitRemove(UnitGroupLoopCurrent());
             }
             UnitGroupLoopEnd();
-            libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, lp_turret);
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_turret);
             lv_turretUnit = UnitLastCreated();
             libNtve_gf_KillModel(lv_turretModel);
             UnitSetState(UnitLastCreated(), c_unitStateTargetable, false);
             UnitIssueOrder(lv_bonusSCVUnit, OrderTargetingUnit(null, lv_turretUnit), c_orderQueueReplace);
         }
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement, 5, lp_bonusMarines);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "AgriaSCV", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, lp_bonusMarines);
 }
 void gf_AddHybridstoAttackWave (fixed lp_gameTime) {
     int autoB6C02E7A_val;
@@ -2804,44 +2813,6 @@ bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runAct
 // Trigger: Init 01 Load Data
 //--------------------------------------------------------------------------------------------------
 bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    playergroup auto0B258D10_g;
-    int auto0B258D10_p;
-    string auto834F8A5E_val;
-    // Variable Declarations
-    int lv_indexPlayer;
-    // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    auto0B258D10_g = libCOMI_gf_HumanPlayers();
-    auto0B258D10_p = 1;
-    for ( ; auto0B258D10_p <= PlayerGroupCount(auto0B258D10_g) ; auto0B258D10_p += BoolToInt(lv_indexPlayer == PlayerGroupPlayer(auto0B258D10_g, auto0B258D10_p)) ) {
-        lv_indexPlayer = PlayerGroupPlayer(auto0B258D10_g, auto0B258D10_p);
-        auto834F8A5E_val = GameAttributePlayerValue("[bnet:local/0.0/353878]1", lv_indexPlayer);
-        if (auto834F8A5E_val == "0003") {
-            PlayerSetCommander(lv_indexPlayer, "Artanis");
-        }
-        else if (auto834F8A5E_val == "0002") {
-            PlayerSetCommander(lv_indexPlayer, "Kerrigan");
-        }
-        else if (auto834F8A5E_val == "0001") {
-            PlayerSetCommander(lv_indexPlayer, "Raynor");
-        }
-        else {
-            if ((lv_indexPlayer == 1)) {
-                PlayerSetCommander(lv_indexPlayer, "Raynor");
-            }
-            else {
-                PlayerSetCommander(lv_indexPlayer, "Artanis");
-            }
-        }
-    }
-    PlayerSetCommander(5, null);
-    libCOMI_gf_EnableArcadeContestMode();
-    TriggerExecute(gt_Init02Players, true, false);
-    TriggerExecute(gt_Player5SetCommanderandother, false, false);
-    TriggerExecute(gt_Player5AddAllHutstoUnitGroups, false, false);
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
@@ -2854,54 +2825,6 @@ void gt_Init01LoadData_Init () {
 // Trigger: Init 02 Players
 //--------------------------------------------------------------------------------------------------
 bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    playergroup autoE0EF2853_g;
-    int autoE0EF2853_p;
-    playergroup autoB969537F_g;
-    int autoB969537F_p;
-    // Variable Declarations
-    int lv_playerIterEnemy;
-    int lv_playerIterAlly;
-    // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    PlayerGroupLoopBegin(PlayerGroupAll());
-    for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
-        libCOMI_gf_SetAllianceCoop(PlayerGroupLoopCurrent(), 5, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-    }
-    PlayerGroupLoopEnd();
-    libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_03_ENEMY);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_04_ENEMY);
-    libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    PlayerGroupLoopBegin(gv_enemyGroup);
-    for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
-        libCOMI_gf_SetAllianceCoop(PlayerGroupLoopCurrent(), 5, libNtve_ge_AllianceSetting_Enemy);
-    }
-    PlayerGroupLoopEnd();
-    autoE0EF2853_g = gv_enemyGroup; 
-    autoE0EF2853_p = 1;
-    for ( ; autoE0EF2853_p <= PlayerGroupCount(autoE0EF2853_g) ; autoE0EF2853_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p)) ) {
-        lv_playerIterEnemy = PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-        PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
-        autoB969537F_g = libCOMI_gf_HumanPlayers();
-        autoB969537F_p = 1;
-        for ( ; autoB969537F_p <= PlayerGroupCount(autoB969537F_g) ; autoB969537F_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoB969537F_g, autoB969537F_p)) ) {
-            lv_playerIterAlly = PlayerGroupPlayer(autoB969537F_g, autoB969537F_p);
-            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-        }
-    }
-    PlayerSetAlliance(gv_pLAYER_03_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
-    PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_03_ENEMY, true);
-    PlayerSetState(5, c_playerStateMineralCostIgnored, true);
-    PlayerSetState(5, c_playerStateVespeneCostIgnored, true);
-    PlayerSetState(5, c_playerStateFoodIgnored, true);
-    PlayerSetColorIndex(5, 0, true);
-    libCOMI_gf_SetAlliedCommandersstartingResources();
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -2916,13 +2839,14 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
+    TriggerExecute(gt_Init02Players, true, false);
+    TriggerExecute(gt_Player5SetCommanderandother, false, false);
+    TriggerExecute(gt_Player5AddAllHutstoUnitGroups, false, false);
     TriggerExecute(gt_Init04Technology, true, false);
-    libCOMI_gf_PurchaseStorymodeTech();
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
     TriggerExecute(gt_Init07Environment, true, false);
     TriggerExecute(gt_Init08Difficulties, true, false);
-    libCOMI_gf_PlayMapIntroZoom(true);
     TriggerExecute(gt_StartAI, true, false);
     TriggerExecute(gt_StartGameQ, true, false);
     return true;
@@ -2939,8 +2863,7 @@ bool gt_Init04Technology_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    libNtve_gf_SetUpgradeLevelForPlayer(5, "AgriaColonistRaiseStructuresFast", 1);
-    libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_COLONISTS, "AgriaColonistRaiseStructuresFast", 1);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -2975,7 +2898,7 @@ bool gt_Init05Units_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_Camp4SetRoute, true, true);
     TriggerExecute(gt_Camp5SetRoute, true, true);
     TriggerExecute(gt_Camp6SetRoute, true, true);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionFromId(21), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null,gv_pLAYER_05_COLONISTS, RegionFromId(21), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitSetState(UnitGroupLoopCurrent(), c_unitStateTargetable, false);
     }
@@ -2990,8 +2913,6 @@ bool gt_Init05Units_Func (bool testConds, bool runActions) {
         UnitGroupAdd(gv_allEnemyStructures, UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_01_USER);
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_02_USER);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -3016,7 +2937,6 @@ bool gt_Init07Environment_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    GameTimeOfDaySet("08:00:00");
     VisExploreArea(gv_pLAYER_01_USER, RegionFromId(49), true, false);
     VisExploreArea(gv_pLAYER_02_USER, RegionFromId(49), true, false);
     VisExploreArea(gv_pLAYER_02_USER, RegionFromId(22), true, false);
@@ -3032,18 +2952,10 @@ void gt_Init07Environment_Init () {
 //--------------------------------------------------------------------------------------------------
 bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
     // Variable Declarations
-    fixed lv_bonusObjectiveLife;
-    fixed lv_mainObjectiveLife;
     // Variable Initialization
     // Actions
     if (!runActions) {
         return true;
-    }
-    if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_01_USER) == 4)) {
-        UnitRemove(UnitFromId(211));
-    }
-    if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_02_USER) == 4)) {
-        UnitRemove(UnitFromId(134));
     }
     return true;
 }
@@ -3059,11 +2971,6 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     region lv_enemyBase;
     // Variable Initialization
     // Actions
-    if (!runActions) {
-        return true;
-    }
-    UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/068743D5"), null, PlayerStartLocation(gv_pLAYER_01_USER));
-    UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/187E0E6E"), null, PlayerStartLocation(gv_pLAYER_02_USER));
     Wait(7.0, c_timeReal);
     TriggerQueueEnter();
     TriggerExecute(gt_HansonFirstTransmission, true, true);
@@ -3072,6 +2979,8 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_ObjectiveDoNotLoose2Camps, true, true);
     Wait(2.0, c_timeGame);
     TriggerQueueExit();
+    TimerStart(gv_launchTrainTimer, 300, false, c_timeAI);
+    TimerStart(gv_launchTrainTimer2, 600, false, c_timeAI);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -3675,7 +3584,7 @@ void gt_Camp6SetRoute_Init () {
 bool gt_APCIsIdle_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGroupHasUnit(UnitGroupIdle(5, false), gv_aPCUnit) == true))) {
+        if (!((UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_aPCUnit) == true))) {
             return false;
         }
     }
@@ -3723,32 +3632,32 @@ bool gt_Player5AddAllHutstoUnitGroups_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UnitGroupLoopBegin(UnitGroup("NovaColonistHut", 5, RegionFromId(10), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("NovaColonistHut",gv_pLAYER_05_COLONISTS, RegionFromId(10), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitGroupAdd(gv_camp1Structures, UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("NovaColonistHut", 5, RegionFromId(16), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("NovaColonistHut",gv_pLAYER_05_COLONISTS, RegionFromId(16), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitGroupAdd(gv_camp2Structures, UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("NovaColonistHut", 5, RegionFromId(17), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("NovaColonistHut",gv_pLAYER_05_COLONISTS, RegionFromId(17), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitGroupAdd(gv_camp3Structures, UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("NovaColonistHut", 5, RegionFromId(18), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("NovaColonistHut",gv_pLAYER_05_COLONISTS, RegionFromId(18), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitGroupAdd(gv_camp4Structures, UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("NovaColonistHut", 5, RegionFromId(19), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("NovaColonistHut",gv_pLAYER_05_COLONISTS, RegionFromId(19), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitGroupAdd(gv_camp5Structures, UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    UnitGroupLoopBegin(UnitGroup("NovaColonistHut", 5, RegionFromId(20), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("NovaColonistHut",gv_pLAYER_05_COLONISTS, RegionFromId(20), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitGroupAdd(gv_camp6Structures, UnitGroupLoopCurrent());
     }
@@ -3767,8 +3676,8 @@ bool gt_Player5SetCommanderandother_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    libNtve_gf_SetUpgradeLevelForPlayer(5, "RaynorCommander", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(5, "CommanderLevel", 15);
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_COLONISTS, "RaynorCommander", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_COLONISTS, "CommanderLevel", 15);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -3783,13 +3692,14 @@ bool gt_Player5StructureArmorUpgrade_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    libNtve_gf_SetUpgradeLevelForPlayer(5, "TerranBuildingArmor", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_COLONISTS, "TerranBuildingArmor", 1);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
 void gt_Player5StructureArmorUpgrade_Init () {
     gt_Player5StructureArmorUpgrade = TriggerCreate("gt_Player5StructureArmorUpgrade_Func");
-    TriggerAddEventTimeElapsed(gt_Player5StructureArmorUpgrade, 600.0, c_timeGame);
+    //TriggerAddEventTimeElapsed(gt_Player5StructureArmorUpgrade, 600.0, c_timeGame);
+    TriggerAddEventTimer(gt_Player5StructureArmorUpgrade, gv_launchTrainTimer2);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Player 5 Structure Fire Supression Upgrade and Turret
@@ -3799,9 +3709,9 @@ bool gt_Player5StructureFireSupressionUpgradeandTurret_Func (bool testConds, boo
     if (!runActions) {
         return true;
     }
-    libNtve_gf_SetUpgradeLevelForPlayer(5, "HiSecAutoTracking", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(5, "ReinforcedSuperstructure", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(5, "FireSuppressionSystems", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_COLONISTS, "HiSecAutoTracking", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_COLONISTS, "ReinforcedSuperstructure", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_COLONISTS, "FireSuppressionSystems", 1);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -3816,9 +3726,9 @@ bool gt_Player5FortifiedBunkerUpgrade_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    libNtve_gf_SetUpgradeLevelForPlayer(5, "FortifiedBunkerCarapace", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(5, "ShrikeTurret", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(5, "FireSuppressionSystems", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_COLONISTS, "FortifiedBunkerCarapace", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_COLONISTS, "ShrikeTurret", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_COLONISTS, "FireSuppressionSystems", 1);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -3854,75 +3764,75 @@ bool gt_ConstructRedOutpost_Func (bool testConds, bool runActions) {
     while (!((UnitGroupCount(UnitGroup(null, gv_pLAYER_03_ENEMY, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) == 0))) {
         Wait(1.0, c_timeGame);
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(817046164));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(817046164));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, PointFromId(817046164));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(817046164));
     lv_bunker1 = UnitLastCreated();
     libNtve_gf_KillModel(lv_bunkerPlacement1);
     UnitSetState(lv_bunker1, c_unitStateTargetable, false);
     UnitIssueOrder(gv_invisibleBuilderRedTealOutposts, OrderTargetingUnit(null, lv_bunker1), c_orderQueueReplace);
-    while (!(((UnitIsAlive(lv_bunker1) == false) || ((UnitIsAlive(lv_bunker1) == true) && (UnitFilterMatch(lv_bunker1, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
+    while (!(((UnitIsAlive(lv_bunker1) == false) || ((UnitIsAlive(lv_bunker1) == true) && (UnitFilterMatch(lv_bunker1,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
         Wait(1.0, c_timeGame);
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(810540701));
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(810540701));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, PointFromId(810540701));
-    UnitGroupLoopBegin(UnitGroup("Marine", 5, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(810540701));
+    UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunker1), c_orderQueueAddToEnd);
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(412237293));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(412237293));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, PointFromId(412237293));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(412237293));
     lv_bunker2 = UnitLastCreated();
     libNtve_gf_KillModel(lv_bunkerPlacement2);
     UnitSetState(lv_bunker2, c_unitStateTargetable, false);
     UnitIssueOrder(gv_invisibleBuilderRedTealOutposts, OrderTargetingUnit(null, lv_bunker2), c_orderQueueReplace);
-    while (!(((UnitIsAlive(lv_bunker2) == false) || ((UnitIsAlive(lv_bunker2) == true) && (UnitFilterMatch(lv_bunker2, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
+    while (!(((UnitIsAlive(lv_bunker2) == false) || ((UnitIsAlive(lv_bunker2) == true) && (UnitFilterMatch(lv_bunker2,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
         Wait(1.0, c_timeGame);
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(810540701));
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(810540701));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, PointFromId(810540701));
-    UnitGroupLoopBegin(UnitGroup("Marine", 5, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(810540701));
+    UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunker2), c_orderQueueAddToEnd);
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(857806576));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(857806576));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(26), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, PointFromId(857806576));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(857806576));
     lv_turret = UnitLastCreated();
     libNtve_gf_KillModel(lv_turretPlacement);
     UnitSetState(lv_turret, c_unitStateTargetable, false);
     UnitIssueOrder(gv_invisibleBuilderRedTealOutposts, OrderTargetingUnit(null, lv_turret), c_orderQueueReplace);
-    while (!(((UnitIsAlive(lv_turret) == false) || ((UnitIsAlive(lv_turret) == true) && (UnitFilterMatch(lv_turret, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
+    while (!(((UnitIsAlive(lv_turret) == false) || ((UnitIsAlive(lv_turret) == true) && (UnitFilterMatch(lv_turret,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
         Wait(1.0, c_timeGame);
     }
     PingDestroy(gv_redOutpostPing);
@@ -3961,62 +3871,62 @@ bool gt_ConstructTealOutpost_Func (bool testConds, bool runActions) {
     while (!((UnitGroupCount(UnitGroup(null, gv_pLAYER_04_ENEMY, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), c_unitCountAlive) == 0))) {
         Wait(1.0, c_timeGame);
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(1056610188));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(1056610188));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, PointFromId(1056610188));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Bunker", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(1056610188));
     lv_bunker = UnitLastCreated();
     libNtve_gf_KillModel(lv_bunkerPlacement);
     UnitSetState(lv_bunker, c_unitStateTargetable, false);
     UnitIssueOrder(gv_invisibleBuilderRedTealOutposts, OrderTargetingUnit(null, lv_bunker), c_orderQueueReplace);
-    while (!(((UnitIsAlive(lv_bunker) == false) || ((UnitIsAlive(lv_bunker) == true) && (UnitFilterMatch(lv_bunker, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
+    while (!(((UnitIsAlive(lv_bunker) == false) || ((UnitIsAlive(lv_bunker) == true) && (UnitFilterMatch(lv_bunker,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
         Wait(1.0, c_timeGame);
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(357746324));
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(357746324));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement, 5, PointFromId(357746324));
-    UnitGroupLoopBegin(UnitGroup("Marine", 5, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "Marine", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(357746324));
+    UnitGroupLoopBegin(UnitGroup("Marine",gv_pLAYER_05_COLONISTS, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingUnit(null, lv_bunker), c_orderQueueAddToEnd);
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(780928979));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(780928979));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, PointFromId(780928979));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(780928979));
     lv_turret2 = UnitLastCreated();
     libNtve_gf_KillModel(lv_turretPlacement2);
     UnitSetState(lv_turret2, c_unitStateTargetable, false);
     UnitIssueOrder(gv_invisibleBuilderRedTealOutposts, OrderTargetingUnit(null, lv_turret2), c_orderQueueReplace);
-    while (!(((UnitIsAlive(lv_turret2) == false) || ((UnitIsAlive(lv_turret2) == true) && (UnitFilterMatch(lv_turret2, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
+    while (!(((UnitIsAlive(lv_turret2) == false) || ((UnitIsAlive(lv_turret2) == true) && (UnitFilterMatch(lv_turret2,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
         Wait(1.0, c_timeGame);
     }
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(1935393530));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(1935393530));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, PointFromId(1935393530));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "MissileTurret", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(1935393530));
     lv_turret3 = UnitLastCreated();
     libNtve_gf_KillModel(lv_turretPlacement3);
     UnitSetState(lv_turret3, c_unitStateTargetable, false);
     UnitIssueOrder(gv_invisibleBuilderRedTealOutposts, OrderTargetingUnit(null, lv_turret3), c_orderQueueReplace);
-    while (!(((UnitIsAlive(lv_turret3) == false) || ((UnitIsAlive(lv_turret3) == true) && (UnitFilterMatch(lv_turret3, 5, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(5, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
+    while (!(((UnitIsAlive(lv_turret3) == false) || ((UnitIsAlive(lv_turret3) == true) && (UnitFilterMatch(lv_turret3,gv_pLAYER_05_COLONISTS, UnitFilter(0, (1 << (c_targetFilterUnderConstruction - 32)), (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)))) == false) && (UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_invisibleBuilderRedTealOutposts) == true))))) {
         Wait(1.0, c_timeGame);
     }
     PingDestroy(gv_tealOutpostPing);
@@ -4202,7 +4112,7 @@ bool gt_RedScienceFacilityCaptured_Func (bool testConds, bool runActions) {
     TimerWindowDestroy(gv_redTimerWindow);
     UnitGroupLoopBegin(UnitGroup(null, 0, RegionFromId(11), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-        UnitSetOwner(UnitGroupLoopCurrent(), 5, true);
+        UnitSetOwner(UnitGroupLoopCurrent(),gv_pLAYER_05_COLONISTS, true);
     }
     UnitGroupLoopEnd();
     PingDestroy(gv_redBeaconPing);
@@ -4237,7 +4147,7 @@ bool gt_TealWarFacilityCaptured_Func (bool testConds, bool runActions) {
     TimerWindowDestroy(gv_tealTimerWindow);
     UnitGroupLoopBegin(UnitGroup(null, 0, RegionFromId(12), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-        UnitSetOwner(UnitGroupLoopCurrent(), 5, true);
+        UnitSetOwner(UnitGroupLoopCurrent(),gv_pLAYER_05_COLONISTS, true);
     }
     UnitGroupLoopEnd();
     PingDestroy(gv_tealBeaconPing);
@@ -4309,22 +4219,22 @@ bool gt_ConstructSensorTower1_Func (bool testConds, bool runActions) {
         Wait(1.0, c_timeGame);
     }
     libNtve_gf_KillModel(lv_placementModel);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(1356500068));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(1356500068));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(32), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(32), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
     lv_sensorSCVLocal = UnitFromId(937658160);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "SensorTower", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, PointFromId(1356500068));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "SensorTower", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(1356500068));
     lv_sensorTowerUnit = UnitLastCreated();
     TextTagCreate(StringExternal("Param/Value/C33E09D6"), 16, UnitGetPosition(gv_redBeacon), 2.0, true, true, PlayerGroupAll());
     lv_tag = TextTagLastCreated();
     TextTagShow(lv_tag, PlayerGroupAll(), true);
     UnitIssueOrder(lv_sensorSCVLocal, OrderTargetingUnit(null, lv_sensorTowerUnit), c_orderQueueReplace);
     TriggerExecute(gt_AttackWaveSensorTower1, false, false);
-    while (!(((UnitGroupHasUnit(UnitGroup(null, 5, RegionFromId(32), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterUnderConstruction - 32)) | (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), lv_sensorTowerUnit) == true) || (UnitIsAlive(lv_sensorTowerUnit) == false)))) {
+    while (!(((UnitGroupHasUnit(UnitGroup(null,gv_pLAYER_05_COLONISTS, RegionFromId(32), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterUnderConstruction - 32)) | (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), lv_sensorTowerUnit) == true) || (UnitIsAlive(lv_sensorTowerUnit) == false)))) {
         Wait(1.0, c_timeGame);
     }
     if ((UnitIsAlive(lv_sensorTowerUnit) == true)) {
@@ -4365,22 +4275,22 @@ bool gt_ConstructSensorTower2_Func (bool testConds, bool runActions) {
         Wait(1.0, c_timeGame);
     }
     libNtve_gf_KillModel(lv_placementModel);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement, 5, PointFromId(1574818404));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "TerranDropPod", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(1574818404));
     Wait(2.0, c_timeGame);
-    UnitGroupLoopBegin(UnitGroup("TerranDropPod", 5, RegionFromId(33), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup("TerranDropPod",gv_pLAYER_05_COLONISTS, RegionFromId(33), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
     UnitGroupLoopEnd();
     lv_sensorSCVLocal = UnitFromId(937658160);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "SensorTower", c_unitCreateConstruct | c_unitCreateIgnorePlacement, 5, PointFromId(1574818404));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "SensorTower", c_unitCreateConstruct | c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(1574818404));
     lv_sensorTowerUnit = UnitLastCreated();
     TextTagCreate(StringExternal("Param/Value/009F3378"), 16, UnitGetPosition(gv_redBeacon), 2.0, true, true, PlayerGroupAll());
     lv_tag = TextTagLastCreated();
     TextTagShow(lv_tag, PlayerGroupAll(), true);
     UnitIssueOrder(lv_sensorSCVLocal, OrderTargetingUnit(null, lv_sensorTowerUnit), c_orderQueueReplace);
     TriggerExecute(gt_AttackWaveSensorTower2, false, false);
-    while (!(((UnitGroupHasUnit(UnitGroup(null, 5, RegionFromId(33), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterUnderConstruction - 32)) | (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), lv_sensorTowerUnit) == true) || (UnitIsAlive(lv_sensorTowerUnit) == false)))) {
+    while (!(((UnitGroupHasUnit(UnitGroup(null,gv_pLAYER_05_COLONISTS, RegionFromId(33), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterUnderConstruction - 32)) | (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), lv_sensorTowerUnit) == true) || (UnitIsAlive(lv_sensorTowerUnit) == false)))) {
         Wait(1.0, c_timeGame);
     }
     if ((UnitIsAlive(lv_sensorTowerUnit) == true)) {
@@ -4448,9 +4358,11 @@ bool gt_APCReadyCamp1_Func (bool testConds, bool runActions) {
     return true;
 }
 //--------------------------------------------------------------------------------------------------
+
 void gt_APCReadyCamp1_Init () {
     gt_APCReadyCamp1 = TriggerCreate("gt_APCReadyCamp1_Func");
-    TriggerAddEventTimeElapsed(gt_APCReadyCamp1, 300.0, c_timeGame);
+   // TriggerAddEventTimeElapsed(gt_APCReadyCamp1, 300.0, c_timeGame);
+    TriggerAddEventTimer(gt_APCReadyCamp1, gv_launchTrainTimer);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Camp 1 - Launch APC
@@ -4527,7 +4439,7 @@ bool gt_Camp1PeriodicRoute_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    if ((UnitGroupHasUnit(UnitGroupIdle(5, false), gv_aPCUnit) == true)) {
+    if ((UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_aPCUnit) == true)) {
         lv_distance = DistanceBetweenPoints(UnitGetPosition(gv_aPCUnit), gv_currentPointGlobal);
         if ((lv_distance <= 1)) {
             if ((gv_indexOfArray == gv_maxIndexOfArray)) {
@@ -4770,7 +4682,7 @@ bool gt_Camp2PeriodicRoute_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    if ((UnitGroupHasUnit(UnitGroupIdle(5, false), gv_aPCUnit) == true)) {
+    if ((UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_aPCUnit) == true)) {
         lv_distance = DistanceBetweenPoints(UnitGetPosition(gv_aPCUnit), gv_currentPointGlobal);
         if ((lv_distance <= 1)) {
             if ((gv_indexOfArray == gv_maxIndexOfArray)) {
@@ -5011,7 +4923,7 @@ bool gt_Camp3PeriodicRoute_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    if ((UnitGroupHasUnit(UnitGroupIdle(5, false), gv_aPCUnit) == true)) {
+    if ((UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_aPCUnit) == true)) {
         lv_distance = DistanceBetweenPoints(UnitGetPosition(gv_aPCUnit), gv_currentPointGlobal);
         if ((lv_distance <= 1)) {
             if ((gv_indexOfArray == gv_maxIndexOfArray)) {
@@ -5244,7 +5156,7 @@ bool gt_Camp4PeriodicRoute_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    if ((UnitGroupHasUnit(UnitGroupIdle(5, false), gv_aPCUnit) == true)) {
+    if ((UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_aPCUnit) == true)) {
         lv_distance = DistanceBetweenPoints(UnitGetPosition(gv_aPCUnit), gv_currentPointGlobal);
         if ((lv_distance <= 1)) {
             if ((gv_indexOfArray == gv_maxIndexOfArray)) {
@@ -5445,7 +5357,7 @@ bool gt_Camp5APCisinCamp_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    gf_APCisinCampConstrucion(RegionFromId(19), 3, 5, PointFromId(852347465), PointFromId(1605379981), PointFromId(2009650130), PointFromId(262891322), PointFromId(826432447), true, PointFromId(788185155), true, "Barracks", PointFromId(767676009), gt_Camp5IsDead, gv_camp5Structures, gt_Camp5PeriodicRoute, gt_AttackWaveCamp5, "Camp5Bonus");
+    gf_APCisinCampConstrucion(RegionFromId(19), 3,gv_pLAYER_05_COLONISTS, PointFromId(852347465), PointFromId(1605379981), PointFromId(2009650130), PointFromId(262891322), PointFromId(826432447), true, PointFromId(788185155), true, "Barracks", PointFromId(767676009), gt_Camp5IsDead, gv_camp5Structures, gt_Camp5PeriodicRoute, gt_AttackWaveCamp5, "Camp5Bonus");
     gv_aPCUnitIsInCamp = 0;
     Wait((1.5*60), c_timeGame);
     TriggerExecute(gt_APCReadyCamp6, true, false);
@@ -5476,7 +5388,7 @@ bool gt_Camp5PeriodicRoute_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    if ((UnitGroupHasUnit(UnitGroupIdle(5, false), gv_aPCUnit) == true)) {
+    if ((UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_aPCUnit) == true)) {
         lv_distance = DistanceBetweenPoints(UnitGetPosition(gv_aPCUnit), gv_currentPointGlobal);
         if ((lv_distance <= 1)) {
             if ((gv_indexOfArray == gv_maxIndexOfArray)) {
@@ -5763,7 +5675,7 @@ bool gt_Camp6APCisinCamp_Func (bool testConds, bool runActions) {
     }
     TriggerExecute(gt_HansonFinalAttack, true, true);
     TriggerExecute(gt_Camp6FinalAttack, true, false);
-    gf_APCisinCampConstrucion(RegionFromId(20), 4, 5, PointFromId(822029709), PointFromId(81606294), PointFromId(1983472241), PointFromId(2135133532), PointFromId(1930032059), true, PointFromId(711992819), true, "Starport", PointFromId(1384541298), gt_Camp6IsDead, gv_camp6Structures, gt_Camp6PeriodicRoute, gt_AttackWaveCamp6, "NOEVENT");
+    gf_APCisinCampConstrucion(RegionFromId(20), 4,gv_pLAYER_05_COLONISTS, PointFromId(822029709), PointFromId(81606294), PointFromId(1983472241), PointFromId(2135133532), PointFromId(1930032059), true, PointFromId(711992819), true, "Starport", PointFromId(1384541298), gt_Camp6IsDead, gv_camp6Structures, gt_Camp6PeriodicRoute, gt_AttackWaveCamp6, "NOEVENT");
     gv_aPCUnitIsInCamp = 0;
     TriggerExecute(gt_VictorySequence, true, false);
     return true;
@@ -5792,7 +5704,7 @@ bool gt_Camp6PeriodicRoute_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    if ((UnitGroupHasUnit(UnitGroupIdle(5, false), gv_aPCUnit) == true)) {
+    if ((UnitGroupHasUnit(UnitGroupIdle(gv_pLAYER_05_COLONISTS, false), gv_aPCUnit) == true)) {
         lv_distance = DistanceBetweenPoints(UnitGetPosition(gv_aPCUnit), gv_currentPointGlobal);
         if ((lv_distance <= 1)) {
             if ((gv_indexOfArray == gv_maxIndexOfArray)) {
@@ -6528,7 +6440,7 @@ bool gt_DefeatShipFlyesAway_Func (bool testConds, bool runActions) {
     }
     TriggerEnable(TriggerGetCurrent(), false);
     lv_shipUnit = UnitFromId(1583954415);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionFromId(21), UnitFilter(0, 0, (1 << c_targetFilterAir) | (1 << c_targetFilterStructure) | (1 << c_targetFilterHeroic) | (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    UnitGroupLoopBegin(UnitGroup(null,gv_pLAYER_05_COLONISTS, RegionFromId(21), UnitFilter(0, 0, (1 << c_targetFilterAir) | (1 << c_targetFilterStructure) | (1 << c_targetFilterHeroic) | (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
         UnitRemove(UnitGroupLoopCurrent());
     }
@@ -6595,11 +6507,11 @@ bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
     libCOMI_gf_CinematicModeCampaign(true, c_transitionDurationDefault, true);
     libCOMI_gf_SendMissionTransmission("PrimaryObjectiveVictory", false, -1);
     UnitPauseAll(true);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "BioDomeCommandFlying", c_unitCreateIgnorePlacement, 5, PointFromId(506457290));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "BioDomeCommandFlying", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(506457290));
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(200161374)), c_orderQueueReplace);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "BioDomeCommandFlying", c_unitCreateIgnorePlacement, 5, PointFromId(332038443));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "BioDomeCommandFlying", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(332038443));
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(550365429)), c_orderQueueReplace);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "ColonistShipFlying", c_unitCreateIgnorePlacement, 5, PointFromId(574802190));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "ColonistShipFlying", c_unitCreateIgnorePlacement,gv_pLAYER_05_COLONISTS, PointFromId(574802190));
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1256212283)), c_orderQueueReplace);
     CameraLockInput(gv_pLAYER_01_USER, true);
     CameraLockInput(gv_pLAYER_02_USER, true);
@@ -7801,7 +7713,7 @@ void gt_ObjectivePrimaryObjectivesCampCapturedUpdate_Init () {
     gt_ObjectivePrimaryObjectivesCampCapturedUpdate = TriggerCreate("gt_ObjectivePrimaryObjectivesCampCapturedUpdate_Func");
 }
 //--------------------------------------------------------------------------------------------------
-// Trigger: Objective - Create Secondary 
+// Trigger: Objective - Create Secondary
 //--------------------------------------------------------------------------------------------------
 bool gt_ObjectiveCreateSecondary_Func (bool testConds, bool runActions) {
     // Actions

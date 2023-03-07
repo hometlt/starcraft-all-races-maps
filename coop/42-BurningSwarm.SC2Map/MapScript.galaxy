@@ -834,11 +834,11 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
-const int gv_pLAYER_05_ZergSwarm = 5;
+int gv_pLAYER_01_USER = 1;
+int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 6;
+const int gv_pLAYER_04_ENEMY = 7;
+const int gv_pLAYER_05_ZergSwarm = 8;
 const int gv_eNEMY_BASE_COUNT = 10;
 const int gv_kronosBossbarID = 1;
 //--------------------------------------------------------------------------------------------------
@@ -3988,21 +3988,10 @@ trigger gf_GetProperAttackTrigger2subObjective (int lp_eAB79CEBAAA8) {
         return gt_TypeAttackWaveerror;
     }
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 01 Load Data
 //--------------------------------------------------------------------------------------------------
 bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    playergroup auto0B258D10_g;
-    int auto0B258D10_p;
-    string auto834F8A5E_val;
-    // Variable Declarations
-    int lv_indexPlayer;
-    // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
@@ -4015,18 +4004,8 @@ void gt_Init01LoadData_Init () {
 // Trigger: Init 02 Players
 //--------------------------------------------------------------------------------------------------
 bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    playergroup autoE0EF2853_g;
-    int autoE0EF2853_p;
-    playergroup autoB969537F_g;
-    int autoB969537F_p;
-    // Variable Declarations
-    int lv_playerIterEnemy;
-    int lv_playerIterAlly;
-    // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -4037,10 +4016,6 @@ void gt_Init02Players_Init () {
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
     TriggerExecute(gt_Init02Players, true, false);
     TriggerExecute(gt_Init04Technology, true, false);
     TriggerExecute(gt_Init05Units, true, false);
@@ -4069,11 +4044,6 @@ bool gt_Init04Technology_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_i;
     // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
     autoA5C22F11_ae = 4;
     autoA5C22F11_ai = 1;
     lv_i = 1;
@@ -4440,7 +4410,6 @@ void gt_Init09Commander_Init () {
     gt_Init09Commander = TriggerCreate("gt_Init09Commander_Func");
     TriggerAddEventMapInit(gt_Init09Commander);
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Portrait - Announcer
 //--------------------------------------------------------------------------------------------------
@@ -4629,8 +4598,6 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/068743D5"), null, PlayerStartLocation(gv_pLAYER_01_USER));
-    UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/187E0E6E"), null, PlayerStartLocation(gv_pLAYER_02_USER));
     Wait(7.0, c_timeReal);
     TriggerQueueEnter();
     gv_tower_Pings[1] = c_invalidPingId;

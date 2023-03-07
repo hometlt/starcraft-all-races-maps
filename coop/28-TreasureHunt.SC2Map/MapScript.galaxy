@@ -2197,11 +2197,9 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     gt_Init02Players();
     gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
     gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
-
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
     TriggerExecute(gt_Init07Environment, true, false);
@@ -2348,7 +2346,7 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_ObjectiveEscortCrystalsCreate, true, false);
     Wait(4.5, c_timeGame);
     TriggerExecute(gt_ObjectiveDontLoseCrystalsCreate, true, false);
-    Wait(3.0, c_timeGame);
+    Wait(3.0, c_timeGame); 
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     auto01C93E02_val = RandomInt(1, 3);
     if (auto01C93E02_val == 1) {
@@ -6990,7 +6988,6 @@ bool gt_VictoryTransmission_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -7013,9 +7010,7 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
         return true;
     }
     TriggerEnable(TriggerGetCurrent(), false);
-
     libCOMI_gf_BeforeFanfare(c_gameOverDefeat);
-
     auto24528792_val = RandomInt(1, 2);
     if (auto24528792_val == 1) {
         UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/C1AFE0E0"));
@@ -7028,13 +7023,9 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     UISetCursorVisible(PlayerGroupAll(), true);
     TriggerExecute(gt_Defeat, true, false);
-
     libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/285C8236"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-
     libCOMI_gf_MoveCameraForAllPlayers(gv_lastCriticalEventPosition, 2.0);
-
     libCOMI_gf_AfterFanfare(c_gameOverDefeat);
-
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -7060,10 +7051,8 @@ bool gt_VictoryEscortingCompleted_Func (bool testConds, bool runActions) {
         return true;
     }
     TriggerEnable(TriggerGetCurrent(), false);
-
     VictoryPanelAddCustomStatisticLine(StringExternal("Param/Value/63CB2206"), StringExternal("Param/Value/D5D27AD3"));
     VictoryPanelAddCustomStatisticLine(StringExternal("Param/Value/620A36D3"), StringExternal("Param/Value/550EAE47"));
-
     libCOMI_gf_BeforeFanfare(c_gameOverVictory);
     auto2B941A8E_val = RandomInt(1, 2);
     if (auto2B941A8E_val == 1) {
@@ -7079,8 +7068,6 @@ bool gt_VictoryEscortingCompleted_Func (bool testConds, bool runActions) {
     Wait(0.5, c_timeGame);
     libCOMI_gf_MoveCameraForAllPlayers(gv_lastCriticalEventPosition, 2.0);
     libCOMI_gf_AfterFanfare(c_gameOverVictory);
-
-
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -7140,7 +7127,6 @@ bool gt_Defeat_Func (bool testConds, bool runActions) {
 void gt_Defeat_Init () {
     gt_Defeat = TriggerCreate("gt_Defeat_Func");
 }
-
 //--------------------------------------------------------------------------------------------------
 // Trigger: Base Attack Wave 01A
 //--------------------------------------------------------------------------------------------------

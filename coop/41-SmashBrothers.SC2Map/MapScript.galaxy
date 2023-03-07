@@ -33,9 +33,9 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 const int gv_pLAYER_01_USER = 1;
 const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_VALERIAN = 3;
-const int gv_pLAYER_04_AMON = 4;
-const int gv_pLAYER_05_AMON2 = 5;
+const int gv_pLAYER_03_VALERIAN = 11;
+const int gv_pLAYER_04_AMON = 12;
+const int gv_pLAYER_05_AMON2 = 13;
 const int gv_pLAYER_06_AMON3 = 6;
 const int gv_pLAYER_07_AMON4 = 7;
 const int gv_pLAYER_08_PURIFIERS = 8;
@@ -436,7 +436,6 @@ bool gt_MyOwnInitialization_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_MyOwnInitialization_Init () {
     gt_MyOwnInitialization = TriggerCreate("gt_MyOwnInitialization_Func");
-    TriggerAddEventMapInit(gt_MyOwnInitialization);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Init 01 Load Data
@@ -454,6 +453,9 @@ void gt_Init01LoadData_Init () {
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
+
+
+    TriggerExecute(gt_MyOwnInitialization, true, false);
     TriggerExecute(gt_Init04Technology, true, false);
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
@@ -473,41 +475,6 @@ void gt_Init03LoadingComplete_Init () {
 // Trigger: Init 04 Technology
 //--------------------------------------------------------------------------------------------------
 bool gt_Init04Technology_Func (bool testConds, bool runActions) {
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_08_PURIFIERS, "VoidZealotSuperShields", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_08_PURIFIERS, "Charge", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_08_PURIFIERS, "StalkerResearchBlinkCharges", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_08_PURIFIERS, "ExtendedThermalLance", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_VALERIAN, "ShieldWall", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_03_VALERIAN, "FireSuppressionSystems", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, "ShieldWall", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, "ShieldWall", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, "ShieldWall", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, "ShieldWall", 1);
-    Wait(205.0, c_timeGame);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, "TerranInfantryArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, "TerranInfantryArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, "TerranInfantryArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, "TerranInfantryArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, "TerranInfantryWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, "TerranInfantryWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, "TerranInfantryWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, "TerranInfantryWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, "TerranVehicleArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, "TerranVehicleArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, "TerranVehicleArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, "TerranVehicleArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, "TerranVehicleWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, "TerranVehicleWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, "TerranVehicleWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, "TerranVehicleWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, "TerranShipWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, "TerranShipWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, "TerranShipWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, "TerranShipWeaponsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_04_AMON, "TerranShipArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_05_AMON2, "TerranShipArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_06_AMON3, "TerranShipArmorsLevel1", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(gv_pLAYER_07_AMON4, "TerranShipArmorsLevel1", 1);
     return true;
 }
 //--------------------------------------------------------------------------------------------------

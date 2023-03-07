@@ -7,7 +7,6 @@
 //==================================================================================================
 include "TriggerLibs/NativeLib"
 include "LibCOMI"
-include "Lib37CC0EF2"
 include "aiF917F4D7"
 
 //--------------------------------------------------------------------------------------------------
@@ -16,21 +15,20 @@ include "aiF917F4D7"
 void InitLibs () {
     libNtve_InitLib();
     libCOMI_InitLib();
-    lib37CC0EF2_InitLib();
 }
 
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
-const int gv_pLAYER_05_ALLY = 5;
+const int gv_pLAYER_03_ENEMY = 6;
+const int gv_pLAYER_04_ENEMY = 8;
+const int gv_pLAYER_05_ALLY = 9;
 
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
+int gv_pLAYER_01_USER;
+int gv_pLAYER_02_USER;
 playergroup gv_eNEMY_GROUP;
 timer gv_game_Lab_Start_Timer;
 int gv_game_Lab_Start_Timer_Window;
@@ -94,6 +92,8 @@ void InitGlobals () {
     int init_i;
     int init_j;
 
+    gv_pLAYER_01_USER = 1;
+    gv_pLAYER_02_USER = 2;
     gv_eNEMY_GROUP = PlayerGroupEmpty();
     gv_game_Lab_Start_Timer = TimerCreate();
     gv_game_Lab_Start_Timer_Window = c_timerWindowNone;
@@ -148,7 +148,6 @@ bool gf_CreateAirDropForcePartolET (int lp_resourceBucket, int lp_techLevel, reg
 //--------------------------------------------------------------------------------------------------
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
-trigger gt_Bankpreloading;
 trigger gt_Init01LoadData;
 trigger gt_Init02Players;
 trigger gt_Init03LoadingComplete;
@@ -408,7 +407,6 @@ trigger gt_TransmissionVictory;
 trigger gt_TransmissionDefeatAlliedDestroyed;
 trigger gt_TransmissionDefeatDreggFullyEvolved;
 trigger gt_Victory;
-trigger gt_DefeatAlliedBaseDestroyed;
 trigger gt_DefeatDreggFullyEvolved;
 trigger gt_Defeat;
 trigger gt_AIAttackWaves;
@@ -536,10 +534,10 @@ wave cai_wave_createdWave (int w, int p) {
 
 //--------------------------------------------------------------------------------------------------
 void cai_startall () {
-    AICampaignStart(3);
-    AICampaignStart(4);
-    AICampaignStart(5);
+    AICampaignStart(6);
     AICampaignStart(7);
+    AICampaignStart(8);
+    AICampaignStart(9);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -824,24 +822,6 @@ bool gf_CreateAirDropForcePartolET (int lp_resourceBucket, int lp_techLevel, reg
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Bank preloading
-//--------------------------------------------------------------------------------------------------
-bool gt_Bankpreloading_Func (bool testConds, bool runActions) {
-    // Automatic Variable Declarations
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Bankpreloading_Init () {
-    gt_Bankpreloading = TriggerCreate("gt_Bankpreloading_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Init 01 Load Data
 //--------------------------------------------------------------------------------------------------
 bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
@@ -856,7 +836,6 @@ bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TriggerExecute(gt_Init02Players, true, false);
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
@@ -883,6 +862,8 @@ bool gt_Init02Players_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     PlayerSetState(gv_pLAYER_05_ALLY, c_playerStateMineralCostIgnored, true);
     PlayerSetState(gv_pLAYER_05_ALLY, c_playerStateVespeneCostIgnored, true);
     PlayerSetState(gv_pLAYER_05_ALLY, c_playerStateFoodIgnored, true);
@@ -904,6 +885,7 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
         return true;
     }
 
+    TriggerExecute(gt_Init02Players, true, false);
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init09Doodads, true, false);
     TriggerExecute(gt_AIStart, true, false);
@@ -10829,7 +10811,7 @@ bool gt_Victory_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Victory);
+    libCOMI_gv_cM_GameOverResult = libCOMI_ge_CampaignMissionGameResultType_Victory;
     gv_game_Over = true;
     TransmissionClearAll();
     TriggerQueuePause(true);
@@ -10862,89 +10844,6 @@ void gt_Victory_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Defeat Allied Base Destroyed
-//--------------------------------------------------------------------------------------------------
-bool gt_DefeatAlliedBaseDestroyed_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    point lv_cameraTarget;
-
-    // Automatic Variable Declarations
-    unitgroup auto03ADDCCB_g;
-    int auto03ADDCCB_u;
-    unit auto03ADDCCB_var;
-
-    // Variable Initialization
-
-    // Conditions
-    if (testConds) {
-        if (!(lib37CC0EF2_gf_DefeatAnyPlayerBaseDead())) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    gv_game_Over = true;
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-    TriggerExecute(gt_TransmissionDefeatAlliedDestroyed, true, false);
-    if ((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_01_USER, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true)) {
-        lv_cameraTarget = PlayerStartLocation(gv_pLAYER_01_USER);
-    }
-    else {
-        lv_cameraTarget = PlayerStartLocation(gv_pLAYER_02_USER);
-    }
-    Wait(2.0, c_timeReal);
-    auto03ADDCCB_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
-    auto03ADDCCB_u = UnitGroupCount(auto03ADDCCB_g, c_unitCountAll);
-    for (;; auto03ADDCCB_u -= 1) {
-        auto03ADDCCB_var = UnitGroupUnitFromEnd(auto03ADDCCB_g, auto03ADDCCB_u);
-        if (auto03ADDCCB_var == null) { break; }
-        libNtve_gf_MakeUnitInvulnerable(auto03ADDCCB_var, true);
-    }
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_01_USER)) == false)) {
-        CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-        CameraPan(gv_pLAYER_01_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
-    }
-
-    if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_02_USER)) == false)) {
-        CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-        CameraPan(gv_pLAYER_02_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
-    }
-
-    Wait(4.0, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Defeat, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_DefeatAlliedBaseDestroyed_Init () {
-    gt_DefeatAlliedBaseDestroyed = TriggerCreate("gt_DefeatAlliedBaseDestroyed_Func");
-    TriggerAddEventTimePeriodic(gt_DefeatAlliedBaseDestroyed, 1.0, c_timeAI);
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Defeat Dregg Fully Evolved
 //--------------------------------------------------------------------------------------------------
 bool gt_DefeatDreggFullyEvolved_Func (bool testConds, bool runActions) {
@@ -10970,7 +10869,7 @@ bool gt_DefeatDreggFullyEvolved_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
+    libCOMI_gv_cM_GameOverResult = libCOMI_ge_CampaignMissionGameResultType_Defeat;
     gv_game_Over = true;
     TransmissionClearAll();
     TriggerQueuePause(true);
@@ -11373,7 +11272,6 @@ void gt_AttackWave07_Init () {
 // Trigger Initialization
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
-    gt_Bankpreloading_Init();
     gt_Init01LoadData_Init();
     gt_Init02Players_Init();
     gt_Init03LoadingComplete_Init();
@@ -11633,7 +11531,6 @@ void InitTriggers () {
     gt_TransmissionDefeatAlliedDestroyed_Init();
     gt_TransmissionDefeatDreggFullyEvolved_Init();
     gt_Victory_Init();
-    gt_DefeatAlliedBaseDestroyed_Init();
     gt_DefeatDreggFullyEvolved_Init();
     gt_Defeat_Init();
     gt_AIAttackWaves_Init();

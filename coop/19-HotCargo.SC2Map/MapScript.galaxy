@@ -841,10 +841,11 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
+int gv_pLAYER_01_USER = 1;
+int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 6;
+const int gv_pLAYER_04_ENEMY = 7;
+const int gv_pLAYER_05_ALLY = 8;
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
@@ -1101,9 +1102,9 @@ wave cai_wave_createdWave (int w, int p) {
 }
 //--------------------------------------------------------------------------------------------------
 void cai_startall () {
-    AICampaignStart(3);
-    AICampaignStart(4);
-    AICampaignStart(5);
+    AICampaignStart(gv_pLAYER_03_ENEMY);
+    AICampaignStart(gv_pLAYER_04_ENEMY);
+    AICampaignStart(gv_pLAYER_05_ALLY);
 }
 //--------------------------------------------------------------------------------------------------
 void cai_runall () {
@@ -1206,17 +1207,6 @@ void gt_UntitledTrigger001_Init () {
 // Trigger: Init 01 Load Data
 //--------------------------------------------------------------------------------------------------
 bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    playergroup auto0B258D10_g;
-    int auto0B258D10_p;
-    string auto834F8A5E_val;
-    // Variable Declarations
-    int lv_indexPlayer;
-    // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    TriggerExecute(gt_Init02Players, true, false);
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
@@ -1229,39 +1219,8 @@ void gt_Init01LoadData_Init () {
 // Trigger: Init 02 Players
 //--------------------------------------------------------------------------------------------------
 bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    playergroup autoE0EF2853_g;
-    int autoE0EF2853_p;
-    playergroup autoB969537F_g;
-    int autoB969537F_p;
-    // Variable Declarations
-    int lv_playerIterEnemy;
-    int lv_playerIterAlly;
-    // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_03_ENEMY);
-    PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_04_ENEMY);
-    libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    autoE0EF2853_g = gv_enemyGroup; 
-    autoE0EF2853_p = 1;
-    for ( ; autoE0EF2853_p <= PlayerGroupCount(autoE0EF2853_g) ; autoE0EF2853_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p)) ) {
-        lv_playerIterEnemy = PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-        PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
-        autoB969537F_g = libCOMI_gf_HumanPlayers();
-        autoB969537F_p = 1;
-        for ( ; autoB969537F_p <= PlayerGroupCount(autoB969537F_g) ; autoB969537F_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoB969537F_g, autoB969537F_p)) ) {
-            lv_playerIterAlly = PlayerGroupPlayer(autoB969537F_g, autoB969537F_p);
-            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-        }
-    }
-    PlayerSetAlliance(gv_pLAYER_03_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
-    PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_03_ENEMY, true);
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -1272,10 +1231,7 @@ void gt_Init02Players_Init () {
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
+    TriggerExecute(gt_Init02Players, true, false);
     TriggerExecute(gt_Init04Technology, true, false);
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
@@ -1331,17 +1287,10 @@ void gt_Init06MusicSound_Init () {
 // Trigger: Init 07 Environment
 //--------------------------------------------------------------------------------------------------
 bool gt_Init07Environment_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    GameTimeOfDaySet("08:00:00");
-    VisExploreArea(gv_pLAYER_01_USER, RegionFromId(49), true, false);
-    VisExploreArea(gv_pLAYER_02_USER, RegionFromId(49), true, false);
-    VisExploreArea(1, RegionFromId(15), true, false);
-    VisExploreArea(1, RegionFromId(12), true, false);
-    VisExploreArea(2, RegionFromId(15), true, false);
-    VisExploreArea(2, RegionFromId(12), true, false);
+    VisExploreArea(gv_pLAYER_01_USER, RegionFromId(15), true, false);
+    VisExploreArea(gv_pLAYER_01_USER, RegionFromId(12), true, false);
+    VisExploreArea(gv_pLAYER_02_USER, RegionFromId(15), true, false);
+    VisExploreArea(gv_pLAYER_02_USER, RegionFromId(12), true, false);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -1352,10 +1301,6 @@ void gt_Init07Environment_Init () {
 // Trigger: Init 08 Difficulties
 //--------------------------------------------------------------------------------------------------
 bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    fixed lv_bonusObjectiveLife;
-    fixed lv_mainObjectiveLife;
-    // Variable Initialization
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -1685,7 +1630,7 @@ bool gt_DustStormCycle_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_DustStormCycle_Init () {
     gt_DustStormCycle = TriggerCreate("gt_DustStormCycle_Func");
-    TriggerAddEventTimePeriodic(gt_DustStormCycle, 300.0, c_timeGame);
+    TriggerAddEventTimePeriodic(gt_DustStormCycle, 300.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Dust Storm Expire
@@ -1743,7 +1688,7 @@ bool gt_EnemyFollowsConvoy_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_EnemyFollowsConvoy_Init () {
     gt_EnemyFollowsConvoy = TriggerCreate("gt_EnemyFollowsConvoy_Func");
-    TriggerAddEventTimePeriodic(gt_EnemyFollowsConvoy, 2.0, c_timeGame);
+    TriggerAddEventTimePeriodic(gt_EnemyFollowsConvoy, 2.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Friendly Fire Off
@@ -1751,7 +1696,7 @@ void gt_EnemyFollowsConvoy_Init () {
 bool gt_FriendlyFireOff_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnitTargetUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnitTargetUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
         if (!(((UnitGetOwner(EventUnit()) == 1) || (UnitGetOwner(EventUnit()) == 2)))) {
@@ -1787,7 +1732,7 @@ bool gt_ConvoyDies_Func (bool testConds, bool runActions) {
         if (!((UnitGetType(EventUnit()) == "ColonistTransport"))) {
             return false;
         }
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
     }
@@ -1837,7 +1782,7 @@ bool gt_EvacShuttle_Func (bool testConds, bool runActions) {
         return true;
     }
     libCOMI_gf_SendSplitMissionTransmission("DefendSucces", true, 1, -1);
-    libNtve_gf_CreateUnitsWithDefaultFacing(1, "SpecialOpsDropship", 0, 5, PointFromId(2124432642));
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "SpecialOpsDropship", 0, gv_pLAYER_05_ALLY, PointFromId(2124432642));
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1634216977)), c_orderQueueReplace);
     return true;
 }
@@ -1851,7 +1796,7 @@ void gt_EvacShuttle_Init () {
 bool gt_EvacShuttleLeaves_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
     }
@@ -1875,10 +1820,10 @@ bool gt_Convoy4Spawn_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UnitCreate(1, "ColonistTransport", 0, 5, PointFromId(67760863), 270.0);
+    UnitCreate(1, "ColonistTransport", 0, gv_pLAYER_05_ALLY, PointFromId(67760863), 270.0);
     UnitGroupAdd(gv_convoyG4, UnitLastCreated());
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 3);
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 4);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_03_ENEMY);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_04_ENEMY);
     RegionAttachToUnit(RegionFromId(17), UnitLastCreated(), Point(0.0, 0.0));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitGroupUnit(gv_convoyG4, 1)), null);
     TransmissionSendForPlayerSelect(libCOMI_gf_HumanPlayers(), TransmissionSource(), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("acObj_TerranAdjutant_175", -1), StringExternal("Param/Value/415CB859"), StringExternal("Param/Value/9CA86420"), 2.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
@@ -1892,7 +1837,7 @@ bool gt_Convoy4Spawn_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy4Spawn_Init () {
     gt_Convoy4Spawn = TriggerCreate("gt_Convoy4Spawn_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy4Spawn, 90.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy4Spawn, 90.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy4Rally
@@ -1903,7 +1848,7 @@ bool gt_Convoy4Rally_Func (bool testConds, bool runActions) {
     // Variable Initialization
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
         if (!((lv_triggerIndex == 0))) {
@@ -1931,7 +1876,7 @@ void gt_Convoy4Rally_Init () {
 bool gt_Convoy4Home_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
         if (!((UnitGetType(EventUnit()) == "ColonistTransport"))) {
@@ -1985,7 +1930,7 @@ bool gt_Convoy1Warning_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy1Warning_Init () {
     gt_Convoy1Warning = TriggerCreate("gt_Convoy1Warning_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy1Warning, 430.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy1Warning, 430.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy1Spawn
@@ -1995,10 +1940,10 @@ bool gt_Convoy1Spawn_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UnitCreate(1, "ColonistTransport", 0, 5, PointFromId(508885450), 270.0);
+    UnitCreate(1, "ColonistTransport", 0, gv_pLAYER_05_ALLY, PointFromId(508885450), 270.0);
     UnitGroupAdd(gv_convoyG1, UnitLastCreated());
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 3);
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 4);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_03_ENEMY);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_04_ENEMY);
     RegionAttachToUnit(RegionFromId(17), UnitLastCreated(), Point(0.0, 0.0));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitGroupUnit(gv_convoyG1, 1)), null);
     TriggerExecute(gt_tConvoyA, true, false);
@@ -2014,7 +1959,7 @@ bool gt_Convoy1Spawn_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy1Spawn_Init () {
     gt_Convoy1Spawn = TriggerCreate("gt_Convoy1Spawn_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy1Spawn, 460.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy1Spawn, 460.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy1Rally
@@ -2044,7 +1989,7 @@ void gt_Convoy1Rally_Init () {
 bool gt_Convoy1Home_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
         if (!((UnitGetType(EventUnit()) == "ColonistTransport"))) {
@@ -2097,7 +2042,7 @@ bool gt_Convoy3Warning_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy3Warning_Init () {
     gt_Convoy3Warning = TriggerCreate("gt_Convoy3Warning_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy3Warning, 600.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy3Warning, 600.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy3Spawn
@@ -2107,10 +2052,10 @@ bool gt_Convoy3Spawn_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UnitCreate(1, "ColonistTransport", 0, 5, PointFromId(1524762657), 270.0);
+    UnitCreate(1, "ColonistTransport", 0, gv_pLAYER_05_ALLY, PointFromId(1524762657), 270.0);
     UnitGroupAdd(gv_convoyG3, UnitLastCreated());
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 3);
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 4);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_03_ENEMY);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_04_ENEMY);
     RegionAttachToUnit(RegionFromId(17), UnitLastCreated(), Point(0.0, 0.0));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitGroupUnit(gv_convoyG3, 1)), null);
     TriggerExecute(gt_tConvoyB, true, false);
@@ -2126,7 +2071,7 @@ bool gt_Convoy3Spawn_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy3Spawn_Init () {
     gt_Convoy3Spawn = TriggerCreate("gt_Convoy3Spawn_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy3Spawn, 630.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy3Spawn, 630.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy3Rally
@@ -2178,7 +2123,7 @@ void gt_Convoy3Rally3_Init () {
 bool gt_Convoy3Home_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
         if (!((UnitGetType(EventUnit()) == "ColonistTransport"))) {
@@ -2233,7 +2178,7 @@ bool gt_Convoy2Warning_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy2Warning_Init () {
     gt_Convoy2Warning = TriggerCreate("gt_Convoy2Warning_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy2Warning, 810.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy2Warning, 810.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy2Spawn
@@ -2243,10 +2188,10 @@ bool gt_Convoy2Spawn_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UnitCreate(1, "ColonistTransport", 0, 5, PointFromId(311514091), 270.0);
+    UnitCreate(1, "ColonistTransport", 0, gv_pLAYER_05_ALLY, PointFromId(311514091), 270.0);
     UnitGroupAdd(gv_convoyG2, UnitLastCreated());
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 3);
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 4);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_03_ENEMY);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_04_ENEMY);
     RegionAttachToUnit(RegionFromId(17), UnitLastCreated(), Point(0.0, 0.0));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitGroupUnit(gv_convoyG2, 1)), null);
     TriggerExecute(gt_tConvoyC, true, false);
@@ -2263,7 +2208,7 @@ bool gt_Convoy2Spawn_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy2Spawn_Init () {
     gt_Convoy2Spawn = TriggerCreate("gt_Convoy2Spawn_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy2Spawn, 840.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy2Spawn, 840.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy2Rally
@@ -2337,7 +2282,7 @@ void gt_Convoy2Rally6_Init () {
 bool gt_Convoy2Home_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
         if (!((UnitGetType(EventUnit()) == "ColonistTransport"))) {
@@ -2386,7 +2331,7 @@ bool gt_Convoy4Warning2_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy4Warning2_Init () {
     gt_Convoy4Warning2 = TriggerCreate("gt_Convoy4Warning2_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy4Warning2, 1020.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy4Warning2, 1020.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy4Spawn 2
@@ -2396,10 +2341,10 @@ bool gt_Convoy4Spawn2_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UnitCreate(1, "ColonistTransport", 0, 5, PointFromId(67760863), 270.0);
+    UnitCreate(1, "ColonistTransport", 0, gv_pLAYER_05_ALLY, PointFromId(67760863), 270.0);
     UnitGroupAdd(gv_convoyG4, UnitLastCreated());
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 3);
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 4);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_03_ENEMY);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_04_ENEMY);
     RegionAttachToUnit(RegionFromId(17), UnitLastCreated(), Point(0.0, 0.0));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitGroupUnit(gv_convoyG4, 1)), null);
     TriggerExecute(gt_tConvoyD, true, false);
@@ -2417,7 +2362,7 @@ bool gt_Convoy4Spawn2_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy4Spawn2_Init () {
     gt_Convoy4Spawn2 = TriggerCreate("gt_Convoy4Spawn2_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy4Spawn2, 1050.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy4Spawn2, 1050.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy4Rally 2
@@ -2456,7 +2401,7 @@ bool gt_Convoy4Home2_Func (bool testConds, bool runActions) {
         if (!((GameGetMissionTime() > 1000.0))) {
             return false;
         }
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
         if (!((UnitGetType(EventUnit()) == "ColonistTransport"))) {
@@ -2511,7 +2456,7 @@ bool gt_Convoy3Warning2_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy3Warning2_Init () {
     gt_Convoy3Warning2 = TriggerCreate("gt_Convoy3Warning2_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy3Warning2, 1020.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy3Warning2, 1020.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy3Spawn 2
@@ -2521,10 +2466,10 @@ bool gt_Convoy3Spawn2_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UnitCreate(1, "ColonistTransport", 0, 5, PointFromId(1524762657), 270.0);
+    UnitCreate(1, "ColonistTransport", 0, gv_pLAYER_05_ALLY, PointFromId(1524762657), 270.0);
     UnitGroupAdd(gv_convoyG3, UnitLastCreated());
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 3);
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 4);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_03_ENEMY);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_04_ENEMY);
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitGroupUnit(gv_convoyG3, 1)), null);
     gv_convoyP3 = PingLastCreated();
     PingSetUnit(gv_convoyP3, UnitGroupUnit(gv_convoyG3, 1));
@@ -2535,7 +2480,7 @@ bool gt_Convoy3Spawn2_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy3Spawn2_Init () {
     gt_Convoy3Spawn2 = TriggerCreate("gt_Convoy3Spawn2_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy3Spawn2, 1050.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy3Spawn2, 1050.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy3Rally 2
@@ -2571,7 +2516,7 @@ void gt_Convoy3Rally2_Init () {
 bool gt_Convoy3Home2_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
         if (!((UnitGetType(EventUnit()) == "ColonistTransport"))) {
@@ -2625,7 +2570,7 @@ bool gt_Convoy1Warning2_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy1Warning2_Init () {
     gt_Convoy1Warning2 = TriggerCreate("gt_Convoy1Warning2_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy1Warning2, 1290.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy1Warning2, 1290.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy1Spawn 2
@@ -2635,10 +2580,10 @@ bool gt_Convoy1Spawn2_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UnitCreate(1, "ColonistTransport", 0, 5, PointFromId(508885450), 270.0);
+    UnitCreate(1, "ColonistTransport", 0, gv_pLAYER_05_ALLY, PointFromId(508885450), 270.0);
     UnitGroupAdd(gv_convoyG1, UnitLastCreated());
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 3);
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 4);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_03_ENEMY);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_04_ENEMY);
     RegionAttachToUnit(RegionFromId(17), UnitLastCreated(), Point(0.0, 0.0));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitGroupUnit(gv_convoyG1, 1)), null);
     TriggerExecute(gt_tConvoyE, true, false);
@@ -2654,7 +2599,7 @@ bool gt_Convoy1Spawn2_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy1Spawn2_Init () {
     gt_Convoy1Spawn2 = TriggerCreate("gt_Convoy1Spawn2_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy1Spawn2, 1320.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy1Spawn2, 1320.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy1Rally 2
@@ -2690,7 +2635,7 @@ void gt_Convoy1Rally2_Init () {
 bool gt_Convoy1Home2_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
         if (!((UnitGetType(EventUnit()) == "ColonistTransport"))) {
@@ -2744,7 +2689,7 @@ bool gt_Convoy2Warning2_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy2Warning2_Init () {
     gt_Convoy2Warning2 = TriggerCreate("gt_Convoy2Warning2_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy2Warning2, 1290.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy2Warning2, 1290.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy2Spawn 2
@@ -2754,10 +2699,10 @@ bool gt_Convoy2Spawn2_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UnitCreate(1, "ColonistTransport", 0, 5, PointFromId(311514091), 270.0);
+    UnitCreate(1, "ColonistTransport", 0, gv_pLAYER_05_ALLY, PointFromId(311514091), 270.0);
     UnitGroupAdd(gv_convoyG2, UnitLastCreated());
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 3);
-    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, 4);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_03_ENEMY);
+    libNtve_gf_ShareVisionofUnit(UnitLastCreated(), true, gv_pLAYER_04_ENEMY);
     RegionAttachToUnit(RegionFromId(18), UnitLastCreated(), Point(0.0, 0.0));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitGroupUnit(gv_convoyG2, 1)), null);
     gv_convoyP2 = PingLastCreated();
@@ -2771,7 +2716,7 @@ bool gt_Convoy2Spawn2_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_Convoy2Spawn2_Init () {
     gt_Convoy2Spawn2 = TriggerCreate("gt_Convoy2Spawn2_Func");
-    TriggerAddEventTimeElapsed(gt_Convoy2Spawn2, 1320.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Convoy2Spawn2, 1320.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Convoy2Rally 4
@@ -2863,7 +2808,7 @@ void gt_Convoy2Rally5_Init () {
 bool gt_Convoy2Home2_Func (bool testConds, bool runActions) {
     // Conditions
     if (testConds) {
-        if (!((UnitGetOwner(EventUnit()) == 5))) {
+        if (!((UnitGetOwner(EventUnit()) == gv_pLAYER_05_ALLY))) {
             return false;
         }
         if (!((UnitGetType(EventUnit()) == "ColonistTransport"))) {
@@ -2901,13 +2846,13 @@ bool gt_test_Func (bool testConds, bool runActions) {
         return true;
     }
     libCOMI_gf_EnableDisableCoopAIWavePings(false);
-    AISetBullyRebuildDelay(libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), 3);
-    AISetBullyRebuildDelay(libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), 4);
+    AISetBullyRebuildDelay(libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), gv_pLAYER_03_ENEMY);
+    AISetBullyRebuildDelay(libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), gv_pLAYER_04_ENEMY);
     PlayerSetLighting(1, "AgriaSunset", 9.0);
-    AINearestTownBullyRebuild(3, true);
-    AIToggleBulliesInRegion(3, RegionFromId(11), false);
-    AIToggleBulliesInRegion(3, RegionFromId(16), false);
-    AINearestTownBullyRebuild(4, true);
+    AINearestTownBullyRebuild(gv_pLAYER_03_ENEMY, true);
+    AIToggleBulliesInRegion(gv_pLAYER_03_ENEMY, RegionFromId(11), false);
+    AIToggleBulliesInRegion(gv_pLAYER_03_ENEMY, RegionFromId(16), false);
+    AINearestTownBullyRebuild(gv_pLAYER_04_ENEMY, true);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -2925,15 +2870,9 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    AISetBullyRebuildDelay(libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), 3);
-    AISetBullyRebuildDelay(libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), 4);
+    AISetBullyRebuildDelay(libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), gv_pLAYER_03_ENEMY);
+    AISetBullyRebuildDelay(libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), libNtve_gf_DifficultyValueFixed(120.0, 120.0, 120.0, 120.0), gv_pLAYER_04_ENEMY);
     libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(10), "DustStorms");
-    libCOMI_gf_SetAllianceCoop(1, 5, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-    libCOMI_gf_SetAllianceCoop(2, 5, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-    libCOMI_gf_SetAllianceCoop(5, 1, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-    libCOMI_gf_SetAllianceCoop(5, 1, libNtve_ge_AllianceSetting_AllyWithSharedVision);
-    UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/068743D5"), null, PlayerStartLocation(gv_pLAYER_01_USER));
-    UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/187E0E6E"), null, PlayerStartLocation(gv_pLAYER_02_USER));
     Wait(7.0, c_timeReal);
     TriggerQueueEnter();
     TriggerExecute(gt_ObjectiveEscortTheConvoyCreate2, true, true);
@@ -2976,7 +2915,7 @@ bool gt_UpdateConvoyCount_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_UpdateConvoyCount_Init () {
     gt_UpdateConvoyCount = TriggerCreate("gt_UpdateConvoyCount_Func");
-    TriggerAddEventTimePeriodic(gt_UpdateConvoyCount, 0.5, c_timeGame);
+    TriggerAddEventTimePeriodic(gt_UpdateConvoyCount, 0.5, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Enemy Attacking Q
@@ -3377,14 +3316,14 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto259CC4C7_ai = 1;
             lv_index = 1;
             for ( ; ( (auto259CC4C7_ai >= 0 && lv_index <= auto259CC4C7_ae) || (auto259CC4C7_ai <= 0 && lv_index >= auto259CC4C7_ae) ) ; lv_index += auto259CC4C7_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 3, PointFromId(1231254673));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_03_ENEMY, PointFromId(1231254673));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             auto3D78A8E8_ae = 9;
             auto3D78A8E8_ai = 1;
             lv_index = 1;
             for ( ; ( (auto3D78A8E8_ai >= 0 && lv_index <= auto3D78A8E8_ae) || (auto3D78A8E8_ai <= 0 && lv_index >= auto3D78A8E8_ae) ) ; lv_index += auto3D78A8E8_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Baneling", 0, 3, PointFromId(1231254673));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Baneling", 0, gv_pLAYER_03_ENEMY, PointFromId(1231254673));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG1, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3394,14 +3333,14 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto34A640A6_ai = 1;
             lv_index = 1;
             for ( ; ( (auto34A640A6_ai >= 0 && lv_index <= auto34A640A6_ae) || (auto34A640A6_ai <= 0 && lv_index >= auto34A640A6_ae) ) ; lv_index += auto34A640A6_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 3, PointFromId(1231254673));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, gv_pLAYER_03_ENEMY, PointFromId(1231254673));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             autoA9644C3F_ae = 7;
             autoA9644C3F_ai = 1;
             lv_index = 1;
             for ( ; ( (autoA9644C3F_ai >= 0 && lv_index <= autoA9644C3F_ae) || (autoA9644C3F_ai <= 0 && lv_index >= autoA9644C3F_ae) ) ; lv_index += autoA9644C3F_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 3, PointFromId(1231254673));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_03_ENEMY, PointFromId(1231254673));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG1, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3411,14 +3350,14 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             autoC6A66E8C_ai = 1;
             lv_index = 1;
             for ( ; ( (autoC6A66E8C_ai >= 0 && lv_index <= autoC6A66E8C_ae) || (autoC6A66E8C_ai <= 0 && lv_index >= autoC6A66E8C_ae) ) ; lv_index += autoC6A66E8C_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 3, PointFromId(1231254673));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_03_ENEMY, PointFromId(1231254673));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             auto0B51753A_ae = 15;
             auto0B51753A_ai = 1;
             lv_index = 1;
             for ( ; ( (auto0B51753A_ai >= 0 && lv_index <= auto0B51753A_ae) || (auto0B51753A_ai <= 0 && lv_index >= auto0B51753A_ae) ) ; lv_index += auto0B51753A_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 3, PointFromId(1231254673));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_03_ENEMY, PointFromId(1231254673));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG1, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3433,21 +3372,21 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto3B69A6D0_ai = 1;
             lv_index = 1;
             for ( ; ( (auto3B69A6D0_ai >= 0 && lv_index <= auto3B69A6D0_ae) || (auto3B69A6D0_ai <= 0 && lv_index >= auto3B69A6D0_ae) ) ; lv_index += auto3B69A6D0_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             autoBDB86CFB_ae = 9;
             autoBDB86CFB_ai = 1;
             lv_index = 1;
             for ( ; ( (autoBDB86CFB_ai >= 0 && lv_index <= autoBDB86CFB_ae) || (autoBDB86CFB_ai <= 0 && lv_index >= autoBDB86CFB_ae) ) ; lv_index += autoBDB86CFB_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             autoE602DD82_ae = 3;
             autoE602DD82_ai = 1;
             lv_index = 1;
             for ( ; ( (autoE602DD82_ai >= 0 && lv_index <= autoE602DD82_ae) || (autoE602DD82_ai <= 0 && lv_index >= autoE602DD82_ae) ) ; lv_index += autoE602DD82_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG3, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3457,21 +3396,21 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto28CB2B37_ai = 1;
             lv_index = 1;
             for ( ; ( (auto28CB2B37_ai >= 0 && lv_index <= auto28CB2B37_ae) || (auto28CB2B37_ai <= 0 && lv_index >= auto28CB2B37_ae) ) ; lv_index += auto28CB2B37_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto117B9642_ae = 7;
             auto117B9642_ai = 1;
             lv_index = 1;
             for ( ; ( (auto117B9642_ai >= 0 && lv_index <= auto117B9642_ae) || (auto117B9642_ai <= 0 && lv_index >= auto117B9642_ae) ) ; lv_index += auto117B9642_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto375BE700_ae = 3;
             auto375BE700_ai = 1;
             lv_index = 1;
             for ( ; ( (auto375BE700_ai >= 0 && lv_index <= auto375BE700_ae) || (auto375BE700_ai <= 0 && lv_index >= auto375BE700_ae) ) ; lv_index += auto375BE700_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "InfestedAbomination", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "InfestedAbomination", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG3, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3481,28 +3420,28 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto61519619_ai = 1;
             lv_index = 1;
             for ( ; ( (auto61519619_ai >= 0 && lv_index <= auto61519619_ae) || (auto61519619_ai <= 0 && lv_index >= auto61519619_ae) ) ; lv_index += auto61519619_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             autoD53A88C4_ae = 7;
             autoD53A88C4_ai = 1;
             lv_index = 1;
             for ( ; ( (autoD53A88C4_ai >= 0 && lv_index <= autoD53A88C4_ae) || (autoD53A88C4_ai <= 0 && lv_index >= autoD53A88C4_ae) ) ; lv_index += autoD53A88C4_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             autoBA6740E8_ae = 3;
             autoBA6740E8_ai = 1;
             lv_index = 1;
             for ( ; ( (autoBA6740E8_ai >= 0 && lv_index <= autoBA6740E8_ae) || (autoBA6740E8_ai <= 0 && lv_index >= autoBA6740E8_ae) ) ; lv_index += autoBA6740E8_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto1534B294_ae = 2;
             auto1534B294_ai = 1;
             lv_index = 1;
             for ( ; ( (auto1534B294_ai >= 0 && lv_index <= auto1534B294_ae) || (auto1534B294_ai <= 0 && lv_index >= auto1534B294_ae) ) ; lv_index += auto1534B294_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG3, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3519,21 +3458,21 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto0DB5B9D9_ai = 1;
             lv_index = 1;
             for ( ; ( (auto0DB5B9D9_ai >= 0 && lv_index <= auto0DB5B9D9_ae) || (auto0DB5B9D9_ai <= 0 && lv_index >= auto0DB5B9D9_ae) ) ; lv_index += auto0DB5B9D9_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto13A4A4B4_ae = 3;
             auto13A4A4B4_ai = 1;
             lv_index = 1;
             for ( ; ( (auto13A4A4B4_ai >= 0 && lv_index <= auto13A4A4B4_ae) || (auto13A4A4B4_ai <= 0 && lv_index >= auto13A4A4B4_ae) ) ; lv_index += auto13A4A4B4_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto921A8EDC_ae = 11;
             auto921A8EDC_ai = 1;
             lv_index = 1;
             for ( ; ( (auto921A8EDC_ai >= 0 && lv_index <= auto921A8EDC_ae) || (auto921A8EDC_ai <= 0 && lv_index >= auto921A8EDC_ae) ) ; lv_index += auto921A8EDC_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG2, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3543,21 +3482,21 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto0EF15D4E_ai = 1;
             lv_index = 1;
             for ( ; ( (auto0EF15D4E_ai >= 0 && lv_index <= auto0EF15D4E_ae) || (auto0EF15D4E_ai <= 0 && lv_index >= auto0EF15D4E_ae) ) ; lv_index += auto0EF15D4E_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto6DCB0EE5_ae = 2;
             auto6DCB0EE5_ai = 1;
             lv_index = 1;
             for ( ; ( (auto6DCB0EE5_ai >= 0 && lv_index <= auto6DCB0EE5_ae) || (auto6DCB0EE5_ai <= 0 && lv_index >= auto6DCB0EE5_ae) ) ; lv_index += auto6DCB0EE5_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto054433E8_ae = 4;
             auto054433E8_ai = 1;
             lv_index = 1;
             for ( ; ( (auto054433E8_ai >= 0 && lv_index <= auto054433E8_ae) || (auto054433E8_ai <= 0 && lv_index >= auto054433E8_ae) ) ; lv_index += auto054433E8_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "InfestedAbomination", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "InfestedAbomination", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG2, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3567,21 +3506,21 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             autoBC60E4E1_ai = 1;
             lv_index = 1;
             for ( ; ( (autoBC60E4E1_ai >= 0 && lv_index <= autoBC60E4E1_ae) || (autoBC60E4E1_ai <= 0 && lv_index >= autoBC60E4E1_ae) ) ; lv_index += autoBC60E4E1_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto1D3B456A_ae = 10;
             auto1D3B456A_ai = 1;
             lv_index = 1;
             for ( ; ( (auto1D3B456A_ai >= 0 && lv_index <= auto1D3B456A_ae) || (auto1D3B456A_ai <= 0 && lv_index >= auto1D3B456A_ae) ) ; lv_index += auto1D3B456A_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto30CB4CA4_ae = 9;
             auto30CB4CA4_ai = 1;
             lv_index = 1;
             for ( ; ( (auto30CB4CA4_ai >= 0 && lv_index <= auto30CB4CA4_ae) || (auto30CB4CA4_ai <= 0 && lv_index >= auto30CB4CA4_ae) ) ; lv_index += auto30CB4CA4_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG2, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3597,28 +3536,28 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             autoE11348F1_ai = 1;
             lv_index = 1;
             for ( ; ( (autoE11348F1_ai >= 0 && lv_index <= autoE11348F1_ae) || (autoE11348F1_ai <= 0 && lv_index >= autoE11348F1_ae) ) ; lv_index += autoE11348F1_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto6D277A71_ae = 4;
             auto6D277A71_ai = 1;
             lv_index = 1;
             for ( ; ( (auto6D277A71_ai >= 0 && lv_index <= auto6D277A71_ae) || (auto6D277A71_ai <= 0 && lv_index >= auto6D277A71_ae) ) ; lv_index += auto6D277A71_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             autoF57E2197_ae = 11;
             autoF57E2197_ai = 1;
             lv_index = 1;
             for ( ; ( (autoF57E2197_ai >= 0 && lv_index <= autoF57E2197_ae) || (autoF57E2197_ai <= 0 && lv_index >= autoF57E2197_ae) ) ; lv_index += autoF57E2197_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto34E329BC_ae = 10;
             auto34E329BC_ai = 1;
             lv_index = 1;
             for ( ; ( (auto34E329BC_ai >= 0 && lv_index <= auto34E329BC_ae) || (auto34E329BC_ai <= 0 && lv_index >= auto34E329BC_ae) ) ; lv_index += auto34E329BC_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG3, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3628,35 +3567,35 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto18803B22_ai = 1;
             lv_index = 1;
             for ( ; ( (auto18803B22_ai >= 0 && lv_index <= auto18803B22_ae) || (auto18803B22_ai <= 0 && lv_index >= auto18803B22_ae) ) ; lv_index += auto18803B22_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             autoEACA2008_ae = 3;
             autoEACA2008_ai = 1;
             lv_index = 1;
             for ( ; ( (autoEACA2008_ai >= 0 && lv_index <= autoEACA2008_ae) || (autoEACA2008_ai <= 0 && lv_index >= autoEACA2008_ae) ) ; lv_index += autoEACA2008_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "InfestedAbomination", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "InfestedAbomination", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto5078C6C5_ae = 7;
             auto5078C6C5_ai = 1;
             lv_index = 1;
             for ( ; ( (auto5078C6C5_ai >= 0 && lv_index <= auto5078C6C5_ae) || (auto5078C6C5_ai <= 0 && lv_index >= auto5078C6C5_ae) ) ; lv_index += auto5078C6C5_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto7AB122F3_ae = 6;
             auto7AB122F3_ai = 1;
             lv_index = 1;
             for ( ; ( (auto7AB122F3_ai >= 0 && lv_index <= auto7AB122F3_ae) || (auto7AB122F3_ai <= 0 && lv_index >= auto7AB122F3_ae) ) ; lv_index += auto7AB122F3_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Baneling", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Baneling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto5776F42B_ae = 1;
             auto5776F42B_ai = 1;
             lv_index = 1;
             for ( ; ( (auto5776F42B_ai >= 0 && lv_index <= auto5776F42B_ae) || (auto5776F42B_ai <= 0 && lv_index >= auto5776F42B_ae) ) ; lv_index += auto5776F42B_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Omegalisk", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Omegalisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG3, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3666,35 +3605,35 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto90103352_ai = 1;
             lv_index = 1;
             for ( ; ( (auto90103352_ai >= 0 && lv_index <= auto90103352_ae) || (auto90103352_ai <= 0 && lv_index >= auto90103352_ae) ) ; lv_index += auto90103352_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto0FAE80C3_ae = 2;
             auto0FAE80C3_ai = 1;
             lv_index = 1;
             for ( ; ( (auto0FAE80C3_ai >= 0 && lv_index <= auto0FAE80C3_ae) || (auto0FAE80C3_ai <= 0 && lv_index >= auto0FAE80C3_ae) ) ; lv_index += auto0FAE80C3_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             autoC69EE025_ae = 7;
             autoC69EE025_ai = 1;
             lv_index = 1;
             for ( ; ( (autoC69EE025_ai >= 0 && lv_index <= autoC69EE025_ae) || (autoC69EE025_ai <= 0 && lv_index >= autoC69EE025_ae) ) ; lv_index += autoC69EE025_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto5AB2C127_ae = 2;
             auto5AB2C127_ai = 1;
             lv_index = 1;
             for ( ; ( (auto5AB2C127_ai >= 0 && lv_index <= auto5AB2C127_ae) || (auto5AB2C127_ai <= 0 && lv_index >= auto5AB2C127_ae) ) ; lv_index += auto5AB2C127_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             auto35CF024D_ae = 2;
             auto35CF024D_ai = 1;
             lv_index = 1;
             for ( ; ( (auto35CF024D_ai >= 0 && lv_index <= auto35CF024D_ae) || (auto35CF024D_ai <= 0 && lv_index >= auto35CF024D_ae) ) ; lv_index += auto35CF024D_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDominator", 0, 4, RegionGetCenter(RegionFromId(13)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDominator", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(13)));
                 UnitGroupAdd(gv_enemyG3, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG3, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3710,49 +3649,49 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto383243A4_ai = 1;
             lv_index = 1;
             for ( ; ( (auto383243A4_ai >= 0 && lv_index <= auto383243A4_ae) || (auto383243A4_ai <= 0 && lv_index >= auto383243A4_ae) ) ; lv_index += auto383243A4_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             auto444E8121_ae = 8;
             auto444E8121_ai = 1;
             lv_index = 1;
             for ( ; ( (auto444E8121_ai >= 0 && lv_index <= auto444E8121_ae) || (auto444E8121_ai <= 0 && lv_index >= auto444E8121_ae) ) ; lv_index += auto444E8121_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             auto34009AAE_ae = 5;
             auto34009AAE_ai = 1;
             lv_index = 1;
             for ( ; ( (auto34009AAE_ai >= 0 && lv_index <= auto34009AAE_ae) || (auto34009AAE_ai <= 0 && lv_index >= auto34009AAE_ae) ) ; lv_index += auto34009AAE_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             auto80B1E243_ae = 5;
             auto80B1E243_ai = 1;
             lv_index = 1;
             for ( ; ( (auto80B1E243_ai >= 0 && lv_index <= auto80B1E243_ae) || (auto80B1E243_ai <= 0 && lv_index >= auto80B1E243_ae) ) ; lv_index += auto80B1E243_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             autoB65B75AE_ae = 2;
             autoB65B75AE_ai = 1;
             lv_index = 1;
             for ( ; ( (autoB65B75AE_ai >= 0 && lv_index <= autoB65B75AE_ae) || (autoB65B75AE_ai <= 0 && lv_index >= autoB65B75AE_ae) ) ; lv_index += autoB65B75AE_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "InfestedAbomination", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "InfestedAbomination", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             autoD04B77D1_ae = 2;
             autoD04B77D1_ai = 1;
             lv_index = 1;
             for ( ; ( (autoD04B77D1_ai >= 0 && lv_index <= autoD04B77D1_ae) || (autoD04B77D1_ai <= 0 && lv_index >= autoD04B77D1_ae) ) ; lv_index += autoD04B77D1_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             auto6DCF5420_ae = 1;
             auto6DCF5420_ai = 1;
             lv_index = 1;
             for ( ; ( (auto6DCF5420_ai >= 0 && lv_index <= auto6DCF5420_ae) || (auto6DCF5420_ai <= 0 && lv_index >= auto6DCF5420_ae) ) ; lv_index += auto6DCF5420_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Leviathan", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Leviathan", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG1, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3760,28 +3699,28 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto3C54CA6C_ai = 1;
             lv_index = 1;
             for ( ; ( (auto3C54CA6C_ai >= 0 && lv_index <= auto3C54CA6C_ae) || (auto3C54CA6C_ai <= 0 && lv_index >= auto3C54CA6C_ae) ) ; lv_index += auto3C54CA6C_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             autoE82A2D35_ae = 7;
             autoE82A2D35_ai = 1;
             lv_index = 1;
             for ( ; ( (autoE82A2D35_ai >= 0 && lv_index <= autoE82A2D35_ae) || (autoE82A2D35_ai <= 0 && lv_index >= autoE82A2D35_ae) ) ; lv_index += autoE82A2D35_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto84CF1C2F_ae = 5;
             auto84CF1C2F_ai = 1;
             lv_index = 1;
             for ( ; ( (auto84CF1C2F_ai >= 0 && lv_index <= auto84CF1C2F_ae) || (auto84CF1C2F_ai <= 0 && lv_index >= auto84CF1C2F_ae) ) ; lv_index += auto84CF1C2F_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             autoF75CD00E_ae = 2;
             autoF75CD00E_ai = 1;
             lv_index = 1;
             for ( ; ( (autoF75CD00E_ai >= 0 && lv_index <= autoF75CD00E_ae) || (autoF75CD00E_ai <= 0 && lv_index >= autoF75CD00E_ae) ) ; lv_index += autoF75CD00E_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridReaver", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridReaver", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG2, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(18))), c_orderQueueReplace);
@@ -3791,28 +3730,28 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto23ACEE3C_ai = 1;
             lv_index = 1;
             for ( ; ( (auto23ACEE3C_ai >= 0 && lv_index <= auto23ACEE3C_ae) || (auto23ACEE3C_ai <= 0 && lv_index >= auto23ACEE3C_ae) ) ; lv_index += auto23ACEE3C_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             auto050CF56E_ae = 7;
             auto050CF56E_ai = 1;
             lv_index = 1;
             for ( ; ( (auto050CF56E_ai >= 0 && lv_index <= auto050CF56E_ae) || (auto050CF56E_ai <= 0 && lv_index >= auto050CF56E_ae) ) ; lv_index += auto050CF56E_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Mutalisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             autoFF8A9B7B_ae = 5;
             autoFF8A9B7B_ai = 1;
             lv_index = 1;
             for ( ; ( (autoFF8A9B7B_ai >= 0 && lv_index <= autoFF8A9B7B_ae) || (autoFF8A9B7B_ai <= 0 && lv_index >= autoFF8A9B7B_ae) ) ; lv_index += autoFF8A9B7B_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             autoAA35B56A_ae = 2;
             autoAA35B56A_ai = 1;
             lv_index = 1;
             for ( ; ( (autoAA35B56A_ai >= 0 && lv_index <= autoAA35B56A_ae) || (autoAA35B56A_ai <= 0 && lv_index >= autoAA35B56A_ae) ) ; lv_index += autoAA35B56A_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridReaver", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridReaver", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG1, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3820,42 +3759,42 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             auto289BB107_ai = 1;
             lv_index = 1;
             for ( ; ( (auto289BB107_ai >= 0 && lv_index <= auto289BB107_ae) || (auto289BB107_ai <= 0 && lv_index >= auto289BB107_ae) ) ; lv_index += auto289BB107_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto757EC03A_ae = 8;
             auto757EC03A_ai = 1;
             lv_index = 1;
             for ( ; ( (auto757EC03A_ai >= 0 && lv_index <= auto757EC03A_ae) || (auto757EC03A_ai <= 0 && lv_index >= auto757EC03A_ae) ) ; lv_index += auto757EC03A_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto553C2471_ae = 5;
             auto553C2471_ai = 1;
             lv_index = 1;
             for ( ; ( (auto553C2471_ai >= 0 && lv_index <= auto553C2471_ae) || (auto553C2471_ai <= 0 && lv_index >= auto553C2471_ae) ) ; lv_index += auto553C2471_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto3E3EE975_ae = 6;
             auto3E3EE975_ai = 1;
             lv_index = 1;
             for ( ; ( (auto3E3EE975_ai >= 0 && lv_index <= auto3E3EE975_ae) || (auto3E3EE975_ai <= 0 && lv_index >= auto3E3EE975_ae) ) ; lv_index += auto3E3EE975_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto3AE61F14_ae = 2;
             auto3AE61F14_ai = 1;
             lv_index = 1;
             for ( ; ( (auto3AE61F14_ai >= 0 && lv_index <= auto3AE61F14_ae) || (auto3AE61F14_ai <= 0 && lv_index >= auto3AE61F14_ae) ) ; lv_index += auto3AE61F14_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto4C156325_ae = 1;
             auto4C156325_ai = 1;
             lv_index = 1;
             for ( ; ( (auto4C156325_ai >= 0 && lv_index <= auto4C156325_ae) || (auto4C156325_ai <= 0 && lv_index >= auto4C156325_ae) ) ; lv_index += auto4C156325_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Omegalisk", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Omegalisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG2, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(18))), c_orderQueueReplace);
@@ -3865,42 +3804,42 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             autoF0494CCE_ai = 1;
             lv_index = 1;
             for ( ; ( (autoF0494CCE_ai >= 0 && lv_index <= autoF0494CCE_ae) || (autoF0494CCE_ai <= 0 && lv_index >= autoF0494CCE_ae) ) ; lv_index += autoF0494CCE_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             autoEECE2BB0_ae = 8;
             autoEECE2BB0_ai = 1;
             lv_index = 1;
             for ( ; ( (autoEECE2BB0_ai >= 0 && lv_index <= autoEECE2BB0_ae) || (autoEECE2BB0_ai <= 0 && lv_index >= autoEECE2BB0_ae) ) ; lv_index += autoEECE2BB0_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             autoEBD2BA32_ae = 5;
             autoEBD2BA32_ai = 1;
             lv_index = 1;
             for ( ; ( (autoEBD2BA32_ai >= 0 && lv_index <= autoEBD2BA32_ae) || (autoEBD2BA32_ai <= 0 && lv_index >= autoEBD2BA32_ae) ) ; lv_index += autoEBD2BA32_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             autoF3E79A96_ae = 6;
             autoF3E79A96_ai = 1;
             lv_index = 1;
             for ( ; ( (autoF3E79A96_ai >= 0 && lv_index <= autoF3E79A96_ae) || (autoF3E79A96_ai <= 0 && lv_index >= autoF3E79A96_ae) ) ; lv_index += autoF3E79A96_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             autoD2EB941F_ae = 2;
             autoD2EB941F_ai = 1;
             lv_index = 1;
             for ( ; ( (autoD2EB941F_ai >= 0 && lv_index <= autoD2EB941F_ae) || (autoD2EB941F_ai <= 0 && lv_index >= autoD2EB941F_ae) ) ; lv_index += autoD2EB941F_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ultralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             auto3B8CBE92_ae = 1;
             auto3B8CBE92_ai = 1;
             lv_index = 1;
             for ( ; ( (auto3B8CBE92_ai >= 0 && lv_index <= auto3B8CBE92_ae) || (auto3B8CBE92_ai <= 0 && lv_index >= auto3B8CBE92_ae) ) ; lv_index += auto3B8CBE92_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Omegalisk", 0, 4, RegionGetCenter(RegionFromId(2)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Omegalisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(2)));
                 UnitGroupAdd(gv_enemyG1, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG1, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(17))), c_orderQueueReplace);
@@ -3908,49 +3847,49 @@ bool gt_AttackConvoySpawn2_Func (bool testConds, bool runActions) {
             autoD5995286_ai = 1;
             lv_index = 1;
             for ( ; ( (autoD5995286_ai >= 0 && lv_index <= autoD5995286_ae) || (autoD5995286_ai <= 0 && lv_index >= autoD5995286_ae) ) ; lv_index += autoD5995286_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Zergling", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto382EC75B_ae = 8;
             auto382EC75B_ai = 1;
             lv_index = 1;
             for ( ; ( (auto382EC75B_ai >= 0 && lv_index <= auto382EC75B_ae) || (auto382EC75B_ai <= 0 && lv_index >= auto382EC75B_ae) ) ; lv_index += auto382EC75B_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Roach", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto2AB3947A_ae = 5;
             auto2AB3947A_ai = 1;
             lv_index = 1;
             for ( ; ( (auto2AB3947A_ai >= 0 && lv_index <= auto2AB3947A_ae) || (auto2AB3947A_ai <= 0 && lv_index >= auto2AB3947A_ae) ) ; lv_index += auto2AB3947A_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Ravager", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             autoC4F69BCB_ae = 5;
             autoC4F69BCB_ai = 1;
             lv_index = 1;
             for ( ; ( (autoC4F69BCB_ai >= 0 && lv_index <= autoC4F69BCB_ae) || (autoC4F69BCB_ai <= 0 && lv_index >= autoC4F69BCB_ae) ) ; lv_index += autoC4F69BCB_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hydralisk", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             autoD3CCA3D0_ae = 2;
             autoD3CCA3D0_ai = 1;
             lv_index = 1;
             for ( ; ( (autoD3CCA3D0_ai >= 0 && lv_index <= autoD3CCA3D0_ae) || (autoD3CCA3D0_ai <= 0 && lv_index >= autoD3CCA3D0_ae) ) ; lv_index += autoD3CCA3D0_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "InfestedAbomination", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "InfestedAbomination", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             auto75A9A442_ae = 2;
             auto75A9A442_ai = 1;
             lv_index = 1;
             for ( ; ( (auto75A9A442_ai >= 0 && lv_index <= auto75A9A442_ae) || (auto75A9A442_ai <= 0 && lv_index >= auto75A9A442_ae) ) ; lv_index += auto75A9A442_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "HybridDestroyer", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             autoAE1FFF43_ae = 1;
             autoAE1FFF43_ai = 1;
             lv_index = 1;
             for ( ; ( (autoAE1FFF43_ai >= 0 && lv_index <= autoAE1FFF43_ae) || (autoAE1FFF43_ai <= 0 && lv_index >= autoAE1FFF43_ae) ) ; lv_index += autoAE1FFF43_ai ) {
-                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Leviathan", 0, 4, RegionGetCenter(RegionFromId(9)));
+                libNtve_gf_CreateUnitsWithDefaultFacing(1, "Leviathan", 0, gv_pLAYER_04_ENEMY, RegionGetCenter(RegionFromId(9)));
                 UnitGroupAdd(gv_enemyG2, UnitLastCreated());
             }
             UnitGroupIssueOrder(gv_enemyG2, OrderTargetingPoint(AbilityCommand("attack", 0), RegionGetCenter(RegionFromId(18))), c_orderQueueReplace);
@@ -4087,8 +4026,6 @@ bool gt_AttackWave02_Func (bool testConds, bool runActions) {
     AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
     libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, gf_AttackWaveSpawn(), true);
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
-    libNtve_gf_SetUpgradeLevelForPlayer(3, "zerglingmovementspeed", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(4, "zerglingmovementspeed", 1);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -4175,8 +4112,6 @@ bool gt_AttackWave04_Func (bool testConds, bool runActions) {
     AIAttackWaveSetTargetPoint(gv_pLAYER_04_ENEMY, PointFromId(249));
     libCOMI_gf_CreateCoopAttackForceatLocationandWaitforthemtospawn2(gv_pLAYER_03_ENEMY, gv_pLAYER_04_ENEMY, lv_resourceBucket, lv_techBucket, gf_AttackWaveSpawn(), true);
     libCOMI_gf_SendAttackWaveusingCoopAttackForce(libCOMI_gf_LastCreatedCoopAttackForce(), 0, true);
-    libNtve_gf_SetUpgradeLevelForPlayer(3, "hydraliskspeed", 1);
-    libNtve_gf_SetUpgradeLevelForPlayer(4, "hydraliskspeed", 1);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -4274,14 +4209,14 @@ bool gt_Bullies_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    AIToggleBulliesInRegion(3, RegionFromId(11), false);
-    AIToggleBulliesInRegion(3, RegionFromId(16), false);
+    AIToggleBulliesInRegion(gv_pLAYER_03_ENEMY, RegionFromId(11), false);
+    AIToggleBulliesInRegion(gv_pLAYER_03_ENEMY, RegionFromId(16), false);
     return true;
 }
 //--------------------------------------------------------------------------------------------------
 void gt_Bullies_Init () {
     gt_Bullies = TriggerCreate("gt_Bullies_Func");
-    TriggerAddEventTimeElapsed(gt_Bullies, 600.0, c_timeGame);
+    TriggerAddEventTimeElapsed(gt_Bullies, 600.0, c_timeAI);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Objective - EscortTheConvoy - Create 2

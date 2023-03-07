@@ -1209,18 +1209,29 @@ bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runAct
 // Trigger: Init 01 Load Data
 //--------------------------------------------------------------------------------------------------
 bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
+    libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
+    return true;
+}
+//--------------------------------------------------------------------------------------------------
+void gt_Init01LoadData_Init () {
+    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
+    TriggerAddEventMapInit(gt_Init01LoadData);
+}
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 02 Players
+//--------------------------------------------------------------------------------------------------
+bool gt_Init02Players_Func (bool testConds, bool runActions) {
     playergroup auto0B258D10_g;
     int auto0B258D10_p;
     string auto834F8A5E_val;
     // Variable Declarations
     int lv_indexPlayer;
-    // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    TriggerExecute(gt_Init02Players, true, false);
-    libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
+
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
+
+
+
     PathAddNoFlyZone(PointFromId(1110891384), 13.0, 13.5);
     UnitSetState(UnitFromId(1655051572), c_unitStateFidget, false);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(1655051572), true);
@@ -1279,19 +1290,8 @@ bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
         UnitBehaviorAddPlayer(UnitGroupLoopCurrent(), "RevealObjectiveUnit", gv_pLAYER_02_USER, 1);
     }
     UnitGroupLoopEnd();
-    return true;
-}
-//--------------------------------------------------------------------------------------------------
-void gt_Init01LoadData_Init () {
-    gt_Init01LoadData = TriggerCreate("gt_Init01LoadData_Func");
-    TriggerAddEventMapInit(gt_Init01LoadData);
-}
-//--------------------------------------------------------------------------------------------------
-// Trigger: Init 02 Players
-//--------------------------------------------------------------------------------------------------
-bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
-    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
+
+
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -1306,6 +1306,7 @@ bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
+    TriggerExecute(gt_Init02Players, true, false);
     TriggerExecute(gt_Init07Environment, true, false);
     TriggerExecute(gt_Init08Difficulties, true, false);
     TriggerExecute(gt_StartAI, true, false);
@@ -1327,6 +1328,7 @@ bool gt_Init07Environment_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
+
     VisExploreArea(gv_pLAYER_01_USER, RegionFromId(49), true, false);
     VisExploreArea(gv_pLAYER_02_USER, RegionFromId(49), true, false);
     VisRevealerCreate(gv_pLAYER_01_USER, RegionFromId(21));
