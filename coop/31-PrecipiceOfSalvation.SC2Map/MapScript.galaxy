@@ -839,11 +839,11 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
-const int gv_pLAYER_01_USER = 1;
-const int gv_pLAYER_02_USER = 2;
-const int gv_pLAYER_03_ENEMY = 3;
-const int gv_pLAYER_04_ENEMY = 4;
-const int gv_pLAYER_05_ALLY = 5;
+int gv_pLAYER_01_USER = 1;
+int gv_pLAYER_02_USER = 2;
+const int gv_pLAYER_03_ENEMY = 8;
+const int gv_pLAYER_04_ENEMY = 9;
+const int gv_pLAYER_05_ALLY = 10;
 const int gv_pLAYER_06_HYBRID = 6;
 const int gv_pLAYER_07_HYBRID_SUPPORT = 7;
 const int gv_aMONWARPOUTWEST = 0;
@@ -2969,58 +2969,15 @@ bool gt_Init02Players_Func (bool testConds, bool runActions) {
     playergroup lv_amonSupportGroup;
     // Variable Initialization
     lv_amonSupportGroup = PlayerGroupEmpty();
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+
+
     PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_03_ENEMY);
     PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_04_ENEMY);
-    libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_01_USER, gv_pLAYER_05_ALLY, libNtve_ge_AllianceSetting_Neutral);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_02_USER, gv_pLAYER_05_ALLY, libNtve_ge_AllianceSetting_Neutral);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_05_ALLY, gv_pLAYER_01_USER, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_05_ALLY, gv_pLAYER_02_USER, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_01_USER, gv_pLAYER_06_HYBRID, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_02_USER, gv_pLAYER_06_HYBRID, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_01_USER, gv_pLAYER_07_HYBRID_SUPPORT, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_02_USER, gv_pLAYER_07_HYBRID_SUPPORT, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_06_HYBRID, gv_pLAYER_01_USER, libNtve_ge_AllianceSetting_EnemyWithSharedVision);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_06_HYBRID, gv_pLAYER_02_USER, libNtve_ge_AllianceSetting_EnemyWithSharedVision);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_07_HYBRID_SUPPORT, gv_pLAYER_01_USER, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAllianceOneWay(gv_pLAYER_07_HYBRID_SUPPORT, gv_pLAYER_02_USER, libNtve_ge_AllianceSetting_Enemy);
-    libNtve_gf_SetAlliance(gv_pLAYER_05_ALLY, gv_pLAYER_06_HYBRID, libNtve_ge_AllianceSetting_EnemyWithSharedVision);
-    libNtve_gf_SetAlliance(gv_pLAYER_05_ALLY, gv_pLAYER_07_HYBRID_SUPPORT, libNtve_ge_AllianceSetting_EnemyWithSharedVision);
-    libNtve_gf_SetAlliance(gv_pLAYER_06_HYBRID, gv_pLAYER_07_HYBRID_SUPPORT, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    libNtve_gf_SetAlliance(gv_pLAYER_06_HYBRID, 0, libNtve_ge_AllianceSetting_Ally);
-    libNtve_gf_SetAlliance(gv_pLAYER_07_HYBRID_SUPPORT, 0, libNtve_ge_AllianceSetting_Ally);
-    PlayerSetState(gv_pLAYER_06_HYBRID, c_playerStateMineralCostIgnored, true);
-    PlayerSetState(gv_pLAYER_06_HYBRID, c_playerStateVespeneCostIgnored, true);
-    PlayerSetState(gv_pLAYER_06_HYBRID, c_playerStateFoodIgnored, true);
-    autoE0EF2853_g = gv_enemyGroup; 
-    autoE0EF2853_p = 1;
-    for ( ; autoE0EF2853_p <= PlayerGroupCount(autoE0EF2853_g) ; autoE0EF2853_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p)) ) {
-        lv_playerIterEnemy = PlayerGroupPlayer(autoE0EF2853_g, autoE0EF2853_p);
-        libNtve_gf_SetAlliance(lv_playerIterEnemy, gv_pLAYER_05_ALLY, libNtve_ge_AllianceSetting_Ally);
-        libNtve_gf_SetAlliance(lv_playerIterEnemy, gv_pLAYER_06_HYBRID, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-        libNtve_gf_SetAlliance(lv_playerIterEnemy, gv_pLAYER_07_HYBRID_SUPPORT, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-        PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
-        autoB969537F_g = libCOMI_gf_HumanPlayers();
-        autoB969537F_p = 1;
-        for ( ; autoB969537F_p <= PlayerGroupCount(autoB969537F_g) ; autoB969537F_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoB969537F_g, autoB969537F_p)) ) {
-            lv_playerIterAlly = PlayerGroupPlayer(autoB969537F_g, autoB969537F_p);
-            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-        }
-    }
-    PlayerSetAlliance(gv_pLAYER_03_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
-    PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_03_ENEMY, true);
-    AICampaignStart(gv_pLAYER_05_ALLY);
+
     AISetDefenseRadii(gv_pLAYER_03_ENEMY, 15.0, 15.0, 15.0);
     AISetDefenseRadii(gv_pLAYER_04_ENEMY, 15.0, 15.0, 15.0);
     AISetDefenseRadii(gv_pLAYER_05_ALLY, 15.0, 15.0, 15.0);
+    AICampaignStart(gv_pLAYER_05_ALLY);
     AICampaignStart(gv_pLAYER_06_HYBRID);
     AICampaignStart(gv_pLAYER_07_HYBRID_SUPPORT);
     PlayerGroupAdd(lv_amonSupportGroup, gv_pLAYER_06_HYBRID);
@@ -3038,10 +2995,6 @@ void gt_Init02Players_Init () {
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
     TriggerExecute(gt_Init04Technology, true, false);
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
@@ -3060,10 +3013,6 @@ void gt_Init03LoadingComplete_Init () {
 // Trigger: Init 04 Technology
 //--------------------------------------------------------------------------------------------------
 bool gt_Init04Technology_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -3074,10 +3023,6 @@ void gt_Init04Technology_Init () {
 // Trigger: Init 05 Units
 //--------------------------------------------------------------------------------------------------
 bool gt_Init05Units_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
     gv_remainingProtossStructureCount = UnitCount(null, gv_pLAYER_05_ALLY, RegionFromId(11), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     gv_totalProtossStructures = UnitCount(null, gv_pLAYER_05_ALLY, RegionFromId(11), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     UnitStatusBarOverride(UnitFromId(727888777), c_unitStatusGroupAll);
@@ -3104,10 +3049,6 @@ void gt_Init06MusicSound_Init () {
 // Trigger: Init 07 Environment
 //--------------------------------------------------------------------------------------------------
 bool gt_Init07Environment_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
     GameTimeOfDaySet("08:00:00");
     PlayerGroupLoopBegin(libCOMI_gf_HumanPlayers());
     for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
@@ -3151,10 +3092,7 @@ bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
     unitgroup lv_voidRiftsGroup;
     // Variable Initialization
     lv_voidRiftsGroup = UnitGroupEmpty();
-    // Actions
-    if (!runActions) {
-        return true;
-    }
+
     PlayerGroupLoopBegin(libCOMI_gf_HumanPlayers());
     for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
       //  auto51A11F02_val = GameAttributePlayerValue("[bnet:Liberty (Mod)/0.0/999,file:Mods/Liberty.SC2Mod]3004", PlayerGroupLoopCurrent());
@@ -3197,10 +3135,6 @@ void gt_Init08Difficulties_Init () {
 // Trigger: Init 09 Tips
 //--------------------------------------------------------------------------------------------------
 bool gt_Init09Tips_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
     HelpPanelAddTip(PlayerGroupAll(), libNtve_gf_FormatTipTitle(StringExternal("Param/Value/45BEE599"), libNtve_ge_TipType_NormalTip), StringExternal("Param/Value/C1EB9773"), StringToText(""), "Assets\\Textures\\btn-unit-xelnaga-destroyer.dds");
     HelpPanelAddTip(PlayerGroupAll(), libNtve_gf_FormatTipTitle(StringExternal("Param/Value/1D9CB7E6"), libNtve_ge_TipType_NormalTip), StringExternal("Param/Value/DCC22357"), StringToText(""), "Assets\\Textures\\btn-upgrade-vorazun-shadowstun.dds");
     HelpPanelAddTip(PlayerGroupAll(), libNtve_gf_FormatTipTitle(StringExternal("Param/Value/0C3822AC"), libNtve_ge_TipType_NormalTip), StringExternal("Param/Value/C4023E00"), StringToText(""), "Assets\\Textures\\tip_WarpZone.dds");
@@ -3216,21 +3150,15 @@ void gt_Init09Tips_Init () {
 bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     // Variable Declarations
     region lv_enemyBase;
-    // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/068743D5"), null, PlayerStartLocation(gv_pLAYER_01_USER));
-    UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/187E0E6E"), null, PlayerStartLocation(gv_pLAYER_02_USER));
+
     gf_ScaleBulliestoDifficulty();
     gf_ScaleVoidRiftstoDifficulty();
     Wait(7.0, c_timeReal);
-    if ((PlayerType(gv_pLAYER_01_USER) == c_playerTypeUser) && (PlayerStatus(gv_pLAYER_01_USER) == c_playerStatusActive) && (PlayerType(gv_pLAYER_02_USER) == c_playerTypeUser) && (PlayerStatus(gv_pLAYER_02_USER) == c_playerStatusActive)) {
-    }
-    else {
-        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/51064338"));
-    }
+    //if ((PlayerType(gv_pLAYER_01_USER) == c_playerTypeUser) && (PlayerStatus(gv_pLAYER_01_USER) == c_playerStatusActive) && (PlayerType(gv_pLAYER_02_USER) == c_playerTypeUser) && (PlayerStatus(gv_pLAYER_02_USER) == c_playerStatusActive)) {
+    //}
+    //else {
+    //    UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/51064338"));
+    //}
     TriggerExecute(gt_TransmissionPrimaryObjectiveCreated, true, false);
     Wait(8.0, c_timeGame);
     TriggerExecute(gt_ObjectiveDestroyTheHybridWarpGatesCreate, true, true);

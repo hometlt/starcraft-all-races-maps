@@ -71,3 +71,10 @@ bool gt_Init02Players_Func (bool testConds, bool runActions) {
 ...
     gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
     gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
+    
+    
+    
+    
+    
+    AIAttackWaveSetTargetPlayer(gv_pLAYER_05_ALLY, lv_amonSupportGroup);
+    AIAttackWaveSetTargetPlayer(gv_pLAYER_06_HYBRID, PlayerGroupSingle(gv_pLAYER_05_ALLY));
