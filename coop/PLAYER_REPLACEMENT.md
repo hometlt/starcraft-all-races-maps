@@ -78,3 +78,8 @@ bool gt_Init02Players_Func (bool testConds, bool runActions) {
     
     AIAttackWaveSetTargetPlayer(gv_pLAYER_05_ALLY, lv_amonSupportGroup);
     AIAttackWaveSetTargetPlayer(gv_pLAYER_06_HYBRID, PlayerGroupSingle(gv_pLAYER_05_ALLY));
+
+
+
+    All maps 
+    https://discord.gg/8T4MUA3xXr

@@ -840,10 +840,10 @@
             //--------------------------------------------------------------------------------------------------
             // Constants
             //--------------------------------------------------------------------------------------------------
-            const int gv_pLAYER_01_USER = 1;
-            const int gv_pLAYER_02_USER = 2;
-            const int gv_pLAYER_03_ENEMY = 3;
-            const int gv_pLAYER_04_ENEMY = 4;
+            int gv_pLAYER_01_USER = 1;
+            int gv_pLAYER_02_USER = 2;
+            const int gv_pLAYER_03_ENEMY = 6;
+            const int gv_pLAYER_04_ENEMY = 7;
             //--------------------------------------------------------------------------------------------------
             // Global Variables
             //--------------------------------------------------------------------------------------------------
@@ -1350,11 +1350,6 @@
             // Trigger: Init 01 Load Data
             //--------------------------------------------------------------------------------------------------
             bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-             
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
                 libCOMI_gf_LoadCoopMission(&quot;COOP_Placeholder&quot;, gt_Init03LoadingComplete);
                 return true;
             }
@@ -1367,18 +1362,8 @@
             // Trigger: Init 02 Players
             //--------------------------------------------------------------------------------------------------
             bool gt_Init02Players_Func (bool testConds, bool runActions) {
-                playergroup auto59D87B76_g;
-                int auto59D87B76_p;
-                playergroup autoB8AC17A4_g;
-                int autoB8AC17A4_p;
-                // Variable Declarations
-                int lv_playerIterEnemy;
-                int lv_playerIterAlly;
-                // Variable Initialization
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
+                gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+                gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -1389,10 +1374,6 @@
             // Trigger: Init 03 Loading Complete
             //--------------------------------------------------------------------------------------------------
             bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
                 TriggerExecute(gt_Init02Players, true, false);
                 TriggerExecute(gt_Init04Technology, true, false);
                 TriggerExecute(gt_Init05Units, true, false);
@@ -1429,11 +1410,6 @@
             // Trigger: Init 04 Technology
             //--------------------------------------------------------------------------------------------------
             bool gt_Init04Technology_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -1444,12 +1420,6 @@
             // Trigger: Init 05 Units
             //--------------------------------------------------------------------------------------------------
             bool gt_Init05Units_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_01_USER);
-                libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_02_USER);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -1470,10 +1440,6 @@
             // Trigger: Init 07 Environment
             //--------------------------------------------------------------------------------------------------
             bool gt_Init07Environment_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
                 GameTimeOfDaySet(&quot;00&quot;);
                 GameSetToDLighting(&quot;Valhalla&quot;);
                 FogSetDensity(0.1);
@@ -1489,18 +1455,6 @@
             // Trigger: Init 08 Difficulties
             //--------------------------------------------------------------------------------------------------
             bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
-                // Variable Declarations
-                fixed lv_bonusObjectiveLife;
-                fixed lv_mainObjectiveLife;
-                // Variable Initialization
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                PlayerSetDifficulty(1, 2);
-                PlayerSetDifficulty(2, 2);
-                PlayerSetDifficulty(3, 2);
-                PlayerSetDifficulty(4, 2);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -1511,10 +1465,6 @@
             // Trigger: Init 09 Map Specifics
             //--------------------------------------------------------------------------------------------------
             bool gt_Init09MapSpecifics_Func (bool testConds, bool runActions) {
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
                 gv_var_WarpDevices_Remaining = 14;
                 gv_var_WarpDevices_Destroyed = 0;
                 gv_var_WarpDevices_Activated_MaxCount = 4;
@@ -1588,15 +1538,6 @@
             // Trigger: Start Game Q
             //--------------------------------------------------------------------------------------------------
             bool gt_StartGameQ_Func (bool testConds, bool runActions) {
-                // Variable Declarations
-                region lv_enemyBase;
-                // Variable Initialization
-                // Actions
-                if (!runActions) {
-                    return true;
-                }
-                UIAlertPoint(&quot;Trigger&quot;, gv_pLAYER_01_USER, StringExternal(&quot;Param/Value/9FDCC864&quot;), null, PlayerStartLocation(gv_pLAYER_01_USER));
-                UIAlertPoint(&quot;Trigger&quot;, gv_pLAYER_02_USER, StringExternal(&quot;Param/Value/DC650534&quot;), null, PlayerStartLocation(gv_pLAYER_02_USER));
                 return true;
             }
             //--------------------------------------------------------------------------------------------------

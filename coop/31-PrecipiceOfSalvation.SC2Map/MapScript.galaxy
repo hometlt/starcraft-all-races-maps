@@ -2936,17 +2936,6 @@ bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runAct
 // Trigger: Init 01 Load Data
 //--------------------------------------------------------------------------------------------------
 bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    playergroup auto0B258D10_g;
-    int auto0B258D10_p;
-    string auto834F8A5E_val;
-    // Variable Declarations
-    int lv_indexPlayer;
-    // Variable Initialization
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-    TriggerExecute(gt_Init02Players, true, false);
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
@@ -2971,9 +2960,13 @@ bool gt_Init02Players_Func (bool testConds, bool runActions) {
     lv_amonSupportGroup = PlayerGroupEmpty();
 
 
+    gv_pLAYER_01_USER = libCOMI_gf_GetRolePlayer(1);
+    gv_pLAYER_02_USER = libCOMI_gf_GetRolePlayer(2);
+
+
+
     PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_03_ENEMY);
     PlayerGroupAdd(gv_enemyGroup, gv_pLAYER_04_ENEMY);
-
     AISetDefenseRadii(gv_pLAYER_03_ENEMY, 15.0, 15.0, 15.0);
     AISetDefenseRadii(gv_pLAYER_04_ENEMY, 15.0, 15.0, 15.0);
     AISetDefenseRadii(gv_pLAYER_05_ALLY, 15.0, 15.0, 15.0);
@@ -2995,6 +2988,7 @@ void gt_Init02Players_Init () {
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
+    TriggerExecute(gt_Init02Players, true, false);
     TriggerExecute(gt_Init04Technology, true, false);
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
@@ -3092,7 +3086,6 @@ bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
     unitgroup lv_voidRiftsGroup;
     // Variable Initialization
     lv_voidRiftsGroup = UnitGroupEmpty();
-
     PlayerGroupLoopBegin(libCOMI_gf_HumanPlayers());
     for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
       //  auto51A11F02_val = GameAttributePlayerValue("[bnet:Liberty (Mod)/0.0/999,file:Mods/Liberty.SC2Mod]3004", PlayerGroupLoopCurrent());
@@ -3150,7 +3143,6 @@ void gt_Init09Tips_Init () {
 bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     // Variable Declarations
     region lv_enemyBase;
-
     gf_ScaleBulliestoDifficulty();
     gf_ScaleVoidRiftstoDifficulty();
     Wait(7.0, c_timeReal);

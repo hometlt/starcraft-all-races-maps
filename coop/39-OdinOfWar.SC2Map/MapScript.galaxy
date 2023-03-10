@@ -19,6 +19,12 @@ void InitLibs () {
 //--------------------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------------------
+int gv_pLAYER3;
+int gv_pLAYER4;
+int gv_pLAYER5;
+bool gv_core1isdead;
+bool gv_core2isdead;
+bool gv_core3isdead;
 unitgroup gv_oBJECTIVEMAIN1;
 unitgroup gv_oBJECTIVEARMY;
 unitgroup gv_oBJECTIVEMAIN2;
@@ -34,13 +40,13 @@ int[3] gv_bonus;
 unitgroup gv_attackwave1;
 unitgroup gv_attackwave2;
 unitgroup gv_attackwave3;
-bool gv_core1isdead;
-bool gv_core2isdead;
-bool gv_core3isdead;
 
 void InitGlobals () {
     int init_i;
 
+    gv_pLAYER3 = 6;
+    gv_pLAYER4 = 7;
+    gv_pLAYER5 = 8;
     gv_oBJECTIVEMAIN1 = UnitGroupEmpty();
     gv_oBJECTIVEARMY = UnitGroupEmpty();
     gv_oBJECTIVEMAIN2 = UnitGroupEmpty();
@@ -343,7 +349,7 @@ bool gt_Datacoreprotection_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    UnitCreate(1, "HybridGeneral", 0, 3, UnitGetPosition(EventUnit()), libNtve_gf_RandomAngle());
+    UnitCreate(1, "HybridGeneral", 0, gv_pLAYER5, UnitGetPosition(EventUnit()), libNtve_gf_RandomAngle());
     PingCreate(PlayerGroupAll(), "PingWarning", UnitGetPosition(UnitLastCreated()), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 10.0);
     libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
     libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 1);
@@ -390,7 +396,7 @@ bool gt_Datacoreprotection2_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    UnitCreate(1, "HybridGeneral", 0, 3, UnitGetPosition(EventUnit()), libNtve_gf_RandomAngle());
+    UnitCreate(1, "HybridGeneral", 0, gv_pLAYER5, UnitGetPosition(EventUnit()), libNtve_gf_RandomAngle());
     PingCreate(PlayerGroupAll(), "PingWarning", UnitGetPosition(UnitLastCreated()), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 10.0);
     libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
     libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 1);
@@ -437,7 +443,7 @@ bool gt_Datacoreprotection3_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    UnitCreate(1, "HybridGeneral", 0, 3, UnitGetPosition(EventUnit()), libNtve_gf_RandomAngle());
+    UnitCreate(1, "HybridGeneral", 0, gv_pLAYER5, UnitGetPosition(EventUnit()), libNtve_gf_RandomAngle());
     PingCreate(PlayerGroupAll(), "PingWarning", UnitGetPosition(UnitLastCreated()), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 10.0);
     libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
     libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 1);
@@ -1720,17 +1726,17 @@ bool gt_BonusObjective_Func (bool testConds, bool runActions) {
     PortraitSetVisible(PortraitLastCreated(), PlayerGroupAll(), false, false);
     UIClearMessages(PlayerGroupAll(), c_messageAreaAll);
     Wait(0.1, c_timeGame);
-    UnitCreate(1, "WarpPrismGiantPhasing", 0, 3, RegionRandomPoint(RegionFromId(9)), libNtve_gf_RandomAngle());
+    UnitCreate(1, "WarpPrismGiantPhasing", 0, gv_pLAYER5, RegionRandomPoint(RegionFromId(9)), libNtve_gf_RandomAngle());
     PingCreate(PlayerGroupAll(), "PingBonus", UnitGetPosition(UnitLastCreated()), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 524287.0);
     DataTableSetPing(true, "hybrid", PingLastCreated());
     libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
     libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 1);
     libCOMI_gf_ShareVisionofUnitCoop(UnitLastCreated(), true, 2);
-    UnitCreate(1, "HybridDestroyer", 0, 3, UnitGetPosition(UnitLastCreated()), libNtve_gf_RandomAngle());
+    UnitCreate(1, "HybridDestroyer", 0, gv_pLAYER5, UnitGetPosition(UnitLastCreated()), libNtve_gf_RandomAngle());
     libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
-    UnitCreate(3, "HybridReaver", 0, 3, UnitGetPosition(UnitLastCreated()), libNtve_gf_RandomAngle());
+    UnitCreate(3, "HybridReaver", 0, gv_pLAYER5, UnitGetPosition(UnitLastCreated()), libNtve_gf_RandomAngle());
     libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
-    UnitCreate(2, "HybridNemesis", 0, 3, UnitGetPosition(UnitLastCreated()), libNtve_gf_RandomAngle());
+    UnitCreate(2, "HybridNemesis", 0, gv_pLAYER5, UnitGetPosition(UnitLastCreated()), libNtve_gf_RandomAngle());
     libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", UnitGetPosition(UnitLastCreated()));
     ObjectiveCreate(StringExternal("Param/Value/599C4A7E"), StringExternal("Param/Value/BD0FBDCC"), c_objectiveStateActive, false);
     DataTableSetObjective(true, "hybrid", ObjectiveLastCreated());
