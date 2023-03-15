@@ -102,14 +102,13 @@ void gf_RunAttackWaveatMissionTime (trigger lp_attackWave, fixed lp_time);
 // Trigger Variables
 //--------------------------------------------------------------------------------------------------
 trigger gt_Init01LoadData;
-trigger gt_Init02Players;
 trigger gt_Init03LoadingComplete;
+trigger gt_Init02Players;
 trigger gt_Init04Technology;
 trigger gt_Init05Units;
 trigger gt_Init06MusicSound;
 trigger gt_Init07Environment;
 trigger gt_Init08Difficulties;
-trigger gt_DebugCantFail;
 trigger gt_StartGameQ;
 trigger gt_CivilianScream;
 trigger gt_UpdateCounterDestroyed;
@@ -329,6 +328,7 @@ bool auto_gf_RunMissionEvent_TriggerFunc (bool testConds, bool runActions) {
     trigger lp_missionEventTrigger = auto_gf_RunMissionEvent_lp_missionEventTrigger;
     fixed lp_missionEventTime = auto_gf_RunMissionEvent_lp_missionEventTime;
 
+    // Automatic Variable Declarations
     // Implementation
     while (!((GameGetMissionTime() >= lp_missionEventTime))) {
         Wait(0.5, c_timeAI);
@@ -359,6 +359,7 @@ bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runAct
     trigger lp_attackWave = auto_gf_RunAttackWaveatMissionTime_lp_attackWave;
     fixed lp_time = auto_gf_RunAttackWaveatMissionTime_lp_time;
 
+    // Automatic Variable Declarations
     // Implementation
     while (!((lp_time <= GameGetMissionTime()))) {
         Wait(0.3, c_timeAI);
@@ -374,13 +375,10 @@ bool auto_gf_RunAttackWaveatMissionTime_TriggerFunc (bool testConds, bool runAct
 // Trigger: Init 01 Load Data
 //--------------------------------------------------------------------------------------------------
 bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
-    playergroup auto49DE823F_g;
-    int auto49DE823F_p;
-    string autoF21407A6_val;
-
     // Variable Declarations
     int lv_indexPlayer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -388,31 +386,6 @@ bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    auto49DE823F_g = libCOMI_gf_HumanPlayers();
-    auto49DE823F_p = 1;
-    for ( ; auto49DE823F_p <= PlayerGroupCount(auto49DE823F_g) ; auto49DE823F_p += BoolToInt(lv_indexPlayer == PlayerGroupPlayer(auto49DE823F_g, auto49DE823F_p)) ) {
-        lv_indexPlayer = PlayerGroupPlayer(auto49DE823F_g, auto49DE823F_p);
-        autoF21407A6_val = GameAttributePlayerValue("[bnet:local/0.0/254459]1", lv_indexPlayer);
-        if (autoF21407A6_val == "0003") {
-            PlayerSetCommander(lv_indexPlayer, "Artanis");
-        }
-        else if (autoF21407A6_val == "0002") {
-            PlayerSetCommander(lv_indexPlayer, "Kerrigan");
-        }
-        else if (autoF21407A6_val == "0001") {
-            PlayerSetCommander(lv_indexPlayer, "Raynor");
-        }
-        else {
-            if ((lv_indexPlayer == 1)) {
-                PlayerSetCommander(lv_indexPlayer, "Raynor");
-            }
-            else {
-                PlayerSetCommander(lv_indexPlayer, "Artanis");
-            }
-        }
-    }
-    libCOMI_gf_EnableArcadeContestMode();
-    TriggerExecute(gt_Init02Players, true, false);
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
@@ -424,94 +397,21 @@ void gt_Init01LoadData_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Init 02 Players
-//--------------------------------------------------------------------------------------------------
-bool gt_Init02Players_Func (bool testConds, bool runActions) {
-    playergroup autoA70DAD80_g;
-    int autoA70DAD80_p;
-    playergroup autoD14218CF_g;
-    int autoD14218CF_p;
-    playergroup auto27EBB7AC_g;
-    int auto27EBB7AC_p;
-    playergroup autoB87FB4F2_g;
-    int autoB87FB4F2_p;
-
-    // Variable Declarations
-    int lv_playerIterEnemy;
-    int lv_playerIterAlly;
-
-    // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libNtve_gf_SetPlayerGroupAlliance(libCOMI_gf_HumanPlayers(), libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    libCOMI_gf_SetAllianceCoop(1, 14, libNtve_ge_AllianceSetting_NeutralWithSharedVision);
-    libCOMI_gf_SetAllianceCoop(2, 14, libNtve_ge_AllianceSetting_NeutralWithSharedVision);
-    libCOMI_gf_SetAllianceCoop(3, 14, libNtve_ge_AllianceSetting_Neutral);
-    PlayerGroupAdd(gv_enemyGroup1, gv_pLAYER_03_ENEMY);
-    PlayerGroupAdd(gv_enemyGroup2, gv_pLAYER_04_ENEMY);
-    PlayerGroupAdd(gv_enemyGroup2, gv_pLAYER_05_ENEMY);
-    libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup2, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
-    autoA70DAD80_g = gv_enemyGroup1; 
-    autoA70DAD80_p = 1;
-    for ( ; autoA70DAD80_p <= PlayerGroupCount(autoA70DAD80_g) ; autoA70DAD80_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(autoA70DAD80_g, autoA70DAD80_p)) ) {
-        lv_playerIterEnemy = PlayerGroupPlayer(autoA70DAD80_g, autoA70DAD80_p);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-        PlayerSetColorIndex(lv_playerIterEnemy, libCOMI_gf_EnemyPlayerColor(), true);
-        autoD14218CF_g = libCOMI_gf_HumanPlayers();
-        autoD14218CF_p = 1;
-        for ( ; autoD14218CF_p <= PlayerGroupCount(autoD14218CF_g) ; autoD14218CF_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoD14218CF_g, autoD14218CF_p)) ) {
-            lv_playerIterAlly = PlayerGroupPlayer(autoD14218CF_g, autoD14218CF_p);
-            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-        }
-    }
-    auto27EBB7AC_g = gv_enemyGroup2; 
-    auto27EBB7AC_p = 1;
-    for ( ; auto27EBB7AC_p <= PlayerGroupCount(auto27EBB7AC_g) ; auto27EBB7AC_p += BoolToInt(lv_playerIterEnemy == PlayerGroupPlayer(auto27EBB7AC_g, auto27EBB7AC_p)) ) {
-        lv_playerIterEnemy = PlayerGroupPlayer(auto27EBB7AC_g, auto27EBB7AC_p);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateMineralCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateVespeneCostIgnored, true);
-        PlayerSetState(lv_playerIterEnemy, c_playerStateFoodIgnored, true);
-        PlayerSetColorIndex(lv_playerIterEnemy, 4, true);
-        autoB87FB4F2_g = libCOMI_gf_HumanPlayers();
-        autoB87FB4F2_p = 1;
-        for ( ; autoB87FB4F2_p <= PlayerGroupCount(autoB87FB4F2_g) ; autoB87FB4F2_p += BoolToInt(lv_playerIterAlly == PlayerGroupPlayer(autoB87FB4F2_g, autoB87FB4F2_p)) ) {
-            lv_playerIterAlly = PlayerGroupPlayer(autoB87FB4F2_g, autoB87FB4F2_p);
-            libNtve_gf_SetAlliance(lv_playerIterAlly, lv_playerIterEnemy, libNtve_ge_AllianceSetting_Enemy);
-        }
-    }
-    PlayerSetAlliance(gv_pLAYER_05_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
-    PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_05_ENEMY, true);
-    libCOMI_gf_SetAlliedCommandersstartingResources();
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_Init02Players_Init () {
-    gt_Init02Players = TriggerCreate("gt_Init02Players_Func");
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
     }
 
+    TriggerExecute(gt_Init02Players, true, false);
     TriggerExecute(gt_Init04Technology, true, false);
-    libCOMI_gf_PurchaseStorymodeTech();
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
     TriggerExecute(gt_Init07Environment, true, false);
     TriggerExecute(gt_Init08Difficulties, true, false);
-    libCOMI_gf_PlayMapIntroZoom(true);
     TriggerExecute(gt_StartAI, true, false);
     TriggerExecute(gt_StartGameQ, true, false);
     return true;
@@ -523,15 +423,41 @@ void gt_Init03LoadingComplete_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Init 04 Technology
+// Trigger: Init 02 Players
 //--------------------------------------------------------------------------------------------------
-bool gt_Init04Technology_Func (bool testConds, bool runActions) {
+bool gt_Init02Players_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_playerIterEnemy;
+    int lv_playerIterAlly;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
     // Actions
     if (!runActions) {
         return true;
     }
 
-    libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
+    libCOMI_gf_SetAllianceCoop(1, 14, libNtve_ge_AllianceSetting_NeutralWithSharedVision);
+    libCOMI_gf_SetAllianceCoop(2, 14, libNtve_ge_AllianceSetting_NeutralWithSharedVision);
+    libCOMI_gf_SetAllianceCoop(3, 14, libNtve_ge_AllianceSetting_Neutral);
+    PlayerGroupAdd(gv_enemyGroup1, gv_pLAYER_03_ENEMY);
+    PlayerGroupAdd(gv_enemyGroup2, gv_pLAYER_04_ENEMY);
+    PlayerGroupAdd(gv_enemyGroup2, gv_pLAYER_05_ENEMY);
+    libNtve_gf_SetPlayerGroupAlliance(gv_enemyGroup2, libNtve_ge_AllianceSetting_AllyWithSharedVisionAndPushable);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init02Players_Init () {
+    gt_Init02Players = TriggerCreate("gt_Init02Players_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init 04 Technology
+//--------------------------------------------------------------------------------------------------
+bool gt_Init04Technology_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     return true;
 }
 
@@ -544,13 +470,7 @@ void gt_Init04Technology_Init () {
 // Trigger: Init 05 Units
 //--------------------------------------------------------------------------------------------------
 bool gt_Init05Units_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_01_USER);
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_02_USER);
+    // Automatic Variable Declarations
     return true;
 }
 
@@ -563,6 +483,7 @@ void gt_Init05Units_Init () {
 // Trigger: Init 06 Music/Sound
 //--------------------------------------------------------------------------------------------------
 bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     return true;
 }
 
@@ -575,6 +496,7 @@ void gt_Init06MusicSound_Init () {
 // Trigger: Init 07 Environment
 //--------------------------------------------------------------------------------------------------
 bool gt_Init07Environment_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -599,18 +521,8 @@ bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
     fixed lv_bonusObjectiveLife;
     fixed lv_mainObjectiveLife;
 
+    // Automatic Variable Declarations
     // Variable Initialization
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_01_USER) == 4)) {
-    }
-
-    if ((libCOMI_gf_DifficultyLevelForPlayerCoop(gv_pLAYER_02_USER) == 4)) {
-    }
 
     return true;
 }
@@ -621,47 +533,13 @@ void gt_Init08Difficulties_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Debug - Can't Fail
-//--------------------------------------------------------------------------------------------------
-bool gt_DebugCantFail_Func (bool testConds, bool runActions) {
-    // Conditions
-    if (testConds) {
-        if (!((GameCheatsEnabled(c_gameCheatCategoryPublic) == true))) {
-            return false;
-        }
-
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    PlayerModifyPropertyFixed(gv_pLAYER_01_USER, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 0.0);
-    PlayerModifyPropertyFixed(gv_pLAYER_02_USER, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 0.0);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_DebugCantFail_Init () {
-    gt_DebugCantFail = TriggerCreate("gt_DebugCantFail_Func");
-    TriggerAddEventChatMessage(gt_DebugCantFail, c_playerAny, "cantfail", false);
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Start Game Q
 //--------------------------------------------------------------------------------------------------
 bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     // Variable Declarations
     region lv_enemyBase;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -669,8 +547,6 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/A8FFA3D9"), null, PlayerStartLocation(gv_pLAYER_01_USER));
-    UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/C919B152"), null, PlayerStartLocation(gv_pLAYER_02_USER));
     Wait(7.0, c_timeReal);
     TriggerQueueEnter();
     TriggerExecute(gt_ObjectiveDestroyallpsiemitterwavesCreate, true, true);
@@ -678,13 +554,11 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_ObjectiveDontLetTheEnemyDestroyBuildingsCreate, true, false);
     Wait(2.0, c_timeGame);
     TriggerEnable(gt_UpdateBothObjectives, true);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/DF582713"), StringExternal("Param/Value/8515D0F3"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
     Wait(10.0, c_timeGame);
     TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/6F7B2E70"), StringExternal("Param/Value/05F057DD"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
     Wait(10.0, c_timeGame);
     TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/E0A4CA79"), StringExternal("Param/Value/793184E2"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     TriggerQueueExit();
     return true;
 }
@@ -701,6 +575,7 @@ bool gt_CivilianScream_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_integer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Conditions
@@ -744,6 +619,7 @@ void gt_CivilianScream_Init () {
 // Trigger: UpdateCounterDestroyed
 //--------------------------------------------------------------------------------------------------
 bool gt_UpdateCounterDestroyed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((UnitGetType(EventUnit()) == "AbandonedBuilding"))) {
@@ -770,6 +646,7 @@ void gt_UpdateCounterDestroyed_Init () {
 // Trigger: UpdateCounterAlive
 //--------------------------------------------------------------------------------------------------
 bool gt_UpdateCounterAlive_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((UnitGetType(EventUnit()) == "AbandonedBuilding"))) {
@@ -796,6 +673,11 @@ void gt_UpdateCounterAlive_Init () {
 // Trigger: FinalAttack
 //--------------------------------------------------------------------------------------------------
 bool gt_FinalAttack_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto5FD23088_g;
+    int auto5FD23088_u;
+    unit auto5FD23088_var;
+
     // Conditions
     if (testConds) {
         if (!((gv_pSIemitterwave == 5))) {
@@ -810,14 +692,16 @@ bool gt_FinalAttack_Func (bool testConds, bool runActions) {
 
     TriggerEnable(TriggerGetCurrent(), false);
     TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(736062140), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/22293ADB"), StringExternal("Param/Value/3A476F32"), 8.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
-    UnitGroupLoopBegin(UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
-    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+    auto5FD23088_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto5FD23088_u = UnitGroupCount(auto5FD23088_g, c_unitCountAll);
+    for (;; auto5FD23088_u -= 1) {
+        auto5FD23088_var = UnitGroupUnitFromEnd(auto5FD23088_g, auto5FD23088_u);
+        if (auto5FD23088_var == null) { break; }
         if (true) {
-            UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingPoint(AbilityCommand("attack", 1), UnitGetPosition(UnitGroupClosestToPoint(UnitGroup(null, 14, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), UnitGetPosition(UnitGroupLoopCurrent())))), c_orderQueueReplace);
+            UnitIssueOrder(auto5FD23088_var, OrderTargetingPoint(AbilityCommand("attack", 1), UnitGetPosition(UnitGroupClosestToPoint(UnitGroup(null, 14, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), UnitGetPosition(auto5FD23088_var)))), c_orderQueueReplace);
         }
 
     }
-    UnitGroupLoopEnd();
     TriggerEnable(gt_TurnOnVictory, true);
     return true;
 }
@@ -832,6 +716,7 @@ void gt_FinalAttack_Init () {
 // Trigger: HalfHealth
 //--------------------------------------------------------------------------------------------------
 bool gt_HalfHealth_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 80.0))) {
@@ -861,6 +746,7 @@ void gt_HalfHealth_Init () {
 // Trigger: HalfHealth 2
 //--------------------------------------------------------------------------------------------------
 bool gt_HalfHealth2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 80.0))) {
@@ -892,6 +778,7 @@ void gt_HalfHealth2_Init () {
 // Trigger: HalfHealth 3
 //--------------------------------------------------------------------------------------------------
 bool gt_HalfHealth3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 80.0))) {
@@ -923,6 +810,7 @@ void gt_HalfHealth3_Init () {
 // Trigger: HalfHealthBig
 //--------------------------------------------------------------------------------------------------
 bool gt_HalfHealthBig_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 80.0))) {
@@ -952,6 +840,7 @@ void gt_HalfHealthBig_Init () {
 // Trigger: HalfHealthBig 2
 //--------------------------------------------------------------------------------------------------
 bool gt_HalfHealthBig2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 80.0))) {
@@ -987,6 +876,7 @@ bool gt_Defendsmall_Func (bool testConds, bool runActions) {
     unitgroup lv_defenderGroup;
     region lv_regVar;
 
+    // Automatic Variable Declarations
     // Variable Initialization
     lv_defenderGroup = UnitGroupEmpty();
 
@@ -1019,6 +909,7 @@ bool gt_Defendsmall2_Func (bool testConds, bool runActions) {
     unitgroup lv_defenderGroup;
     region lv_regVar;
 
+    // Automatic Variable Declarations
     // Variable Initialization
     lv_defenderGroup = UnitGroupEmpty();
 
@@ -1048,6 +939,7 @@ bool gt_Defendsmall3_Func (bool testConds, bool runActions) {
     unitgroup lv_defenderGroup;
     region lv_regVar;
 
+    // Automatic Variable Declarations
     // Variable Initialization
     lv_defenderGroup = UnitGroupEmpty();
 
@@ -1077,6 +969,7 @@ bool gt_Defendbig_Func (bool testConds, bool runActions) {
     unitgroup lv_defenderGroup;
     region lv_regVar;
 
+    // Automatic Variable Declarations
     // Variable Initialization
     lv_defenderGroup = UnitGroupEmpty();
 
@@ -1105,6 +998,7 @@ bool gt_Defendbig2_Func (bool testConds, bool runActions) {
     unitgroup lv_defenderGroup;
     region lv_regVar;
 
+    // Automatic Variable Declarations
     // Variable Initialization
     lv_defenderGroup = UnitGroupEmpty();
 
@@ -1131,6 +1025,7 @@ void gt_Defendbig2_Init () {
 // Trigger: TurnOnVictory
 //--------------------------------------------------------------------------------------------------
 bool gt_TurnOnVictory_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_04_ENEMY, null, UnitFilter(0, 0, (1 << c_targetFilterStructure) | (1 << c_targetFilterMissile) | (1 << c_targetFilterBuried), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true))) {
@@ -1158,6 +1053,7 @@ void gt_TurnOnVictory_Init () {
 // Trigger: Enemy Attacking Q
 //--------------------------------------------------------------------------------------------------
 bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -1176,9 +1072,7 @@ bool gt_EnemyAttackingQ_Func (bool testConds, bool runActions) {
 
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerQueueEnter();
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("AttackWave", true, RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER));
-    libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     TriggerQueueExit();
     Wait(20.0, c_timeAI);
     TriggerEnable(TriggerGetCurrent(), true);
@@ -1196,6 +1090,7 @@ void gt_EnemyAttackingQ_Init () {
 // Trigger: Defeat Primary Objective Failed
 //--------------------------------------------------------------------------------------------------
 bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((gv_structureAlive == 0))) {
@@ -1224,7 +1119,7 @@ bool gt_DefeatPrimaryObjectiveFailed_Func (bool testConds, bool runActions) {
     libCOMI_gf_SendMissionTransmission("DestroyedReminder", false, -1);
     libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
     TriggerExecute(gt_ObjectiveDontLetTheEnemyDestroyBuildingsFailed, true, false);
-    libCOMI_gf_DisplayCampaignMessage(libCOMI_gf_HumanPlayers(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/3186712A"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
+    libCOMI_gf_DisplayCampaignMessage(PlayerGroupAll(), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/3186712A"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
     CameraLockInput(gv_pLAYER_01_USER, true);
     CameraLockInput(gv_pLAYER_02_USER, true);
     UnitClearSelection(gv_pLAYER_01_USER);
@@ -1248,6 +1143,7 @@ void gt_DefeatPrimaryObjectiveFailed_Init () {
 // Trigger: Victory Primary Objective Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -1278,6 +1174,7 @@ void gt_VictoryPrimaryObjectiveComplete_Init () {
 // Trigger: Victory Sequence
 //--------------------------------------------------------------------------------------------------
 bool gt_VictorySequence_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((libCOMI_gf_GameIsOver() == false))) {
@@ -1311,6 +1208,7 @@ void gt_VictorySequence_Init () {
 // Trigger: Victory Fanfare Q
 //--------------------------------------------------------------------------------------------------
 bool gt_VictoryFanfareQ_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -1349,6 +1247,7 @@ void gt_VictoryFanfareQ_Init () {
 // Trigger: Victory
 //--------------------------------------------------------------------------------------------------
 bool gt_Victory_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
@@ -1375,6 +1274,7 @@ void gt_Victory_Init () {
 // Trigger: Defeat
 //--------------------------------------------------------------------------------------------------
 bool gt_Defeat_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
@@ -1401,6 +1301,7 @@ void gt_Defeat_Init () {
 // Trigger: Start AI
 //--------------------------------------------------------------------------------------------------
 bool gt_StartAI_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -1422,19 +1323,26 @@ void gt_StartAI_Init () {
 // Trigger: AIzerg
 //--------------------------------------------------------------------------------------------------
 bool gt_AIzerg_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto8FF18DF2_g;
+    int auto8FF18DF2_u;
+    unit auto8FF18DF2_var;
+
     // Actions
     if (!runActions) {
         return true;
     }
 
-    UnitGroupLoopBegin(UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
-    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+    auto8FF18DF2_g = UnitGroup(null, 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto8FF18DF2_u = UnitGroupCount(auto8FF18DF2_g, c_unitCountAll);
+    for (;; auto8FF18DF2_u -= 1) {
+        auto8FF18DF2_var = UnitGroupUnitFromEnd(auto8FF18DF2_g, auto8FF18DF2_u);
+        if (auto8FF18DF2_var == null) { break; }
         if (true) {
-            UnitIssueOrder(UnitGroupLoopCurrent(), OrderTargetingPoint(AbilityCommand("attack", 1), UnitGetPosition(UnitGroupClosestToPoint(UnitGroup(null, 14, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), UnitGetPosition(UnitGroupLoopCurrent())))), c_orderQueueReplace);
+            UnitIssueOrder(auto8FF18DF2_var, OrderTargetingPoint(AbilityCommand("attack", 1), UnitGetPosition(UnitGroupClosestToPoint(UnitGroup(null, 14, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), UnitGetPosition(auto8FF18DF2_var)))), c_orderQueueReplace);
         }
 
     }
-    UnitGroupLoopEnd();
     return true;
 }
 
@@ -1448,6 +1356,7 @@ void gt_AIzerg_Init () {
 // Trigger: DestroyPingsIfDead
 //--------------------------------------------------------------------------------------------------
 bool gt_DestroyPingsIfDead_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -1502,6 +1411,7 @@ void gt_DestroyPingsIfDead_Init () {
 // Trigger: CheckIfUnitsInUnitGroup
 //--------------------------------------------------------------------------------------------------
 bool gt_CheckIfUnitsInUnitGroup_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!(((UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter3) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_flyingEmitter1) == false)))) {
@@ -1537,6 +1447,7 @@ void gt_CheckIfUnitsInUnitGroup_Init () {
 // Trigger: CheckIfUnitsInUnitGroup 2
 //--------------------------------------------------------------------------------------------------
 bool gt_CheckIfUnitsInUnitGroup2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!(((UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter3) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_flyingEmitter1) == false)))) {
@@ -1572,6 +1483,7 @@ void gt_CheckIfUnitsInUnitGroup2_Init () {
 // Trigger: CheckIfUnitsInUnitGroup 3
 //--------------------------------------------------------------------------------------------------
 bool gt_CheckIfUnitsInUnitGroup3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!(((UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter3) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_flyingEmitter1) == false)))) {
@@ -1607,6 +1519,7 @@ void gt_CheckIfUnitsInUnitGroup3_Init () {
 // Trigger: CheckIfUnitsInUnitGroup 4
 //--------------------------------------------------------------------------------------------------
 bool gt_CheckIfUnitsInUnitGroup4_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!(((UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter3) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_flyingEmitter1) == false)))) {
@@ -1642,6 +1555,7 @@ void gt_CheckIfUnitsInUnitGroup4_Init () {
 // Trigger: CheckIfUnitsInUnitGroup 5
 //--------------------------------------------------------------------------------------------------
 bool gt_CheckIfUnitsInUnitGroup5_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!(((UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_secondClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter1) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter2) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_firstClassEmitter3) == false) && (UnitGroupHasUnit(gv_pSIunitgroup, gv_flyingEmitter1) == false)))) {
@@ -1675,6 +1589,7 @@ void gt_CheckIfUnitsInUnitGroup5_Init () {
 // Trigger: Reveal
 //--------------------------------------------------------------------------------------------------
 bool gt_Reveal_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -1702,6 +1617,7 @@ void gt_Reveal_Init () {
 // Trigger: TurnSpawnOverlordsStructures
 //--------------------------------------------------------------------------------------------------
 bool gt_TurnSpawnOverlordsStructures_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -1724,6 +1640,7 @@ void gt_TurnSpawnOverlordsStructures_Init () {
 // Trigger: SpawnSporeSpine
 //--------------------------------------------------------------------------------------------------
 bool gt_SpawnSporeSpine_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -1758,6 +1675,7 @@ void gt_SpawnSporeSpine_Init () {
 // Trigger: SpawnOverlords
 //--------------------------------------------------------------------------------------------------
 bool gt_SpawnOverlords_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -1780,6 +1698,7 @@ void gt_SpawnOverlords_Init () {
 // Trigger: SpawnOverlords 2
 //--------------------------------------------------------------------------------------------------
 bool gt_SpawnOverlords2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -1802,21 +1721,22 @@ void gt_SpawnOverlords2_Init () {
 // Trigger: FirstClassInitialWave
 //--------------------------------------------------------------------------------------------------
 bool gt_FirstClassInitialWave_Func (bool testConds, bool runActions) {
-    int autoE0E606DB_ae;
-    int autoE0E606DB_ai;
-    int auto0B6A0519_ae;
-    int auto0B6A0519_ai;
-    int auto4CEBE6B1_ae;
-    int auto4CEBE6B1_ai;
-    int autoE5688AB5_ae;
-    int autoE5688AB5_ai;
-    int autoEEE17FCF_ae;
-    int autoEEE17FCF_ai;
-    int auto6A88DF2D_ae;
-    int auto6A88DF2D_ai;
-
     // Variable Declarations
     int lv_integer;
+
+    // Automatic Variable Declarations
+    const int autoE0E606DB_ae = 2;
+    const int autoE0E606DB_ai = 1;
+    const int auto0B6A0519_ae = 2;
+    const int auto0B6A0519_ai = 1;
+    const int auto4CEBE6B1_ae = 2;
+    const int auto4CEBE6B1_ai = 1;
+    const int autoE5688AB5_ae = 2;
+    const int autoE5688AB5_ai = 1;
+    const int autoEEE17FCF_ae = 2;
+    const int autoEEE17FCF_ai = 1;
+    const int auto6A88DF2D_ae = 3;
+    const int auto6A88DF2D_ai = 1;
 
     // Variable Initialization
 
@@ -1827,10 +1747,8 @@ bool gt_FirstClassInitialWave_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
-        autoE0E606DB_ae = 2;
-        autoE0E606DB_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoE0E606DB_ai >= 0 && lv_integer <= autoE0E606DB_ae) || (autoE0E606DB_ai <= 0 && lv_integer >= autoE0E606DB_ae) ) ; lv_integer += autoE0E606DB_ai ) {
+        for ( ; ( (autoE0E606DB_ai >= 0 && lv_integer <= autoE0E606DB_ae) || (autoE0E606DB_ai < 0 && lv_integer >= autoE0E606DB_ae) ) ; lv_integer += autoE0E606DB_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
         }
@@ -1838,10 +1756,8 @@ bool gt_FirstClassInitialWave_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
-        auto0B6A0519_ae = 2;
-        auto0B6A0519_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto0B6A0519_ai >= 0 && lv_integer <= auto0B6A0519_ae) || (auto0B6A0519_ai <= 0 && lv_integer >= auto0B6A0519_ae) ) ; lv_integer += auto0B6A0519_ai ) {
+        for ( ; ( (auto0B6A0519_ai >= 0 && lv_integer <= auto0B6A0519_ae) || (auto0B6A0519_ai < 0 && lv_integer >= auto0B6A0519_ae) ) ; lv_integer += auto0B6A0519_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
         }
@@ -1849,10 +1765,8 @@ bool gt_FirstClassInitialWave_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
-        auto4CEBE6B1_ae = 2;
-        auto4CEBE6B1_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto4CEBE6B1_ai >= 0 && lv_integer <= auto4CEBE6B1_ae) || (auto4CEBE6B1_ai <= 0 && lv_integer >= auto4CEBE6B1_ae) ) ; lv_integer += auto4CEBE6B1_ai ) {
+        for ( ; ( (auto4CEBE6B1_ai >= 0 && lv_integer <= auto4CEBE6B1_ae) || (auto4CEBE6B1_ai < 0 && lv_integer >= auto4CEBE6B1_ae) ) ; lv_integer += auto4CEBE6B1_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
         }
@@ -1860,10 +1774,8 @@ bool gt_FirstClassInitialWave_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
-        autoE5688AB5_ae = 2;
-        autoE5688AB5_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoE5688AB5_ai >= 0 && lv_integer <= autoE5688AB5_ae) || (autoE5688AB5_ai <= 0 && lv_integer >= autoE5688AB5_ae) ) ; lv_integer += autoE5688AB5_ai ) {
+        for ( ; ( (autoE5688AB5_ai >= 0 && lv_integer <= autoE5688AB5_ae) || (autoE5688AB5_ai < 0 && lv_integer >= autoE5688AB5_ae) ) ; lv_integer += autoE5688AB5_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
         }
@@ -1871,10 +1783,8 @@ bool gt_FirstClassInitialWave_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
-        autoEEE17FCF_ae = 2;
-        autoEEE17FCF_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoEEE17FCF_ai >= 0 && lv_integer <= autoEEE17FCF_ae) || (autoEEE17FCF_ai <= 0 && lv_integer >= autoEEE17FCF_ae) ) ; lv_integer += autoEEE17FCF_ai ) {
+        for ( ; ( (autoEEE17FCF_ai >= 0 && lv_integer <= autoEEE17FCF_ae) || (autoEEE17FCF_ai < 0 && lv_integer >= autoEEE17FCF_ae) ) ; lv_integer += autoEEE17FCF_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
         }
@@ -1885,10 +1795,8 @@ bool gt_FirstClassInitialWave_Func (bool testConds, bool runActions) {
         UnitKill(gv_firstClassEmitter1);
         libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_firstClassEmitter1Point);
         libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter1Ping);
-        auto6A88DF2D_ae = 3;
-        auto6A88DF2D_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto6A88DF2D_ai >= 0 && lv_integer <= auto6A88DF2D_ae) || (auto6A88DF2D_ai <= 0 && lv_integer >= auto6A88DF2D_ae) ) ; lv_integer += auto6A88DF2D_ai ) {
+        for ( ; ( (auto6A88DF2D_ai >= 0 && lv_integer <= auto6A88DF2D_ae) || (auto6A88DF2D_ai < 0 && lv_integer >= auto6A88DF2D_ae) ) ; lv_integer += auto6A88DF2D_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
             libNtve_gf_CreateUnitsAtPoint2(2, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
@@ -1910,21 +1818,22 @@ void gt_FirstClassInitialWave_Init () {
 // Trigger: FirstClassEmitterSpawn1
 //--------------------------------------------------------------------------------------------------
 bool gt_FirstClassEmitterSpawn1_Func (bool testConds, bool runActions) {
-    int auto3F47ADB2_ae;
-    int auto3F47ADB2_ai;
-    int auto8BC33F5E_ae;
-    int auto8BC33F5E_ai;
-    int auto4BEA4BF8_ae;
-    int auto4BEA4BF8_ai;
-    int autoD15BF037_ae;
-    int autoD15BF037_ai;
-    int auto2E40B5A1_ae;
-    int auto2E40B5A1_ai;
-    int auto84807768_ae;
-    int auto84807768_ai;
-
     // Variable Declarations
     int lv_integer;
+
+    // Automatic Variable Declarations
+    const int auto3F47ADB2_ae = 2;
+    const int auto3F47ADB2_ai = 1;
+    const int auto8BC33F5E_ae = 2;
+    const int auto8BC33F5E_ai = 1;
+    const int auto4BEA4BF8_ae = 2;
+    const int auto4BEA4BF8_ai = 1;
+    const int autoD15BF037_ae = 2;
+    const int autoD15BF037_ai = 1;
+    const int auto2E40B5A1_ae = 2;
+    const int auto2E40B5A1_ai = 1;
+    const int auto84807768_ae = 3;
+    const int auto84807768_ai = 1;
 
     // Variable Initialization
 
@@ -1937,10 +1846,8 @@ bool gt_FirstClassEmitterSpawn1_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_FirstClassEmitterSpawn12, true);
     libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
-        auto3F47ADB2_ae = 2;
-        auto3F47ADB2_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto3F47ADB2_ai >= 0 && lv_integer <= auto3F47ADB2_ae) || (auto3F47ADB2_ai <= 0 && lv_integer >= auto3F47ADB2_ae) ) ; lv_integer += auto3F47ADB2_ai ) {
+        for ( ; ( (auto3F47ADB2_ai >= 0 && lv_integer <= auto3F47ADB2_ae) || (auto3F47ADB2_ai < 0 && lv_integer >= auto3F47ADB2_ae) ) ; lv_integer += auto3F47ADB2_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
         }
@@ -1948,10 +1855,8 @@ bool gt_FirstClassEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
-        auto8BC33F5E_ae = 2;
-        auto8BC33F5E_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto8BC33F5E_ai >= 0 && lv_integer <= auto8BC33F5E_ae) || (auto8BC33F5E_ai <= 0 && lv_integer >= auto8BC33F5E_ae) ) ; lv_integer += auto8BC33F5E_ai ) {
+        for ( ; ( (auto8BC33F5E_ai >= 0 && lv_integer <= auto8BC33F5E_ae) || (auto8BC33F5E_ai < 0 && lv_integer >= auto8BC33F5E_ae) ) ; lv_integer += auto8BC33F5E_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
         }
@@ -1959,10 +1864,8 @@ bool gt_FirstClassEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
-        auto4BEA4BF8_ae = 2;
-        auto4BEA4BF8_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto4BEA4BF8_ai >= 0 && lv_integer <= auto4BEA4BF8_ae) || (auto4BEA4BF8_ai <= 0 && lv_integer >= auto4BEA4BF8_ae) ) ; lv_integer += auto4BEA4BF8_ai ) {
+        for ( ; ( (auto4BEA4BF8_ai >= 0 && lv_integer <= auto4BEA4BF8_ae) || (auto4BEA4BF8_ai < 0 && lv_integer >= auto4BEA4BF8_ae) ) ; lv_integer += auto4BEA4BF8_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
         }
@@ -1970,10 +1873,8 @@ bool gt_FirstClassEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
-        autoD15BF037_ae = 2;
-        autoD15BF037_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoD15BF037_ai >= 0 && lv_integer <= autoD15BF037_ae) || (autoD15BF037_ai <= 0 && lv_integer >= autoD15BF037_ae) ) ; lv_integer += autoD15BF037_ai ) {
+        for ( ; ( (autoD15BF037_ai >= 0 && lv_integer <= autoD15BF037_ae) || (autoD15BF037_ai < 0 && lv_integer >= autoD15BF037_ae) ) ; lv_integer += autoD15BF037_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
         }
@@ -1981,10 +1882,8 @@ bool gt_FirstClassEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter1) == true)) {
-        auto2E40B5A1_ae = 2;
-        auto2E40B5A1_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto2E40B5A1_ai >= 0 && lv_integer <= auto2E40B5A1_ae) || (auto2E40B5A1_ai <= 0 && lv_integer >= auto2E40B5A1_ae) ) ; lv_integer += auto2E40B5A1_ai ) {
+        for ( ; ( (auto2E40B5A1_ai >= 0 && lv_integer <= auto2E40B5A1_ae) || (auto2E40B5A1_ai < 0 && lv_integer >= auto2E40B5A1_ae) ) ; lv_integer += auto2E40B5A1_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
         }
@@ -1995,10 +1894,8 @@ bool gt_FirstClassEmitterSpawn1_Func (bool testConds, bool runActions) {
         UnitKill(gv_firstClassEmitter1);
         libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_firstClassEmitter1Point);
         libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter1Ping);
-        auto84807768_ae = 3;
-        auto84807768_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto84807768_ai >= 0 && lv_integer <= auto84807768_ae) || (auto84807768_ai <= 0 && lv_integer >= auto84807768_ae) ) ; lv_integer += auto84807768_ai ) {
+        for ( ; ( (auto84807768_ai >= 0 && lv_integer <= auto84807768_ae) || (auto84807768_ai < 0 && lv_integer >= auto84807768_ae) ) ; lv_integer += auto84807768_ai ) {
             TriggerEnable(gt_FirstClassEmitterSpawn12, false);
             libNtve_gf_CreateUnitsAtPoint2(2, "Zergling", 0, 4, RegionRandomPoint(RegionFromId(4)));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(RegionFromId(4)));
@@ -2024,6 +1921,7 @@ bool gt_FirstClassEmitterSpawn12_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_integer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -2049,22 +1947,23 @@ void gt_FirstClassEmitterSpawn12_Init () {
 // Trigger: FirstClassEmitterSpawn2
 //--------------------------------------------------------------------------------------------------
 bool gt_FirstClassEmitterSpawn2_Func (bool testConds, bool runActions) {
-    int auto61B1C2CE_ae;
-    int auto61B1C2CE_ai;
-    int auto7DBF60C8_ae;
-    int auto7DBF60C8_ai;
-    int autoFB1F0966_ae;
-    int autoFB1F0966_ai;
-    int autoF2201B1E_ae;
-    int autoF2201B1E_ai;
-    int auto572A53D2_ae;
-    int auto572A53D2_ai;
-    int auto9E6ADF75_ae;
-    int auto9E6ADF75_ai;
-
     // Variable Declarations
     int lv_integer;
     region lv_emitterVariable;
+
+    // Automatic Variable Declarations
+    const int auto61B1C2CE_ae = 2;
+    const int auto61B1C2CE_ai = 1;
+    const int auto7DBF60C8_ae = 2;
+    const int auto7DBF60C8_ai = 1;
+    const int autoFB1F0966_ae = 2;
+    const int autoFB1F0966_ai = 1;
+    const int autoF2201B1E_ae = 2;
+    const int autoF2201B1E_ai = 1;
+    const int auto572A53D2_ae = 2;
+    const int auto572A53D2_ai = 1;
+    const int auto9E6ADF75_ae = 3;
+    const int auto9E6ADF75_ai = 1;
 
     // Variable Initialization
 
@@ -2078,10 +1977,8 @@ bool gt_FirstClassEmitterSpawn2_Func (bool testConds, bool runActions) {
     lv_emitterVariable = RegionFromId(5);
     libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
-        auto61B1C2CE_ae = 2;
-        auto61B1C2CE_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto61B1C2CE_ai >= 0 && lv_integer <= auto61B1C2CE_ae) || (auto61B1C2CE_ai <= 0 && lv_integer >= auto61B1C2CE_ae) ) ; lv_integer += auto61B1C2CE_ai ) {
+        for ( ; ( (auto61B1C2CE_ai >= 0 && lv_integer <= auto61B1C2CE_ae) || (auto61B1C2CE_ai < 0 && lv_integer >= auto61B1C2CE_ae) ) ; lv_integer += auto61B1C2CE_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2089,10 +1986,8 @@ bool gt_FirstClassEmitterSpawn2_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
-        auto7DBF60C8_ae = 2;
-        auto7DBF60C8_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto7DBF60C8_ai >= 0 && lv_integer <= auto7DBF60C8_ae) || (auto7DBF60C8_ai <= 0 && lv_integer >= auto7DBF60C8_ae) ) ; lv_integer += auto7DBF60C8_ai ) {
+        for ( ; ( (auto7DBF60C8_ai >= 0 && lv_integer <= auto7DBF60C8_ae) || (auto7DBF60C8_ai < 0 && lv_integer >= auto7DBF60C8_ae) ) ; lv_integer += auto7DBF60C8_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2100,10 +1995,8 @@ bool gt_FirstClassEmitterSpawn2_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
-        autoFB1F0966_ae = 2;
-        autoFB1F0966_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoFB1F0966_ai >= 0 && lv_integer <= autoFB1F0966_ae) || (autoFB1F0966_ai <= 0 && lv_integer >= autoFB1F0966_ae) ) ; lv_integer += autoFB1F0966_ai ) {
+        for ( ; ( (autoFB1F0966_ai >= 0 && lv_integer <= autoFB1F0966_ae) || (autoFB1F0966_ai < 0 && lv_integer >= autoFB1F0966_ae) ) ; lv_integer += autoFB1F0966_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2111,10 +2004,8 @@ bool gt_FirstClassEmitterSpawn2_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
-        autoF2201B1E_ae = 2;
-        autoF2201B1E_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoF2201B1E_ai >= 0 && lv_integer <= autoF2201B1E_ae) || (autoF2201B1E_ai <= 0 && lv_integer >= autoF2201B1E_ae) ) ; lv_integer += autoF2201B1E_ai ) {
+        for ( ; ( (autoF2201B1E_ai >= 0 && lv_integer <= autoF2201B1E_ae) || (autoF2201B1E_ai < 0 && lv_integer >= autoF2201B1E_ae) ) ; lv_integer += autoF2201B1E_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2122,10 +2013,8 @@ bool gt_FirstClassEmitterSpawn2_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter2) == true)) {
-        auto572A53D2_ae = 2;
-        auto572A53D2_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto572A53D2_ai >= 0 && lv_integer <= auto572A53D2_ae) || (auto572A53D2_ai <= 0 && lv_integer >= auto572A53D2_ae) ) ; lv_integer += auto572A53D2_ai ) {
+        for ( ; ( (auto572A53D2_ai >= 0 && lv_integer <= auto572A53D2_ae) || (auto572A53D2_ai < 0 && lv_integer >= auto572A53D2_ae) ) ; lv_integer += auto572A53D2_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2137,10 +2026,8 @@ bool gt_FirstClassEmitterSpawn2_Func (bool testConds, bool runActions) {
         UnitKill(gv_firstClassEmitter2);
         libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_firstClassEmitter2Point);
         libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter2Ping);
-        auto9E6ADF75_ae = 3;
-        auto9E6ADF75_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto9E6ADF75_ai >= 0 && lv_integer <= auto9E6ADF75_ae) || (auto9E6ADF75_ai <= 0 && lv_integer >= auto9E6ADF75_ae) ) ; lv_integer += auto9E6ADF75_ai ) {
+        for ( ; ( (auto9E6ADF75_ai >= 0 && lv_integer <= auto9E6ADF75_ae) || (auto9E6ADF75_ai < 0 && lv_integer >= auto9E6ADF75_ae) ) ; lv_integer += auto9E6ADF75_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(7, "Zergling", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
             libNtve_gf_CreateUnitsAtPoint2(2, "Baneling", 0, 4, RegionRandomPoint(lv_emitterVariable));
@@ -2164,6 +2051,7 @@ bool gt_FirstClassEmitterSpawn22_Func (bool testConds, bool runActions) {
     int lv_integer;
     region lv_emitterVariable;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -2190,22 +2078,23 @@ void gt_FirstClassEmitterSpawn22_Init () {
 // Trigger: FirstClassEmitterSpawn3
 //--------------------------------------------------------------------------------------------------
 bool gt_FirstClassEmitterSpawn3_Func (bool testConds, bool runActions) {
-    int auto81FC9D46_ae;
-    int auto81FC9D46_ai;
-    int auto27D386C3_ae;
-    int auto27D386C3_ai;
-    int autoAA64E4DA_ae;
-    int autoAA64E4DA_ai;
-    int auto3FF30238_ae;
-    int auto3FF30238_ai;
-    int auto27C0DABD_ae;
-    int auto27C0DABD_ai;
-    int auto5C99476E_ae;
-    int auto5C99476E_ai;
-
     // Variable Declarations
     region lv_emitterVariable;
     int lv_integer;
+
+    // Automatic Variable Declarations
+    const int auto81FC9D46_ae = 2;
+    const int auto81FC9D46_ai = 1;
+    const int auto27D386C3_ae = 2;
+    const int auto27D386C3_ai = 1;
+    const int autoAA64E4DA_ae = 2;
+    const int autoAA64E4DA_ai = 1;
+    const int auto3FF30238_ae = 2;
+    const int auto3FF30238_ai = 1;
+    const int auto27C0DABD_ae = 2;
+    const int auto27C0DABD_ai = 1;
+    const int auto5C99476E_ae = 3;
+    const int auto5C99476E_ai = 1;
 
     // Variable Initialization
 
@@ -2219,10 +2108,8 @@ bool gt_FirstClassEmitterSpawn3_Func (bool testConds, bool runActions) {
     lv_emitterVariable = RegionFromId(13);
     libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
-        auto81FC9D46_ae = 2;
-        auto81FC9D46_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto81FC9D46_ai >= 0 && lv_integer <= auto81FC9D46_ae) || (auto81FC9D46_ai <= 0 && lv_integer >= auto81FC9D46_ae) ) ; lv_integer += auto81FC9D46_ai ) {
+        for ( ; ( (auto81FC9D46_ai >= 0 && lv_integer <= auto81FC9D46_ae) || (auto81FC9D46_ai < 0 && lv_integer >= auto81FC9D46_ae) ) ; lv_integer += auto81FC9D46_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2233,10 +2120,8 @@ bool gt_FirstClassEmitterSpawn3_Func (bool testConds, bool runActions) {
         UnitKill(gv_firstClassEmitter2);
         PlayerCreateEffectPoint(4, "EnergyNovaPersistent", gv_firstClassEmitter2Point);
         libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter2Ping);
-        auto27D386C3_ae = 2;
-        auto27D386C3_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto27D386C3_ai >= 0 && lv_integer <= auto27D386C3_ae) || (auto27D386C3_ai <= 0 && lv_integer >= auto27D386C3_ae) ) ; lv_integer += auto27D386C3_ai ) {
+        for ( ; ( (auto27D386C3_ai >= 0 && lv_integer <= auto27D386C3_ae) || (auto27D386C3_ai < 0 && lv_integer >= auto27D386C3_ae) ) ; lv_integer += auto27D386C3_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2244,10 +2129,8 @@ bool gt_FirstClassEmitterSpawn3_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
-        autoAA64E4DA_ae = 2;
-        autoAA64E4DA_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoAA64E4DA_ai >= 0 && lv_integer <= autoAA64E4DA_ae) || (autoAA64E4DA_ai <= 0 && lv_integer >= autoAA64E4DA_ae) ) ; lv_integer += autoAA64E4DA_ai ) {
+        for ( ; ( (autoAA64E4DA_ai >= 0 && lv_integer <= autoAA64E4DA_ae) || (autoAA64E4DA_ai < 0 && lv_integer >= autoAA64E4DA_ae) ) ; lv_integer += autoAA64E4DA_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2255,10 +2138,8 @@ bool gt_FirstClassEmitterSpawn3_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
-        auto3FF30238_ae = 2;
-        auto3FF30238_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto3FF30238_ai >= 0 && lv_integer <= auto3FF30238_ae) || (auto3FF30238_ai <= 0 && lv_integer >= auto3FF30238_ae) ) ; lv_integer += auto3FF30238_ai ) {
+        for ( ; ( (auto3FF30238_ai >= 0 && lv_integer <= auto3FF30238_ae) || (auto3FF30238_ai < 0 && lv_integer >= auto3FF30238_ae) ) ; lv_integer += auto3FF30238_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2266,10 +2147,8 @@ bool gt_FirstClassEmitterSpawn3_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
     if ((UnitIsAlive(gv_firstClassEmitter3) == true)) {
-        auto27C0DABD_ae = 2;
-        auto27C0DABD_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto27C0DABD_ai >= 0 && lv_integer <= auto27C0DABD_ae) || (auto27C0DABD_ai <= 0 && lv_integer >= auto27C0DABD_ae) ) ; lv_integer += auto27C0DABD_ai ) {
+        for ( ; ( (auto27C0DABD_ai >= 0 && lv_integer <= auto27C0DABD_ae) || (auto27C0DABD_ai < 0 && lv_integer >= auto27C0DABD_ae) ) ; lv_integer += auto27C0DABD_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2281,10 +2160,8 @@ bool gt_FirstClassEmitterSpawn3_Func (bool testConds, bool runActions) {
         UnitKill(gv_firstClassEmitter3);
         libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_firstClassEmitter3Point);
         libCOMI_gf_DestroyPingCoop(gv_firstClassEmitter3Ping);
-        auto5C99476E_ae = 3;
-        auto5C99476E_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto5C99476E_ai >= 0 && lv_integer <= auto5C99476E_ae) || (auto5C99476E_ai <= 0 && lv_integer >= auto5C99476E_ae) ) ; lv_integer += auto5C99476E_ai ) {
+        for ( ; ( (auto5C99476E_ai >= 0 && lv_integer <= auto5C99476E_ae) || (auto5C99476E_ai < 0 && lv_integer >= auto5C99476E_ae) ) ; lv_integer += auto5C99476E_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(4, "Roach", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
             libNtve_gf_CreateUnitsAtPoint2(2, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
@@ -2310,6 +2187,7 @@ bool gt_FirstClassEmitterSpawn32_Func (bool testConds, bool runActions) {
     region lv_emitterVariable;
     int lv_integer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -2336,22 +2214,23 @@ void gt_FirstClassEmitterSpawn32_Init () {
 // Trigger: SecondClassEmitterSpawn1
 //--------------------------------------------------------------------------------------------------
 bool gt_SecondClassEmitterSpawn1_Func (bool testConds, bool runActions) {
-    int autoC675CD79_ae;
-    int autoC675CD79_ai;
-    int autoEB80C66B_ae;
-    int autoEB80C66B_ai;
-    int auto96C84619_ae;
-    int auto96C84619_ai;
-    int auto0D0C8AA5_ae;
-    int auto0D0C8AA5_ai;
-    int auto8780BFF0_ae;
-    int auto8780BFF0_ai;
-    int autoCB99191C_ae;
-    int autoCB99191C_ai;
-
     // Variable Declarations
     region lv_emitterVariable;
     int lv_integer;
+
+    // Automatic Variable Declarations
+    const int autoC675CD79_ae = 1;
+    const int autoC675CD79_ai = 1;
+    const int autoEB80C66B_ae = 2;
+    const int autoEB80C66B_ai = 1;
+    const int auto96C84619_ae = 1;
+    const int auto96C84619_ai = 1;
+    const int auto0D0C8AA5_ae = 2;
+    const int auto0D0C8AA5_ai = 1;
+    const int auto8780BFF0_ae = 2;
+    const int auto8780BFF0_ai = 1;
+    const int autoCB99191C_ae = 3;
+    const int autoCB99191C_ai = 1;
 
     // Variable Initialization
 
@@ -2365,10 +2244,8 @@ bool gt_SecondClassEmitterSpawn1_Func (bool testConds, bool runActions) {
     lv_emitterVariable = RegionFromId(6);
     libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
-        autoC675CD79_ae = 1;
-        autoC675CD79_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoC675CD79_ai >= 0 && lv_integer <= autoC675CD79_ae) || (autoC675CD79_ai <= 0 && lv_integer >= autoC675CD79_ae) ) ; lv_integer += autoC675CD79_ai ) {
+        for ( ; ( (autoC675CD79_ai >= 0 && lv_integer <= autoC675CD79_ae) || (autoC675CD79_ai < 0 && lv_integer >= autoC675CD79_ae) ) ; lv_integer += autoC675CD79_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Ultralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2376,10 +2253,8 @@ bool gt_SecondClassEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
-        autoEB80C66B_ae = 2;
-        autoEB80C66B_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoEB80C66B_ai >= 0 && lv_integer <= autoEB80C66B_ae) || (autoEB80C66B_ai <= 0 && lv_integer >= autoEB80C66B_ae) ) ; lv_integer += autoEB80C66B_ai ) {
+        for ( ; ( (autoEB80C66B_ai >= 0 && lv_integer <= autoEB80C66B_ae) || (autoEB80C66B_ai < 0 && lv_integer >= autoEB80C66B_ae) ) ; lv_integer += autoEB80C66B_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2387,10 +2262,8 @@ bool gt_SecondClassEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
-        auto96C84619_ae = 1;
-        auto96C84619_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto96C84619_ai >= 0 && lv_integer <= auto96C84619_ae) || (auto96C84619_ai <= 0 && lv_integer >= auto96C84619_ae) ) ; lv_integer += auto96C84619_ai ) {
+        for ( ; ( (auto96C84619_ai >= 0 && lv_integer <= auto96C84619_ae) || (auto96C84619_ai < 0 && lv_integer >= auto96C84619_ae) ) ; lv_integer += auto96C84619_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Ultralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2398,10 +2271,8 @@ bool gt_SecondClassEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
-        auto0D0C8AA5_ae = 2;
-        auto0D0C8AA5_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto0D0C8AA5_ai >= 0 && lv_integer <= auto0D0C8AA5_ae) || (auto0D0C8AA5_ai <= 0 && lv_integer >= auto0D0C8AA5_ae) ) ; lv_integer += auto0D0C8AA5_ai ) {
+        for ( ; ( (auto0D0C8AA5_ai >= 0 && lv_integer <= auto0D0C8AA5_ae) || (auto0D0C8AA5_ai < 0 && lv_integer >= auto0D0C8AA5_ae) ) ; lv_integer += auto0D0C8AA5_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2409,10 +2280,8 @@ bool gt_SecondClassEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
-        auto8780BFF0_ae = 2;
-        auto8780BFF0_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto8780BFF0_ai >= 0 && lv_integer <= auto8780BFF0_ae) || (auto8780BFF0_ai <= 0 && lv_integer >= auto8780BFF0_ae) ) ; lv_integer += auto8780BFF0_ai ) {
+        for ( ; ( (auto8780BFF0_ai >= 0 && lv_integer <= auto8780BFF0_ae) || (auto8780BFF0_ai < 0 && lv_integer >= auto8780BFF0_ae) ) ; lv_integer += auto8780BFF0_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2420,10 +2289,8 @@ bool gt_SecondClassEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter1) == true)) {
-        autoCB99191C_ae = 3;
-        autoCB99191C_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoCB99191C_ai >= 0 && lv_integer <= autoCB99191C_ae) || (autoCB99191C_ai <= 0 && lv_integer >= autoCB99191C_ae) ) ; lv_integer += autoCB99191C_ai ) {
+        for ( ; ( (autoCB99191C_ai >= 0 && lv_integer <= autoCB99191C_ae) || (autoCB99191C_ai < 0 && lv_integer >= autoCB99191C_ae) ) ; lv_integer += autoCB99191C_ai ) {
             TriggerEnable(gt_SecondClassEmitterSpawn12, false);
             UnitKill(gv_secondClassEmitter1);
             libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_secondClassEmitter1Point);
@@ -2453,6 +2320,7 @@ bool gt_SecondClassEmitterSpawn12_Func (bool testConds, bool runActions) {
     region lv_emitterVariable;
     int lv_integer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -2480,22 +2348,23 @@ void gt_SecondClassEmitterSpawn12_Init () {
 // Trigger: SecondClassEmitterSpawn2
 //--------------------------------------------------------------------------------------------------
 bool gt_SecondClassEmitterSpawn2_Func (bool testConds, bool runActions) {
-    int auto285771F8_ae;
-    int auto285771F8_ai;
-    int autoAE0073E8_ae;
-    int autoAE0073E8_ai;
-    int autoFDCB9D99_ae;
-    int autoFDCB9D99_ai;
-    int autoE9539153_ae;
-    int autoE9539153_ai;
-    int auto36C228FC_ae;
-    int auto36C228FC_ai;
-    int autoB7044D85_ae;
-    int autoB7044D85_ai;
-
     // Variable Declarations
     region lv_emitterVariable;
     int lv_integer;
+
+    // Automatic Variable Declarations
+    const int auto285771F8_ae = 1;
+    const int auto285771F8_ai = 1;
+    const int autoAE0073E8_ae = 2;
+    const int autoAE0073E8_ai = 1;
+    const int autoFDCB9D99_ae = 1;
+    const int autoFDCB9D99_ai = 1;
+    const int autoE9539153_ae = 2;
+    const int autoE9539153_ai = 1;
+    const int auto36C228FC_ae = 2;
+    const int auto36C228FC_ai = 1;
+    const int autoB7044D85_ae = 3;
+    const int autoB7044D85_ai = 1;
 
     // Variable Initialization
 
@@ -2509,10 +2378,8 @@ bool gt_SecondClassEmitterSpawn2_Func (bool testConds, bool runActions) {
     lv_emitterVariable = RegionFromId(7);
     libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
-        auto285771F8_ae = 1;
-        auto285771F8_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto285771F8_ai >= 0 && lv_integer <= auto285771F8_ae) || (auto285771F8_ai <= 0 && lv_integer >= auto285771F8_ae) ) ; lv_integer += auto285771F8_ai ) {
+        for ( ; ( (auto285771F8_ai >= 0 && lv_integer <= auto285771F8_ae) || (auto285771F8_ai < 0 && lv_integer >= auto285771F8_ae) ) ; lv_integer += auto285771F8_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Ultralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2520,10 +2387,8 @@ bool gt_SecondClassEmitterSpawn2_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
-        autoAE0073E8_ae = 2;
-        autoAE0073E8_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoAE0073E8_ai >= 0 && lv_integer <= autoAE0073E8_ae) || (autoAE0073E8_ai <= 0 && lv_integer >= autoAE0073E8_ae) ) ; lv_integer += autoAE0073E8_ai ) {
+        for ( ; ( (autoAE0073E8_ai >= 0 && lv_integer <= autoAE0073E8_ae) || (autoAE0073E8_ai < 0 && lv_integer >= autoAE0073E8_ae) ) ; lv_integer += autoAE0073E8_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2531,10 +2396,8 @@ bool gt_SecondClassEmitterSpawn2_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
-        autoFDCB9D99_ae = 1;
-        autoFDCB9D99_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoFDCB9D99_ai >= 0 && lv_integer <= autoFDCB9D99_ae) || (autoFDCB9D99_ai <= 0 && lv_integer >= autoFDCB9D99_ae) ) ; lv_integer += autoFDCB9D99_ai ) {
+        for ( ; ( (autoFDCB9D99_ai >= 0 && lv_integer <= autoFDCB9D99_ae) || (autoFDCB9D99_ai < 0 && lv_integer >= autoFDCB9D99_ae) ) ; lv_integer += autoFDCB9D99_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Ultralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2542,10 +2405,8 @@ bool gt_SecondClassEmitterSpawn2_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
-        autoE9539153_ae = 2;
-        autoE9539153_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoE9539153_ai >= 0 && lv_integer <= autoE9539153_ae) || (autoE9539153_ai <= 0 && lv_integer >= autoE9539153_ae) ) ; lv_integer += autoE9539153_ai ) {
+        for ( ; ( (autoE9539153_ai >= 0 && lv_integer <= autoE9539153_ae) || (autoE9539153_ai < 0 && lv_integer >= autoE9539153_ae) ) ; lv_integer += autoE9539153_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2553,10 +2414,8 @@ bool gt_SecondClassEmitterSpawn2_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
-        auto36C228FC_ae = 2;
-        auto36C228FC_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto36C228FC_ai >= 0 && lv_integer <= auto36C228FC_ae) || (auto36C228FC_ai <= 0 && lv_integer >= auto36C228FC_ae) ) ; lv_integer += auto36C228FC_ai ) {
+        for ( ; ( (auto36C228FC_ai >= 0 && lv_integer <= auto36C228FC_ae) || (auto36C228FC_ai < 0 && lv_integer >= auto36C228FC_ae) ) ; lv_integer += auto36C228FC_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Hydralisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2564,10 +2423,8 @@ bool gt_SecondClassEmitterSpawn2_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 0.0, false);
     if ((UnitIsAlive(gv_secondClassEmitter2) == true)) {
-        autoB7044D85_ae = 3;
-        autoB7044D85_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoB7044D85_ai >= 0 && lv_integer <= autoB7044D85_ae) || (autoB7044D85_ai <= 0 && lv_integer >= autoB7044D85_ae) ) ; lv_integer += autoB7044D85_ai ) {
+        for ( ; ( (autoB7044D85_ai >= 0 && lv_integer <= autoB7044D85_ae) || (autoB7044D85_ai < 0 && lv_integer >= autoB7044D85_ae) ) ; lv_integer += autoB7044D85_ai ) {
             TriggerEnable(gt_SecondClassEmitterSpawn22, false);
             UnitKill(gv_secondClassEmitter1);
             libNtve_gf_CreateModelAtPoint("ArtifactActivated", gv_secondClassEmitter1Point);
@@ -2597,6 +2454,7 @@ bool gt_SecondClassEmitterSpawn22_Func (bool testConds, bool runActions) {
     region lv_emitterVariable;
     int lv_integer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -2624,28 +2482,29 @@ void gt_SecondClassEmitterSpawn22_Init () {
 // Trigger: FlyingEmitterSpawn1
 //--------------------------------------------------------------------------------------------------
 bool gt_FlyingEmitterSpawn1_Func (bool testConds, bool runActions) {
-    int auto4CB8F351_ae;
-    int auto4CB8F351_ai;
-    int autoEE103BB2_ae;
-    int autoEE103BB2_ai;
-    int autoD6B3913A_ae;
-    int autoD6B3913A_ai;
-    int auto77F59C7B_ae;
-    int auto77F59C7B_ai;
-    int autoBD0FDCD7_ae;
-    int autoBD0FDCD7_ai;
-    int auto170AF99C_ae;
-    int auto170AF99C_ai;
-    int autoAB080AFE_ae;
-    int autoAB080AFE_ai;
-    int auto8653C2B7_ae;
-    int auto8653C2B7_ai;
-    int auto10D3E311_ae;
-    int auto10D3E311_ai;
-
     // Variable Declarations
     region lv_emitterVariable;
     int lv_integer;
+
+    // Automatic Variable Declarations
+    const int auto4CB8F351_ae = 2;
+    const int auto4CB8F351_ai = 1;
+    const int autoEE103BB2_ae = 1;
+    const int autoEE103BB2_ai = 1;
+    const int autoD6B3913A_ae = 3;
+    const int autoD6B3913A_ai = 1;
+    const int auto77F59C7B_ae = 2;
+    const int auto77F59C7B_ai = 1;
+    const int autoBD0FDCD7_ae = 2;
+    const int autoBD0FDCD7_ai = 1;
+    const int auto170AF99C_ae = 2;
+    const int auto170AF99C_ai = 1;
+    const int autoAB080AFE_ae = 2;
+    const int autoAB080AFE_ai = 1;
+    const int auto8653C2B7_ae = 2;
+    const int auto8653C2B7_ai = 1;
+    const int auto10D3E311_ae = 2;
+    const int auto10D3E311_ai = 1;
 
     // Variable Initialization
 
@@ -2659,10 +2518,8 @@ bool gt_FlyingEmitterSpawn1_Func (bool testConds, bool runActions) {
     lv_emitterVariable = RegionFromId(8);
     libNtve_gf_WaitForTimer(gv_timerDuration, 110.0, false);
     if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
-        auto4CB8F351_ae = 2;
-        auto4CB8F351_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto4CB8F351_ai >= 0 && lv_integer <= auto4CB8F351_ae) || (auto4CB8F351_ai <= 0 && lv_integer >= auto4CB8F351_ae) ) ; lv_integer += auto4CB8F351_ai ) {
+        for ( ; ( (auto4CB8F351_ai >= 0 && lv_integer <= auto4CB8F351_ae) || (auto4CB8F351_ai < 0 && lv_integer >= auto4CB8F351_ae) ) ; lv_integer += auto4CB8F351_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Mutalisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2670,10 +2527,8 @@ bool gt_FlyingEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 90.0, false);
     if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
-        autoEE103BB2_ae = 1;
-        autoEE103BB2_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoEE103BB2_ai >= 0 && lv_integer <= autoEE103BB2_ae) || (autoEE103BB2_ai <= 0 && lv_integer >= autoEE103BB2_ae) ) ; lv_integer += autoEE103BB2_ai ) {
+        for ( ; ( (autoEE103BB2_ai >= 0 && lv_integer <= autoEE103BB2_ae) || (autoEE103BB2_ai < 0 && lv_integer >= autoEE103BB2_ae) ) ; lv_integer += autoEE103BB2_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Corruptor", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2681,10 +2536,8 @@ bool gt_FlyingEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 70.0, false);
     if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
-        autoD6B3913A_ae = 3;
-        autoD6B3913A_ai = 1;
         lv_integer = 1;
-        for ( ; ( (autoD6B3913A_ai >= 0 && lv_integer <= autoD6B3913A_ae) || (autoD6B3913A_ai <= 0 && lv_integer >= autoD6B3913A_ae) ) ; lv_integer += autoD6B3913A_ai ) {
+        for ( ; ( (autoD6B3913A_ai >= 0 && lv_integer <= autoD6B3913A_ae) || (autoD6B3913A_ai < 0 && lv_integer >= autoD6B3913A_ae) ) ; lv_integer += autoD6B3913A_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Scourge", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2692,14 +2545,10 @@ bool gt_FlyingEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 50.0, false);
     if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
-        auto77F59C7B_ae = 2;
-        auto77F59C7B_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto77F59C7B_ai >= 0 && lv_integer <= auto77F59C7B_ae) || (auto77F59C7B_ai <= 0 && lv_integer >= auto77F59C7B_ae) ) ; lv_integer += auto77F59C7B_ai ) {
-            autoBD0FDCD7_ae = 2;
-            autoBD0FDCD7_ai = 1;
+        for ( ; ( (auto77F59C7B_ai >= 0 && lv_integer <= auto77F59C7B_ae) || (auto77F59C7B_ai < 0 && lv_integer >= auto77F59C7B_ae) ) ; lv_integer += auto77F59C7B_ai ) {
             lv_integer = 1;
-            for ( ; ( (autoBD0FDCD7_ai >= 0 && lv_integer <= autoBD0FDCD7_ae) || (autoBD0FDCD7_ai <= 0 && lv_integer >= autoBD0FDCD7_ae) ) ; lv_integer += autoBD0FDCD7_ai ) {
+            for ( ; ( (autoBD0FDCD7_ai >= 0 && lv_integer <= autoBD0FDCD7_ae) || (autoBD0FDCD7_ai < 0 && lv_integer >= autoBD0FDCD7_ae) ) ; lv_integer += autoBD0FDCD7_ai ) {
                 libNtve_gf_CreateUnitsAtPoint2(1, "Mutalisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
                 libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
             }
@@ -2708,14 +2557,10 @@ bool gt_FlyingEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 30.0, false);
     if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
-        auto170AF99C_ae = 2;
-        auto170AF99C_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto170AF99C_ai >= 0 && lv_integer <= auto170AF99C_ae) || (auto170AF99C_ai <= 0 && lv_integer >= auto170AF99C_ae) ) ; lv_integer += auto170AF99C_ai ) {
-            autoAB080AFE_ae = 2;
-            autoAB080AFE_ai = 1;
+        for ( ; ( (auto170AF99C_ai >= 0 && lv_integer <= auto170AF99C_ae) || (auto170AF99C_ai < 0 && lv_integer >= auto170AF99C_ae) ) ; lv_integer += auto170AF99C_ai ) {
             lv_integer = 1;
-            for ( ; ( (autoAB080AFE_ai >= 0 && lv_integer <= autoAB080AFE_ae) || (autoAB080AFE_ai <= 0 && lv_integer >= autoAB080AFE_ae) ) ; lv_integer += autoAB080AFE_ai ) {
+            for ( ; ( (autoAB080AFE_ai >= 0 && lv_integer <= autoAB080AFE_ae) || (autoAB080AFE_ai < 0 && lv_integer >= autoAB080AFE_ae) ) ; lv_integer += autoAB080AFE_ai ) {
                 libNtve_gf_CreateUnitsAtPoint2(1, "BroodLord", 0, 4, RegionRandomPoint(lv_emitterVariable));
                 libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
             }
@@ -2724,14 +2569,10 @@ bool gt_FlyingEmitterSpawn1_Func (bool testConds, bool runActions) {
 
     libNtve_gf_WaitForTimer(gv_timerDuration, 1.0, false);
     if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
-        auto8653C2B7_ae = 2;
-        auto8653C2B7_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto8653C2B7_ai >= 0 && lv_integer <= auto8653C2B7_ae) || (auto8653C2B7_ai <= 0 && lv_integer >= auto8653C2B7_ae) ) ; lv_integer += auto8653C2B7_ai ) {
-            auto10D3E311_ae = 2;
-            auto10D3E311_ai = 1;
+        for ( ; ( (auto8653C2B7_ai >= 0 && lv_integer <= auto8653C2B7_ae) || (auto8653C2B7_ai < 0 && lv_integer >= auto8653C2B7_ae) ) ; lv_integer += auto8653C2B7_ai ) {
             lv_integer = 1;
-            for ( ; ( (auto10D3E311_ai >= 0 && lv_integer <= auto10D3E311_ae) || (auto10D3E311_ai <= 0 && lv_integer >= auto10D3E311_ae) ) ; lv_integer += auto10D3E311_ai ) {
+            for ( ; ( (auto10D3E311_ai >= 0 && lv_integer <= auto10D3E311_ae) || (auto10D3E311_ai < 0 && lv_integer >= auto10D3E311_ae) ) ; lv_integer += auto10D3E311_ai ) {
                 TriggerEnable(gt_FlyingEmitterSpawn12, false);
                 UnitKill(gv_flyingEmitter1);
                 libNtve_gf_CreateModelAtPoint("AncientXelNagaArtifactBlastModel", gv_flyingEmitter1Point);
@@ -2756,12 +2597,13 @@ void gt_FlyingEmitterSpawn1_Init () {
 // Trigger: FlyingEmitterSpawn12
 //--------------------------------------------------------------------------------------------------
 bool gt_FlyingEmitterSpawn12_Func (bool testConds, bool runActions) {
-    int auto3C5925C9_ae;
-    int auto3C5925C9_ai;
-
     // Variable Declarations
     region lv_emitterVariable;
     int lv_integer;
+
+    // Automatic Variable Declarations
+    const int auto3C5925C9_ae = 2;
+    const int auto3C5925C9_ai = 1;
 
     // Variable Initialization
 
@@ -2773,10 +2615,8 @@ bool gt_FlyingEmitterSpawn12_Func (bool testConds, bool runActions) {
     Wait(2.0, c_timeGame);
     lv_emitterVariable = RegionFromId(8);
     if ((UnitIsAlive(gv_flyingEmitter1) == true)) {
-        auto3C5925C9_ae = 2;
-        auto3C5925C9_ai = 1;
         lv_integer = 1;
-        for ( ; ( (auto3C5925C9_ai >= 0 && lv_integer <= auto3C5925C9_ae) || (auto3C5925C9_ai <= 0 && lv_integer >= auto3C5925C9_ae) ) ; lv_integer += auto3C5925C9_ai ) {
+        for ( ; ( (auto3C5925C9_ai >= 0 && lv_integer <= auto3C5925C9_ae) || (auto3C5925C9_ai < 0 && lv_integer >= auto3C5925C9_ae) ) ; lv_integer += auto3C5925C9_ai ) {
             libNtve_gf_CreateUnitsAtPoint2(1, "Mutalisk", 0, 4, RegionRandomPoint(lv_emitterVariable));
             libCOMI_gf_DropPodWarpInUnitGroup(UnitLastCreatedGroup(), RegionRandomPoint(lv_emitterVariable));
         }
@@ -2799,6 +2639,7 @@ bool gt_PsiEmitterwave1_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_integer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -2840,6 +2681,7 @@ bool gt_PsiEmitterwave2gamma_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_integer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -2892,6 +2734,7 @@ bool gt_PsiEmitterwave3gamma_Func (bool testConds, bool runActions) {
     int lv_integer;
     int lv_integer2;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -2947,6 +2790,7 @@ bool gt_PsiEmitterwave3gamma2_Func (bool testConds, bool runActions) {
     int lv_integer;
     int lv_integer2;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -3014,6 +2858,7 @@ bool gt_PsiEmitterwave3gamma3_Func (bool testConds, bool runActions) {
     int lv_integer;
     int lv_integer2;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -3082,6 +2927,7 @@ bool gt_PsiEmitterwave1big_Func (bool testConds, bool runActions) {
     int lv_integer2;
     int lv_integer3;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -3134,6 +2980,7 @@ bool gt_PsiEmitterwave1Flyer_Func (bool testConds, bool runActions) {
     int lv_integer2;
     int lv_integer3;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -3182,6 +3029,7 @@ bool gt_PsiEmitterwave2big_Func (bool testConds, bool runActions) {
     int lv_integer2;
     int lv_integer3;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -3254,6 +3102,7 @@ bool gt_DefendersWave_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_integer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -3282,6 +3131,7 @@ bool gt_DefendersWave2_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_integer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -3310,6 +3160,7 @@ bool gt_DefendersWave3_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_integer;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -3340,6 +3191,7 @@ bool gt_SetupAttackWaveSpawn_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_spawnLocationIter;
 
+    // Automatic Variable Declarations
     // Variable Initialization
 
     // Actions
@@ -3377,6 +3229,7 @@ void gt_SetupAttackWaveSpawn_Init () {
 // Trigger: AI Attack Waves
 //--------------------------------------------------------------------------------------------------
 bool gt_AIAttackWaves_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -3398,6 +3251,7 @@ void gt_AIAttackWaves_Init () {
 // Trigger: UpdateBothObjectives
 //--------------------------------------------------------------------------------------------------
 bool gt_UpdateBothObjectives_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -3419,6 +3273,7 @@ void gt_UpdateBothObjectives_Init () {
 // Trigger: Objective - Destroy all psi emitter waves - Create
 //--------------------------------------------------------------------------------------------------
 bool gt_ObjectiveDestroyallpsiemitterwavesCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -3440,6 +3295,7 @@ void gt_ObjectiveDestroyallpsiemitterwavesCreate_Init () {
 // Trigger: Objective - DontLetTheEnemyDestroyBuildings - Create
 //--------------------------------------------------------------------------------------------------
 bool gt_ObjectiveDontLetTheEnemyDestroyBuildingsCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -3461,6 +3317,7 @@ void gt_ObjectiveDontLetTheEnemyDestroyBuildingsCreate_Init () {
 // Trigger: Objective - DontLetTheEnemyDestroyBuildings - Failed
 //--------------------------------------------------------------------------------------------------
 bool gt_ObjectiveDontLetTheEnemyDestroyBuildingsFailed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -3481,6 +3338,7 @@ void gt_ObjectiveDontLetTheEnemyDestroyBuildingsFailed_Init () {
 // Trigger: BothObjectivesCompleted
 //--------------------------------------------------------------------------------------------------
 bool gt_BothObjectivesCompleted_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
@@ -3509,6 +3367,7 @@ void gt_BothObjectivesCompleted_Init () {
 // Trigger: Objective - DestroyOrbitalCommand - Create
 //--------------------------------------------------------------------------------------------------
 bool gt_ObjectiveDestroyOrbitalCommandCreate_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Actions
     if (!runActions) {
         return true;
@@ -3534,6 +3393,7 @@ void gt_ObjectiveDestroyOrbitalCommandCreate_Init () {
 // Trigger: Objective - DestroyOrbitalCommand - Completed
 //--------------------------------------------------------------------------------------------------
 bool gt_ObjectiveDestroyOrbitalCommandCompleted_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
     // Conditions
     if (testConds) {
         if (!((EventUnit() == UnitFromId(911594484)))) {
@@ -3563,14 +3423,13 @@ void gt_ObjectiveDestroyOrbitalCommandCompleted_Init () {
 //--------------------------------------------------------------------------------------------------
 void InitTriggers () {
     gt_Init01LoadData_Init();
-    gt_Init02Players_Init();
     gt_Init03LoadingComplete_Init();
+    gt_Init02Players_Init();
     gt_Init04Technology_Init();
     gt_Init05Units_Init();
     gt_Init06MusicSound_Init();
     gt_Init07Environment_Init();
     gt_Init08Difficulties_Init();
-    gt_DebugCantFail_Init();
     gt_StartGameQ_Init();
     gt_CivilianScream_Init();
     gt_UpdateCounterDestroyed_Init();

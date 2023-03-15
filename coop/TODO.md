@@ -15,7 +15,6 @@
 49-OperationBrainstorm.SC2Map
 50-AerialEvacuation.SC2Map
 51-YouAreWhatYouEat.SC2Map
-52-AmonsReach.SC2Map
 53-DylarianShipyards.SC2Map
 54-GazeOfTheVoid.SC2Map
 55-GuardiansOfAiur.SC2Map

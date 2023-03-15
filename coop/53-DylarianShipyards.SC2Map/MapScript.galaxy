@@ -5,10 +5,21 @@
 // Name:   RTC 2017: Dylarian Shipyards
 // 
 //==================================================================================================
+include "TriggerLibs/natives"
+
+//--------------------------------------------------------------------------------------------------
+// Custom Script: Triggers
+//--------------------------------------------------------------------------------------------------
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   RTC 2017: Dylarian Shipyards
+// 
+//==================================================================================================
 include "TriggerLibs/NativeLib"
 include "TriggerLibs/SwarmLib"
 include "LibCOMI"
-include "aiF917F4D7"
 
 //--------------------------------------------------------------------------------------------------
 // Library Initialization
@@ -167,7 +178,6 @@ trigger gt_LokiDestroyed;
 trigger gt_EnemyAttackingQ;
 trigger gt_LokiQ;
 trigger gt_LokiDisoveredQ;
-trigger gt_DefeatBaseDead;
 trigger gt_DefeatPrimaryObjectiveFailed;
 trigger gt_VictoryPrimaryObjectiveComplete;
 trigger gt_VictorySequence;
@@ -204,132 +214,6 @@ trigger gt_ObjectiveDestroyLokiCreate;
 trigger gt_ObjectiveDestroyLokiComplete;
 trigger gt_ObjectiveDestroyLokiUpdate;
 trigger gt_ObjectiveDestroyLokiFailed;
-
-//--------------------------------------------------------------------------------------------------
-// Custom AI Functions
-//--------------------------------------------------------------------------------------------------
-string[17] cai_playerAI;
-
-//--------------------------------------------------------------------------------------------------
-void InitCustomAI () {
-    int init_i;
-
-    for (init_i = 0; init_i <= 16; init_i += 1) {
-        cai_playerAI[init_i] = null;
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-void cai_start (string ai, int p) {
-    if (p < 0 || p >= 16) {
-        return;
-    }
-    cai_playerAI[p] = ai;
-
-    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_start(p); }
-}
-
-//--------------------------------------------------------------------------------------------------
-void cai_setDefGather (int p, point val) {
-    if (p < 0 || p >= 16) {
-        return;
-    }
-    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_setDefGather(p, val); }
-}
-
-//--------------------------------------------------------------------------------------------------
-string cai_getCustomData (int p) {
-    if (p < 0 || p >= 16) {
-        return null;
-    }
-    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getCustomData(p); }
-    return null;
-}
-
-//--------------------------------------------------------------------------------------------------
-wave cai_getLastWave (int p) {
-    if (p < 0 || p >= 16) {
-        return null;
-    }
-    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_getLastWave(p); }
-    return null;
-}
-
-//--------------------------------------------------------------------------------------------------
-void cai_waves_run (int p, playergroup target) {
-    if (p < 0 || p >= 16) {
-        return;
-    }
-    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_run(p, target); }
-}
-
-//--------------------------------------------------------------------------------------------------
-void cai_waves_enable (int p, bool val) {
-    if (p < 0 || p >= 16) {
-        return;
-    }
-    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_waves_enable(p, val); }
-}
-
-//--------------------------------------------------------------------------------------------------
-void cai_waves_stop (string ai) {
-    if (ai == "aiF917F4D7") { aiF917F4D7_waves_stop(); }
-}
-
-//--------------------------------------------------------------------------------------------------
-void cai_wave_run (int w, int p, playergroup target, bool wait) {
-    if (p < 0 || p >= 16) {
-        return;
-    }
-    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_run(w, p, target, wait); }
-}
-
-//--------------------------------------------------------------------------------------------------
-void cai_wave_enable (int w, int p, bool val) {
-    if (p < 0 || p >= 16) {
-        return;
-    }
-    if (cai_playerAI[p] == "aiF917F4D7") { aiF917F4D7_wave_enable(w, p, val); }
-}
-
-//--------------------------------------------------------------------------------------------------
-bool cai_wave_isEnabled (int w, int p) {
-    if (p < 0 || p >= 16) {
-        return false;
-    }
-    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_isEnabled(w, p); }
-    return false;
-}
-
-//--------------------------------------------------------------------------------------------------
-unitgroup cai_wave_createdUnits (int w, int p) {
-    if (p < 0 || p >= 16) {
-        return null;
-    }
-    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdUnits(w, p); }
-    return null;
-}
-
-//--------------------------------------------------------------------------------------------------
-wave cai_wave_createdWave (int w, int p) {
-    if (p < 0 || p >= 16) {
-        return null;
-    }
-    if (cai_playerAI[p] == "aiF917F4D7") { return aiF917F4D7_wave_createdWave(w, p); }
-    return null;
-}
-
-//--------------------------------------------------------------------------------------------------
-void cai_startall () {
-    cai_start("aiF917F4D7", 7);
-    AICampaignStart(3);
-    AICampaignStart(4);
-}
-
-//--------------------------------------------------------------------------------------------------
-void cai_runall () {
-    playergroup target = PlayerGroupEmpty();
-}
 
 //--------------------------------------------------------------------------------------------------
 // Global Functions
@@ -665,32 +549,6 @@ bool gt_Init01LoadData_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    libCOMI_gf_SetDefaultCommandersForContestLocalTest("ProtossArtanis", "ZergKerrigan");
-    auto0B258D10_g = libCOMI_gf_HumanPlayers();
-    auto0B258D10_p = 1;
-    for ( ; auto0B258D10_p <= PlayerGroupCount(auto0B258D10_g) ; auto0B258D10_p += BoolToInt(lv_indexPlayer == PlayerGroupPlayer(auto0B258D10_g, auto0B258D10_p)) ) {
-        lv_indexPlayer = PlayerGroupPlayer(auto0B258D10_g, auto0B258D10_p);
-        auto834F8A5E_val = GameAttributePlayerValue("[bnet:local/0.0/357801]1", lv_indexPlayer);
-        if (auto834F8A5E_val == "0003") {
-            PlayerSetCommander(lv_indexPlayer, "Artanis");
-        }
-        else if (auto834F8A5E_val == "0002") {
-            PlayerSetCommander(lv_indexPlayer, "Kerrigan");
-        }
-        else if (auto834F8A5E_val == "0001") {
-            PlayerSetCommander(lv_indexPlayer, "Raynor");
-        }
-        else {
-            if ((lv_indexPlayer == 1)) {
-                PlayerSetCommander(lv_indexPlayer, "Raynor");
-            }
-            else {
-                PlayerSetCommander(lv_indexPlayer, "Artanis");
-            }
-        }
-    }
-    libCOMI_gf_EnableArcadeContestMode();
-    TriggerExecute(gt_Init02Players, true, false);
     libCOMI_gf_LoadCoopMission("COOP_Placeholder", gt_Init03LoadingComplete);
     return true;
 }
@@ -772,7 +630,6 @@ bool gt_Init02Players_Func (bool testConds, bool runActions) {
     }
     PlayerSetAlliance(gv_pLAYER_03_ENEMY, c_allianceIdPower, gv_pLAYER_04_ENEMY, true);
     PlayerSetAlliance(gv_pLAYER_04_ENEMY, c_allianceIdPower, gv_pLAYER_03_ENEMY, true);
-    libCOMI_gf_SetAlliedCommandersstartingResources();
     return true;
 }
 
@@ -785,18 +642,12 @@ void gt_Init02Players_Init () {
 // Trigger: Init 03 Loading Complete
 //--------------------------------------------------------------------------------------------------
 bool gt_Init03LoadingComplete_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
+    TriggerExecute(gt_Init02Players, true, false);
     TriggerExecute(gt_Init04Technology, true, false);
-    libCOMI_gf_PurchaseStorymodeTech();
     TriggerExecute(gt_Init05Units, true, false);
     TriggerExecute(gt_Init06MusicSound, true, false);
     TriggerExecute(gt_Init07Environment, true, false);
     TriggerExecute(gt_Init08Difficulties, true, false);
-    libCOMI_gf_PlayMapIntroZoom(true);
     TriggerExecute(gt_StartAI, true, false);
     TriggerExecute(gt_StartGameQ, true, false);
     return true;
@@ -811,12 +662,6 @@ void gt_Init03LoadingComplete_Init () {
 // Trigger: Init 04 Technology
 //--------------------------------------------------------------------------------------------------
 bool gt_Init04Technology_Func (bool testConds, bool runActions) {
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    libCOMI_gf_SetTechRestrictionsCallback(TriggerGetCurrent());
     return true;
 }
 
@@ -842,8 +687,7 @@ bool gt_Init05Units_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_01_USER);
-    libCOMI_gf_SetWorkerRallyPointsPlayersNexuses(gv_pLAYER_02_USER);
+
     UnitBehaviorAddPlayer(UnitFromId(370698803), "LokiDocked", 0, 1);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(370698803), true);
     UnitBehaviorAddPlayer(UnitFromId(442268028), "LokiDocked", 0, 1);
@@ -1029,7 +873,6 @@ bool gt_DebugCantFail_Func (bool testConds, bool runActions) {
 
     PlayerModifyPropertyFixed(gv_pLAYER_01_USER, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 0.0);
     PlayerModifyPropertyFixed(gv_pLAYER_02_USER, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 0.0);
-    TriggerEnable(gt_DefeatBaseDead, false);
     TriggerEnable(gt_DefeatPrimaryObjectiveFailed, false);
     return true;
 }
@@ -3178,84 +3021,6 @@ void gt_LokiDisoveredQ_Init () {
     gt_LokiDisoveredQ = TriggerCreate("gt_LokiDisoveredQ_Func");
 }
 
-//--------------------------------------------------------------------------------------------------
-// Trigger: Defeat Base Dead
-//--------------------------------------------------------------------------------------------------
-bool gt_DefeatBaseDead_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    point lv_cameraTarget;
-
-    // Variable Initialization
-
-    // Conditions
-    if (testConds) {
-        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
-            return false;
-        }
-
-        if (!((libCOMI_gf_GameIsOver() == false))) {
-            return false;
-        }
-
-        if (!(((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_01_USER, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true) || (libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_02_USER, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true)))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    TriggerEnable(TriggerGetCurrent(), false);
-    libCOMI_gf_GameOver(libCOMI_ge_CampaignMissionGameResultType_Defeat);
-    TransmissionClearAll();
-    TriggerQueuePause(true);
-    TriggerQueueClear(c_triggerQueueRemove);
-    libCOMI_gf_CinematicModeCampaign(true, 1.5, true);
-    TriggerExecute(gt_ObjectiveRescuePilotFailed, true, false);
-    if ((libNtve_gf_UnitGroupIsDead(UnitGroup(null, gv_pLAYER_01_USER, null, UnitFilter((1 << c_targetFilterPreventDefeat), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == true)) {
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/6166427B"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/7A60698B"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-        lv_cameraTarget = PlayerStartLocation(gv_pLAYER_01_USER);
-    }
-    else {
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_02_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/FAF74290"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-        libCOMI_gf_DisplayCampaignMessage(PlayerGroupSingle(gv_pLAYER_01_USER), libCOMI_ge_CampaignMessageType_MissionFailed, StringExternal("Param/Value/D7FCB0EB"), libCOMI_ge_CampaignMessageFormatNotFormat_FormatMessage);
-        lv_cameraTarget = PlayerStartLocation(gv_pLAYER_02_USER);
-    }
-    Wait(2.0, c_timeReal);
-    UnitGroupLoopBegin(UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
-    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-        libNtve_gf_MakeUnitInvulnerable(UnitGroupLoopCurrent(), true);
-    }
-    UnitGroupLoopEnd();
-    CameraLockInput(gv_pLAYER_01_USER, true);
-    CameraLockInput(gv_pLAYER_02_USER, true);
-    UnitClearSelection(gv_pLAYER_01_USER);
-    UnitClearSelection(gv_pLAYER_02_USER);
-    UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
-    if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_01_USER)) == false)) {
-        CameraApplyInfo(gv_pLAYER_01_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-        CameraPan(gv_pLAYER_01_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
-    }
-
-    if ((RegionContainsPoint(RegionCircle(lv_cameraTarget, 8.0), CameraGetTarget(gv_pLAYER_02_USER)) == false)) {
-        CameraApplyInfo(gv_pLAYER_02_USER, CameraInfoDefault(), 2.0, -1, 10.0, false);
-        CameraPan(gv_pLAYER_02_USER, lv_cameraTarget, 2.0, -1, 10.0, false);
-    }
-
-    Wait(4.0, c_timeReal);
-    UISetCursorVisible(PlayerGroupAll(), true);
-    TriggerExecute(gt_Defeat, true, false);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void gt_DefeatBaseDead_Init () {
-    gt_DefeatBaseDead = TriggerCreate("gt_DefeatBaseDead_Func");
-    TriggerAddEventTimePeriodic(gt_DefeatBaseDead, 1.0, c_timeAI);
-}
 
 //--------------------------------------------------------------------------------------------------
 // Trigger: Defeat Primary Objective Failed
@@ -4411,7 +4176,6 @@ void InitTriggers () {
     gt_EnemyAttackingQ_Init();
     gt_LokiQ_Init();
     gt_LokiDisoveredQ_Init();
-    gt_DefeatBaseDead_Init();
     gt_DefeatPrimaryObjectiveFailed_Init();
     gt_VictoryPrimaryObjectiveComplete_Init();
     gt_VictorySequence_Init();
@@ -4453,9 +4217,22 @@ void InitTriggers () {
 //--------------------------------------------------------------------------------------------------
 // Map Initialization
 //--------------------------------------------------------------------------------------------------
-void InitMap () {
+void run () {
     InitLibs();
     InitGlobals();
-    InitCustomAI();
     InitTriggers();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Custom Script Initialization
+//--------------------------------------------------------------------------------------------------
+void InitCustomScript () {
+    run();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitCustomScript();
 }
