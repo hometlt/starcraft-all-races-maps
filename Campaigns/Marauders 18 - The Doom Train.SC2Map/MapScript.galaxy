@@ -1,0 +1,2174 @@
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   ???????????????? - ??????????-????????????
+// 
+//==================================================================================================
+include "TriggerLibs/NativeLib"
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+void InitLibs () {
+    libNtve_InitLib();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Variables
+//--------------------------------------------------------------------------------------------------
+unit gv_trainChanger;
+unit gv_train0;
+unit gv_train1;
+unit gv_train2;
+unit gv_train3;
+unit gv_train4;
+unit gv_train5;
+unit gv_train6;
+unit gv_train7;
+int gv_objTrain;
+unitgroup gv_attackerGroup1;
+unitgroup gv_attackerGroup2;
+int gv_trainRouteVar;
+
+void InitGlobals () {
+    gv_trainChanger = UnitFromId(9);
+    gv_train0 = UnitFromId(9);
+    gv_train1 = UnitFromId(1);
+    gv_train2 = UnitFromId(3);
+    gv_train3 = UnitFromId(5);
+    gv_train4 = UnitFromId(7);
+    gv_train5 = UnitFromId(8);
+    gv_train6 = UnitFromId(4);
+    gv_train7 = UnitFromId(2);
+    gv_objTrain = c_invalidObjectiveId;
+    gv_attackerGroup1 = UnitGroupFromId(1);
+    gv_attackerGroup2 = UnitGroupFromId(2);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Global Function Declarations
+//--------------------------------------------------------------------------------------------------
+void gf_Attack1MarineMedic ();
+void gf_Attack2MarineHellbatWarhound ();
+void gf_Attack3HellionCyclone ();
+void gf_Attack4PoundhoundGoliath ();
+void gf_Attack5MarineMedicHellbat ();
+void gf_Attack6HellionHellbat ();
+void gf_Attack7Obliterator ();
+void gf_Attack8CyclonePoundhound ();
+void gf_Attack9ThorMarine ();
+void gf_Attack10WarhoundCyclone ();
+void gf_AttackDropship1GoliathHellbat ();
+void gf_AttackDropship2MarineWarhound ();
+void gf_AttackDropship3CyclonePoundhound ();
+void gf_AttackDropship4WarhoundHellion ();
+void gf_AttackDropship5ThorPoundhound ();
+void gf_AttackDropship6ThorMarineHellbat ();
+void gf_AttackDropship7GoliathWarhoundPoundhound ();
+void gf_AttackDropship8GoliathCycloneHellion ();
+void gf_AttackDropship9MarineMedicPoundhound ();
+void gf_AttackDropship10Obliterator ();
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Variables
+//--------------------------------------------------------------------------------------------------
+trigger gt_WarfoundryColor;
+trigger gt_Init;
+trigger gt_Bunker;
+trigger gt_BuildingJump;
+trigger gt_TrainKillBuilding;
+trigger gt_TrainChangerFirst;
+trigger gt_TrainMoveFirst;
+trigger gt_TrainChangerLong;
+trigger gt_TrainChangerShort;
+trigger gt_TrainMoveLong;
+trigger gt_TrainMoveLong2;
+trigger gt_TrainMoveLong3;
+trigger gt_TrainMoveLong4;
+trigger gt_TrainMoveLong5;
+trigger gt_TrainMoveShort;
+trigger gt_TrainMoveReturn;
+trigger gt_Intro;
+trigger gt_TrainPhase2;
+trigger gt_TrainPhase3;
+trigger gt_TrainPhase4;
+trigger gt_TrainPhase5;
+trigger gt_TrainPhase6;
+trigger gt_TrainSpawnAdds;
+trigger gt_TrainSpeedSlow1;
+trigger gt_TrainSpeedSlow2;
+trigger gt_Attacks;
+trigger gt_AttackDropshipAttackCommand;
+trigger gt_AttackerGroupSpeed;
+trigger gt_AttackerGroupSpeed2;
+trigger gt_AttackerIdle;
+trigger gt_DropshipRemove;
+trigger gt_BlabMinerals;
+trigger gt_BlabBase;
+trigger gt_BaseDestroyed;
+trigger gt_TrainDead;
+trigger gt_Fail;
+
+//--------------------------------------------------------------------------------------------------
+// Global Functions
+//--------------------------------------------------------------------------------------------------
+void gf_Attack1MarineMedic () {
+    // Automatic Variable Declarations
+    unitgroup auto27B66D1E_g;
+    int auto27B66D1E_u;
+    unit auto27B66D1E_var;
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(18, "WarPig", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(5, "Medic", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    auto27B66D1E_g = gv_attackerGroup1;
+    auto27B66D1E_u = UnitGroupCount(auto27B66D1E_g, c_unitCountAll);
+    for (;; auto27B66D1E_u -= 1) {
+        auto27B66D1E_var = UnitGroupUnitFromEnd(auto27B66D1E_g, auto27B66D1E_u);
+        if (auto27B66D1E_var == null) { break; }
+        UnitSetPropertyFixed(auto27B66D1E_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_Attack2MarineHellbatWarhound () {
+    // Automatic Variable Declarations
+    unitgroup autoCDD114EC_g;
+    int autoCDD114EC_u;
+    unit autoCDD114EC_var;
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(3, "WarHound", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(7, "HellionTank", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(11, "WarPig", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    autoCDD114EC_g = gv_attackerGroup1;
+    autoCDD114EC_u = UnitGroupCount(autoCDD114EC_g, c_unitCountAll);
+    for (;; autoCDD114EC_u -= 1) {
+        autoCDD114EC_var = UnitGroupUnitFromEnd(autoCDD114EC_g, autoCDD114EC_u);
+        if (autoCDD114EC_var == null) { break; }
+        UnitSetPropertyFixed(autoCDD114EC_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_Attack3HellionCyclone () {
+    // Automatic Variable Declarations
+    unitgroup auto36242E4F_g;
+    int auto36242E4F_u;
+    unit auto36242E4F_var;
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(7, "Hellion", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(5, "Cyclone", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    auto36242E4F_g = gv_attackerGroup1;
+    auto36242E4F_u = UnitGroupCount(auto36242E4F_g, c_unitCountAll);
+    for (;; auto36242E4F_u -= 1) {
+        auto36242E4F_var = UnitGroupUnitFromEnd(auto36242E4F_g, auto36242E4F_u);
+        if (auto36242E4F_var == null) { break; }
+        UnitSetPropertyFixed(auto36242E4F_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_Attack4PoundhoundGoliath () {
+    // Automatic Variable Declarations
+    unitgroup auto37A169EE_g;
+    int auto37A169EE_u;
+    unit auto37A169EE_var;
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(12, "Goliath", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(2, "WarHound2", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    auto37A169EE_g = gv_attackerGroup1;
+    auto37A169EE_u = UnitGroupCount(auto37A169EE_g, c_unitCountAll);
+    for (;; auto37A169EE_u -= 1) {
+        auto37A169EE_var = UnitGroupUnitFromEnd(auto37A169EE_g, auto37A169EE_u);
+        if (auto37A169EE_var == null) { break; }
+        UnitSetPropertyFixed(auto37A169EE_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_Attack5MarineMedicHellbat () {
+    // Automatic Variable Declarations
+    unitgroup autoCEF8CE1B_g;
+    int autoCEF8CE1B_u;
+    unit autoCEF8CE1B_var;
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(22, "WarPig", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(8, "Medic", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(8, "HellionTank", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    autoCEF8CE1B_g = gv_attackerGroup1;
+    autoCEF8CE1B_u = UnitGroupCount(autoCEF8CE1B_g, c_unitCountAll);
+    for (;; autoCEF8CE1B_u -= 1) {
+        autoCEF8CE1B_var = UnitGroupUnitFromEnd(autoCEF8CE1B_g, autoCEF8CE1B_u);
+        if (autoCEF8CE1B_var == null) { break; }
+        UnitSetPropertyFixed(autoCEF8CE1B_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_Attack6HellionHellbat () {
+    // Automatic Variable Declarations
+    unitgroup autoD37409AA_g;
+    int autoD37409AA_u;
+    unit autoD37409AA_var;
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(11, "Hellion", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(8, "HellionTank", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    autoD37409AA_g = gv_attackerGroup1;
+    autoD37409AA_u = UnitGroupCount(autoD37409AA_g, c_unitCountAll);
+    for (;; autoD37409AA_u -= 1) {
+        autoD37409AA_var = UnitGroupUnitFromEnd(autoD37409AA_g, autoD37409AA_u);
+        if (autoD37409AA_var == null) { break; }
+        UnitSetPropertyFixed(autoD37409AA_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_Attack7Obliterator () {
+    // Automatic Variable Declarations
+    unitgroup auto2A33C229_g;
+    int auto2A33C229_u;
+    unit auto2A33C229_var;
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "SiegeBreaker2", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAdd(gv_attackerGroup1, UnitLastCreated());
+    auto2A33C229_g = gv_attackerGroup1;
+    auto2A33C229_u = UnitGroupCount(auto2A33C229_g, c_unitCountAll);
+    for (;; auto2A33C229_u -= 1) {
+        auto2A33C229_var = UnitGroupUnitFromEnd(auto2A33C229_g, auto2A33C229_u);
+        if (auto2A33C229_var == null) { break; }
+        UnitSetPropertyFixed(auto2A33C229_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_Attack8CyclonePoundhound () {
+    // Automatic Variable Declarations
+    unitgroup auto22F0514E_g;
+    int auto22F0514E_u;
+    unit auto22F0514E_var;
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(7, "Cyclone", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(4, "WarHound2", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    auto22F0514E_g = gv_attackerGroup1;
+    auto22F0514E_u = UnitGroupCount(auto22F0514E_g, c_unitCountAll);
+    for (;; auto22F0514E_u -= 1) {
+        auto22F0514E_var = UnitGroupUnitFromEnd(auto22F0514E_g, auto22F0514E_u);
+        if (auto22F0514E_var == null) { break; }
+        UnitSetPropertyFixed(auto22F0514E_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_Attack9ThorMarine () {
+    // Automatic Variable Declarations
+    unitgroup autoA90E59FF_g;
+    int autoA90E59FF_u;
+    unit autoA90E59FF_var;
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(3, "Thor", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(7, "WarPig", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    autoA90E59FF_g = gv_attackerGroup1;
+    autoA90E59FF_u = UnitGroupCount(autoA90E59FF_g, c_unitCountAll);
+    for (;; autoA90E59FF_u -= 1) {
+        autoA90E59FF_var = UnitGroupUnitFromEnd(autoA90E59FF_g, autoA90E59FF_u);
+        if (autoA90E59FF_var == null) { break; }
+        UnitSetPropertyFixed(autoA90E59FF_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_Attack10WarhoundCyclone () {
+    // Automatic Variable Declarations
+    unitgroup auto0E815CBD_g;
+    int auto0E815CBD_u;
+    unit auto0E815CBD_var;
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(7, "WarHound", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(5, "Cyclone", 0, 4, RegionRandomPoint(RegionFromId(3)));
+    UnitGroupIssueOrder(UnitLastCreatedGroup(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    UnitGroupAddUnitGroup(gv_attackerGroup1, UnitLastCreatedGroup());
+    auto0E815CBD_g = gv_attackerGroup1;
+    auto0E815CBD_u = UnitGroupCount(auto0E815CBD_g, c_unitCountAll);
+    for (;; auto0E815CBD_u -= 1) {
+        auto0E815CBD_var = UnitGroupUnitFromEnd(auto0E815CBD_g, auto0E815CBD_u);
+        if (auto0E815CBD_var == null) { break; }
+        UnitSetPropertyFixed(auto0E815CBD_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_AttackDropship1GoliathHellbat () {
+    // Variable Declarations
+    unit lv_drop;
+
+    // Automatic Variable Declarations
+    unitgroup auto54C51FD8_g;
+    int auto54C51FD8_u;
+    unit auto54C51FD8_var;
+
+    // Variable Initialization
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hercules", 0, 4, PointFromId(971));
+    lv_drop = UnitLastCreated();
+    UnitCargoCreate(UnitLastCreated(), "Goliath", 8);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "HellionTank", 4);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("HerculesTransport", 2), PointFromId(972)), c_orderQueueReplace);
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(974)), c_orderQueueAddToEnd);
+    auto54C51FD8_g = gv_attackerGroup2;
+    auto54C51FD8_u = UnitGroupCount(auto54C51FD8_g, c_unitCountAll);
+    for (;; auto54C51FD8_u -= 1) {
+        auto54C51FD8_var = UnitGroupUnitFromEnd(auto54C51FD8_g, auto54C51FD8_u);
+        if (auto54C51FD8_var == null) { break; }
+        UnitSetPropertyFixed(auto54C51FD8_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_AttackDropship2MarineWarhound () {
+    // Variable Declarations
+    unit lv_drop;
+
+    // Automatic Variable Declarations
+    unitgroup autoAC6EA10F_g;
+    int autoAC6EA10F_u;
+    unit autoAC6EA10F_var;
+
+    // Variable Initialization
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hercules", 0, 4, PointFromId(971));
+    lv_drop = UnitLastCreated();
+    UnitCargoCreate(UnitLastCreated(), "WarPig", 17);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "WarHound", 4);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("HerculesTransport", 2), PointFromId(972)), c_orderQueueReplace);
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(974)), c_orderQueueAddToEnd);
+    autoAC6EA10F_g = gv_attackerGroup2;
+    autoAC6EA10F_u = UnitGroupCount(autoAC6EA10F_g, c_unitCountAll);
+    for (;; autoAC6EA10F_u -= 1) {
+        autoAC6EA10F_var = UnitGroupUnitFromEnd(autoAC6EA10F_g, autoAC6EA10F_u);
+        if (autoAC6EA10F_var == null) { break; }
+        UnitSetPropertyFixed(autoAC6EA10F_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_AttackDropship3CyclonePoundhound () {
+    // Variable Declarations
+    unit lv_drop;
+
+    // Automatic Variable Declarations
+    unitgroup auto1092F43D_g;
+    int auto1092F43D_u;
+    unit auto1092F43D_var;
+
+    // Variable Initialization
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hercules", 0, 4, PointFromId(971));
+    lv_drop = UnitLastCreated();
+    UnitCargoCreate(UnitLastCreated(), "Cyclone", 5);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "WarHound2", 4);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("HerculesTransport", 2), PointFromId(973)), c_orderQueueReplace);
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(974)), c_orderQueueAddToEnd);
+    auto1092F43D_g = gv_attackerGroup2;
+    auto1092F43D_u = UnitGroupCount(auto1092F43D_g, c_unitCountAll);
+    for (;; auto1092F43D_u -= 1) {
+        auto1092F43D_var = UnitGroupUnitFromEnd(auto1092F43D_g, auto1092F43D_u);
+        if (auto1092F43D_var == null) { break; }
+        UnitSetPropertyFixed(auto1092F43D_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_AttackDropship4WarhoundHellion () {
+    // Variable Declarations
+    unit lv_drop;
+
+    // Automatic Variable Declarations
+    unitgroup auto77EBE412_g;
+    int auto77EBE412_u;
+    unit auto77EBE412_var;
+
+    // Variable Initialization
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hercules", 0, 4, PointFromId(971));
+    lv_drop = UnitLastCreated();
+    UnitCargoCreate(UnitLastCreated(), "Hellion", 14);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "WarHound", 7);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("HerculesTransport", 2), PointFromId(973)), c_orderQueueReplace);
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(974)), c_orderQueueAddToEnd);
+    auto77EBE412_g = gv_attackerGroup2;
+    auto77EBE412_u = UnitGroupCount(auto77EBE412_g, c_unitCountAll);
+    for (;; auto77EBE412_u -= 1) {
+        auto77EBE412_var = UnitGroupUnitFromEnd(auto77EBE412_g, auto77EBE412_u);
+        if (auto77EBE412_var == null) { break; }
+        UnitSetPropertyFixed(auto77EBE412_var, c_unitPropMovementSpeed, 2.5);
+    }
+}
+
+void gf_AttackDropship5ThorPoundhound () {
+    // Variable Declarations
+    unit lv_drop;
+
+    // Automatic Variable Declarations
+    unitgroup auto3874D821_g;
+    int auto3874D821_u;
+    unit auto3874D821_var;
+
+    // Variable Initialization
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hercules", 0, 4, PointFromId(971));
+    lv_drop = UnitLastCreated();
+    UnitCargoCreate(UnitLastCreated(), "Thor", 2);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "WarHound2", 4);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("HerculesTransport", 2), PointFromId(972)), c_orderQueueReplace);
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(974)), c_orderQueueAddToEnd);
+    auto3874D821_g = gv_attackerGroup2;
+    auto3874D821_u = UnitGroupCount(auto3874D821_g, c_unitCountAll);
+    for (;; auto3874D821_u -= 1) {
+        auto3874D821_var = UnitGroupUnitFromEnd(auto3874D821_g, auto3874D821_u);
+        if (auto3874D821_var == null) { break; }
+        UnitSetPropertyFixed(auto3874D821_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_AttackDropship6ThorMarineHellbat () {
+    // Variable Declarations
+    unit lv_drop;
+
+    // Automatic Variable Declarations
+    unitgroup autoEB81740F_g;
+    int autoEB81740F_u;
+    unit autoEB81740F_var;
+
+    // Variable Initialization
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hercules", 0, 4, PointFromId(971));
+    lv_drop = UnitLastCreated();
+    UnitCargoCreate(UnitLastCreated(), "Thor", 4);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "WarPig", 13);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "HellionTank", 8);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("HerculesTransport", 2), PointFromId(972)), c_orderQueueReplace);
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(974)), c_orderQueueAddToEnd);
+    autoEB81740F_g = gv_attackerGroup2;
+    autoEB81740F_u = UnitGroupCount(autoEB81740F_g, c_unitCountAll);
+    for (;; autoEB81740F_u -= 1) {
+        autoEB81740F_var = UnitGroupUnitFromEnd(autoEB81740F_g, autoEB81740F_u);
+        if (autoEB81740F_var == null) { break; }
+        UnitSetPropertyFixed(autoEB81740F_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_AttackDropship7GoliathWarhoundPoundhound () {
+    // Variable Declarations
+    unit lv_drop;
+
+    // Automatic Variable Declarations
+    unitgroup auto64A9B510_g;
+    int auto64A9B510_u;
+    unit auto64A9B510_var;
+
+    // Variable Initialization
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hercules", 0, 4, PointFromId(971));
+    lv_drop = UnitLastCreated();
+    UnitCargoCreate(UnitLastCreated(), "Goliath", 12);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "WarHound", 6);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "WarHound2", 3);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("HerculesTransport", 2), PointFromId(972)), c_orderQueueReplace);
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(974)), c_orderQueueAddToEnd);
+    auto64A9B510_g = gv_attackerGroup2;
+    auto64A9B510_u = UnitGroupCount(auto64A9B510_g, c_unitCountAll);
+    for (;; auto64A9B510_u -= 1) {
+        auto64A9B510_var = UnitGroupUnitFromEnd(auto64A9B510_g, auto64A9B510_u);
+        if (auto64A9B510_var == null) { break; }
+        UnitSetPropertyFixed(auto64A9B510_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_AttackDropship8GoliathCycloneHellion () {
+    // Variable Declarations
+    unit lv_drop;
+
+    // Automatic Variable Declarations
+    unitgroup auto24A9E8C2_g;
+    int auto24A9E8C2_u;
+    unit auto24A9E8C2_var;
+
+    // Variable Initialization
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hercules", 0, 4, PointFromId(971));
+    lv_drop = UnitLastCreated();
+    UnitCargoCreate(UnitLastCreated(), "Goliath", 8);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "Cyclone", 7);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "Hellion", 11);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("HerculesTransport", 2), PointFromId(973)), c_orderQueueReplace);
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(974)), c_orderQueueAddToEnd);
+    auto24A9E8C2_g = gv_attackerGroup2;
+    auto24A9E8C2_u = UnitGroupCount(auto24A9E8C2_g, c_unitCountAll);
+    for (;; auto24A9E8C2_u -= 1) {
+        auto24A9E8C2_var = UnitGroupUnitFromEnd(auto24A9E8C2_g, auto24A9E8C2_u);
+        if (auto24A9E8C2_var == null) { break; }
+        UnitSetPropertyFixed(auto24A9E8C2_var, c_unitPropMovementSpeed, 2.81);
+    }
+}
+
+void gf_AttackDropship9MarineMedicPoundhound () {
+    // Variable Declarations
+    unit lv_drop;
+
+    // Automatic Variable Declarations
+    unitgroup auto8BA230B2_g;
+    int auto8BA230B2_u;
+    unit auto8BA230B2_var;
+
+    // Variable Initialization
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hercules", 0, 4, PointFromId(971));
+    lv_drop = UnitLastCreated();
+    UnitCargoCreate(UnitLastCreated(), "WarPig", 22);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "Medic", 7);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitCargoCreate(UnitLastCreated(), "WarHound2", 3);
+    UnitGroupAddUnitGroup(gv_attackerGroup2, UnitCargoLastCreatedGroup());
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("HerculesTransport", 2), PointFromId(972)), c_orderQueueReplace);
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(974)), c_orderQueueAddToEnd);
+    auto8BA230B2_g = gv_attackerGroup2;
+    auto8BA230B2_u = UnitGroupCount(auto8BA230B2_g, c_unitCountAll);
+    for (;; auto8BA230B2_u -= 1) {
+        auto8BA230B2_var = UnitGroupUnitFromEnd(auto8BA230B2_g, auto8BA230B2_u);
+        if (auto8BA230B2_var == null) { break; }
+        UnitSetPropertyFixed(auto8BA230B2_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+void gf_AttackDropship10Obliterator () {
+    // Variable Declarations
+    unit lv_drop;
+
+    // Automatic Variable Declarations
+    unitgroup autoD0A42BC0_g;
+    int autoD0A42BC0_u;
+    unit autoD0A42BC0_var;
+
+    // Variable Initialization
+
+    // Implementation
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Hercules", 0, 4, PointFromId(971));
+    lv_drop = UnitLastCreated();
+    UnitCargoCreate(UnitLastCreated(), "SiegeBreaker2", 1);
+    UnitGroupAdd(gv_attackerGroup2, UnitCargoLastCreated());
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("HerculesTransport", 2), PointFromId(972)), c_orderQueueReplace);
+    UnitIssueOrder(lv_drop, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(974)), c_orderQueueAddToEnd);
+    autoD0A42BC0_g = gv_attackerGroup2;
+    autoD0A42BC0_u = UnitGroupCount(autoD0A42BC0_g, c_unitCountAll);
+    for (;; autoD0A42BC0_u -= 1) {
+        autoD0A42BC0_var = UnitGroupUnitFromEnd(autoD0A42BC0_g, autoD0A42BC0_u);
+        if (autoD0A42BC0_var == null) { break; }
+        UnitSetPropertyFixed(autoD0A42BC0_var, c_unitPropMovementSpeed, 2.25);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Warfoundry Color
+//--------------------------------------------------------------------------------------------------
+bool gt_WarfoundryColor_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGetOwner(EventUnit()) == 2) || (UnitGetOwner(EventUnit()) == 4) || (UnitGetOwner(EventUnit()) == 3)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    ActorSend(libNtve_gf_MainActorofUnit(EventUnit()), "SetTeamColor 68,34,34 73,37,37");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_WarfoundryColor_Init () {
+    gt_WarfoundryColor = TriggerCreate("gt_WarfoundryColor_Func");
+    TriggerAddEventUnitRegion(gt_WarfoundryColor, null, RegionEntireMap(), true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Init
+//--------------------------------------------------------------------------------------------------
+bool gt_Init_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    VisRevealerCreate(5, RegionEntireMap());
+    PlayerOptionOverride(1, "simplecommandcard", "0");
+    PlayerOptionOverride(1, "selectuncontrolable", "1");
+    PlayerOptionOverride(1, "selectuncontrolable", "1");
+    libNtve_gf_SetAlliance(2, 3, libNtve_ge_AllianceSetting_AllyWithSharedVision);
+    libNtve_gf_SetAlliance(2, 4, libNtve_ge_AllianceSetting_AllyWithSharedVision);
+    libNtve_gf_SetAlliance(2, 5, libNtve_ge_AllianceSetting_Ally);
+    libNtve_gf_SetAlliance(3, 4, libNtve_ge_AllianceSetting_AllyWithSharedVision);
+    libNtve_gf_SetAlliance(3, 5, libNtve_ge_AllianceSetting_Ally);
+    libNtve_gf_SetAlliance(4, 5, libNtve_ge_AllianceSetting_Ally);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Init_Init () {
+    gt_Init = TriggerCreate("gt_Init_Func");
+    TriggerAddEventMapInit(gt_Init);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Bunker
+//--------------------------------------------------------------------------------------------------
+bool gt_Bunker_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoF2552494_g;
+    int autoF2552494_u;
+    unit autoF2552494_var;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    autoF2552494_g = UnitGroup("Bunker", 2, RegionEntireMap(), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoF2552494_u = UnitGroupCount(autoF2552494_g, c_unitCountAll);
+    for (;; autoF2552494_u -= 1) {
+        autoF2552494_var = UnitGroupUnitFromEnd(autoF2552494_g, autoF2552494_u);
+        if (autoF2552494_var == null) { break; }
+        UnitCargoCreate(autoF2552494_var, "WarPig", 4);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Bunker_Init () {
+    gt_Bunker = TriggerCreate("gt_Bunker_Func");
+    TriggerAddEventMapInit(gt_Bunker);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: BuildingJump
+//--------------------------------------------------------------------------------------------------
+bool gt_BuildingJump_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitSetHeight(EventUnit(), 40.0, 0.2);
+    Wait(1.0, c_timeGame);
+    UnitSetHeight(EventUnit(), 0.0, 0.1);
+    Wait(0.1, c_timeGame);
+    libNtve_gf_CreateModelAtPoint("BuildingJumpSplat", UnitGetPosition(EventUnit()));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BuildingJump_Init () {
+    gt_BuildingJump = TriggerCreate("gt_BuildingJump_Func");
+    TriggerAddEventUnitAbility(gt_BuildingJump, null, AbilityCommand("DeepTunnel2", 0), c_unitAbilStageExecute, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Kill Building
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainKillBuilding_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 1))) {
+            return false;
+        }
+
+        if (!((UnitTypeTestAttribute(UnitGetType(EventUnit()), c_unitAttributeStructure) == true))) {
+            return false;
+        }
+
+        if (!((UnitGetType(EventUnit()) != "SJSpaceStationValerian"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitKill(EventUnit());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainKillBuilding_Init () {
+    gt_TrainKillBuilding = TriggerCreate("gt_TrainKillBuilding_Func");
+    TriggerAddEventUnitRange(gt_TrainKillBuilding, null, UnitFromId(9), 1.0, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Changer First
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainChangerFirst_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_trainChanger = gv_train0;
+    TriggerExecute(gt_TrainMoveFirst, false, false);
+    gv_trainChanger = gv_train1;
+    TriggerExecute(gt_TrainMoveFirst, false, false);
+    gv_trainChanger = gv_train2;
+    TriggerExecute(gt_TrainMoveFirst, false, false);
+    gv_trainChanger = gv_train3;
+    TriggerExecute(gt_TrainMoveFirst, false, false);
+    gv_trainChanger = gv_train4;
+    TriggerExecute(gt_TrainMoveFirst, false, false);
+    gv_trainChanger = gv_train5;
+    TriggerExecute(gt_TrainMoveFirst, false, false);
+    gv_trainChanger = gv_train6;
+    TriggerExecute(gt_TrainMoveFirst, false, false);
+    gv_trainChanger = gv_train7;
+    TriggerExecute(gt_TrainMoveFirst, false, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainChangerFirst_Init () {
+    gt_TrainChangerFirst = TriggerCreate("gt_TrainChangerFirst_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Move First
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainMoveFirst_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1135)), c_orderQueueReplace);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1136)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1137)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1138)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1139)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1140)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1141)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1142)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1143)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1144)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1145)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1146)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1147)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1148)), c_orderQueueAddToEnd);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainMoveFirst_Init () {
+    gt_TrainMoveFirst = TriggerCreate("gt_TrainMoveFirst_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Changer Long
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainChangerLong_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_trainChanger = gv_train0;
+    TriggerExecute(gt_TrainMoveLong, false, false);
+    gv_trainChanger = gv_train1;
+    TriggerExecute(gt_TrainMoveLong, false, false);
+    gv_trainChanger = gv_train2;
+    TriggerExecute(gt_TrainMoveLong, false, false);
+    gv_trainChanger = gv_train3;
+    TriggerExecute(gt_TrainMoveLong, false, false);
+    gv_trainChanger = gv_train4;
+    TriggerExecute(gt_TrainMoveLong, false, false);
+    gv_trainChanger = gv_train5;
+    TriggerExecute(gt_TrainMoveLong, false, false);
+    gv_trainChanger = gv_train6;
+    TriggerExecute(gt_TrainMoveLong, false, false);
+    gv_trainChanger = gv_train7;
+    TriggerExecute(gt_TrainMoveLong, false, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainChangerLong_Init () {
+    gt_TrainChangerLong = TriggerCreate("gt_TrainChangerLong_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Changer Short
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainChangerShort_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_trainChanger = gv_train0;
+    TriggerExecute(gt_TrainMoveShort, false, false);
+    gv_trainChanger = gv_train1;
+    TriggerExecute(gt_TrainMoveShort, false, false);
+    gv_trainChanger = gv_train2;
+    TriggerExecute(gt_TrainMoveShort, false, false);
+    gv_trainChanger = gv_train3;
+    TriggerExecute(gt_TrainMoveShort, false, false);
+    gv_trainChanger = gv_train4;
+    TriggerExecute(gt_TrainMoveShort, false, false);
+    gv_trainChanger = gv_train5;
+    TriggerExecute(gt_TrainMoveShort, false, false);
+    gv_trainChanger = gv_train6;
+    TriggerExecute(gt_TrainMoveShort, false, false);
+    gv_trainChanger = gv_train7;
+    TriggerExecute(gt_TrainMoveShort, false, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainChangerShort_Init () {
+    gt_TrainChangerShort = TriggerCreate("gt_TrainChangerShort_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Move Long
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainMoveLong_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1161)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1162)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1163)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1164)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1165)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1166)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1167)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1168)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1169)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1170)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1171)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1172)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1173)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1174)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1175)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1176)), c_orderQueueAddToEnd);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainMoveLong_Init () {
+    gt_TrainMoveLong = TriggerCreate("gt_TrainMoveLong_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Move Long 2
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainMoveLong2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_trainChanger = EventUnit();
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1177)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1178)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1179)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1180)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1181)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1182)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1183)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1184)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1185)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1186)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1187)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1188)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1189)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1190)), c_orderQueueAddToEnd);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainMoveLong2_Init () {
+    gt_TrainMoveLong2 = TriggerCreate("gt_TrainMoveLong2_Func");
+    TriggerAddEventUnitRangePoint(gt_TrainMoveLong2, null, PointFromId(1176), 1.0, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Move Long 3
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainMoveLong3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_trainChanger = EventUnit();
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1191)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1192)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1193)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1194)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1195)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1196)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1197)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1198)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1199)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1200)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1201)), c_orderQueueAddToEnd);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainMoveLong3_Init () {
+    gt_TrainMoveLong3 = TriggerCreate("gt_TrainMoveLong3_Func");
+    TriggerAddEventUnitRangePoint(gt_TrainMoveLong3, null, PointFromId(1190), 1.0, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Move Long 4
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainMoveLong4_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_trainChanger = EventUnit();
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1135)), c_orderQueueReplace);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1136)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1137)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1138)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1139)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1140)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1141)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1142)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1143)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1144)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1145)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1146)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1147)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1148)), c_orderQueueAddToEnd);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainMoveLong4_Init () {
+    gt_TrainMoveLong4 = TriggerCreate("gt_TrainMoveLong4_Func");
+    TriggerAddEventUnitRangePoint(gt_TrainMoveLong4, null, PointFromId(1201), 1.0, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Move Long 5
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainMoveLong5_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    gv_trainChanger = EventUnit();
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1149)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1150)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1151)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1152)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1153)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1154)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1155)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1156)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1157)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1158)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1159)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1160)), c_orderQueueAddToEnd);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainMoveLong5_Init () {
+    gt_TrainMoveLong5 = TriggerCreate("gt_TrainMoveLong5_Func");
+    TriggerAddEventUnitRangePoint(gt_TrainMoveLong5, null, PointFromId(1148), 1.0, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Move Short
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainMoveShort_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1202)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1203)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1204)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1205)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1206)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1207)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1208)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1209)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1210)), c_orderQueueAddToEnd);
+    UnitIssueOrder(gv_trainChanger, OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1190)), c_orderQueueAddToEnd);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainMoveShort_Init () {
+    gt_TrainMoveShort = TriggerCreate("gt_TrainMoveShort_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Move Return
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainMoveReturn_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    if ((AbsI(gv_trainRouteVar) < 2)) {
+        TriggerExecute(gt_TrainChangerLong, true, false);
+        gv_trainRouteVar = (gv_trainRouteVar + 1);
+        Wait(10.0, c_timeGame);
+        TriggerEnable(TriggerGetCurrent(), true);
+    }
+    else {
+        if ((AbsI(gv_trainRouteVar) == 2)) {
+            TriggerExecute(gt_TrainChangerShort, true, false);
+            gv_trainRouteVar = 0;
+            Wait(10.0, c_timeGame);
+            TriggerEnable(TriggerGetCurrent(), true);
+        }
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainMoveReturn_Init () {
+    gt_TrainMoveReturn = TriggerCreate("gt_TrainMoveReturn_Func");
+    TriggerAddEventUnitRangePoint(gt_TrainMoveReturn, UnitRefFromVariable("gv_train0"), PointFromId(1160), 1.0, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Intro
+//--------------------------------------------------------------------------------------------------
+bool gt_Intro_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto20A2792E_g;
+    int auto20A2792E_u;
+    unit auto20A2792E_var;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundtrackPause(PlayerGroupAll(), c_soundtrackCategoryMusic, true, true);
+    CinematicFade(false, 0.0, c_fadeStyleNormal, Color(0.00, 0.00, 0.00), 0.0, true);
+    libNtve_gf_CinematicMode(true, PlayerGroupAll(), c_transitionDurationImmediate);
+    CameraPan(1, PointFromId(913), 0.0, -1, 10.0, false);
+    Wait(1.0, c_timeGame);
+    libNtve_gf_CinematicMode(false, PlayerGroupAll(), c_transitionDurationDefault);
+    CinematicFade(true, 2.0, c_fadeStyleNormal, Color(0.00, 0.00, 0.00), 0.0, false);
+    Wait(3.0, c_timeGame);
+    UnitIssueOrder(UnitFromId(18), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(903)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(16), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(910)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(10), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(904)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(14), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(911)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(902), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(907)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(11), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(906)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(15), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(909)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(6), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(905)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(13), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(912)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(23), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(912)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(901), OrderTargetingPoint(AbilityCommand("DeepTunnel2", 0), PointFromId(908)), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE215", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.05, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE218", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE218", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.2, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.06, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.06, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE2", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.06, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE29", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.06, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE29", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.06, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE29", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.06, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE29", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    Wait(0.06, c_timeGame);
+    UnitIssueOrder(UnitFromId(914), OrderTargetingPoint(AbilityCommand("CalldownMULE29", 0), RegionRandomPoint(RegionFromId(1))), c_orderQueueReplace);
+    VisResetFoWAlpha(1);
+    Wait(12.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/AC03105C"), StringExternal("Param/Value/BCEAA369"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(6.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/F7F9C95E"), StringExternal("Param/Value/C31B4513"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/6489B8A7"), StringExternal("Param/Value/44F0885B"), 9.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(30.0, c_timeGame);
+    TriggerExecute(gt_TrainChangerFirst, true, false);
+    Wait(4.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/F97B15A4"), StringExternal("Param/Value/E7DE633A"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    VisRevealArea(1, RegionFromId(2), 23.0, false);
+    CameraPan(1, PointFromId(915), 1.0, -1, 10.0, false);
+    Wait(2.0, c_timeGame);
+    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, "EpicOST", c_soundtrackCueAny, c_soundtrackIndexAny, true);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("BlackOpsMarinePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/E7D2E65C"), StringExternal("Param/Value/3C751C97"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/E9DF6A4C"), StringExternal("Param/Value/1FA55DCB"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1135), ColorWithAlpha(100.00, 6.67, 9.02, 0.00), 524287.0, 270.0);
+    PingSetUnit(PingLastCreated(), gv_train0);
+    libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1135), ColorWithAlpha(100.00, 6.67, 9.02, 0.00), 524287.0, 270.0);
+    PingSetUnit(PingLastCreated(), gv_train1);
+    libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1135), ColorWithAlpha(100.00, 6.67, 9.02, 0.00), 524287.0, 270.0);
+    PingSetUnit(PingLastCreated(), gv_train2);
+    libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1135), ColorWithAlpha(100.00, 6.67, 9.02, 0.00), 524287.0, 270.0);
+    PingSetUnit(PingLastCreated(), gv_train3);
+    libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1135), ColorWithAlpha(100.00, 6.67, 9.02, 0.00), 524287.0, 270.0);
+    PingSetUnit(PingLastCreated(), gv_train4);
+    libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1135), ColorWithAlpha(100.00, 6.67, 9.02, 0.00), 524287.0, 270.0);
+    PingSetUnit(PingLastCreated(), gv_train5);
+    libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1135), ColorWithAlpha(100.00, 6.67, 9.02, 0.00), 524287.0, 270.0);
+    PingSetUnit(PingLastCreated(), gv_train6);
+    libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1135), ColorWithAlpha(100.00, 6.67, 9.02, 0.00), 524287.0, 270.0);
+    PingSetUnit(PingLastCreated(), gv_train7);
+    Wait(7.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/40FDE9AB"), StringExternal("Param/Value/F931A541"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    ObjectiveCreate(StringExternal("Param/Value/8E1EAEDC"), StringToText(""), c_objectiveStateActive, true);
+    gv_objTrain = ObjectiveLastCreated();
+    libNtve_gf_DisplayBossBar(1, "Assets\\Textures\\btn-unit-terran-dominiontrain-fast.dds", StringExternal("Param/Value/93E378E5"), 125000, PlayerGroupAll());
+    libNtve_gf_SetBossBarBoss(1, UnitFromId(9), true);
+    libNtve_gf_MoveBossBar(1, c_anchorTopRight, 0, 50);
+    Wait(10.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/B6BA08F1"), StringExternal("Param/Value/11B29875"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    auto20A2792E_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto20A2792E_u = UnitGroupCount(auto20A2792E_g, c_unitCountAll);
+    for (;; auto20A2792E_u -= 1) {
+        auto20A2792E_var = UnitGroupUnitFromEnd(auto20A2792E_g, auto20A2792E_u);
+        if (auto20A2792E_var == null) { break; }
+        UnitWeaponAdd(auto20A2792E_var, "Adept6", null);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Intro_Init () {
+    gt_Intro = TriggerCreate("gt_Intro_Func");
+    TriggerAddEventMapInit(gt_Intro);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Phase 2
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainPhase2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoF532EB99_g;
+    int autoF532EB99_u;
+    unit autoF532EB99_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 90.0))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/29C89084"), StringExternal("Param/Value/F01D0556"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    autoF532EB99_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoF532EB99_u = UnitGroupCount(autoF532EB99_g, c_unitCountAll);
+    for (;; autoF532EB99_u -= 1) {
+        autoF532EB99_var = UnitGroupUnitFromEnd(autoF532EB99_g, autoF532EB99_u);
+        if (autoF532EB99_var == null) { break; }
+        UnitWeaponAdd(autoF532EB99_var, "Adept63", null);
+    }
+    Wait(14.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("BlackOpsMarinePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/AE383BC0"), StringExternal("Param/Value/A3BB9166"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/CDE7F7C3"), StringExternal("Param/Value/F784435F"), 8.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("BlackOpsMarinePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/D62EE3B7"), StringExternal("Param/Value/CD90CE95"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/B41F81E0"), StringExternal("Param/Value/39866792"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(3.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/FC54E64C"), StringExternal("Param/Value/EA6C7707"), 3.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(50.0, c_timeGame);
+    TriggerExecute(gt_Attacks, true, false);
+    TriggerEnable(gt_TrainSpawnAdds, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainPhase2_Init () {
+    gt_TrainPhase2 = TriggerCreate("gt_TrainPhase2_Func");
+    TriggerAddEventUnitAttacked2(gt_TrainPhase2, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Phase 3
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainPhase3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto5206CFCC_g;
+    int auto5206CFCC_u;
+    unit auto5206CFCC_var;
+    unitgroup auto07CA274A_g;
+    int auto07CA274A_u;
+    unit auto07CA274A_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 75.0))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/04FA0A8E"), StringExternal("Param/Value/870B8D79"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    auto5206CFCC_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto5206CFCC_u = UnitGroupCount(auto5206CFCC_g, c_unitCountAll);
+    for (;; auto5206CFCC_u -= 1) {
+        auto5206CFCC_var = UnitGroupUnitFromEnd(auto5206CFCC_g, auto5206CFCC_u);
+        if (auto5206CFCC_var == null) { break; }
+        UnitWeaponAdd(auto5206CFCC_var, "Ravasaur2", null);
+    }
+    Wait(7.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("BlackOpsMarinePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/8EF902F2"), StringExternal("Param/Value/7ACCF66E"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/2122FA70"), StringExternal("Param/Value/39CC59B8"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    auto07CA274A_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    auto07CA274A_u = UnitGroupCount(auto07CA274A_g, c_unitCountAll);
+    for (;; auto07CA274A_u -= 1) {
+        auto07CA274A_var = UnitGroupUnitFromEnd(auto07CA274A_g, auto07CA274A_u);
+        if (auto07CA274A_var == null) { break; }
+        UnitSetPropertyFixed(auto07CA274A_var, c_unitPropMovementSpeed, 4.0);
+    }
+    TriggerEnable(gt_TrainSpeedSlow1, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainPhase3_Init () {
+    gt_TrainPhase3 = TriggerCreate("gt_TrainPhase3_Func");
+    TriggerAddEventUnitAttacked2(gt_TrainPhase3, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Phase 4
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainPhase4_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoBFADB58F_g;
+    int autoBFADB58F_u;
+    unit autoBFADB58F_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 60.0))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/284B63E0"), StringExternal("Param/Value/4759BBA3"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    autoBFADB58F_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoBFADB58F_u = UnitGroupCount(autoBFADB58F_g, c_unitCountAll);
+    for (;; autoBFADB58F_u -= 1) {
+        autoBFADB58F_var = UnitGroupUnitFromEnd(autoBFADB58F_g, autoBFADB58F_u);
+        if (autoBFADB58F_var == null) { break; }
+        UnitWeaponAdd(autoBFADB58F_var, "ScourgeSwarm3", null);
+        UnitWeaponAdd(autoBFADB58F_var, "Adept64", null);
+    }
+    Wait(3.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/6C97289E"), StringExternal("Param/Value/3790770C"), 7.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/3BFBF9C5"), StringExternal("Param/Value/89C88C82"), 4.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/A2F61A5B"), StringExternal("Param/Value/5C72F913"), 4.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/30A290D1"), StringExternal("Param/Value/CEFBAD36"), 4.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/30D9AA6E"), StringExternal("Param/Value/BE13ED79"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("BlackOpsMarinePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/E14BCAC5"), StringExternal("Param/Value/28C58868"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/F692F37B"), StringExternal("Param/Value/86A0CAD7"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("BlackOpsMarinePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/73FF0ED6"), StringExternal("Param/Value/C82B8715"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainPhase4_Init () {
+    gt_TrainPhase4 = TriggerCreate("gt_TrainPhase4_Func");
+    TriggerAddEventUnitAttacked2(gt_TrainPhase4, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Phase 5
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainPhase5_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoD11D28D7_g;
+    int autoD11D28D7_u;
+    unit autoD11D28D7_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 50.0))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("BlackOpsMarinePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/07D68359"), StringExternal("Param/Value/B1B55EF7"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/010D17C5"), StringExternal("Param/Value/5CC04A66"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    autoD11D28D7_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoD11D28D7_u = UnitGroupCount(autoD11D28D7_g, c_unitCountAll);
+    for (;; autoD11D28D7_u -= 1) {
+        autoD11D28D7_var = UnitGroupUnitFromEnd(autoD11D28D7_g, autoD11D28D7_u);
+        if (autoD11D28D7_var == null) { break; }
+        UnitSetPropertyFixed(autoD11D28D7_var, c_unitPropMovementSpeed, 5.0);
+    }
+    TriggerEnable(gt_TrainSpeedSlow1, false);
+    TriggerEnable(gt_TrainSpeedSlow2, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainPhase5_Init () {
+    gt_TrainPhase5 = TriggerCreate("gt_TrainPhase5_Func");
+    TriggerAddEventUnitAttacked2(gt_TrainPhase5, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Phase 6
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainPhase6_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent) <= 25.0))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/6FFDCCB2"), StringExternal("Param/Value/F77E3D5F"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/13D8F925"), StringExternal("Param/Value/22EC1C95"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/883DF966"), StringExternal("Param/Value/AAAFE637"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/CA4559AC"), StringExternal("Param/Value/5604DFA6"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/53C006B2"), StringExternal("Param/Value/AF7EBE0A"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("BlackOpsMarinePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/BD9D1B59"), StringExternal("Param/Value/ECDC7BD0"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainPhase6_Init () {
+    gt_TrainPhase6 = TriggerCreate("gt_TrainPhase6_Func");
+    TriggerAddEventUnitAttacked2(gt_TrainPhase6, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Spawn Adds
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainSpawnAdds_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train0));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train1));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train2));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train3));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train4));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train5));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train6));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train7));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    Wait(2.0, c_timeGame);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train0));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train1));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train2));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train3));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train4));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train5));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train6));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    libNtve_gf_CreateUnitsWithDefaultFacing(1, "WarPig", 0, 4, UnitGetPosition(gv_train7));
+    UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    Wait(150.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainSpawnAdds_Init () {
+    gt_TrainSpawnAdds = TriggerCreate("gt_TrainSpawnAdds_Func");
+    TriggerEnable(gt_TrainSpawnAdds, false);
+    TriggerAddEventUnitAttacked2(gt_TrainSpawnAdds, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Speed Slow  1
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainSpeedSlow1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoD9B05922_g;
+    int autoD9B05922_u;
+    unit autoD9B05922_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    UnitSetPropertyFixed(gv_train0, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train1, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train2, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train3, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train4, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train5, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train6, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train7, c_unitPropMovementSpeed, 3.0);
+    Wait(40.0, c_timeGame);
+    autoD9B05922_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoD9B05922_u = UnitGroupCount(autoD9B05922_g, c_unitCountAll);
+    for (;; autoD9B05922_u -= 1) {
+        autoD9B05922_var = UnitGroupUnitFromEnd(autoD9B05922_g, autoD9B05922_u);
+        if (autoD9B05922_var == null) { break; }
+        UnitSetPropertyFixed(autoD9B05922_var, c_unitPropMovementSpeed, 4.0);
+    }
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainSpeedSlow1_Init () {
+    gt_TrainSpeedSlow1 = TriggerCreate("gt_TrainSpeedSlow1_Func");
+    TriggerEnable(gt_TrainSpeedSlow1, false);
+    TriggerAddEventUnitAttacked2(gt_TrainSpeedSlow1, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Speed Slow  2
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainSpeedSlow2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoEAA1FFC6_g;
+    int autoEAA1FFC6_u;
+    unit autoEAA1FFC6_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 5))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    UnitSetPropertyFixed(gv_train0, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train1, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train2, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train3, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train4, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train5, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train6, c_unitPropMovementSpeed, 3.0);
+    UnitSetPropertyFixed(gv_train7, c_unitPropMovementSpeed, 3.0);
+    Wait(40.0, c_timeGame);
+    autoEAA1FFC6_g = UnitGroup(null, 5, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    autoEAA1FFC6_u = UnitGroupCount(autoEAA1FFC6_g, c_unitCountAll);
+    for (;; autoEAA1FFC6_u -= 1) {
+        autoEAA1FFC6_var = UnitGroupUnitFromEnd(autoEAA1FFC6_g, autoEAA1FFC6_u);
+        if (autoEAA1FFC6_var == null) { break; }
+        UnitSetPropertyFixed(autoEAA1FFC6_var, c_unitPropMovementSpeed, 5.0);
+    }
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainSpeedSlow2_Init () {
+    gt_TrainSpeedSlow2 = TriggerCreate("gt_TrainSpeedSlow2_Func");
+    TriggerEnable(gt_TrainSpeedSlow2, false);
+    TriggerAddEventUnitAttacked2(gt_TrainSpeedSlow2, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attacks
+//--------------------------------------------------------------------------------------------------
+bool gt_Attacks_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    while (true) {
+        Wait(2.0, c_timeGame);
+        gf_Attack1MarineMedic();
+        Wait(100.0, c_timeGame);
+        gf_AttackDropship4WarhoundHellion();
+        Wait(120.0, c_timeGame);
+        gf_Attack5MarineMedicHellbat();
+        Wait(170.0, c_timeGame);
+        gf_AttackDropship8GoliathCycloneHellion();
+        gf_Attack9ThorMarine();
+        Wait(180.0, c_timeGame);
+        gf_Attack3HellionCyclone();
+        gf_AttackDropship9MarineMedicPoundhound();
+        Wait(180.0, c_timeGame);
+        gf_Attack8CyclonePoundhound();
+        Wait(0.5, c_timeGame);
+        gf_Attack6HellionHellbat();
+        Wait(190.0, c_timeGame);
+        gf_AttackDropship2MarineWarhound();
+        Wait(3.0, c_timeGame);
+        gf_AttackDropship3CyclonePoundhound();
+        Wait(180.0, c_timeGame);
+        gf_AttackDropship9MarineMedicPoundhound();
+        Wait(3.0, c_timeGame);
+        gf_AttackDropship10Obliterator();
+        Wait(180.0, c_timeGame);
+        gf_Attack4PoundhoundGoliath();
+        Wait(120.0, c_timeGame);
+        gf_AttackDropship7GoliathWarhoundPoundhound();
+        Wait(180.0, c_timeGame);
+        gf_Attack2MarineHellbatWarhound();
+        gf_Attack7Obliterator();
+        Wait(180.0, c_timeGame);
+        gf_AttackDropship5ThorPoundhound();
+        gf_AttackDropship6ThorMarineHellbat();
+        Wait(160.0, c_timeGame);
+        gf_AttackDropship2MarineWarhound();
+        Wait(3.0, c_timeGame);
+        gf_AttackDropship1GoliathHellbat();
+        Wait(180.0, c_timeGame);
+        gf_Attack1MarineMedic();
+        gf_Attack10WarhoundCyclone();
+        Wait(180.0, c_timeGame);
+        gf_Attack8CyclonePoundhound();
+        gf_Attack9ThorMarine();
+        Wait(170.0, c_timeGame);
+        gf_AttackDropship8GoliathCycloneHellion();
+        gf_Attack6HellionHellbat();
+        Wait(100.0, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Attacks_Init () {
+    gt_Attacks = TriggerCreate("gt_Attacks_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attack Dropship Attack Command
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackDropshipAttackCommand_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 4))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(4.0, c_timeGame);
+    UnitGroupIssueOrder(gv_attackerGroup2, OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    Wait(15.0, c_timeGame);
+    UnitRemove(EventUnit());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackDropshipAttackCommand_Init () {
+    gt_AttackDropshipAttackCommand = TriggerCreate("gt_AttackDropshipAttackCommand_Func");
+    TriggerAddEventUnitCargo(gt_AttackDropshipAttackCommand, null, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attacker Group Speed
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackerGroupSpeed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup autoC592E95E_g;
+    int autoC592E95E_u;
+    unit autoC592E95E_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 4))) {
+            return false;
+        }
+
+        if (!((UnitGroupHasUnit(gv_attackerGroup1, EventUnit()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    autoC592E95E_g = gv_attackerGroup1;
+    autoC592E95E_u = UnitGroupCount(autoC592E95E_g, c_unitCountAll);
+    for (;; autoC592E95E_u -= 1) {
+        autoC592E95E_var = UnitGroupUnitFromEnd(autoC592E95E_g, autoC592E95E_u);
+        if (autoC592E95E_var == null) { break; }
+        UnitResetSpeed(autoC592E95E_var);
+    }
+    Wait(10.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackerGroupSpeed_Init () {
+    gt_AttackerGroupSpeed = TriggerCreate("gt_AttackerGroupSpeed_Func");
+    TriggerAddEventUnitAttacked2(gt_AttackerGroupSpeed, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attacker Group Speed 2
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackerGroupSpeed2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto931AB104_g;
+    int auto931AB104_u;
+    unit auto931AB104_var;
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 4))) {
+            return false;
+        }
+
+        if (!((UnitGroupHasUnit(gv_attackerGroup2, EventUnit()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    auto931AB104_g = gv_attackerGroup2;
+    auto931AB104_u = UnitGroupCount(auto931AB104_g, c_unitCountAll);
+    for (;; auto931AB104_u -= 1) {
+        auto931AB104_var = UnitGroupUnitFromEnd(auto931AB104_g, auto931AB104_u);
+        if (auto931AB104_var == null) { break; }
+        UnitResetSpeed(auto931AB104_var);
+    }
+    Wait(10.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackerGroupSpeed2_Init () {
+    gt_AttackerGroupSpeed2 = TriggerCreate("gt_AttackerGroupSpeed2_Func");
+    TriggerAddEventUnitAttacked2(gt_AttackerGroupSpeed2, null, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Attacker Idle
+//--------------------------------------------------------------------------------------------------
+bool gt_AttackerIdle_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 4))) {
+            return false;
+        }
+
+        if (!((UnitGetType(EventUnit()) != "Hercules"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitFromId(17))), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_AttackerIdle_Init () {
+    gt_AttackerIdle = TriggerCreate("gt_AttackerIdle_Func");
+    TriggerAddEventUnitBecomesIdle(gt_AttackerIdle, null, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Dropship Remove
+//--------------------------------------------------------------------------------------------------
+bool gt_DropshipRemove_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitRemove(EventUnit());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_DropshipRemove_Init () {
+    gt_DropshipRemove = TriggerCreate("gt_DropshipRemove_Func");
+    TriggerAddEventUnitRegion(gt_DropshipRemove, null, RegionFromId(4), true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Blab Minerals
+//--------------------------------------------------------------------------------------------------
+bool gt_BlabMinerals_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 1))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/082EC5E2"), StringExternal("Param/Value/74313B17"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BlabMinerals_Init () {
+    gt_BlabMinerals = TriggerCreate("gt_BlabMinerals_Func");
+    TriggerAddEventUnitRegion(gt_BlabMinerals, null, RegionFromId(5), true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Blab Base
+//--------------------------------------------------------------------------------------------------
+bool gt_BlabBase_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetOwner(EventUnit()) == 1))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/E675EC0D"), StringExternal("Param/Value/821E88F9"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BlabBase_Init () {
+    gt_BlabBase = TriggerCreate("gt_BlabBase_Func");
+    TriggerAddEventUnitRegion(gt_BlabBase, null, RegionFromId(6), true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Base Destroyed
+//--------------------------------------------------------------------------------------------------
+bool gt_BaseDestroyed_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitCount(null, 2, RegionFromId(7), UnitFilter((1 << c_targetFilterStructure), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0) == 0))) {
+            return false;
+        }
+
+        if (!((UnitGetOwner(EventUnit()) == 2))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerEnable(gt_TrainSpawnAdds, false);
+    Wait(3.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/DDB39045"), StringExternal("Param/Value/026DE182"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_BaseDestroyed_Init () {
+    gt_BaseDestroyed = TriggerCreate("gt_BaseDestroyed_Func");
+    TriggerAddEventUnitDied(gt_BaseDestroyed, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Train Dead
+//--------------------------------------------------------------------------------------------------
+bool gt_TrainDead_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MULEPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/88CA4A95"), StringExternal("Param/Value/B20ED401"), 5.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    ObjectiveSetState(gv_objTrain, c_objectiveStateCompleted);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/670EA87D"), StringExternal("Param/Value/6CEA901A"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("BlackOpsMarinePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/C74D4330"), StringExternal("Param/Value/614DA3E3"), 6.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    Wait(2.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("BlackOpsMarinePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/964E6452"), StringExternal("Param/Value/6CCBA209"), 4.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromModel("MarauderPortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", null, StringExternal("Param/Value/9DF132CA"), StringExternal("Param/Value/4E50165B"), 3.0, c_transmissionDurationAdd, true, c_maxPlayers, false);
+    GameOver(1, c_gameOverVictory, true, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_TrainDead_Init () {
+    gt_TrainDead = TriggerCreate("gt_TrainDead_Func");
+    TriggerAddEventUnitDied(gt_TrainDead, UnitRefFromUnit(UnitFromId(9)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Fail
+//--------------------------------------------------------------------------------------------------
+bool gt_Fail_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    GameOver(1, c_gameOverDefeat, true, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Fail_Init () {
+    gt_Fail = TriggerCreate("gt_Fail_Func");
+    TriggerAddEventUnitDied(gt_Fail, UnitRefFromUnit(UnitFromId(17)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Initialization
+//--------------------------------------------------------------------------------------------------
+void InitTriggers () {
+    gt_WarfoundryColor_Init();
+    gt_Init_Init();
+    gt_Bunker_Init();
+    gt_BuildingJump_Init();
+    gt_TrainKillBuilding_Init();
+    gt_TrainChangerFirst_Init();
+    gt_TrainMoveFirst_Init();
+    gt_TrainChangerLong_Init();
+    gt_TrainChangerShort_Init();
+    gt_TrainMoveLong_Init();
+    gt_TrainMoveLong2_Init();
+    gt_TrainMoveLong3_Init();
+    gt_TrainMoveLong4_Init();
+    gt_TrainMoveLong5_Init();
+    gt_TrainMoveShort_Init();
+    gt_TrainMoveReturn_Init();
+    gt_Intro_Init();
+    gt_TrainPhase2_Init();
+    gt_TrainPhase3_Init();
+    gt_TrainPhase4_Init();
+    gt_TrainPhase5_Init();
+    gt_TrainPhase6_Init();
+    gt_TrainSpawnAdds_Init();
+    gt_TrainSpeedSlow1_Init();
+    gt_TrainSpeedSlow2_Init();
+    gt_Attacks_Init();
+    gt_AttackDropshipAttackCommand_Init();
+    gt_AttackerGroupSpeed_Init();
+    gt_AttackerGroupSpeed2_Init();
+    gt_AttackerIdle_Init();
+    gt_DropshipRemove_Init();
+    gt_BlabMinerals_Init();
+    gt_BlabBase_Init();
+    gt_BaseDestroyed_Init();
+    gt_TrainDead_Init();
+    gt_Fail_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitLibs();
+    InitGlobals();
+    InitTriggers();
+}
