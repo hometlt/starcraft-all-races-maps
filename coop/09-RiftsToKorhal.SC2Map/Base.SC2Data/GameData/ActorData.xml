@@ -3,4 +3,250 @@
     <CActorUnit id="NukePack">
         <CustomUnitStatusFrame value="HotS_UnitStatus/UnitStatusProgressFrameTemplate"/>
     </CActorUnit>
+
+
+
+
+    <CActorUnit id="ACPirateCapitalShip" parent="GenericUnitMorph" unitName="ACPirateCapitalShip">
+        <DeathArray index="Normal" ModelLink="ACPirateCapitalShipDeath" SoundLink="PirateCapitalShip_dieExplosion"/>
+        <PortraitModel value="ACPirateCapitalShipPortrait"/>
+        <BarWidth value="130"/>
+        <BarOffset value="75"/>
+        <NameOffset value="110"/>
+        <On Terms="Abil.ACPirateYamato.SourcePrepStart" Send="$Spell"/>
+        <On Terms="Abil.ACPirateYamato.SourcePrepStop" Send="AnimClear Spell"/>
+        <UnitIcon value="Assets\Textures\btn-unit-terran-cerberus.dds"/>
+        <HeroIcon value="Assets\Textures\btn-unit-terran-cerberus.dds"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-terran-cerberus.dds"/>
+        </GroupIcon>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-terran-cerberus.dds"/>
+        </Wireframe>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-terran-shipplatinglevel0.dds"/>
+        <HostSiteOps Ops="SOpBankerBattlecruiser"/>
+        <UnitKillRank Text="UnitKillRank/PirateCapitalShip"/>
+    </CActorUnit>
+    <CActorMissile id="ACPirateCapitalShipLeftAttackMissile" parent="GenericAttackMissile" unitName="ACPirateCapitalShipLeftLMWeapon"/>
+    <CActorMissile id="ACPirateCapitalShipRightAttackMissile" parent="GenericAttackMissile" unitName="ACPirateCapitalShipRightLMWeapon"/>
+    <CActorAction id="ACPirateCapitalShipLeftAttack" parent="GenericAttack" effectImpact="ACPirateCapitalShipLeftDamage" effectLaunch="ACPirateCapitalShipLeftLM">
+        <LaunchAttachQuery Methods=""/>
+        <LaunchAssets Sound="ACPirateCapitalShip_AttackLaunch_Left"/>
+        <ImpactMap index="None" Model="ACPirateCapitalShipLeftImpact" Sound="ACPirateCapitalShip_AttackImpact"/>
+        <ImpactMap index="Flesh" ModelReaction="BloodTargetImpact"/>
+    </CActorAction>
+    <CActorAction id="ACPirateCapitalShipRightAttack" parent="GenericAttack" effectImpact="ACPirateCapitalShipRightDamage" effectLaunch="ACPirateCapitalShipRightLM">
+        <LaunchAttachQuery Methods=""/>
+        <LaunchAssets Sound="ACPirateCapitalShip_AttackLaunch_Right"/>
+        <ImpactMap index="None" Model="ACPirateCapitalShipRightImpact" Sound="ACPirateCapitalShip_AttackImpact"/>
+        <ImpactMap index="Flesh" ModelReaction="BloodTargetImpact"/>
+    </CActorAction>
+    <CActorModel id="ACPirateLightningStormImpactModel" parent="ModelAnimationStyleContinuous">
+        <Inherits index="CloakEffect" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <AutoScaleFactor value="1.000000"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+        <On Terms="Behavior.ACPirateLightningStormStun.On" Send="Create"/>
+        <On Terms="ActorCreation" Send="AnimBracketStart GL_BSD GLbirth GLstand GLdeath"/>
+        <On Terms="ActorCreation" Send="AnimBracketStart $BSD"/>
+        <On Terms="ActorCreation" Send="TimerSet 2.130000 EMPSoundOff"/>
+        <On Terms="TimerExpired; TimerName EMPSoundOff" Send="Create Hyperion_Recover_EMP"/>
+        <On Terms="Behavior.ACPirateLightningStormStun.Off" Send="AnimBracketStop BSD"/>
+    </CActorModel>
+    <CActorAction id="ACPirateYamatoAAttack" parent="GenericAttack" effectImpact="ACPirateYamatoADamage" effectLaunch="ACPirateYamatoA">
+        <LaunchAttachQuery Methods="Weapon 12"/>
+        <LaunchAssets Sound="PirateCapitalShip_YamatoAttackLaunch"/>
+        <ImpactSiteOps Ops="SOpForwardLaunchGuide SOp2DRotation" HoldPosition="1"/>
+        <ImpactAttachQuery Methods="Origin"/>
+        <ImpactMap index="None" Sound="Protoss_ExplosionLarge"/>
+        <ImpactMap index="Miss" Model="None"/>
+        <ShieldFlashType value="Full"/>
+    </CActorAction>
+    <CActorMissile id="ACPirateYamatoAAttackMissile" parent="GenericAttackMissile" unitName="ACPirateYamatoAWeapon"/>
+    <CActorMissile id="ACPirateYamatoBAttackMissile" parent="GenericAttackMissile" unitName="ACPirateYamatoBWeapon"/>
+    <CActorAction id="ACPirateYamatoBAttack" parent="GenericAttack" effectImpact="ACPirateYamatoBDamage" effectLaunch="ACPirateYamatoB">
+        <LaunchAttachQuery Methods="Weapon 13"/>
+        <LaunchAssets Sound="PirateCapitalShip_YamatoAttackLaunch"/>
+        <ImpactSiteOps Ops="SOpForwardLaunchGuide SOp2DRotation" HoldPosition="1"/>
+        <ImpactAttachQuery Methods="Origin"/>
+        <ImpactMap index="None" Sound="Protoss_ExplosionLarge"/>
+        <ImpactMap index="Miss" Model="None"/>
+        <ShieldFlashType value="Full"/>
+    </CActorAction>
+    <CActorRange id="ACPirateYamatoRange" parent="RangeAbil" abil="ACPirateYamato"/>
+    <CActorSound id="ACPirateCapitalShip_YamatoAttackChargeUp" parent="SoundContinuous">
+        <Host Subject="_Selectable"/>
+        <On Terms="Abil.ACPirateYamato.SourcePrepStart" Send="Create"/>
+        <On Terms="Abil.ACPirateYamato.SourcePrepStop" Send="Destroy"/>
+        <Layers Sound="VoidShard_Unstable_EnergyChargeSound">
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+    </CActorSound>
+    <CActorBeamSimple id="ACPirateCapitalShipTractorBeam" parent="BeamSimpleAnimationStyleContinuous">
+        <HostLaunch Subject="_Unit" Scope="Target"/>
+        <HostLaunchSiteOps Ops="SOpAttachCenter"/>
+        <HostImpact Subject="_Unit" Scope="Caster"/>
+        <HostImpactSiteOps Ops="SOpAttachCenter"/>
+        <On Terms="Effect.ACPirateCapitalShipTractorBeamCP.Start; At Target" Send="Create"/>
+        <On Terms="ActorCreation" Send="AnimBracketStart GL_BSD GLbirth GLstand GLdeath"/>
+        <On Terms="Behavior.ACPirateCapitalShipTractorBeam.Off" Send="TimerSet 2.000000 DelayDestroy"/>
+        <On Terms="TimerExpired; TimerName DelayDestroy" Send="AnimBracketStop BSD"/>
+        <On Terms="ActorCreation" Send="SetOpacity 0.500000"/>
+        <Model value="SOAVespeneBeam"/>
+    </CActorBeamSimple>
+    <!--CActorSound id="AC_PirateCapitalShip_TractorBeam_PickUp_AS">
+        <On Terms="Effect.ACPirateCapitalShipTractorBeamCP.Start; At Target" Send="Create"/>
+        <On Terms="Behavior.ACPirateCapitalShipTractorBeam.Off" Send="Destroy"/>
+        <Sound value="AC_PirateCapitalShip_TractorBeam_PickUp"/>
+    </CActorSound>-->
+    <CActorModel id="ACPirateCapitalShipTractorBeamPickup" parent="ModelAnimationStyleContinuous">
+        <Host Subject="_Missile"/>
+        <On Terms="ActorCreation" Send="HostSiteOpsSet ::Host {SOpAttachCenter ACPirateCapitalShipRotatorA}"/>
+        <On Terms="ActorCreation; PassChance 50.000000" Send="HostSiteOpsSet ::Host {SOpAttachCenter ACPirateCapitalShipRotatorB}"/>
+        <On Terms="ActorCreation; PassChance 33.000000" Send="HostSiteOpsSet ::Host {SOpAttachCenter ACPirateCapitalShipRotatorC}"/>
+        <On Terms="ActorCreation; PassChance 25.000000" Send="HostSiteOpsSet ::Host {SOpAttachCenter ACPirateCapitalShipRotatorD}"/>
+        <Scale value="1.500000"/>
+    </CActorModel>
+    <CActorSiteOpRotator id="ACPirateCapitalShipRotatorA">
+        <Rate value="300.000000"/>
+        <LocalAxis value="2.000000,0.500000,1.000000"/>
+    </CActorSiteOpRotator>
+    <CActorSiteOpRotator id="ACPirateCapitalShipRotatorB">
+        <Rate value="300.000000"/>
+        <LocalAxis value="1.000000,4.000000,0.400000"/>
+    </CActorSiteOpRotator>
+    <CActorSiteOpRotator id="ACPirateCapitalShipRotatorC">
+        <Rate value="300.000000"/>
+        <LocalAxis value="5.000000,1.500000,-2.000000"/>
+    </CActorSiteOpRotator>
+    <CActorSiteOpRotator id="ACPirateCapitalShipRotatorD">
+        <Rate value="300.000000"/>
+        <LocalAxis value="1.000000,1.500000,1.000000"/>
+    </CActorSiteOpRotator>
+    <CActorMissile id="ACPirateCapitalShipTractorAttackMissile" parent="GenericAttackMissile" unitName="ACPirateCapitalShipTractorBeam">
+        <Model value="Invisible"/>
+        <On Terms="ActorCreation" Send="Create ACPirateCapitalShipTractorBeamPickup"/>
+    </CActorMissile>
+    <CActorAction id="ACPirateCapitalShipTractorAttack" parent="GenericAttack" effectImpact="ACPirateCapitalShipTractorBeamDummyImpact" effectLaunch="ACPirateCapitalShipTractorBeamLM">
+        <LaunchSiteOps Ops="SOpAttachCenter"/>
+        <LaunchAttachQuery Methods="AMFilterCenter"/>
+        <LaunchAssets Sound="AC_PirateCapitalShip_TractorBeam_PickUp"/>
+        <ImpactSiteOps Ops="SOpAttachCenter"/>
+        <ImpactMap index="None" Sound=""/>
+        <ShieldFlashType value="None"/>
+    </CActorAction>
+    <CActorSiteOpLocalOffset id="ACPirateLightningStormOffset">
+        <LocalOffset value="0.000000,0.000000,-1.000000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorModel id="ACPirateLightningStormWarningModel" parent="ModelAnimationStyleContinuous">
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOrigin SOpShadow" HoldRotation="1"/>
+        <On Terms="Abil.ACPirateLightningStorm.SourceCastStart" Send="Create"/>
+        <On Terms="Abil.ACPirateLightningStorm.SourceFinishStart" Send="AnimBracketStop BSD"/>
+    </CActorModel>
+    <CActorModel id="ACPirateLightningStormModel" parent="ModelAnimationStyleOneShot">
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachCenter SJHyperionLightningStormOffset" HoldPosition="1" HoldRotation="1"/>
+        <On Terms="Abil.ACPirateLightningStorm.SourceFinishStart" Send="Create"/>
+    </CActorModel>
+    <CActorSound id="ACPirateLightningStormChargeSound" parent="SoundOneShot">
+        <On Terms="Abil.ACPirateLightningStorm.SourceCastStart" Send="Create"/>
+        <Sound value="ACPirateLightningStormCharge"/>
+    </CActorSound>
+    <CActorSound id="ACPirateLightningStormFireSound" parent="SoundOneShot">
+        <On Terms="Abil.ACPirateLightningStorm.SourceFinishStart" Send="Create"/>
+        <Sound value="ACPirateLightningStormFire"/>
+        <Layers Sound="VoidShard_UnstableEnergy_BaseLaunch">
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+        <Layers Sound="ACPirateLightningStormFireDelayedElectric">
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+    </CActorSound>
+    <!--CActorQuad id="ACPirateCapitalShipBombingRun" parent="ZergGuideVisualQuadDown" abil="ACPirateBombingRun">
+        <HostSiteOps Ops="SOpAttachOrigin SOpMoveBackBy2"/>
+        <Height value="12.000000"/>
+        <Width value="4.000000"/>
+        <LaunchActor value="TerranGuideVisualQuadLaunch"/>
+        <CenterActor value="TerranGuideVisualQuadCenter"/>
+        <ImpactActor value="TerranGuideVisualQuadImpact"/>
+    </CActorQuad-->
+    <CActorRegionQuad id="GuideRegionQuadNull">
+        <Aliases value="_GuideRegion"/>
+        <Aliases value="_Scalable"/>
+        <Flags index="SuppressSaveLoad" value="1"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <HostSiteOps Ops="SOp2DRotation"/>
+    </CActorRegionQuad>
+    <CActorQuad id="ACPirateCapitalShipBombingRunWarning" parent="ZergGuideVisualQuadDown">
+        <On index="0" Terms="Abil.Guide" Send="Create"/>
+        <On Terms="Abil.ACPirateBombingRun.SourcePrepStart" Send="Create"/>
+        <On Terms="Abil.ACPirateBombingRun.SourcePrepStop" Send="Destroy"/>
+        <On Terms="ActorCreation" Send="Create GuideRegionQuadNull"/>
+        <Remove Terms="ActorCreation" Send="Create GuideRegionQuadDown"/>
+        <HostSiteOps Ops="SOpAttachOrigin SOpMoveBackBy2"/>
+        <Height value="12.000000"/>
+        <Width value="4.000000"/>
+        <LaunchActor value="TerranGuideVisualQuadLaunch"/>
+        <CenterActor value="TerranGuideVisualQuadCenter"/>
+        <ImpactActor value="TerranGuideVisualQuadImpact"/>
+    </CActorQuad>
+    <CActorModel id="ACPirateCapitalShipBombingRunExplosionA" parent="ModelAnimationStyleOneShot">
+        <Model value="ACPirateCapitalShipBombingRunExplosion"/>
+        <On Terms="Effect.ACPirateBombingRunSearch.Start" Send="Create"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachCenter SOpShadow ACPirateCapitalShipBombingRunOffsetA SOpRandomPointInSphereDot5"/>
+    </CActorModel>
+    <CActorModel id="ACPirateCapitalShipBombingRunExplosionB" parent="ModelAnimationStyleOneShot">
+        <Model value="ACPirateCapitalShipBombingRunExplosion"/>
+        <On Terms="Effect.ACPirateBombingRunSearch.Start" Send="Create"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachCenter SOpShadow ACPirateCapitalShipBombingRunOffsetB SOpRandomPointInSphereDot5"/>
+    </CActorModel>
+    <CActorModel id="ACPirateCapitalShipBombingRunExplosionC" parent="ModelAnimationStyleOneShot">
+        <Model value="ACPirateCapitalShipBombingRunExplosion"/>
+        <On Terms="Effect.ACPirateBombingRunSearch.Start" Send="Create"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachCenter ACPirateCapitalShipBombingRunOffsetA SOpRandomPointInSphereDot5"/>
+    </CActorModel>
+    <CActorModel id="ACPirateCapitalShipBombingRunExplosionD" parent="ModelAnimationStyleOneShot">
+        <Model value="ACPirateCapitalShipBombingRunExplosion"/>
+        <On Terms="Effect.ACPirateBombingRunSearch.Start" Send="Create"/>
+        <Host Subject="_Unit"/>
+        <HostSiteOps Ops="SOpAttachCenter ACPirateCapitalShipBombingRunOffsetB SOpRandomPointInSphereDot5"/>
+    </CActorModel>
+    <CActorSiteOpLocalOffset id="ACPirateCapitalShipBombingRunOffsetA">
+        <LocalOffset value="-1.000000,0.000000,0.000000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSiteOpLocalOffset id="ACPirateCapitalShipBombingRunOffsetB">
+        <LocalOffset value="1.000000,0.000000,0.000000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSound id="ACPirateCapitalShipBombingRunChargeSound" parent="SoundOneShot">
+        <On Terms="Abil.ACPirateBombingRun.SourcePrepStart" Send="Create"/>
+        <On Terms="Abil.ACPirateBombingRun.SourcePrepStop" Send="Destroy"/>
+        <Sound value="ACPirateCapitalShip_YamatoAttackChargeUp"/>
+        <Layers Sound="VoidShard_Unstable_EnergyChargeSound">
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="-2.000000,-2.000000"/>
+        </Layers>
+        <Layers>
+            <Chance value="0"/>
+            <Pitch value="0.000000,0.000000"/>
+            <PlayDelay value="0,0"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+    </CActorSound>
+
 </Catalog>

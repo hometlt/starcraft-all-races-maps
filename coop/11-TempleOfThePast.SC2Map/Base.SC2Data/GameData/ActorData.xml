@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+
+
+
+
+<CActorModel id="ZenithStoneDeathAddition">
+        <ModelFlags index="UpdateVisibility" value="0"/>
+        <!--On Terms="ActorCreation" Send="SetTintColor 128,255,128"/-->
+        <ModelFlags index="UseSyncSeed" value="1"/>
+        <Aliases value="_Snapshot"/>
+        <Host Subject="_Selectable"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="TeamColor" value="1"/>
+        <Inherits index="TimeScale" value="1"/>
+        <Inherits index="TintColor" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <Inherits index="WarpGroup" value="1"/>
+    </CActorModel>
+    <CActorUnit id="ZenithStone" parent="GenericUnitStandard" unitName="ZenithStone">
+        <On Terms="ActorCreation" Send="SetTintColor 187,200,232"/>
+        <On Terms="Abil.ZenithStonePsiStorm.SourcePrepStart" Send="Create ZenithStoneCastModel"/>
+        <!--On Terms="Behavior.ZenithStonePsionicShock.On" Send="Create ZenithStoneTransitionCascade1"/>
+        <On Terms="Behavior.ZenithStoneUnstableStorms.On" Send="Create ZenithStoneTransitionCascade1"/-->
+        <On Terms="ActorCreation" Send="Create ZenithStoneIdleLoop"/>
+        <On Terms="Behavior.ZenithStonePsionicShock.On" Send="Create ZenithStonePsionicShockLoop"/>
+        <On Terms="Behavior.ZenithStoneUnstableStorms.On" Send="Create ZenithStoneUnstableStormsLoop"/>
+        <On Terms="ActorCreation" Send="AnimBracketStart Work {} Stand,Work"/>
+        <On Terms="Behavior.ZenithStonePsionicShock.On" Send="AnimBracketStart WorkA Stand,Work,A,Start Stand,Work,A"/>
+        <On Terms="Behavior.ZenithStoneUnstableStorms.On" Send="AnimBracketStart WorkB Stand,Work,B,Start Stand,Work,B"/>
+        <!--On Terms="UnitDeathCustomize" Send="Create ZenithStoneDeathAddition"/-->
+        <DeathArray index="Normal" ModelLink="ZenithStoneDeath" SoundLink=""/>
+        <BarOffset value="430"/>
+        <BarWidth value="200"/>
+        <LifeArmorIcon value="Assets\Textures\btn-armor-protoss-buildingplating.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-protoss-zenithstone.dds"/>
+        </Wireframe>
+        <Aliases value="_CreepEngulfable"/>
+        <CreepHeightClass value="Medium"/>
+    </CActorUnit>
+    <CActorSiteOpLocalOffset id="ZenithStonePhase1OffsetSOp">
+        <LocalOffset value="0.000000,0.000000,-6.000000"/>
+    </CActorSiteOpLocalOffset>
+    <CActorSound id="ZenithStonePsiStormCast" parent="SoundOneShot">
+        <On Terms="Abil.ZenithStonePsiStorm.SourcePrepStart" Send="Create"/>
+        <Sound value="ZenithStone_PsiStormCast"/>
+    </CActorSound>
+    <CActorSound id="ZenithStonePsionicShockLoop" parent="SoundContinuous">
+        <Sound value="ZenithStone_PsionicShockLoop"/>
+        <On Terms="Behavior.ZenithStoneUnstableStorms.On" Send="Destroy"/>
+    </CActorSound>
+    <CActorSound id="ZenithStoneUnstableStormsLoop" parent="SoundContinuous">
+        <Sound value="ZenithStone_UnstableStormsLoop"/>
+        <On Terms="Behavior.ZenithStoneUnstableStorms.Off" Send="Destroy"/>
+    </CActorSound>
+    <CActorSound id="ZenithStoneIdleLoop" parent="SoundContinuous">
+        <Sound value="ZenithStone_IdleLoop"/>
+        <On Terms="Behavior.ZenithStonePsionicShock.On" Send="Destroy"/>
+    </CActorSound>
+    <CActorSound id="ZenithStoneTransisionCascadeSound" parent="SoundOneShot">
+        <Sound value="ZenithStone_CascadeExplosion"/>
+    </CActorSound>
+    <CActorModel id="ZenithStonePsiStormModel" parent="ModelAnimationStyleContinuous">
+        <On Terms="Effect.ZenithStonePsiStormCP.Start" Send="Create"/>
+        <On Terms="Effect.ZenithStonePsiStormCP.Stop; FromEffectTreeDescendant" Send="AnimBracketStop BSD"/>
+        <On Terms="ActorCreation" Send="SetTintColor 128,255,128"/>
+    </CActorModel>
+    <CActorAction id="ZenithStonePsionicShockAttack" parent="GenericAttack" effectAttack="ZenithStonePsionicShockDamage">
+        <ImpactMap index="None" Sound="ZenithStone_PsionicShockImpact"/>
+        <ImpactSiteOps Ops="SOpAttachHarness SOpAttachVolumeNoVizEnhance"/>
+        <ActionFlags index="ImpactMonitorsTeleports" value="1"/>
+        <!--LaunchAssets Sound="Interceptor_AttackLaunch"/-->
+    </CActorAction>
+    <CActorBeamSimple id="ZenithStonePsionicShockAttackBeam" parent="BeamSimpleAnimationStyleOneShot">
+        <Remove Terms="ActorCreation" Send="AnimBracketStart BSD Birth Stand Death ContentPlayOnce"/>
+        <On Terms="ActorCreation" Send="AnimBracketStart BSD Birth {} {} ContentPlayOnce"/>
+        <Macros value="ActionTargetTeleportDestroy"/>
+    </CActorBeamSimple>
+    <CActorAction id="ZenithStonePsiStormShieldHitter" parent="AoEAttackBase">
+        <On Terms="Effect.ZenithStonePsiStormDamageInitial.Start" Send="Create"/>
+        <On Terms="Effect.ZenithStonePsiStormDamageInitial.Start; At Effect" Send="ActionDamage"/>
+        <On Terms="Effect.ZenithStonePsiStormDamageInitial.Stop; At Effect" Send="Destroy"/>
+        <On Terms="Effect.ZenithStonePsiStormDamage.Start" Send="Create"/>
+        <On Terms="Effect.ZenithStonePsiStormDamage.Start; At Effect" Send="ActionDamage"/>
+        <On Terms="Effect.ZenithStonePsiStormDamage.Stop; At Effect" Send="Destroy"/>
+        <Lifetime value="3.400000"/>
+    </CActorAction>
+    <CActorModel id="ZenithStoneCastModel" parent="ModelAnimationStyleOneShot">
+        <On Terms="ActorCreation" Send="SetTintColor 187,200,232"/>
+    </CActorModel>
+    <CActorModel id="ZenithStonePsiStormImpact" parent="ModelAnimationStyleContinuous">
+        <Inherits index="BaseModelScale" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <On Terms="Behavior.ZenithStonePsiStorm.On" Send="Create"/>
+        <On Terms="Behavior.ZenithStonePsiStorm.Off" Send="AnimBracketStop BSD"/>
+        <On Terms="ActorCreation" Send="SetTintColor 128,255,128"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachCenter"/>
+        <AutoScaleFactor value="0.750000"/>
+    </CActorModel>
+    <CActorSound id="ZenithStonePsiStormImpactSound" parent="SoundOneShot">
+        <On Terms="Effect.ZenithStonePsiStormDamage.Start; At Target" Send="Create"/>
+        <Sound value="ZenithStone_PsionicStormImpact"/>
+    </CActorSound>
+    <CActorSound id="ZenithStonePsiStormSound" parent="SoundContinuous">
+        <On Terms="Effect.ZenithStonePsiStormCP.Start" Send="Create"/>
+        <On Terms="Effect.ZenithStonePsiStormCP.Stop; FromEffectTreeDescendant" Send="Destroy"/>
+        <HostSiteOps Ops="SOpShadow"/>
+        <Sound value="ZenithStone_PsionicStormLaunch"/>
+    </CActorSound>
+
+</Catalog>

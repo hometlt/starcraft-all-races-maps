@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <!--    VoidShard|CelestialArray|Pirate|ResearchVessel|Colonist|ArchAngel|Virophage|Plaguebringer|Hunterling|Spotter|Choker|Kaboomer|Eradicator|Megalith|COD|PnP|cybros|VoidSliver|GuardianEscort|CradleOfDeath|voidrift|voidtendril|voidthrasher|hybrid-->
+
+    <!--                                                                                         -->
+    <!-- Terran Drop Pod (Art) ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="TerranDropPod" parent="GenericUnitStandardNoAutoSoundLinks" unitName="TerranDropPod">
+        <On Terms="ActorCreation" Send="Create TerranDropPodImpact"/>
+        <On Terms="UnitBirth.*.Suppressed" Send="$Birth NonLooping 0.000000 0.000000"/>
+        <WalkAnimMoveSpeed value="0"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Progress" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+    </CActorUnit>
+    <CActorSound id="TerranDropPodImpact" parent="SoundOneShot"/>
+    <!--                                                                                         -->
+    <!-- Terrazine Delivery Truck .............................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="TerrazineDeliveryTruck" parent="GenericUnitStandardNoAutoSoundLinks" unitName="TerrazineDeliveryTruck">
+        <DeathArray index="Normal" ModelLink="TerranLargeUnitDeath"/>
+        <StandAnimTurnTime value="3.33"/>
+        <WalkAnimMoveSpeed value="1"/>
+    </CActorUnit>
+    <CActorAction id="TerrazineDeliveryTruckAttack" parent="GenericAttack" effectAttack="TerrazineDeliveryTruck">
+        <LaunchAttachQuery Methods="AMPatternRollingStripe"/>
+    </CActorAction>
+    <!--                                                                                         -->
+    <!-- Terrazine Gas Barrels ................................................................. -->
+    <!--                                                                                         -->
+    <CActorUnit id="TerrazineGasBarrel" parent="GenericUnitStandardNoAutoSoundLinks" unitName="TerrazineGasBarrel">
+        <DeathArray index="Normal" ModelLink="TerranBuildingDeath"/>
+    </CActorUnit>
+    <CActorModel id="GasBarrelExplodeModel" parent="ModelAnimationStyleContinuous">
+        <On Terms="Effect.GasBarrelExplode.Start" Send="Create"/>
+        <On Terms="Effect.GasBarrelExplode.Stop" Send="AnimBracketStop BSD"/>
+    </CActorModel>
+    <!--                                                                                         -->
+    <!-- Terrazine Shrine ...................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="TerrazineNode" parent="GenericUnitSelectableNoAutoSoundLinks" unitName="TerrazineNode">
+        <On Terms="ActorCreation" Send="Create TerrazineNodeStandLoop"/>
+        <!-- Terran Signals -->
+        <On Terms="Signal.*.TerranStart" Target="TerrazineNodeStandLoop" Send="Destroy"/>
+        <On Terms="Signal.*.TerranStart" Send="Create TerrazineNodeStandAngryLoop"/>
+        <On Terms="Signal.*.TerranStart" Send="AnimGroupApply Angry"/>
+        <On Terms="Signal.*.TerranStart" Send="Create TerrazineExtractor"/>
+        <On Terms="Signal.*.TerranInterrupt" Send="AnimGroupRemove Angry"/>
+        <On Terms="Signal.*.TerranInterrupt" Send="Create TerrazineExtractorDeath"/>
+        <On Terms="Signal.*.TerranInterrupt" Target="TerrazineExtractor" Send="Destroy"/>
+        <On Terms="Signal.*.TerranInterrupt" Target="TerrazineNodeStandAngryLoop" Send="Destroy"/>
+        <On Terms="Signal.*.TerranInterrupt" Send="Create TerrazineNodeStandLoop"/>
+        <On Terms="AbilMorph.*.Start" Target="TerrazineNodeStandAngryLoop" Send="Destroy"/>
+        <On Terms="AbilMorph.*.Start; MorphTo TerrazineNodeDeadTerran" Send="Create TerrazineNodeDeath"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TerrazineNodeDeadTerran" Send="AnimGroupRemove Angry"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TerrazineNodeDeadTerran" Send="AnimBaselineStop"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TerrazineNodeDeadTerran" Send="$Death PlayForever"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TerrazineNodeDeadTerran" Send="SetMinimapVisibility"/>
+        <!-- Protoss Signals -->
+        <On Terms="Signal.*.ProtossStart" Target="TerrazineNodeStandLoop" Send="Destroy"/>
+        <On Terms="Signal.*.ProtossStart" Send="Create TerrazineNodeStandHappyLoop"/>
+        <On Terms="Signal.*.ProtossStart" Send="AnimPlay Happy Stand,Happy 0 -1.000000 -1.000000 61.000000 AsDuration"/>
+        <On Terms="Signal.*.ProtossStart" Send="Create TerrazineProtector"/>
+        <On Terms="Signal.*.ProtossStart" Send="Create TerrazineProtectorStartSound"/>
+        <On Terms="Signal.*.ProtossStart" Send="Create TerrazineProtectorLoopSound"/>
+        <On Terms="Signal.*.ProtossInterrupt" Send="AnimClear Happy"/>
+        <On Terms="Signal.*.ProtossInterrupt" Send="Create TerrazineProtectorDeath"/>
+        <On Terms="Signal.*.ProtossInterrupt" Target="TerrazineProtectorLoopSound" Send="Destroy"/>
+        <On Terms="Signal.*.ProtossInterrupt" Target="TerrazineNodeStandHappyLoop" Send="Destroy"/>
+        <On Terms="Signal.*.ProtossInterrupt" Target="TerrazineProtector" Send="Destroy"/>
+        <On Terms="Signal.*.ProtossInterrupt" Send="Create TerrazineNodeStandLoop"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TerrazineNodeHappyProtoss" Send="Create TerrazineProtectorCappedLoopSound"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TerrazineNodeHappyProtoss" Send="Create TerrazineNodeStandHappyCappedLoop"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TerrazineNodeHappyProtoss" Send="AnimPlay StandCover Stand,Cover PlayForever"/>
+        <On Terms="AbilMorph.*.Finish; MorphTo TerrazineNodeHappyProtoss" Send="Create TerrazineProtectorCappedModel"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <ModelFlags index="IgnoreWalkables" value="1"/>
+        <BarWidth value="120"/>
+        <LifeArmorIcon value="Assets\Textures\btn-armor-terran-none.dds"/>
+        <UnitIcon value="Assets\Textures\Wireframe-general-terrazineshrine.dds"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-general-terrazineshrine.dds"/>
+        </GroupIcon>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-general-terrazineshrine.dds"/>
+        </Wireframe>
+        <MinimapIcon value="Assets\Textures\ui_minimap_icon_terrazine.dds"/>
+    </CActorUnit>
+    <CActorSound id="TerrazineNodeStandLoop" parent="SoundContinuous">
+        <Sound value="Doodad_TerrazineShrineStand"/>
+    </CActorSound>
+    <CActorSound id="TerrazineNodeStandAngryLoop" parent="SoundContinuous">
+        <Sound value="Doodad_TerrazineShrineStandAngry"/>
+    </CActorSound>
+    <CActorSound id="TerrazineNodeStandHappyLoop" parent="SoundContinuous">
+        <Sound value="Doodad_TerrazineShrineStandHappy"/>
+    </CActorSound>
+    <CActorSound id="TerrazineNodeStandHappyCappedLoop">
+        <Supporter Subject="::Creator"/>
+        <Sound value="Doodad_TerrazineShrineStandHappy"/>
+    </CActorSound>
+    <CActorSound id="TerrazineNodeDeath" parent="SoundOneShot">
+        <Sound value="Doodad_TerrazineShrineDeath"/>
+    </CActorSound>
+    <CActorSound id="TerrazineProtectorLoopSound" parent="SoundContinuous">
+        <Sound value="Doodad_TerrazineProtectorProtossStandWork"/>
+    </CActorSound>
+    <CActorSound id="TerrazineProtectorCappedLoopSound">
+        <Supporter Subject="::Creator"/>
+        <Sound value="Doodad_TerrazineProtectorProtossStandWork"/>
+    </CActorSound>
+    <CActorSound id="TerrazineProtectorStartSound" parent="SoundOneShot">
+        <Sound value="Doodad_TerrazineProtectorProtossBirth"/>
+    </CActorSound>
+    <CActorSound id="TerrazineProtectorDeathSound" parent="SoundOneShot">
+        <Sound value="Doodad_TerrazineProtectorProtossDeath"/>
+    </CActorSound>
+    <!-- Terrazine Extractor -->
+    <CActorModel id="TerrazineExtractor">
+        <On Terms="ActorCreation" Send="$Birth"/>
+        <On Terms="AnimDone; AnimName Birth" Send="AnimPlay StandWork Stand,Work 0 -1.000000 -1.000000 57.000000 AsDuration"/>
+        <On Terms="AnimDone; AnimName StandWork" Send="AnimPlay StandWorkEnd Stand,Work,End"/>
+        <On Terms="AnimDone; AnimName StandWorkEnd" Target="::Creator" Send="Signal TerranDone"/>
+        <On Terms="AnimDone; AnimName StandWorkEnd" Send="AnimPlay StandCover Stand,Cover PlayForever"/>
+    </CActorModel>
+    <CActorModel id="TerrazineExtractorDeath">
+        <On Terms="ActorCreation" Send="$Death"/>
+        <On Terms="AnimDone; AnimName Death" Send="Destroy"/>
+    </CActorModel>
+    <!-- Terrazine Protector -->
+    <CActorModel id="TerrazineProtector">
+        <On Terms="ActorCreation" Send="AnimPlay Build Build 0 -1.000000 -1.000000 60.000000 AsDuration"/>
+        <On Terms="AnimDone; AnimName Build" Target="::Creator" Send="Signal ProtossDone"/>
+        <On Terms="AnimDone; AnimName Build" Send="Destroy"/>
+        <On Terms="ActorDestruction" Send="Create TerrazineProtectorDeathSound"/>
+    </CActorModel>
+    <CActorModel id="TerrazineProtectorDeath">
+        <Model value="TerrazineProtector"/>
+        <On Terms="ActorCreation" Send="$Death"/>
+        <On Terms="AnimDone; AnimName Death" Send="Destroy"/>
+    </CActorModel>
+    <!-- Capped Shrines -->
+    <CActorDoodad id="TerrazineShrineTerranCapped">
+        <Flags index="SuppressSaveLoad" value="0"/>
+        <On Terms="ActorCreation" Send="$Death PlayForever"/>
+    </CActorDoodad>
+    <CActorDoodad id="TerrazineShrineProtossCapped">
+        <Flags index="SuppressSaveLoad" value="0"/>
+        <On Terms="ActorCreation" Send="AnimPlay StandCover Stand,Cover PlayForever"/>
+        <On Terms="ActorCreation" Send="Create TerrazineProtectorCapped"/>
+    </CActorDoodad>
+    <CActorDoodad id="TerrazineProtectorCapped">
+        <Model value="TerrazineProtector"/>
+        <Flags index="SuppressSaveLoad" value="0"/>
+        <On Terms="ActorCreation" Send="AnimPlay StandWork Stand,Work PlayForever"/>
+    </CActorDoodad>
+    <CActorModel id="TerrazineProtectorCappedModel" parent="ModelAddition">
+        <Model value="TerrazineProtector"/>
+        <On Terms="ActorCreation" Send="AnimPlay StandWork Stand,Work PlayForever"/>
+    </CActorModel>
+    <!-- Dropped Terrazine -->
+    <CActorUnit id="TerrazineCanister" parent="GenericUnitStandardNoAutoSoundLinks" unitName="TerrazineCanister">
+        <On Terms="ActorCreation" Send="AnimGroupApply Work"/>
+        <On Terms="Abil.ProbeHarvest.Start" Send="Create TerrazineCanisterWarpOut"/>
+        <On Terms="Abil.ProbeHarvest.Stop" Target="TerrazineCanisterWarpOut" Send="Signal Interrupt"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <BarWidth value="120"/>
+        <LifeArmorIcon value="Assets\Textures\btn-armor-terran-none.dds"/>
+        <MinimapIcon value="Assets\Textures\ui_minimap_icon_terrazine.dds"/>
+        <UnitIcon value="Assets\Textures\Wireframe-general-terrazinecanister.dds"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-general-terrazinecanister.dds"/>
+        </GroupIcon>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-general-terrazinecanister.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorModel id="TerrazineCanisterWarpOut">
+        <Model value="ProtossBuildingBirth"/>
+        <On Terms="ActorCreation" Send="SetScale 0.800000"/>
+        <On Terms="ActorCreation" Send="AnimPlay Start Stand,Build,Start 0 -1.000000 -1.000000 3.000000 AsDuration"/>
+        <On Terms="AnimDone; AnimName Start" Send="$Stand,Build NonLooping"/>
+        <On Terms="AnimDone; AnimName Stand" Send="AnimPlay End Stand,Build,End 0 -1.000000 -1.000000 3.000000 AsDuration"/>
+        <On Terms="Signal.*.Interrupt" Send="AnimPlay End Stand,Build,End 0 -1.000000 -1.000000 1.500000 AsDuration"/>
+        <On Terms="AnimDone; AnimName End" Send="Destroy"/>
+    </CActorModel>
+    <!-- Behaviors -->
+    <CActorEventMacro id="CarryTerrazineNodeAnim">
+        <On Terms="Behavior.CarryTerrazineNode.On" Send="AnimGroupApply Gather"/>
+        <On Terms="Behavior.CarryTerrazineNode.Off" Send="AnimGroupRemove Gather"/>
+    </CActorEventMacro>
+    <CActorModel id="CarryTerrazineNode" parent="ModelAnimationStyleContinuousUNIT">
+        <Model value="TerrazineCanister"/>
+        <HostSiteOps Ops="SOpAttachHardPoint"/>
+        <On Terms="Behavior.CarryTerrazineNode.On" Send="Create"/>
+        <On Terms="Behavior.CarryTerrazineNode.Off" Send="AnimBracketStop BSD"/>
+    </CActorModel>
+    <!--                                                                                         -->
+    <!-- Terrazine Tank ........................................................................ -->
+    <!--                                                                                         -->
+    <CActorUnit id="TerrazineTank" parent="GenericUnitStandardNoAutoSoundLinks" unitName="TerrazineTank">
+        <DeathArray index="Normal" ModelLink="TerrazineTankDeath" SoundLink="TerrazineTank_Explode"/>
+        <On Terms="ActorCreation" Send="Create SoundEmitter Doodad_TerrazineRefinery"/>
+        <Macros value="ExtractAnim"/>
+        <BarWidth value="180"/>
+        <BarOffset value="150"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-terran-buildingarmor.dds"/>
+        <UnitIcon value="Assets\Textures\BTN-Building-Terran-TerrazineRefinery.dds"/>
+        <HeroIcon value="Assets\Textures\BTN-Building-Terran-TerrazineRefinery.dds"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-terran-terrazinetank.dds"/>
+        </GroupIcon>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-terran-terrazinetank.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <!--                                                                                         -->
+    <!-- Terrazine Warehouse ................................................................... -->
+    <!--                                                                                         -->
+    <CActorUnit id="TerrazineWarehouse" parent="GenericUnitStandardNoAutoSoundLinks" unitName="TerrazineWarehouse">
+        <DeathArray index="Normal" ModelLink="TerranBuildingDeath"/>
+        <Macros value="QueueAnim"/>
+    </CActorUnit>
+
+    <CActorUnit id="TerrazineHarvester" parent="GenericUnitBase" unitName="TerrazineHarvester">
+        <PortraitModel value="TerrazineHarvesterPortrait"/>
+        <On Terms="Abil.Irradiate.SourceCastStart" Send="$Spell"/>
+        <On Terms="Abil.attack.ReadyStart" Send="AnimGroupApply Ready"/>
+        <On Terms="WeaponStart.*.AttackStart" Send="AnimBracketStart Attack Attack"/>
+        <On Terms="WeaponStart.*.AttackStart; AnimPlaying Birth" Send="AnimClear Birth"/>
+        <On Terms="WeaponStop.*.AttackStop" Send="AnimBracketStop Attack"/>
+        <On Terms="Abil.attack.ReadyStop" Send="AnimGroupRemove Ready"/>
+        <On Terms="Abil.TerrazineHarvesterExtract.SourceChannelStart" Send="AnimPlay HarvestingTerrazine Stand,Work,Start 0 -1.000000 -1.000000 60.000000 AsDuration"/>
+        <On Terms="AnimDone; AnimName HarvestingTerrazine" Send="AnimPlay Full Stand,Work PlayForever"/>
+        <DeathArray index="Normal" ModelLink="TerrazineHarvester_Death" SoundLink="General_Explosion_Debris"/>
+        <DeathActorModel value="TerrazineHarvesterDeathModel"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-terran-shipplatinglevel0.dds"/>
+        <UnitIcon value="Assets\Textures\BTN-Unit-Terran-ScienceVessel.dds"/>
+        <HeroIcon value="Assets\Textures\BTN-Unit-Terran-ScienceVessel.dds"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\WireFrame-TerrazineHarvester.dds"/>
+        </GroupIcon>
+        <Wireframe>
+            <Image value="Assets\Textures\WireFrame-TerrazineHarvester.dds"/>
+        </Wireframe>
+        <BarWidth value="100"/>
+        <Aliases value="_UnitHuge"/>
+        <ModelFlags index="OutlineEmitter" value="1"/>
+        <SoundArray index="Birth" value=""/>
+        <SoundArray index="Ready" value=""/>
+        <SoundArray index="Help" value=""/>
+        <SoundArray index="What" value=""/>
+        <SoundArray index="Yes" value=""/>
+        <SoundArray index="Attack" value=""/>
+        <SoundArray index="Pissed" value=""/>
+        <SoundArray index="Movement" value=""/>
+        <SoundArray index="Turning" value=""/>
+        <SoundArray index="Board" value=""/>
+        <SoundArray index="Click" value=""/>
+        <SoundArray index="ClickError" value=""/>
+        <SoundArray index="Highlight" value=""/>
+    </CActorUnit>
+    <CActorTurret id="TerrazineHarvesterRotateTurret">
+        <On Terms="TurretEnable.TerrazineHarvesterRotate" Send="Create"/>
+    </CActorTurret>
+    <CActorSiteOpForward id="SOpTerrazineHarvesterDeath">
+        <HostForward Subject="TerrazineHarvesterRotateTurret" Actor="Find"/>
+    </CActorSiteOpForward>
+    <CActorModel id="TerrazineHarvesterDeathModel" parent="UnitDeathModel">
+        <HostSiteOps Ops="SOpAttachOrigin SOpTerrazineHarvesterDeath"/>
+    </CActorModel>
+    <CActorBeamSimple id="TerrazineHarvesterBeam" parent="BeamSimpleAnimationStyleContinuous">
+        <On Terms="Effect.TerrazineHarvesterExtract.Start" Send="Create"/>
+        <On Terms="Effect.TerrazineHarvesterExtract.Stop" Send="AnimBracketStop BSD"/>
+        <HostForProps Subject="_Unit" Scope="Caster" Actor="Find"/>
+        <HostLaunch Subject="_Unit" Scope="Caster" Actor="Find"/>
+        <HostImpact Subject="_Unit" Scope="Target" Actor="Find"/>
+        <HostLaunchSiteOps Ops="SOpAttachOrigin"/>
+        <HostImpactSiteOps Ops="SOpAttachCenter"/>
+        <Inherits index="Visibility" value="1"/>
+    </CActorBeamSimple>
+    <CActorSound id="TerrazineHarvester_Beam_Loop_AS" parent="SoundContinuous">
+        <On Terms="Effect.TerrazineHarvesterExtract.Start" Send="Create"/>
+        <On Terms="Effect.TerrazineHarvesterExtract.Stop" Send="Destroy"/>
+        <Sound value="TerrazineHarvester_Beam_Loop"/>
+    </CActorSound>
+    <CActorTurret id="TerrazineHarvesterGunTurret">
+        <On Terms="TurretEnable.TerrazineHarvesterGunRotate" Send="Create"/>
+        <YawQuery Methods="Turret"/>
+    </CActorTurret>
+    <CActorSound id="TerrazineHarvester_Servo_Turret_AS" parent="SoundOneShot">
+        <On Terms="TurretEnable.TerrazineHarvesterRotate" Send="Create"/>
+        <On Terms="TurretEnable.TerrazineHarvesterGunRotate" Send="Create"/>
+        <Sound value="TerrazineHarvester_Servo_Turret"/>
+    </CActorSound>
+    <CActorAction id="TerrazineHarvesterAttack" parent="GenericAttack" effectAttack="TerrazineHarvesterWeapon">
+        <LaunchAssets Model="MarineAttackLaunch" Sound="TerrazineHarvester_AttackLaunch"/>
+        <ImpactMap index="None" Model="MarineAttackImpact" Sound="TerrazineHarvester_AttackImpact"/>
+        <ImpactMap index="Flesh" ModelReaction="BloodTargetImpact"/>
+    </CActorAction>
+
+    <CActorModel id="COOPTerrazineTankDeathActor" parent="UnitDeathModel">
+        <FogVisibility value="Visible"/>
+    </CActorModel>
+    <CActorUnit id="COOPTerrazineTank" parent="GenericUnitStandardNoAutoSoundLinks" unitName="COOPTerrazineTank">
+        <Macros index="0" removed="1"/>
+        <On Terms="Signal.*.WorkStart" Send="AnimGroupApply Work Start End ClosingFull"/>
+        <On Terms="AnimBracketState.*.AfterClosing; AnimName Work" Send="AnimPlay WorkA Stand,Work,A"/>
+        <On Terms="AnimDone; AnimName WorkA" Send="AnimPlay Dead Dead PlayForever"/>
+        <!--On Terms="Signal.*.WorkEnd" Send="AnimGroupRemove Work"/>
+        <On Terms="Signal.*.WorkStart" Send="StatusSet Working 1"/>
+        <On Terms="UnitDeathCustomize; HasStatus Working" Send="DeathCustomize Flying"/>
+        <On Terms="Signal.*.WorkEnd" Send="AnimBaselineStop"/>
+        <On Terms="Signal.*.WorkEnd" Send="AnimBracketStop ::GL_BSD"/>
+        <On Terms="Signal.*.BleedDeath" Send="AnimGroupRemove Work Instant"/>
+        <On Terms="Signal.*.BleedDeath" Send="ModelSwap Kasai_Harness_Death_B"/>
+        <On Terms="ModelSwapped; ModelSwapTo Kasai_Harness_Death_B" Send="AnimBracketStart BleedDeath Death Dead"/>
+        <On Terms="Signal.*.BleedDeath" Send="AnimBaselineStop"/>
+        <On Terms="Signal.*.BleedDeath" Send="AnimBracketStop ::GL_BSD"/>
+        <On Terms="ModelSwapped; ModelSwapTo Kasai_Harness_Death_B" Send="AnimClearAllBut BleedDeath"/-->
+        <On Terms="UnitDeath" Send="AnimBracketStart FlyDeath Work,End Work,A {} ContentPlayOnce"/>
+        <On Terms="AnimBracketState.*.AfterClosing; AnimName FlyDeath" Send="AnimPlay FlyDeathEndLoop Dead PlayForever"/>
+        <Model value="Kasai_Harness"/>
+        <BuildModel value="Kasai_Harness"/>
+        <DeathArray index="Normal" AnimProps="IGNORE" ModelLink=""/>
+        <DeathArray index="Timeout">
+            <ActorModel value="COOPTerrazineTankDeathActor"/>
+            <AnimProps value="Death"/>
+            <ModelLink value="Kasai_Harness_Death_D"/>
+            <SoundLink value="COOPTerrazineTankDeathSound"/>
+        </DeathArray>
+        <!--DeathCustoms ModelLink="Kasai_Harness_Death_B" SoundLink="General_Explosion_Mech" Name="Flying"/-->
+        <DeathActorModel value="COOPTerrazineTankDeathActor"/>
+        <PlacementModel value="Kasai_Harness"/>
+        <PortraitModel value="KasaiHarness_Portrait"/>
+        <BarOffset value="250"/>
+        <BarWidth value="180"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-KasaiHarness.dds"/>
+        </GroupIcon>
+        <HeroIcon value="Assets\Textures\BTN-Building-Terran-TerrazineRefinery.dds"/>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-terran-buildingarmor.dds"/>
+        <MinimapIcon value="Assets\Textures\ui_minimap_icon_terrazine.dds"/>
+        <MinimapIconScale value="1.200000"/>
+        <MinimapTooltip value="Unit/Name/COOPTerrazineTank"/>
+        <UnitIcon value="Assets\Textures\BTN-Building-Terran-TerrazineRefinery.dds"/>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-KasaiHarness.dds"/>
+        </Wireframe>
+        <VisibilityShape Shape="ZenithStone"/>
+        <FogVisibility value="Visible"/>
+    </CActorUnit>
+    <CActorUnit id="TerrazineNode">
+        <On Terms="UnitBirth.TerrazineNodeOff" Send="Create"/>
+        <On Terms="UnitBirth.TerrazineNodeOff" Send="AnimBracketStart Halt Death IGNORE IGNORE OpeningPlayForever,Instant,DontResetOnUnhide"/>
+        <On Terms="AbilMorph.*.Start; MorphTo TerrazineNodeOff" Send="AnimPlay Halt Death PlayForever"/>
+        <On Terms="AbilMorph.*.Start; MorphTo TerrazineNode" Send="AnimClear Halt 3.000000"/>
+        <On Terms="AbilMorph.*.Start; MorphTo TerrazineNodeOff" Send="MinimapIcon none"/>
+        <On Terms="UnitBirth.TerrazineNodeOff" Send="MinimapIcon none"/>
+        <On Terms="AbilMorph.*.Start; MorphTo TerrazineNode" Send="MinimapIcon Assets\Textures\ui_minimap_icon_terrazine.dds"/>
+    </CActorUnit>
+    <CActorSound id="TerrazineNode_Stand_Loop_AS" parent="SoundContinuous">
+        <On Terms="AbilMorph.*.Start; MorphTo TerrazineNode" Send="Create"/>
+        <On Terms="AbilMorph.*.Start; MorphTo TerrazineNodeOff" Send="Destroy"/>
+        <Sound value="TerrazineNode_Gas_Loops"/>
+    </CActorSound>
+
+
+
+</Catalog>

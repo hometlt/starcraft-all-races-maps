@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CActorUnit id="FuelCellPickupUnit" parent="GenericUnitBase" unitName="FuelCellPickupUnit">
+        <On Terms="Signal.*.LavaCreated" Send="AnimGroupApply Work"/>
+        <On Terms="Signal.*.LavaCreated" Send="AnimPlay BirthEX Birth"/>
+        <On Terms="Signal.*.LavaCreated" Send="SetWireframe 0 Assets\Textures\Wireframe-pickupxenoncrystal.dds"/>
+        <On Terms="AnimPlay; AnimName Birth" Send="AnimClear Birth"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Progress" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+        <UnitIcon value="Assets\Textures\Wireframe-xenoncrystal.dds"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-xenoncrystal.dds"/>
+        </GroupIcon>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-xenoncrystal.dds"/>
+        </Wireframe>
+    </CActorUnit>
+    <CActorSiteOpLocalOffset id="SOpFuelCellCarryOffset"/>
+    <CActorModel id="FuelCellCarryModel">
+        <Aliases value="_Snapshot"/>
+        <Inherits index="BaseModelScale" value="1"/>
+        <Inherits index="CastShadows" value="1"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <Inherits index="CreepEngulfment" value="1"/>
+        <Inherits index="Decal" value="1"/>
+        <Inherits index="ModelMaterials" value="1"/>
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <Inherits index="TeamColor" value="1"/>
+        <Inherits index="TimeScale" value="1"/>
+        <Inherits index="TintColor" value="1"/>
+        <Inherits index="Visibility" value="1"/>
+        <Inherits index="WarpGroup" value="1"/>
+        <On Terms="ActorCreation" Send="AnimBracketStart BSD {} Stand Death"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <On Terms="AnimBracketState.*.AfterClosing; !AnimBracketExitReason ModelSwap; AnimName BSD" Send="Destroy"/>
+        <On Terms="Behavior.FuelCellPickupUnit.On" Send="Create"/>
+        <On Terms="Behavior.FuelCellPickupUnit.Off" Send="Destroy"/>
+        <On Terms="AnimPlay; AnimName Birth" Send="AnimClear Birth"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachHardPoint SOpFuelCellCarryOffset"/>
+        <ModelFlags index="UseSyncSeed" value="1"/>
+    </CActorModel>
+    <CActorSound id="AC_FuelCell_Pkup" parent="SoundOneShot">
+        <On Terms="Behavior.FuelCellPickupUnit.On" Send="Create"/>
+    </CActorSound>
+    <CActorSound id="AC_FuelCell_Pkup_RockLayer" parent="SoundOneShot">
+        <On Terms="Behavior.FuelCellPickupUnit.On" Send="Create"/>
+    </CActorSound>
+    <CActorSound id="AC_FuelCell_Carry_Death" parent="SoundOneShot">
+        <On Terms="Behavior.FuelCellPickupUnit.Off" Send="Destroy"/>
+    </CActorSound>
+    <!--CActorModel id="FuelCellBaseModel">
+        <On Terms="ActorCreation" Send="AnimBracketStart BSD {} Stand"/>
+        <On Terms="ActorCreation" Send="RefClear ::Host"/>
+        <On Terms="ActorDestruction" Send="Print Destroyed"/>
+        <ModelFlags index="AllowHitTest" value="0"/>
+        <ModelFlags index="UseSyncSeed" value="1"/>
+        <Aliases value="_Snapshot"/>
+        <Host Subject="_Selectable"/>
+        <Inherits index="BaseModelScale" value="1"/>
+        <Inherits index="CastShadows" value="1"/>
+        <Inherits index="CloakEffect" value="1"/>
+        <Inherits index="CreepEngulfment" value="1"/>
+        <Inherits index="Decal" value="1"/>
+        <Inherits index="Opacity" value="1"/>
+        <Inherits index="Scale" value="1"/>
+        <Inherits index="TeamColor" value="1"/>
+        <Inherits index="TimeScale" value="1"/>
+        <Inherits index="WarpGroup" value="1"/>
+        <HostSiteOps Ops="SOpAttachOriginStationary SOpShadow"/>
+    </CActorModel-->
+    <CActorAction id="FuelCellWeaponAction" parent="GenericAttack" effectImpact="FuelCellTurninDummy" effectLaunch="FuelCellTurninLM">
+        <LaunchAssets Sound="AC_FuelCell_Payload_PowerUp"/>
+        <LaunchSiteOps Ops="SOpAttachHardPoint SOpFuelCellCarryOffset"/>
+        <Missile value="FuelCellWeapon"/>
+        <ImpactSiteOps Ops="SOpAttachCenter"/>
+        <ShieldFlashType value="None"/>
+    </CActorAction>
+    <CActorMissile id="FuelCellWeapon" unitName="FuelCellWeapon">
+        <Aliases value="_Unit"/>
+        <Aliases value="_Missile"/>
+        <PreHost value="_ActorAction"/>
+        <Model value="FuelCellCarryModel"/>
+        <On Terms="UnitBirth.FuelCellWeapon" Send="Create"/>
+        <On Terms="UnitBirth" Send="AnimBracketStart Lifetime {} Stand Death"/>
+        <On Terms="UnitDeath" Send="Destroy"/>
+        <On Terms="ActorOrphan" Send="Destroy"/>
+        <On Terms="MotionPhaseStart; MotionPhase 1" Send="HostSiteOpsSet ::Host {SOpFuelCellLaunchRotatorA SOpFuelCellLaunchRotatorB}"/>
+        <HostSiteOps Ops="SOpIvariiCrystalPickupRotator SOpIvariiCrystalPickupRotatorB"/>
+    </CActorMissile>
+    <CActorSound id="AC_FuelCell_Payload_Delivery_AS" parent="SoundOneShot">
+        <Sound value="AC_FuelCell_Payload_Delivery"/>
+        <On Terms="UnitBirth.FuelCellWeapon" Send="Create"/>
+    </CActorSound>
+    <CActorSound id="AC_FuelCell_Weapon_Death_AS" parent="SoundOneShot">
+        <Sound value="AC_FuelCell_Carry_Death"/>
+    </CActorSound>
+
+
+
+
+
+
+
+
+    <CActorUnit id="RedstoneSalamander" parent="GenericBurrowerStandard" unitName="RedstoneSalamander">
+        <Macros value="ZergBurrowStandardAnimMacro"/>
+        <Macros value="ZergSmallBurrowEffects"/>
+        <On Terms="Abil.RedstoneSalamanderTunnel.SourceCastStart" Send="AnimClear Spell"/>
+        <On Terms="Abil.RedstoneSalamanderTunnel.SourceCastStart" Send="AnimBracketStop Channel"/>
+        <On Terms="Abil.RedstoneSalamanderTunnel.SourceCastStart" Send="TimerKill FireballDelay"/>
+        <On Terms="Abil.RedstoneSalamanderTunnel.SourceCastStart" Target="RedstoneSalamanderFirebreathModelLaunch" Send="AnimBracketStop BSD"/>
+        <On Terms="Abil.RedstoneSalamanderTunnel.SourceCastStart" Send="AnimBracketStart Tunnel Burrow Stand,Burrow Unburrow ClosingFull,OpeningPlayForever"/>
+        <On Terms="Abil.RedstoneSalamanderTunnel.SourceCastStart" Send="Create RedstoneSalamanderBurrowDownEffects"/>
+        <On Terms="Abil.RedstoneSalamanderTunnel.SourceCastStart" Send="Create BurrowDownUltralisk"/>
+        <On Terms="Abil.RedstoneSalamanderTunnel.SourceCastStart" Target="RedstoneSalamanderBase" Send="Signal Burrowing"/>
+        <On Terms="AbilMorph.BurrowRedstoneSalamanderDown.Start" Target="RedstoneSalamanderBase" Send="Signal Burrowing"/>
+        <On Terms="AbilMorph.BurrowRedstoneSalamanderDown.Start" Send="AnimClear Spell"/>
+        <On Terms="AbilMorph.BurrowRedstoneSalamanderDown.Start" Send="AnimBracketStop Channel"/>
+        <On Terms="AbilMorph.BurrowRedstoneSalamanderDown.Start" Send="TimerKill FireballDelay"/>
+        <On Terms="AbilMorph.BurrowRedstoneSalamanderDown.Start" Target="RedstoneSalamanderFirebreathModelLaunch" Send="AnimBracketStop BSD"/>
+        <On Terms="AbilMorph.BurrowRedstoneSalamanderUp.Start" Send="Create RedstoneSalamanderBase"/>
+        <On Terms="Effect.RedstoneSalamanderTunnelCreateForcePersistent.Start; At Caster" Send="AnimBracketStop Tunnel"/>
+        <On Terms="Effect.RedstoneSalamanderTunnelCreateForcePersistent.Start; At Caster" Send="Create RedstoneSalamanderBurrowUpEffects"/>
+        <On Terms="Effect.RedstoneSalamanderTunnelCreateForcePersistent.Start; At Caster" Send="Create RedstoneSalamanderBase"/>
+        <On Terms="Effect.RedstoneSalamanderTunnelCreateForcePersistent.Start; At Caster" Send="Create BurrowUpLarge"/>
+        <On Terms="Effect.RedstoneSalamanderFireballCreatePersistent.Start; At Caster" Send="TimerSet 2.000000 FireballDelay"/>
+        <On Terms="TimerExpired; TimerName FireballDelay; !AnimPlaying Spell" Send="AnimPlay Spell Attack,01"/>
+        <On Terms="WeaponStart.RedstoneSalamanderFirebreath.AttackStart" Send="AnimBracketStart Channel Spell,Start Spell Spell,End"/>
+        <On Terms="WeaponStart.RedstoneSalamanderFirebreath.AttackStart" Send="Create RedstoneSalamanderFirebreathModelLaunch"/>
+        <On Terms="Effect.RedstoneSalamanderFirebreathCreateGoverningPersistent.Stop; At Caster" Target="RedstoneSalamanderFirebreathModelLaunch" Send="AnimBracketStop BSD"/>
+        <On Terms="Effect.RedstoneSalamanderFirebreathCreateGoverningPersistent.Stop; At Caster" Send="AnimBracketStop Channel"/>
+        <On Terms="UnitBirth.RedstoneSalamander" Send="Create RedstoneSalamanderBase"/>
+        <DeathActorModelLow value="UnitDeathModelRedstoneSalamander"/>
+        <DeathActorModel value="UnitDeathModelRedstoneSalamander"/>
+        <DeathArray index="Normal" ModelLink="RedstoneSalamanderDeath" SoundLink="RedstoneSalamander_DeathMove" VoiceLink="RedstoneSalamander_VoxSnarl"/>
+        <DeathArray index="UnderConstruction" ModelLink="ZergBuildingDeath" SoundLink="Zerg_ExplosionLarge"/>
+        <PortraitModel value="PrimalZergRedstoneSalamanderPortrait"/>
+        <BuildModel value="NydusRumble"/>
+        <PlacementActorModel value="ZergPlacementModel"/>
+        <PlaceholderActorModel value="ZergPlacementModel"/>
+        <PlacementSound value="Zerg_BuildingPlacement"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <BarWidth value="155"/>
+        <BarOffset value="225"/>
+        <NameOffset value="70"/>
+        <UnitIcon value="Assets\Textures\Wireframe-Zerg-Yagdra.dds"/>
+        <HeroIcon value="Assets\Textures\Wireframe-Zerg-Yagdra.dds"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\Wireframe-Zerg-Yagdra.dds"/>
+        </GroupIcon>
+        <Wireframe>
+            <Image value="Assets\Textures\Wireframe-Zerg-Yagdra.dds"/>
+        </Wireframe>
+        <SoundArray index="Birth" value=""/>
+        <SoundArray index="Ready" value="NydusWorm_Ready"/>
+        <SoundArray index="What" value="NydusWorm_What"/>
+        <SoundArray index="Yes" value="NydusWorm_What"/>
+        <SoundArray index="Construction" value="Zerg_BuildingMorphWhat"/>
+        <LifeArmorIcon value="Assets\Textures\btn-armor-zerg-building.dds"/>
+        <UnitKillRank Text="UnitKillRank/MoltenSal"/>
+        <Aliases value="_UnitHuge"/>
+    </CActorUnit>
+    <CActorModel id="UnitDeathModelRedstoneSalamander" parent="UnitDeathModel">
+        <ModelFlags index="UpdateVisibility" value="1"/>
+        <On Terms="AnimDone; AnimName Death" Send="TimerSet 10.000000 DeadCleanup"/>
+        <On Terms="AnimDone; AnimName Death" Send="TimerSet 12.000000 DeadCleanupB"/>
+        <On Terms="TimerExpired; TimerName DeadCleanup" Send="SetOpacity 0.000000 2.000000"/>
+        <On Terms="TimerExpired; TimerName DeadCleanupB" Send="Destroy"/>
+    </CActorModel>
+    <CActorModel id="RedstoneSalamanderBase" parent="ModelAddition">
+        <AutoScaleFactor value="0.500000"/>
+        <HostSiteOps Ops="SOpForwardNorth SOpShadow"/>
+        <On Terms="ActorCreation" Send="AnimPlay Unburrow Unburrow 0 0.000000 0.000000"/>
+        <On Terms="Signal.*.Burrowing" Send="RefClear ::Host"/>
+        <!--On Terms="Signal.*.Burrowing" Send="TimerSet 4,2 DelayDestroy"/-->
+        <On Terms="Signal.*.Burrowing" Send="AnimPlay Burrow Burrow 0 0.500000 0.500000 2.000000 AsDuration"/>
+        <!--On Terms="TimerExpired; TimerName DelayDestroy" Send="Destroy"/-->
+        <On Terms="AnimDone; AnimName Burrow" Send="Destroy"/>
+        <On Terms="UnitDeath" Send="Destroy"/>
+    </CActorModel>
+    <CActorModel id="RedstoneSalamanderBaseDeath">
+        <Scale value="1.200000"/>
+        <HostSiteOps Ops="SOpForwardNorth SOpShadow"/>
+        <Model value="RedstoneSalamanderBase"/>
+        <On Terms="UnitDeath.RedstoneSalamander" Send="Create"/>
+        <On Terms="ActorCreation" Send="AnimBracketStart BSD Birth Stand Death"/>
+        <On Terms="ActorCreation" Send="TimerSet 20.000000 DeadCleanup"/>
+        <On Terms="ActorCreation" Send="TimerSet 22.000000 DeadCleanupB"/>
+        <On Terms="TimerExpired; TimerName DeadCleanup" Send="SetOpacity 0.000000 2.000000"/>
+        <On Terms="TimerExpired; TimerName DeadCleanupB" Send="Destroy"/>
+    </CActorModel>
+    <CActorModel id="RedstoneSalamanderBurrowUpEffects">
+        <Model value="BurrowFXLarge"/>
+        <Host Subject="_Selectable"/>
+        <HostSiteOps Ops="SOpAttachOriginStationary"/>
+        <On Terms="ActorCreation" Send="SetScale 3.000000"/>
+        <On Terms="ActorCreation" Send="AnimPlay Unburrow Unburrow"/>
+        <On Terms="AnimDone; AnimName Unburrow" Send="Destroy"/>
+    </CActorModel>
+    <CActorModel id="RedstoneSalamanderBurrowDownEffects">
+        <Model value="BurrowFXLarge"/>
+        <On Terms="ActorCreation" Send="SetScale 3.000000"/>
+        <On Terms="ActorCreation" Send="AnimPlay Burrow Burrow"/>
+        <On Terms="AnimDone; AnimName Burrow" Send="Destroy"/>
+    </CActorModel>
+    <!-- RedstoneSalamander Fireball                                                           -->
+    <CActorRange id="RedstoneSalamanderFireballRange" parent="RangeAbil" abil="RedstoneSalamanderFireball"/>
+    <CActorMissile id="RedstoneSalamanderFireballMissile" parent="GenericAttackMissile" unitName="RedstoneSalamanderFireballWeapon"/>
+    <CActorAction id="RedstoneSalamanderFireball" parent="GenericAttack" effectImpact="RedstoneSalamanderFireballDamage" effectLaunch="RedstoneSalamanderFireballLaunchMissile">
+        <LaunchAttachQuery Methods="AMFilterWeapon01"/>
+        <LaunchAssets Sound="RedstoneSalamander_Attack"/>
+        <ImpactSiteOps Ops="SOpForwardLaunchGuide SOp2DRotation" HoldPosition="1"/>
+        <ImpactAttachQuery Methods="Origin"/>
+        <ImpactMap index="None" Sound="RedstoneSalamander_Fireball_Impact"/>
+        <ImpactMap index="Miss" Model="None"/>
+    </CActorAction>
+    <CActorModel id="RedstoneSalamanderFireballImpactPointModel" parent="ModelAnimationStyleContinuous">
+        <On Terms="Effect.RedstoneSalamanderFireballCreatePersistent.Start" Send="Create"/>
+        <On Terms="Effect.RedstoneSalamanderFireballCreatePersistent.Stop" Send="Destroy"/>
+        <On Terms="Effect.RedstoneSalamanderFireballHardCreatePersistent.Start" Send="Create"/>
+        <On Terms="Effect.RedstoneSalamanderFireballHardCreatePersistent.Stop" Send="Destroy"/>
+    </CActorModel>
+    <CActorSound id="RedstoneSalamanderFireballChargeSound" parent="SoundContinuous">
+        <Host Subject="BattlecruiserYamatoAttackChargeModel"/>
+        <Sound value="Battlecruiser_YamatoAttackChargeUp"/>
+        <On Terms="Effect.YgdraFireballCreatePersistent.Start; At Caster" Send="Create"/>
+        <On Terms="Effect.YgdraFireballCreatePersistent.Stop; At Caster" Send="Destroy"/>
+    </CActorSound>
+    <!-- RedstoneSalamander Firebreath                                                           -->
+    <CActorModel id="RedstoneSalamanderFirebreathImpactSplat" parent="ModelAnimationStyleOneShot">
+        <Host Subject="_Unit" Scope="Caster"/>
+        <HostSiteOps Ops="SOpAttachOrigin SOpShadow" HoldRotation="1"/>
+        <On Terms="Effect.RedstoneSalamanderFirebreathWaitPersistent.Start; PassChance 12.500000" Send="Create"/>
+        <On Terms="ActorCreation" Send="TimerSet 0.500000 FirebreathImpact"/>
+        <On Terms="TimerExpired; TimerName FirebreathImpact" Send="Destroy"/>
+    </CActorModel>
+    <CActorModel id="RedstoneSalamanderFirebreathModelLaunch" parent="ModelAddition">
+        <HostSiteOps Ops="SOpAttachWeapon01"/>
+        <Host Subject="_Unit"/>
+    </CActorModel>
+    <CActorModel id="RedstoneSalamanderFirebreathTargetModel" parent="ModelAnimationStyleOneShot">
+        <Model value="Invisible"/>
+        <HostSiteOps Ops="SOpForwardCasterPointInverted RedstoneSalamanderFirebreathVariance"/>
+        <On Terms="Effect.RedstoneSalamanderFirebreathWaitPersistent.Start" Send="Create"/>
+        <On Terms="ActorCreation; PassChance 25.000000" Send="Create RedstoneSalamanderFirebreathModelImpact"/>
+    </CActorModel>
+    <CActorModel id="RedstoneSalamanderFirebreathModelImpact" parent="ModelAnimationStyleOneShot">
+        <HostSiteOps Ops="SOpForwardCasterPointInverted"/>
+        <Host Subject="RedstoneSalamanderFirebreathTargetModel"/>
+    </CActorModel>
+    <CActorSiteOpRandomPointInCircle id="RedstoneSalamanderFirebreathVariance">
+        <Radius value="0.500000"/>
+        <Mean value="0.200000"/>
+    </CActorSiteOpRandomPointInCircle>
+    <CActorSound id="RedstoneSalamanderFirebreathStartSound" parent="SoundOneShot">
+        <Sound value="Yagdra_FireBreath_Start"/>
+        <On Terms="WeaponStart.RedstoneSalamanderFirebreath.AttackStart" Send="Create"/>
+    </CActorSound>
+    <CActorSound id="RedstoneSalamanderFirebreathLoopSound" parent="SoundContinuous">
+        <Sound value="Yagdra_FireBreath_Loop"/>
+        <On Terms="Effect.RedstoneSalamanderFirebreathCreateGoverningPersistent.Start; At Caster" Send="Create"/>
+        <On Terms="Effect.RedstoneSalamanderFirebreathCreateGoverningPersistent.Stop; At Caster" Send="Destroy"/>
+    </CActorSound>
+    <CActorSound id="RedstoneSalamanderFirebreathEndSound" parent="SoundOneShot">
+        <Sound value="Yagdra_FireBreath_End"/>
+        <On Terms="Effect.RedstoneSalamanderFirebreathCreateGoverningPersistent.Stop; At Caster" Send="Destroy"/>
+    </CActorSound>
+
+
+    <CActorUnit id="EnvironmentalStabilizer" parent="TerranBuilding" unitName="EnvironmentalStabilizer">
+        <Macros value="RemoveFlyerHelperMacro"/>
+        <On Terms="ActorCreation" Send="Create GeneratorCorePowerLoop"/>
+        <On Terms="Signal.*.On" Send="AnimGroupApply Work Work,Start Work,End"/>
+        <!--<On Terms="Signal.*.On" Send="Create GeneratorCorePowerStart"/>
+        <On Terms="Signal.*.On" Send="Create GeneratorCorePowerLoop"/>
+        <On Terms="Signal.*.Off" Target="GeneratorCorePowerStart" Send="Destroy"/>
+        <On Terms="Signal.*.Off" Target="GeneratorCorePowerLoop" Send="Destroy"/>
+        <On Terms="Signal.*.Off" Send="Create GeneratorCorePowerEnd_PwrDn"/> -->
+        <On Terms="Signal.*.Off" Send="AnimGroupRemove Work"/>
+        <BarOffset value="115"/>
+        <BarWidth value="138"/>
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-terran-platformstabilizer.dds"/>
+        </GroupIcon>
+        <LifeArmorIcon value="Assets\Textures\btn-upgrade-terran-buildingarmor.dds"/>
+        <NameOffset value="120"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-terran-platformstabilizer.dds"/>
+        </Wireframe>
+    </CActorUnit>
+</Catalog>

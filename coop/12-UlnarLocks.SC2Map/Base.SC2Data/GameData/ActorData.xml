@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Catalog>
+    <CActorUnit id="CelestialLock" parent="GenericUnitStandardNoAutoSoundLinks" unitName="CelestialLock">
+        <Aliases value="_CreepEngulfable"/>
+        <On Terms="ActorCreation" Send="AnimBracketStart Work {} Stand,Work Stand,Work,End"/>
+        <On Terms="Signal.*.StateBad" Send="AnimBracketStop Morph"/>
+        <On Terms="Signal.*.StateBad" Send="AnimBracketStop Work"/>
+        <On Terms="Signal.*.StateGood" Send="AnimBracketStop Morph"/>
+        <On Terms="Signal.*.StateGood" Send="AnimBracketStart Work Stand,Work,Start Stand,Work Stand,Work,End"/>
+        <On Terms="Signal.*.StateBad" Send="Create CelestialLock_OfflineLoopSound"/>
+        <On Terms="Signal.*.StateBad" Target="CelestialLock_ActiveLoopSound" Send="Destroy"/>
+        <On Terms="Signal.*.StateGood" Send="Create CelestialLock_ActiveLoopSound"/>
+        <On Terms="AnimDone; AnimName Birth" Send="Create CelestialLock_ActiveLoopSound"/>
+        <On Terms="Signal.*.StateGood" Target="CelestialLock_OfflineLoopSound" Send="Destroy"/>
+        <Model value="Ulnar01Mechanism"/>
+        <ModelFlags index="OutlineOccluder" value="1"/>
+        <CreepHeightClass value="Medium"/>
+        <CreepRateGrow value="Grow"/>
+        <CreepRateShrink value="Shrink"/>
+        <BuildModel value="Ulnar01Mechanism"/>
+        <DeathArray index="Normal" ModelLink="Ulnar01Mechanism"/>
+        <PlacementModel value="Ulnar01Mechanism"/>
+        <CustomUnitStatusFrame value="LotV_UnitStatus/LockStatusProgressFrameTemplate"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Life" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Progress" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+        <Wireframe>
+            <Image value="Assets\Textures\wireframe-protoss-celestiallock.dds"/>
+        </Wireframe>
+        <GroupIcon>
+            <Image value="Assets\Textures\wireframe-protoss-celestiallock.dds"/>
+        </GroupIcon>
+    </CActorUnit>
+    <CActorSound id="CelestialLock_ActiveLoopSound" parent="SoundContinuous">
+        <Host Subject="_Unit"/>
+        <Sound value="PUlnar01_CelestialLock_GreenLoop02"/>
+    </CActorSound>
+    <CActorSound id="CelestialLock_OfflineLoopSound" parent="SoundContinuous">
+        <Host Subject="_Unit"/>
+        <Sound value="PUlnar01_CelestialLock_SparksLoop"/>
+        <Layers Sound="PUlnar01_CelestialLock_RedLoop03">
+            <Chance value="100"/>
+            <Pitch value="0.000000,0.000000"/>
+            <Volume value="0.000000,0.000000"/>
+        </Layers>
+    </CActorSound>
+    <CActorModel id="CelestialLockSelectionAttachment" parent="ModelAddition">
+        <On Terms="ActorCreation" Send="SetOpacity"/>
+        <HostSiteOps Ops="SOpAttachOrigin"/>
+    </CActorModel>
+    <CActorModel id="CelestialLockTerrainObjectAttachment" parent="ModelAddition">
+        <HostSiteOps Ops="SOpAttachOrigin"/>
+    </CActorModel>
+    <CActorUnit id="CelestialLockDisabler" parent="GenericUnitStandardNoAutoSoundLinks" unitName="CelestialLockDisabler">
+        <Macros value="RemoveFlyerHelperMacro"/>
+        <Model value="Ulnar01MechanismDisabler"/>
+        <BuildModel value="Ulnar01MechanismDisabler"/>
+        <DeathArray index="Normal" ModelLink="Ulnar01MechanismDisabler"/>
+        <PlacementModel value="Ulnar01MechanismDisabler"/>
+        <StatusBarFlags index="Shields" value="0"/>
+        <StatusBarFlags index="Energy" value="0"/>
+        <StatusBarFlags index="Cargo" value="0"/>
+        <StatusBarFlags index="Progress" value="0"/>
+        <StatusBarFlags index="Duration" value="0"/>
+        <UnitFlags index="ShowBlobShadow" value="0"/>
+    </CActorUnit>
+    <CActorDoodad id="CelestialLockActivationPad">
+        <Aliases value="_CreepEngulfable"/>
+        <Flags index="SuppressSaveLoad" value="0"/>
+        <EditorCategories value="DoodadType:Environment"/>
+        <On Terms="ActorCreation" Send="SetTintColor 0,128,64"/>
+        <On Terms="Signal.*.PadOn" Send="AnimBracketStart Work Stand,Work,Start Stand,Work Stand,Work,End ClosingFull,OpeningPlayForever"/>
+        <On Terms="Signal.*.PadOff" Send="AnimBracketStop Work"/>
+        <Model value="Ulnar01MechanismActivationPad"/>
+        <CreepHeightClass value="Default"/>
+        <Footprint value="Footprint2x2PlacementOnly"/>
+        <RandomScaleRange value="1.000000,1.000000"/>
+    </CActorDoodad>
+</Catalog>
