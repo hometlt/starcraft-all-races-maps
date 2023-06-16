@@ -6,8 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/LibertyLib"
-include "TriggerLibs/SwarmLib"
+include "LibARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -15,8 +14,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libLbty_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -3606,7 +3604,7 @@ bool gt_StartBonusObjective_Func (bool testConds, bool runActions) {
         lv_bonusObjective = UnitGroupUnitFromEnd(auto4E4E1A41_g, auto4E4E1A41_u);
         if (lv_bonusObjective == null) { break; }
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(lv_bonusObjective), StringExternal("Param/Value/F6BE60D1"));
-        libHots_gf_StorePingForUnit(lv_bonusObjective, 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(lv_bonusObjective, 1, PingLastCreated());
     }
     return true;
 }
@@ -3671,7 +3669,7 @@ bool gt_BonusObjectiveDies_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     gv_objectiveDestroyZenithStonesKilled += 1;
     TriggerExecute(gt_ObjectiveDestroyZenithStonesUpdate, true, false);
     if ((gv_objectiveDestroyZenithStonesKilled >= 3)) {
@@ -3956,13 +3954,13 @@ bool gt_VoidThrasherMissiles_Func (bool testConds, bool runActions) {
 
     lv_l_MissileUnit = EventUnit();
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "KaiserWormScourgeMissile", UnitGetPosition(lv_l_MissileUnit), ColorWithAlpha(100.00, 100.00, 100.00, 0.00), 0.0, UnitGetFacing(lv_l_MissileUnit));
-    libHots_gf_StorePingForUnit(lv_l_MissileUnit, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lv_l_MissileUnit, 1, PingLastCreated());
     PingSetUnit(PingLastCreated(), lv_l_MissileUnit);
     PingSetScale(PingLastCreated(), 0.075);
     while (!((UnitIsAlive(EventUnit()) == false))) {
         Wait(0.0625, c_timeGame);
     }
-    PingDestroy(libHots_gf_PingStoredForUnit(lv_l_MissileUnit, 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(lv_l_MissileUnit, 1));
     return true;
 }
 
@@ -4150,10 +4148,10 @@ bool gt_Init07Environment_Func (bool testConds, bool runActions) {
         VisRevealerCreate(auto8D1A4E90_var, RegionFromId(39));
         gv_revealers[auto8D1A4E90_var][ge_RevealRegions_Revealer_TopRight] = VisRevealerLastCreated();
         VisRevealerEnable(VisRevealerLastCreated(), false);
-        libLbty_gf_AutoRevealRegion(RegionFromId(18), RegionFromId(19), auto8D1A4E90_var);
-        libLbty_gf_AutoRevealRegion(RegionFromId(16), RegionFromId(17), auto8D1A4E90_var);
-        libLbty_gf_AutoRevealRegion(RegionFromId(22), RegionFromId(23), auto8D1A4E90_var);
-        libLbty_gf_AutoRevealRegion(RegionFromId(20), RegionFromId(21), auto8D1A4E90_var);
+        libARRA_gf_AutoRevealRegion(RegionFromId(18), RegionFromId(19), auto8D1A4E90_var);
+        libARRA_gf_AutoRevealRegion(RegionFromId(16), RegionFromId(17), auto8D1A4E90_var);
+        libARRA_gf_AutoRevealRegion(RegionFromId(22), RegionFromId(23), auto8D1A4E90_var);
+        libARRA_gf_AutoRevealRegion(RegionFromId(20), RegionFromId(21), auto8D1A4E90_var);
     }
     gf_ExporeUnexploreAreaforPlayerGroup(libCOMI_gf_HumanPlayers(), true, RegionFromId(11), false);
     libNtve_gf_ShowHideDoodadsInRegion(false, RegionEntireMap(), "LightningBolt");
