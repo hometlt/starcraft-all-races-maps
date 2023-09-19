@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 include "aiD3A20346"
 include "ai3DF7018A"
@@ -16,7 +16,7 @@ include "ai3DF7018A"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -3035,7 +3035,7 @@ bool gt_SlivanBossFightController_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_SlivanPathingDummy, true);
     TriggerExecute(gt_SlivanBossCreeperMovement, true, false);
     TimerStart(gv_slivanTimer, c_timerDurationInfinite, false, c_timeAI);
-    Wait(libHots_gf_DifficultyValueFixed2(1.0, 1.0, 0.0), c_timeAI);
+    Wait(libARRA_gf_DifficultyValueFixed2(1.0, 1.0, 0.0), c_timeAI);
     while (true) {
         UnitGroupLoopBegin(gv_slivanBossCreepers);
         for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
@@ -3043,13 +3043,13 @@ bool gt_SlivanBossFightController_Func (bool testConds, bool runActions) {
             gf_AddUnittoPrimalZergAttackers(UnitGroupLoopCurrent(), UnitGetPosition(UnitGroupLoopCurrent()));
         }
         UnitGroupLoopEnd();
-        Wait(libHots_gf_DifficultyValueFixed2(6.0, 6.0, 5.0), c_timeAI);
+        Wait(libARRA_gf_DifficultyValueFixed2(6.0, 6.0, 5.0), c_timeAI);
         UnitSetCustomValue(gv_slivanVariable, 0, 2.0);
         UnitIssueOrder(gv_slivanVariable, OrderTargetingPoint(AbilityCommand("SlivanPuke", 0), UnitGroupCenterOfGroup(gv_playerUnits)), c_orderQueueReplace);
         Wait(3.0, c_timeAI);
         UnitSetCustomValue(gv_slivanVariable, 0, 0.0);
         UnitIssueOrder(gv_slivanVariable, OrderTargetingPoint(AbilityCommand("move", 0), RegionRandomPoint(RegionFromId(41))), c_orderQueueReplace);
-        Wait(libHots_gf_DifficultyValueFixed2(6.0, 6.0, 4.0), c_timeAI);
+        Wait(libARRA_gf_DifficultyValueFixed2(6.0, 6.0, 4.0), c_timeAI);
         TriggerExecute(gt_SlivanBossCreeperSpawning, true, false);
         Wait(5.0, c_timeAI);
         UnitSetCustomValue(gv_slivanVariable, 0, 2.0);
@@ -3057,7 +3057,7 @@ bool gt_SlivanBossFightController_Func (bool testConds, bool runActions) {
         Wait(3.0, c_timeAI);
         UnitSetCustomValue(gv_slivanVariable, 0, 0.0);
         UnitIssueOrder(gv_slivanVariable, OrderTargetingPoint(AbilityCommand("move", 0), RegionRandomPoint(RegionFromId(41))), c_orderQueueReplace);
-        Wait(libHots_gf_DifficultyValueFixed2(6.0, 6.0, 4.0), c_timeAI);
+        Wait(libARRA_gf_DifficultyValueFixed2(6.0, 6.0, 4.0), c_timeAI);
     }
     return true;
 }

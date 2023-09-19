@@ -7,7 +7,7 @@
 //==================================================================================================
 include "TriggerLibs/NativeLib"
 include "TriggerLibs/LibertyLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOOC"
 include "LibCOMI"
 include "LibCOUI"
@@ -21,8 +21,7 @@ include "Lib860A1A1F"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libLbty_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOOC_InitLib();
     libCOMI_InitLib();
     libCOUI_InitLib();
@@ -2260,7 +2259,7 @@ bool auto_gf_RunSlaynElementalAI_TriggerFunc (bool testConds, bool runActions) {
         UnitBehaviorSetDurationRemaining(lp_cHOSEN_UNIT, "PublicTimedLife", TimerGetRemaining(lv_bonusObjectiveDuration));
         Wait(lv_c_AI_THINK_TIME, c_timeAI);
     }
-    PingDestroy(libHots_gf_PingStoredForUnit(lp_cHOSEN_UNIT, 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(lp_cHOSEN_UNIT, 1));
     libCOMI_gf_SetMissionObjectiveCustomText(lv_bonusObjective, StringToText(""));
     if ((TimerGetRemaining(lv_bonusObjectiveDuration) > 0.0)) {
         gf_SlaynElementalKilled(lp_cHOSEN_UNIT);
@@ -5796,23 +5795,23 @@ bool gt__3P_ResourcesfromShardsDuplicateCharge_Func (bool testConds, bool runAct
             auto32F4293B_var = UnitGroupUnitFromEnd(auto32F4293B_g, auto32F4293B_u);
             if (auto32F4293B_var == null) { break; }
             lv_vBehCount = UnitBehaviorCount(auto32F4293B_var, "ExtractVoidEnergyBEH");
-            if ((TextTagVisible(libHots_gf_TextTagForUnit(auto32F4293B_var, 1), gv_pLAYER_11_ANTAGONIST) == false)) {
+            if ((TextTagVisible(libARRA_gf_TextTagForUnit(auto32F4293B_var, 1), gv_pLAYER_11_ANTAGONIST) == false)) {
                 TextExpressionSetToken("Param/Expression/2D3A8CE5", "A", IntToText(0));
                 TextTagCreate(TextExpressionAssemble("Param/Expression/2D3A8CE5"), 20, UnitGetPosition(auto32F4293B_var), 2.5, true, false, PlayerGroupSingle(gv_pLAYER_11_ANTAGONIST));
                 TextTagSetColor(TextTagLastCreated(), c_textTagColorText, ColorWithAlpha(100.00, 100.00, 100.00, 74.90));
                 TextTagShow(TextTagLastCreated(), gv__3P_AntagonistPG, true);
-                libHots_gf_StoreTextTagForUnit(auto32F4293B_var, 1, TextTagLastCreated());
+                libARRA_gf_StoreTextTagForUnit(auto32F4293B_var, 1, TextTagLastCreated());
             }
             else {
                 TextExpressionSetToken("Param/Expression/062ABBBA", "A", IntToText(lv_vBehCount));
-                TextTagSetText(libHots_gf_TextTagForUnit(auto32F4293B_var, 1), TextExpressionAssemble("Param/Expression/062ABBBA"));
+                TextTagSetText(libARRA_gf_TextTagForUnit(auto32F4293B_var, 1), TextExpressionAssemble("Param/Expression/062ABBBA"));
             }
             if ((lv_vBehCount >= 1)) {
                 PlayerModifyPropertyInt(gv_pLAYER_11_ANTAGONIST, c_playerPropCustom, c_playerPropOperAdd, (lv_vBehCount * lv_vReservoirRate));
                 lv_vIncome += (lv_vBehCount * lv_vReservoirRate);
                 if (((UnitGetPropertyFixed(auto32F4293B_var, c_unitPropResources, c_unitPropCurrent) - (lv_vBehCount * lv_vReservoirRate)) <= 0.0)) {
                     UnitGroupIssueOrder(UnitGroup("VoidShardFragment", c_playerAny, RegionCircle(UnitGetPosition(auto32F4293B_var), 15.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), Order(AbilityCommand("stop", 0)), c_orderQueueReplace);
-                    TextTagDestroy(libHots_gf_TextTagForUnit(auto32F4293B_var, 1));
+                    TextTagDestroy(libARRA_gf_TextTagForUnit(auto32F4293B_var, 1));
                     UnitKill(auto32F4293B_var);
                 }
                 else {
@@ -9104,8 +9103,8 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     gf_RunTriggeratMissionTime((0.3 * 60.0), gt__3P_ObjectiveKillJinaraCreate);
     UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/CF72EB02"), null, PointFromId(1559));
     UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/FDD624A4"), null, PointFromId(370));
-    libLbty_gf_OrderWorkerstoGatherNearbyResources(RegionEntireMap(), gv_pLAYER_01_USER);
-    libLbty_gf_OrderWorkerstoGatherNearbyResources(RegionEntireMap(), gv_pLAYER_02_USER);
+    libARRA_gf_OrderWorkerstoGatherNearbyResources(RegionEntireMap(), gv_pLAYER_01_USER);
+    libARRA_gf_OrderWorkerstoGatherNearbyResources(RegionEntireMap(), gv_pLAYER_02_USER);
     TriggerExecute(gt_SetEffortValues, true, false);
     TriggerExecute(gt_RunBonusObjective, true, false);
     Wait(7.0, c_timeReal);
@@ -10204,7 +10203,7 @@ bool gt_SlaynElemental01Create_Func (bool testConds, bool runActions) {
     TriggerQueueEnter();
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(gv_slaynElemental01), StringExternal("Param/Value/C1AED07B"));
     PingSetUnit(PingLastCreated(), gv_slaynElemental01);
-    libHots_gf_StorePingForUnit(gv_slaynElemental01, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(gv_slaynElemental01, 1, PingLastCreated());
     TriggerExecute(gt_ObjectiveKillSlaynElementalsCreate, true, false);
     Wait(2.0, c_timeGame);
     libCOOC_gf_SetAllSoundChannelVolumesCampaign(libCOOC_ge_VolumeChannelModeCampaign_Speech);
@@ -10248,7 +10247,7 @@ bool gt_SlaynElemental02aCreate_Func (bool testConds, bool runActions) {
     TriggerQueueEnter();
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(gv_slaynElemental02a), StringExternal("Param/Value/12974173"));
     PingSetUnit(PingLastCreated(), gv_slaynElemental02a);
-    libHots_gf_StorePingForUnit(gv_slaynElemental02a, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(gv_slaynElemental02a, 1, PingLastCreated());
     TriggerExecute(gt_ObjectiveKillSlaynElementalsCreate02, true, false);
     Wait(2.0, c_timeGame);
     libCOOC_gf_SetAllSoundChannelVolumesCampaign(libCOOC_ge_VolumeChannelModeCampaign_Speech);
@@ -10292,7 +10291,7 @@ bool gt_SlaynElemental02bCreate_Func (bool testConds, bool runActions) {
     TriggerQueueEnter();
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(gv_slaynElemental02b), StringExternal("Param/Value/EF069200"));
     PingSetUnit(PingLastCreated(), gv_slaynElemental02b);
-    libHots_gf_StorePingForUnit(gv_slaynElemental02b, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(gv_slaynElemental02b, 1, PingLastCreated());
     TriggerExecute(gt_ObjectiveKillSlaynElementalsCreate02, true, false);
     Wait(2.0, c_timeGame);
     libCOOC_gf_SetAllSoundChannelVolumesCampaign(libCOOC_ge_VolumeChannelModeCampaign_Speech);

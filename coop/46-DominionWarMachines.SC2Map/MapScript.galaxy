@@ -831,14 +831,14 @@ void aiE127FAE1_start (int p) {
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 // Library Initialization
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 //--------------------------------------------------------------------------------------------------
@@ -2979,7 +2979,7 @@ bool gt_WarpDevicePhase1Ping_Func (bool testConds, bool runActions) {
     }
     SoundPlayForPlayer(SoundLink("UI_MiniMapPing", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(171901604), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(403307680), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(403307680), 1, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/6571B510"));
     Wait(3.0, c_timeGame);
     SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
@@ -3001,9 +3001,9 @@ bool gt_WarpDevicePhase1Setup_Func (bool testConds, bool runActions) {
         return true;
     }
     TriggerExecute(gt_UIMinimapAlert, true, false);
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(403307680), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(403307680), 1));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(171901604), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(403307680), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(403307680), 1, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/6EDDB3EF"));
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(403307680), false);
     TimerStart(gv_timer_WarpDevice_1, gv_countdown_Warp_Device, false, c_timeGame);
@@ -3040,7 +3040,7 @@ bool gt_WarpDevice1Destroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/F13FA8C4") + TextWithColor(StringExternal("Param/Value/22A508A6"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/05AC037C"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/A5D52D74"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(403307680), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(403307680), 1));
     TimerPause(gv_timer_WarpDevice_1, true);
     TimerPause(gv_timer_Window_Countdown, true);
     Wait(2.0, c_timeGame);
@@ -3074,7 +3074,7 @@ bool gt_WarpDevice1Activated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/DCC0AD66") + TextWithColor(StringExternal("Param/Value/79548206"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/3445C877"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/BE68C0CB"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/47D0F5FD") + TextWithColor(StringExternal("Param/Value/DEA48F3D"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/4536D3D0"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/2CD12331"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(403307680), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(403307680), 1));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice1BulwarkCompanyWarpOut, true, false);
@@ -3233,10 +3233,10 @@ bool gt_WarpDevicePhase2Ping_Func (bool testConds, bool runActions) {
     }
     SoundPlayForPlayer(SoundLink("UI_MiniMapPing", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(834789013), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(587186640), 2, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(587186640), 2, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/4CD8D7D0"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(733671905), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(1606811285), 3, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1606811285), 3, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/0292F395"));
     Wait(3.0, c_timeGame);
     SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
@@ -3264,13 +3264,13 @@ bool gt_WarpDevicePhase2Setup_Func (bool testConds, bool runActions) {
     }
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_UIMinimapAlert, true, false);
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(587186640), 2));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(587186640), 2));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(834789013), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(587186640), 2, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(587186640), 2, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/7E456232"));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1606811285), 3));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1606811285), 3));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(733671905), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(1606811285), 3, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1606811285), 3, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/DE3528A6"));
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(587186640), false);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(1606811285), false);
@@ -3313,7 +3313,7 @@ bool gt_WarpDevice2ADestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/01A843C7") + TextWithColor(StringExternal("Param/Value/DBF8AFA7"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/19DB75DB"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/88B82E59"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(587186640), 2));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(587186640), 2));
     TimerPause(gv_timer_WarpDevice_2A, true);
     TimerPause(gv_timer_WarpDevices_Phase2_AB, true);
     if ((UnitIsAlive(UnitFromId(587186640)) == false) && (UnitIsAlive(UnitFromId(1606811285)) == false)) {
@@ -3357,7 +3357,7 @@ bool gt_WarpDevice2BDestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/06F4B29B") + TextWithColor(StringExternal("Param/Value/0B5E0183"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/0EF5F4D0"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/EA1E3E2B"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1606811285), 3));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1606811285), 3));
     TimerPause(gv_timer_WarpDevice_2B, true);
     TimerPause(gv_timer_WarpDevices_Phase2_AB, true);
     if ((UnitIsAlive(UnitFromId(587186640)) == false) && (UnitIsAlive(UnitFromId(1606811285)) == false)) {
@@ -3418,7 +3418,7 @@ bool gt_WarpDevice2AActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/4CC6873A") + TextWithColor(StringExternal("Param/Value/FBEA6F66"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/72F98B00"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/1E42412C"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/ED5FC2AD") + TextWithColor(StringExternal("Param/Value/80581678"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/B09056AF"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/9DF27339"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(587186640), 2));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(587186640), 2));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice2ASkyFuryWarpOut, true, false);
@@ -3450,7 +3450,7 @@ bool gt_WarpDevice2BActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/F08F17C4") + TextWithColor(StringExternal("Param/Value/7542902F"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/7F2351FC"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/86E361B9"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/BACD7C58") + TextWithColor(StringExternal("Param/Value/94136C0B"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/34D03E5D"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/DF9BB72F"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1606811285), 3));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1606811285), 3));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice2BNightWolfWarpOut, true, false);
@@ -3704,13 +3704,13 @@ bool gt_WarpDevicePhase3Ping_Func (bool testConds, bool runActions) {
     }
     SoundPlayForPlayer(SoundLink("UI_MiniMapPing", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(1152277430), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(2097025030), 4, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(2097025030), 4, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/F5F58CD1"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(1373810736), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(1399340470), 5, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1399340470), 5, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/D3AEE17E"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(954458307), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(1726057299), 6, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1726057299), 6, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/394BC979"));
     Wait(3.0, c_timeGame);
     SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
@@ -3738,17 +3738,17 @@ bool gt_WarpDevicePhase3Setup_Func (bool testConds, bool runActions) {
     }
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_UIMinimapAlert, true, false);
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2097025030), 4));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2097025030), 4));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1152277430), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(2097025030), 4, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(2097025030), 4, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/F6A6A521"));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1399340470), 5));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1399340470), 5));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1373810736), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(1399340470), 5, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1399340470), 5, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/078AD0BE"));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1726057299), 6));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1726057299), 6));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(954458307), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(1726057299), 6, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1726057299), 6, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/FDDA8C33"));
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(2097025030), false);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(1399340470), false);
@@ -3801,7 +3801,7 @@ bool gt_WarpDevice3ADestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/C0342E3C") + TextWithColor(StringExternal("Param/Value/AAE5AC1A"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/BCCA867F"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/3DC4EC75"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2097025030), 4));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2097025030), 4));
     TimerPause(gv_timer_WarpDevice_3A, true);
     TimerPause(gv_timer_WarpDevices_Phase3_ABC, true);
     TimerPause(gv_timer_WarpDevices_Phase3_AB, true);
@@ -3867,7 +3867,7 @@ bool gt_WarpDevice3BDestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/3077D900") + TextWithColor(StringExternal("Param/Value/849ED0F9"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/6B537FDF"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/EB9D3681"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1399340470), 5));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1399340470), 5));
     TimerPause(gv_timer_WarpDevice_3B, true);
     TimerPause(gv_timer_WarpDevices_Phase3_ABC, true);
     TimerPause(gv_timer_WarpDevices_Phase3_AB, true);
@@ -3933,7 +3933,7 @@ bool gt_WarpDevice3CDestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/305F8072") + TextWithColor(StringExternal("Param/Value/DA81419E"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/66240CF5"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/4D615824"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1726057299), 6));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1726057299), 6));
     TimerPause(gv_timer_WarpDevice_3C, true);
     TimerPause(gv_timer_WarpDevices_Phase3_ABC, true);
     TimerPause(gv_timer_WarpDevices_Phase3_AC, true);
@@ -4016,7 +4016,7 @@ bool gt_WarpDevice3AActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/0191C45B") + TextWithColor(StringExternal("Param/Value/004612CE"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/9A2711C2"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/AB0D5EFB"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/68BA3EE1") + TextWithColor(StringExternal("Param/Value/5F72EC90"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/0EE4D53B"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/612AC2B6"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2097025030), 4));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2097025030), 4));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice3AOutbackHunterWarpOut, true, false);
@@ -4050,7 +4050,7 @@ bool gt_WarpDevice3BActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/281ED812") + TextWithColor(StringExternal("Param/Value/576AA31B"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/597A42DD"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/1E7FCDDD"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/CFE6B27E") + TextWithColor(StringExternal("Param/Value/820E9E03"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/C339228E"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/A0111A43"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1399340470), 5));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1399340470), 5));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice3BRedAdderWarpOut, true, false);
@@ -4084,7 +4084,7 @@ bool gt_WarpDevice3CActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/F28A560F") + TextWithColor(StringExternal("Param/Value/2BB7BA87"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/B2A5C21D"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/5BE228D1"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/9662CB21") + TextWithColor(StringExternal("Param/Value/DA1068B5"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/9230905B"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/99276854"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1726057299), 6));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1726057299), 6));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice3CShockDivisionWarpOut, true, false);
@@ -4445,16 +4445,16 @@ bool gt_WarpDevicePhase4Ping_Func (bool testConds, bool runActions) {
     }
     SoundPlayForPlayer(SoundLink("UI_MiniMapPing", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(34196900), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(259458214), 7, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(259458214), 7, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/6FC30F0A"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(2008203070), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(927429514), 8, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(927429514), 8, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/51F5BC94"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(1398512871), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(2034365462), 9, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(2034365462), 9, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/669E5CBC"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(388182422), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(2057077348), 10, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(2057077348), 10, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/D49DEC7D"));
     Wait(3.0, c_timeGame);
     SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
@@ -4482,21 +4482,21 @@ bool gt_WarpDevicePhase4Setup_Func (bool testConds, bool runActions) {
     }
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_UIMinimapAlert, true, false);
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(259458214), 7));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(259458214), 7));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(34196900), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(259458214), 7, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(259458214), 7, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/1AF4A91C"));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(927429514), 8));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(927429514), 8));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(2008203070), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(927429514), 8, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(927429514), 8, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/AD6C4805"));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2034365462), 9));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2034365462), 9));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1398512871), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(2034365462), 9, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(2034365462), 9, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/74053C4F"));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2057077348), 10));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2057077348), 10));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(388182422), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(2057077348), 10, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(2057077348), 10, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/A958F8ED"));
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(259458214), false);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(927429514), false);
@@ -4561,7 +4561,7 @@ bool gt_WarpDevice4ADestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/CAC65BCB") + TextWithColor(StringExternal("Param/Value/15A397B7"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/DB23ED85"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/06C1AF06"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(259458214), 7));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(259458214), 7));
     TimerPause(gv_timer_WarpDevice_4A, true);
     TimerPause(gv_timer_WarpDevices_Phase4_ABCD, true);
     TimerPause(gv_timer_WarpDevices_Phase4_ABC, true);
@@ -4663,7 +4663,7 @@ bool gt_WarpDevice4BDestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/E0388DEA") + TextWithColor(StringExternal("Param/Value/4D34C77A"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/94885C80"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/B9191A5F"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(927429514), 8));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(927429514), 8));
     TimerPause(gv_timer_WarpDevice_4B, true);
     TimerPause(gv_timer_WarpDevices_Phase4_ABCD, true);
     TimerPause(gv_timer_WarpDevices_Phase4_ABC, true);
@@ -4765,7 +4765,7 @@ bool gt_WarpDevice4CDestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/88B5A5FE") + TextWithColor(StringExternal("Param/Value/A7D07A5C"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/BBDB9328"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/1789C0D0"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2034365462), 9));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2034365462), 9));
     TimerPause(gv_timer_WarpDevice_4C, true);
     TimerPause(gv_timer_WarpDevices_Phase4_ABCD, true);
     TimerPause(gv_timer_WarpDevices_Phase4_ABC, true);
@@ -4867,7 +4867,7 @@ bool gt_WarpDevice4DDestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/33FFF1C6") + TextWithColor(StringExternal("Param/Value/1E18B95C"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/2A3928FD"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/9DC8A750"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2057077348), 10));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2057077348), 10));
     TimerPause(gv_timer_WarpDevice_4D, true);
     TimerPause(gv_timer_WarpDevices_Phase4_ABCD, true);
     TimerPause(gv_timer_WarpDevices_Phase4_ABD, true);
@@ -4986,7 +4986,7 @@ bool gt_WarpDevice4AActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/FF1539DC") + TextWithColor(StringExternal("Param/Value/72F49723"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/28B50CD5"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/98341A65"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/9CBAD09D") + TextWithColor(StringExternal("Param/Value/663B1FB0"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/096F7DD0"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/D5E3AAA6"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(259458214), 7));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(259458214), 7));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice4AHurricaneRegimentG1WarpOut, true, false);
@@ -5020,7 +5020,7 @@ bool gt_WarpDevice4BActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/4779787D") + TextWithColor(StringExternal("Param/Value/26D7E744"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/98C97490"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/2F0CA5D5"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/662EAD57") + TextWithColor(StringExternal("Param/Value/DE200969"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/03CAF7AB"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/DE0D846E"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(927429514), 8));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(927429514), 8));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice4BHurricaneRegimentG2WarpOut, true, false);
@@ -5054,7 +5054,7 @@ bool gt_WarpDevice4CActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/7F9B795E") + TextWithColor(StringExternal("Param/Value/2D769D09"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/0472332B"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/0FFE1686"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/604894BB") + TextWithColor(StringExternal("Param/Value/45110F70"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/9F0AF894"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/F7137F05"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2034365462), 9));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2034365462), 9));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice4CBlackhammerG1WarpOut, true, false);
@@ -5088,7 +5088,7 @@ bool gt_WarpDevice4DActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/C429D8FB") + TextWithColor(StringExternal("Param/Value/695FD264"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/F1E80750"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/196D5119"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/E1C24F51") + TextWithColor(StringExternal("Param/Value/813BDF3B"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/8D39B5EB"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/A8B69CFA"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2057077348), 10));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2057077348), 10));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice4DBlackhammerG2WarpOut, true, false);
@@ -5659,16 +5659,16 @@ bool gt_WarpDevicePhase5Ping_Func (bool testConds, bool runActions) {
     }
     SoundPlayForPlayer(SoundLink("UI_MiniMapPing", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(667593574), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(813247277), 11, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(813247277), 11, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/B973FB45"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(19794804), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(1106900905), 12, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1106900905), 12, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/F0756FC8"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(2048703391), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(1277808545), 13, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1277808545), 13, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/F749D28B"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PointFromId(1422833615), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(2026857137), 14, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(2026857137), 14, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/D22260C2"));
     Wait(3.0, c_timeGame);
     SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
@@ -5696,21 +5696,21 @@ bool gt_WarpDevicePhase5Setup_Func (bool testConds, bool runActions) {
     }
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_UIMinimapAlert, true, false);
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(813247277), 11));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(813247277), 11));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(667593574), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(813247277), 11, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(813247277), 11, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/295DF88B"));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1106900905), 12));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1106900905), 12));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(19794804), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(1106900905), 12, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1106900905), 12, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/67D8F480"));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1277808545), 13));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1277808545), 13));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(2048703391), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(1277808545), 13, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1277808545), 13, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/F34360D8"));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2026857137), 14));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2026857137), 14));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingSimple", PointFromId(1422833615), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), gv_ping_Duration, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(2026857137), 14, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(2026857137), 14, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/71FDED90"));
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(813247277), false);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(1106900905), false);
@@ -5775,7 +5775,7 @@ bool gt_WarpDevice5ADestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/228FE0FF") + TextWithColor(StringExternal("Param/Value/940674A0"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/803B6947"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/9547BBE2"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(813247277), 11));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(813247277), 11));
     TimerPause(gv_timer_WarpDevice_5A, true);
     TimerPause(gv_timer_WarpDevices_Phase5_ABCD, true);
     TimerPause(gv_timer_WarpDevices_Phase5_ABC, true);
@@ -5873,7 +5873,7 @@ bool gt_WarpDevice5BDestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/B3BD30D8") + TextWithColor(StringExternal("Param/Value/1EE450BF"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/68382073"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/49988F9F"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1106900905), 12));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1106900905), 12));
     TimerPause(gv_timer_WarpDevice_5B, true);
     TimerPause(gv_timer_WarpDevices_Phase5_ABCD, true);
     TimerPause(gv_timer_WarpDevices_Phase5_ABC, true);
@@ -5971,7 +5971,7 @@ bool gt_WarpDevice5CDestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/7F1DC36A") + TextWithColor(StringExternal("Param/Value/7BC2E8A3"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/54A623D6"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/593B0829"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1277808545), 13));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1277808545), 13));
     TimerPause(gv_timer_WarpDevice_5C, true);
     TimerPause(gv_timer_WarpDevices_Phase5_ABCD, true);
     TimerPause(gv_timer_WarpDevices_Phase5_ABC, true);
@@ -6069,7 +6069,7 @@ bool gt_WarpDevice5DDestroyed_Func (bool testConds, bool runActions) {
     gv_var_WarpDevices_Remaining -= 1;
     gv_var_WarpDevices_Destroyed += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/026CA0DD") + TextWithColor(StringExternal("Param/Value/6C4A1FBC"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/75585E0F"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/1A8A12DF"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2026857137), 14));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2026857137), 14));
     TimerPause(gv_timer_WarpDevice_5D, true);
     TimerPause(gv_timer_WarpDevices_Phase5_ABCD, true);
     TimerPause(gv_timer_WarpDevices_Phase5_ACD, true);
@@ -6184,7 +6184,7 @@ bool gt_WarpDevice5AActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/91697E53") + TextWithColor(StringExternal("Param/Value/0159F7AC"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/8C842B3D"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/76F55BDD"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/CB3BD26A") + TextWithColor(StringExternal("Param/Value/CBFF751A"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/36AD3D2A"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/EEA49732"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(813247277), 11));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(813247277), 11));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice5APrideofAugustgrad1, true, false);
@@ -6218,7 +6218,7 @@ bool gt_WarpDevice5BActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/A7FF8B0F") + TextWithColor(StringExternal("Param/Value/454466E0"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/65675FB9"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/F2C917AE"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/9C0CE47A") + TextWithColor(StringExternal("Param/Value/CCBE7697"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/F21C0865"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/E59F7280"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1106900905), 12));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1106900905), 12));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice5BPrideofAugustgrad2, true, false);
@@ -6252,7 +6252,7 @@ bool gt_WarpDevice5CActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/C581F857") + TextWithColor(StringExternal("Param/Value/CBF6BA4A"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/BA3662A5"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/818886B1"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/A092A09D") + TextWithColor(StringExternal("Param/Value/D2855F52"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/AAAF6539"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/F8433033"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1277808545), 13));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1277808545), 13));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice5CPrideofAugustgrad3, true, false);
@@ -6286,7 +6286,7 @@ bool gt_WarpDevice5DActivated_Func (bool testConds, bool runActions) {
     ObjectiveSetName(gv_objective_PrimaryObjective_1, (StringExternal("Param/Value/909CF00D") + TextWithColor(StringExternal("Param/Value/82AE4253"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Remaining), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/924B0358"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/BD49C37F"), Color(100.0, 100.0, 0.0))));
     gv_var_WarpDevices_Activated += 1;
     ObjectiveSetName(gv_objective_PrimaryObjective_2, (StringExternal("Param/Value/3CBB0BC0") + TextWithColor(StringExternal("Param/Value/3CDAA170"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_WarpDevices_Activated), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/85A10667"), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/F5819879"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(2026857137), 14));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(2026857137), 14));
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TimerPause(gv_timer_Window_Countdown, true);
     TriggerExecute(gt_WarpDevice5DPrideofAugustgrad4, true, false);
@@ -7361,11 +7361,11 @@ bool gt_OdinsEntertheMap_Func (bool testConds, bool runActions) {
     libNtve_gf_ShowHideUnit(UnitFromId(954621714), true);
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(954621714), false);
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingBoss", UnitGetPosition(UnitFromId(341160576)), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 300.0, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(341160576), 30, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(341160576), 30, PingLastCreated());
     PingSetUnit(PingLastCreated(), UnitFromId(341160576));
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/7CEB6E6C"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingBoss", UnitGetPosition(UnitFromId(954621714)), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 300.0, 270.0);
-    libHots_gf_StorePingForUnit(UnitFromId(954621714), 31, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(954621714), 31, PingLastCreated());
     PingSetUnit(PingLastCreated(), UnitFromId(954621714));
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/1CD93DAD"));
     Wait(1.0, c_timeGame);
@@ -7538,7 +7538,7 @@ bool gt_PrimaryOdinAlphaDestroyed_Func (bool testConds, bool runActions) {
     }
     gv_var_Odins_Dead += 1;
     ObjectiveSetName(gv_objective_Primary_DestroyOdins, (StringExternal("Param/Value/3EC385A3") + TextWithColor(StringExternal("Param/Value/A0BA0B27"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_Odins_Dead), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/F4DF962F"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_Odins_MaxCount), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/CFDE1F57"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(341160576), 30));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(341160576), 30));
     UnitCreate(1, "OdinAlphaWreckage", c_unitCreateIgnorePlacement, 3, UnitGetPosition(EventUnit()), UnitGetFacing(EventUnit()));
     RegionSetCenter(RegionFromId(13), UnitGetPosition(EventUnit()));
     VisRevealArea(1, RegionFromId(13), 0.0, true);
@@ -7574,7 +7574,7 @@ bool gt_PrimaryOdinBravoDestroyed_Func (bool testConds, bool runActions) {
     }
     gv_var_Odins_Dead += 1;
     ObjectiveSetName(gv_objective_Primary_DestroyOdins, (StringExternal("Param/Value/1106BAFA") + TextWithColor(StringExternal("Param/Value/7B7D9A6B"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_Odins_Dead), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/40972BF5"), Color(100.0, 100.0, 0.0)) + TextWithColor(IntToText(gv_var_Odins_MaxCount), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/A4BBACE1"), Color(100.0, 100.0, 0.0))));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(954621714), 31));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(954621714), 31));
     UnitCreate(1, "OdinBravoWreckage", c_unitCreateIgnorePlacement, 4, UnitGetPosition(EventUnit()), UnitGetFacing(EventUnit()));
     RegionSetCenter(RegionFromId(14), UnitGetPosition(EventUnit()));
     VisRevealArea(1, RegionFromId(14), 0.0, true);
@@ -7673,7 +7673,7 @@ bool gt_SecondaryBonusObjective1Create_Func (bool testConds, bool runActions) {
     libNtve_gf_MakeUnitInvulnerable(UnitFromId(1705259572), false);
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingTriangle", PointFromId(2119678182), ColorWithAlpha(100.00, 100.00, 0.00, 0.00), 7200.0, 90.0);
     PingSetScale(PingLastCreated(), 0.6);
-    libHots_gf_StorePingForUnit(UnitFromId(1705259572), 20, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1705259572), 20, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/CAB9E2EE"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingAlert", PointFromId(2119678182), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 5.0, 90.0);
     ObjectiveCreateForPlayers((StringExternal("Param/Value/9F7BB500") + StringExternal("Param/Value/A5FBC851")), StringExternal("Param/Value/1C518BF0"), c_objectiveStateActive, false, PlayerGroupAll());
@@ -7699,7 +7699,7 @@ bool gt_SecondaryBonusObjective1Complete_Func (bool testConds, bool runActions) 
     }
     ObjectiveSetState(gv_secondary_BonusObjective_1, c_objectiveStateCompleted);
     ObjectiveSetName(gv_secondary_BonusObjective_1, (StringExternal("Param/Value/B85FD4A8") + StringExternal("Param/Value/5A770389")));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(1705259572), 20));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(1705259572), 20));
     Wait(2.0, c_timeGame);
     SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/98FD4D1B"));
@@ -7728,7 +7728,7 @@ bool gt_SecondaryBonusObjective2Create_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), false);
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingTriangle", PointFromId(1697705478), ColorWithAlpha(100.00, 100.00, 0.00, 0.00), 455.0, 90.0);
     PingSetScale(PingLastCreated(), 0.6);
-    libHots_gf_StorePingForUnit(UnitFromId(319719901), 21, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(319719901), 21, PingLastCreated());
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/400C33DE"));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingAlert", PointFromId(1697705478), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 5.0, 90.0);
     ObjectiveCreateForPlayers((StringExternal("Param/Value/F273C316") + TextWithColor(StringExternal("Param/Value/8F44C157"), Color(100.0, 100.0, 0.0)) + TextWithColor(TextTimeFormat(StringToText("<mintotal/>:<sec2/>"), gv_clock_BonusObjective_2), Color(100.0, 100.0, 0.0)) + TextWithColor(StringExternal("Param/Value/1F011A65"), Color(100.0, 100.0, 0.0)) + StringExternal("Param/Value/71CA7AE9")), StringExternal("Param/Value/68543804"), c_objectiveStateActive, false, PlayerGroupAll());
@@ -7792,7 +7792,7 @@ bool gt_SecondaryBonusObjective2Complete_Func (bool testConds, bool runActions) 
     UnitCreate(1, "VespeneTankerWreckage", c_unitCreateIgnorePlacement, 3, UnitGetPosition(UnitFromId(319719901)), 0.0);
     ObjectiveSetState(gv_secondary_BonusObjective_2, c_objectiveStateCompleted);
     ObjectiveSetName(gv_secondary_BonusObjective_2, (StringExternal("Param/Value/E9723511") + StringExternal("Param/Value/57DAFDBF") + TextTimeFormat(StringToText("<mintotal/>:<sec2/>"), gv_clock_BonusObjective_2) + StringExternal("Param/Value/22F35250") + StringExternal("Param/Value/BC1996DD")));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(319719901), 21));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(319719901), 21));
     Wait(2.0, c_timeGame);
     SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/6D720D15"));
@@ -7816,7 +7816,7 @@ bool gt_SecondaryBonusObjective2Failure_Func (bool testConds, bool runActions) {
     UnitBehaviorRemove(UnitFromId(319719901), "ProgressBar", 1);
     ObjectiveSetState(gv_secondary_BonusObjective_2, c_objectiveStateFailed);
     ObjectiveSetName(gv_secondary_BonusObjective_2, (StringExternal("Param/Value/0569DD17") + StringExternal("Param/Value/0A178DCE")));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(319719901), 21));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(319719901), 21));
     UnitRemove(UnitFromId(319719901));
     Wait(2.0, c_timeGame);
     SoundPlayForPlayer(SoundLink("UI_TransmissionStart", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);

@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -602,16 +602,16 @@ void gf_ModifyDropoffBeaconState (unit lp_beacon, int lp_state) {
     // Implementation
     auto8379038A_val = lp_state;
     if (auto8379038A_val == ge_BeaconStates_Kill) {
-        if ((libHots_gf_PingStoredForUnit(lp_beacon, 1) != c_invalidPingId)) {
-            libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_beacon, 1));
+        if ((libARRA_gf_PingStoredForUnit(lp_beacon, 1) != c_invalidPingId)) {
+            libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_beacon, 1));
         }
 
-        if ((libHots_gf_ActorForUnit(lp_beacon, 2) != null)) {
-            libNtve_gf_KillModel(libHots_gf_ActorForUnit(lp_beacon, 2));
+        if ((libARRA_gf_ActorForUnit(lp_beacon, 2) != null)) {
+            libNtve_gf_KillModel(libARRA_gf_ActorForUnit(lp_beacon, 2));
         }
 
-        if ((libHots_gf_TextTagForUnit(lp_beacon, 3) != c_textTagNone)) {
-            TextTagDestroy(libHots_gf_TextTagForUnit(lp_beacon, 3));
+        if ((libARRA_gf_TextTagForUnit(lp_beacon, 3) != c_textTagNone)) {
+            TextTagDestroy(libARRA_gf_TextTagForUnit(lp_beacon, 3));
         }
 
         UnitKill(lp_beacon);
@@ -621,28 +621,28 @@ void gf_ModifyDropoffBeaconState (unit lp_beacon, int lp_state) {
         libNtve_gf_PlayAnimation(libNtve_gf_MainActorofUnit(lp_beacon), c_animNameDefault, "Birth", 0, c_animTimeDefault);
         TextExpressionSetToken("Param/Expression/234D280C", "UnitName", UnitTypeGetName(gv_c_PayloadUnitType));
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(lp_beacon), TextExpressionAssemble("Param/Expression/234D280C"));
-        libHots_gf_StorePingForUnit(lp_beacon, 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(lp_beacon, 1, PingLastCreated());
         VisRevealArea(gv_pLAYER_01_USER, RegionCircle(UnitGetPosition(lp_beacon), 3.0), 15.0, false);
         VisRevealArea(gv_pLAYER_02_USER, RegionCircle(UnitGetPosition(lp_beacon), 3.0), 15.0, false);
         TextExpressionSetToken("Param/Expression/21D1ABB3", "TruckUnit", UnitTypeGetName(gv_c_PayloadUnitType));
         libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_TerranMainObjective, libCOMI_ge_CampaginReticleSize_Medium, TextExpressionAssemble("Param/Expression/21D1ABB3"), lp_beacon, "Ref_Center");
         TextTagSetMaxSize(TextTagLastCreated(), 45.0, 2.0);
-        libHots_gf_StoreActorForUnit(lp_beacon, 2, libNtve_gf_ActorLastCreated());
-        libHots_gf_StoreTextTagForUnit(lp_beacon, 3, TextTagLastCreated());
+        libARRA_gf_StoreActorForUnit(lp_beacon, 2, libNtve_gf_ActorLastCreated());
+        libARRA_gf_StoreTextTagForUnit(lp_beacon, 3, TextTagLastCreated());
     }
     else if (auto8379038A_val == ge_BeaconStates_ActivateOnBonus) {
         libNtve_gf_ShowHideUnit(lp_beacon, true);
         libNtve_gf_PlayAnimation(libNtve_gf_MainActorofUnit(lp_beacon), c_animNameDefault, "Birth", 0, c_animTimeDefault);
         TextExpressionSetToken("Param/Expression/DFBF0F03", "UnitName", UnitTypeGetName(gv_c_PayloadUnitType));
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(lp_beacon), TextExpressionAssemble("Param/Expression/DFBF0F03"));
-        libHots_gf_StorePingForUnit(lp_beacon, 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(lp_beacon, 1, PingLastCreated());
         VisRevealArea(gv_pLAYER_01_USER, RegionCircle(UnitGetPosition(lp_beacon), 3.0), 15.0, false);
         VisRevealArea(gv_pLAYER_02_USER, RegionCircle(UnitGetPosition(lp_beacon), 3.0), 15.0, false);
         TextExpressionSetToken("Param/Expression/A2F68F40", "TruckUnit", UnitTypeGetName(gv_c_PayloadUnitType));
         libCOMI_gf_CreateReticleEffectAndTextTagAtPoint(libCOMI_ge_CampaginReticleType_TerranBonusObjective, libCOMI_ge_CampaginReticleSize_Medium, TextExpressionAssemble("Param/Expression/A2F68F40"), UnitGetPosition(lp_beacon));
         TextTagSetMaxSize(TextTagLastCreated(), 45.0, 2.0);
-        libHots_gf_StoreActorForUnit(lp_beacon, 2, libNtve_gf_ActorLastCreated());
-        libHots_gf_StoreTextTagForUnit(lp_beacon, 3, TextTagLastCreated());
+        libARRA_gf_StoreActorForUnit(lp_beacon, 2, libNtve_gf_ActorLastCreated());
+        libARRA_gf_StoreTextTagForUnit(lp_beacon, 3, TextTagLastCreated());
     }
     else if (auto8379038A_val == ge_BeaconStates_ActivateOff) {
         libNtve_gf_ShowHideUnit(lp_beacon, true);
@@ -705,7 +705,7 @@ void gf_ActivateObjectiveBeaconsandConstructs (int lp_currentObjective) {
         for ( ; ( (autoA42FCA97_ai >= 0 && lv_constructIter <= autoA42FCA97_ae) || (autoA42FCA97_ai < 0 && lv_constructIter >= autoA42FCA97_ae) ) ; lv_constructIter += autoA42FCA97_ai ) {
             TextExpressionSetToken("Param/Expression/C297B335", "UnitName", UnitTypeGetName(gv_c_GateKeepers));
             libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(gv_primaryObjectiveTarget[lp_currentObjective].lv_constructDropOffGuards[lv_constructIter]), TextExpressionAssemble("Param/Expression/C297B335"));
-            libHots_gf_StorePingForUnit(gv_primaryObjectiveTarget[lp_currentObjective].lv_constructDropOffGuards[lv_constructIter], 1, PingLastCreated());
+            libARRA_gf_StorePingForUnit(gv_primaryObjectiveTarget[lp_currentObjective].lv_constructDropOffGuards[lv_constructIter], 1, PingLastCreated());
         }
     }
     else if (((UnitIsAlive(gv_primaryObjectiveTarget[lp_currentObjective].lv_constructDropOffGuards[1]) == true) || (UnitIsAlive(gv_primaryObjectiveTarget[lp_currentObjective].lv_constructDropOffGuards[2]) == true))) {
@@ -723,7 +723,7 @@ void gf_ActivateObjectiveBeaconsandConstructs (int lp_currentObjective) {
         TriggerEnable(gt_PayloadDropOffConstructDestroyed, true);
         TextExpressionSetToken("Param/Expression/8A3EC7BB", "UnitName", UnitTypeGetName(gv_c_GateKeepers));
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(lv_activeConstructUnit), TextExpressionAssemble("Param/Expression/8A3EC7BB"));
-        libHots_gf_StorePingForUnit(lv_activeConstructUnit, 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(lv_activeConstructUnit, 1, PingLastCreated());
     }
     else if ((UnitIsAlive(gv_primaryObjectiveTarget[lp_currentObjective].lv_constructDropOffGuards[1]) == false) && (UnitIsAlive(gv_primaryObjectiveTarget[lp_currentObjective].lv_constructDropOffGuards[2]) == false)) {
         gf_ActivateDropOffBeacons();
@@ -754,10 +754,10 @@ void gf_PlantExplosives (int lp_targetFacility, int lp_payloadIndex, int lp_poin
     UnitSelect(gv_payloadTrucks[lp_payloadIndex], gv_pLAYER_02_USER, false);
     gv_payloadsAtPrimaryObjective[lp_pointIndex] = gv_payloadTrucks[lp_payloadIndex];
     gv_payloadDetonating[lp_payloadIndex] = true;
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_payloadTrucks[lp_payloadIndex], 1));
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_payloadTrucks[lp_payloadIndex], 3));
-    libHots_gf_StorePingForUnit(gv_payloadTrucks[lp_payloadIndex], 1, c_invalidPingId);
-    libHots_gf_StorePingForUnit(gv_payloadTrucks[lp_payloadIndex], 3, c_invalidPingId);
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gv_payloadTrucks[lp_payloadIndex], 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gv_payloadTrucks[lp_payloadIndex], 3));
+    libARRA_gf_StorePingForUnit(gv_payloadTrucks[lp_payloadIndex], 1, c_invalidPingId);
+    libARRA_gf_StorePingForUnit(gv_payloadTrucks[lp_payloadIndex], 3, c_invalidPingId);
     gf_ModifyDropoffBeaconState(gv_primaryObjectiveTarget[lp_targetFacility].lv_payloadDestination[lp_pointIndex], ge_BeaconStates_Kill);
     gf_ObjectiveDestroyPrimaryObjectiveUpdate(lp_targetFacility, (libCOMI_gf_MissionObjectiveProgress(gv_objectiveDestroyObjective_Data[lp_targetFacility]) + 1));
 }
@@ -874,15 +874,15 @@ bool auto_gf_StartFuse_TriggerFunc (bool testConds, bool runActions) {
             if (lv_dangerUnitIter == null) { break; }
             if ((libNtve_gf_UnitIsInvulnerable(lv_dangerUnitIter) != true) && (UnitTypeGetProperty(UnitGetType(lv_dangerUnitIter), c_unitPropMovementSpeed) > 0.0)) {
                 if ((libNtve_gf_UnitInRegion(lv_dangerUnitIter, gv_primaryObjectiveTarget[gf_ActiveObjective()].lv_nukeExplosionArea) == true)) {
-                    if ((libHots_gf_ActorForUnit(lv_dangerUnitIter, 97) == null)) {
+                    if ((libARRA_gf_ActorForUnit(lv_dangerUnitIter, 97) == null)) {
                         libNtve_gf_AttachModelToUnit(lv_dangerUnitIter, "Fear_Coop", "Ref_Overhead");
-                        libHots_gf_StoreActorForUnit(lv_dangerUnitIter, 97, libNtve_gf_ActorLastCreated());
+                        libARRA_gf_StoreActorForUnit(lv_dangerUnitIter, 97, libNtve_gf_ActorLastCreated());
                     }
 
                 }
                 else {
-                    libNtve_gf_KillModel(libHots_gf_ActorForUnit(lv_dangerUnitIter, 97));
-                    libHots_gf_StoreActorForUnit(lv_dangerUnitIter, 97, null);
+                    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(lv_dangerUnitIter, 97));
+                    libARRA_gf_StoreActorForUnit(lv_dangerUnitIter, 97, null);
                     UnitGroupRemove(lv_unitsInDangerZone, lv_dangerUnitIter);
                 }
             }
@@ -897,8 +897,8 @@ bool auto_gf_StartFuse_TriggerFunc (bool testConds, bool runActions) {
     for (;; autoC25B2285_u -= 1) {
         lv_dangerUnitIter = UnitGroupUnitFromEnd(autoC25B2285_g, autoC25B2285_u);
         if (lv_dangerUnitIter == null) { break; }
-        libNtve_gf_KillModel(libHots_gf_ActorForUnit(lv_dangerUnitIter, 97));
-        libHots_gf_StoreActorForUnit(lv_dangerUnitIter, 97, null);
+        libNtve_gf_KillModel(libARRA_gf_ActorForUnit(lv_dangerUnitIter, 97));
+        libARRA_gf_StoreActorForUnit(lv_dangerUnitIter, 97, null);
     }
     return true;
 }
@@ -1130,7 +1130,7 @@ bool auto_gf_SetupUnitasPayload_TriggerFunc (bool testConds, bool runActions) {
     PingSetScale(PingLastCreated(), 0.5);
     PingSetUnit(PingLastCreated(), lv_payload);
     PingSetTooltip(PingLastCreated(), UnitGetName(lp_payloadUnit));
-    libHots_gf_StorePingForUnit(lv_payload, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lv_payload, 1, PingLastCreated());
     lv_payloadPing = PingLastCreated();
     libCOMI_gf_ShowHidePingCoop(PingLastCreated(), true);
     libCOMI_gf_CreatePingCoop(PlayerGroupSingle(lv_payloadOwnerAlly), "PingSimple", UnitGetPosition(lv_payload), Color(100.00, 100.00, 0.00), 0.0);
@@ -1138,7 +1138,7 @@ bool auto_gf_SetupUnitasPayload_TriggerFunc (bool testConds, bool runActions) {
     PingSetUnit(PingLastCreated(), lv_payload);
     TextExpressionSetToken("Param/Expression/DCBB75DA", "PayloadUnit", UnitGetName(lp_payloadUnit));
     PingSetTooltip(PingLastCreated(), TextExpressionAssemble("Param/Expression/DCBB75DA"));
-    libHots_gf_StorePingForUnit(lv_payload, 3, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lv_payload, 3, PingLastCreated());
     lv_allyPing = PingLastCreated();
     UnitSetPosition(lv_payload, PointFromId(1605441398), false);
     UnitSetFacing(lv_payload, PointGetFacing(PointFromId(1605441398)), 0.0);
@@ -1272,11 +1272,11 @@ bool auto_gf_WatchPayloadDropoffs_TriggerFunc (bool testConds, bool runActions) 
 void gf_ClearPayloadPings (unit lp_payloadUnit) {
     // Automatic Variable Declarations
     // Implementation
-    if ((libHots_gf_PingStoredForUnit(lp_payloadUnit, 1) != c_invalidPingId)) {
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_payloadUnit, 1));
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_payloadUnit, 3));
-        libHots_gf_StorePingForUnit(lp_payloadUnit, 1, c_invalidPingId);
-        libHots_gf_StorePingForUnit(lp_payloadUnit, 3, c_invalidPingId);
+    if ((libARRA_gf_PingStoredForUnit(lp_payloadUnit, 1) != c_invalidPingId)) {
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_payloadUnit, 1));
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_payloadUnit, 3));
+        libARRA_gf_StorePingForUnit(lp_payloadUnit, 1, c_invalidPingId);
+        libARRA_gf_StorePingForUnit(lp_payloadUnit, 3, c_invalidPingId);
     }
 
 }
@@ -1284,9 +1284,9 @@ void gf_ClearPayloadPings (unit lp_payloadUnit) {
 void gf_ShowHidePayloadPings (unit lp_payload, bool lp_showHide) {
     // Automatic Variable Declarations
     // Implementation
-    if ((libHots_gf_PingStoredForUnit(lp_payload, 1) != c_invalidPingId)) {
-        PingSetVisible(libHots_gf_PingStoredForUnit(lp_payload, 1), lp_showHide);
-        PingSetVisible(libHots_gf_PingStoredForUnit(lp_payload, 3), lp_showHide);
+    if ((libARRA_gf_PingStoredForUnit(lp_payload, 1) != c_invalidPingId)) {
+        PingSetVisible(libARRA_gf_PingStoredForUnit(lp_payload, 1), lp_showHide);
+        PingSetVisible(libARRA_gf_PingStoredForUnit(lp_payload, 3), lp_showHide);
     }
 
 }
@@ -1544,7 +1544,7 @@ bool auto_gf_StartBonusObjective_TriggerFunc (bool testConds, bool runActions) {
     lv_targetLocationMarker = gv_bonusObjectiveDropOffMarker[lp_bObjIndex];
     TextExpressionSetToken("Param/Expression/D9858E44", "UnitName", UnitTypeGetName(gv_c_GateKeepers));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(gv_bonusObjectiveGuardianConstruct[lp_bObjIndex]), TextExpressionAssemble("Param/Expression/D9858E44"));
-    libHots_gf_StorePingForUnit(gv_bonusObjectiveGuardianConstruct[lp_bObjIndex], 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(gv_bonusObjectiveGuardianConstruct[lp_bObjIndex], 1, PingLastCreated());
     gf_ModifyDropoffBeaconState(gv_bonusObjectiveDropOffMarkerBlocked[lp_bObjIndex], ge_BeaconStates_ActivateOff);
     TimerStart(gv_bonusObjectiveCompletionTimer[lp_bObjIndex], gv_bonusObjectiveDuration, false, c_timeAI);
     UnitBehaviorAddPlayer(lv_targetLocationMarker, "ProgressBar", gv_pLAYER_03_ENEMY, 1);
@@ -1588,7 +1588,7 @@ bool auto_gf_StartBonusObjective_TriggerFunc (bool testConds, bool runActions) {
     }
     gf_PauseUnpauseBonusObjective(true, lp_bObjIndex);
     if ((UnitIsAlive(gv_bonusObjectiveGuardianConstruct[lp_bObjIndex]) == true)) {
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_bonusObjectiveGuardianConstruct[lp_bObjIndex], 1));
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gv_bonusObjectiveGuardianConstruct[lp_bObjIndex], 1));
         TriggerEnable(lp_triggerConstructDestroy, false);
         gf_ModifyDropoffBeaconState(gv_bonusObjectiveDropOffMarkerBlocked[lp_bObjIndex], ge_BeaconStates_Kill);
     }
@@ -2481,7 +2481,7 @@ bool gt_Init05bTargetLocations_Func (bool testConds, bool runActions) {
             autoF9C9EA79_var = UnitGroupUnitFromEnd(autoF9C9EA79_g, autoF9C9EA79_u);
             if (autoF9C9EA79_var == null) { break; }
             UnitGroupAdd(gv_allConstructs, autoF9C9EA79_var);
-            libHots_gf_StorePointForUnit(autoF9C9EA79_var, 1, UnitGetPosition(autoF9C9EA79_var));
+            libARRA_gf_StorePointForUnit(autoF9C9EA79_var, 1, UnitGetPosition(autoF9C9EA79_var));
         }
     }
     auto9C604FDA_g = gv_primaryObjectiveTarget[5].lv_constructs;
@@ -3046,7 +3046,7 @@ bool gt_PayloadDropOffConstructDestroyed_Func (bool testConds, bool runActions) 
         return true;
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     if (((UnitIsAlive(gv_primaryObjectiveTarget[gv_objectiveActiveCounter].lv_constructDropOffGuards[1]) == false) && (UnitIsAlive(gv_primaryObjectiveTarget[gv_objectiveActiveCounter].lv_constructDropOffGuards[2]) == false))) {
         gf_KillObjectiveReminderReticle();
         gf_ActivateDropOffBeacons();
@@ -4067,7 +4067,7 @@ bool gt_BonusObjectiveGuardian1Killed_Func (bool testConds, bool runActions) {
         TriggerExecute(gt_StartBonusObjective01, true, false);
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     TimerStart(gv_bonusObjectivePauseTimer[lv_killedUnitIndex], gv_bonusObjectivePauseGrace, false, c_timeAI);
     gf_ModifyDropoffBeaconState(gv_bonusObjectiveDropOffMarkerBlocked[lv_killedUnitIndex], ge_BeaconStates_Kill);
     gf_ModifyDropoffBeaconState(gv_bonusObjectiveDropOffMarker[lv_killedUnitIndex], ge_BeaconStates_ActivateOnBonus);
@@ -4108,7 +4108,7 @@ bool gt_BonusObjectiveGuardian2Killed_Func (bool testConds, bool runActions) {
         TriggerExecute(gt_StartBonusObjective02, true, false);
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     TimerStart(gv_bonusObjectivePauseTimer[lv_killedUnitIndex], gv_bonusObjectivePauseGrace, false, c_timeAI);
     gf_ModifyDropoffBeaconState(gv_bonusObjectiveDropOffMarkerBlocked[lv_killedUnitIndex], ge_BeaconStates_Kill);
     gf_ModifyDropoffBeaconState(gv_bonusObjectiveDropOffMarker[lv_killedUnitIndex], ge_BeaconStates_ActivateOnBonus);

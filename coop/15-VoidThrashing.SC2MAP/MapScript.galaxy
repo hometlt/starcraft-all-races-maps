@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -628,7 +628,7 @@ bool auto_gf_VoidThrasherRumbleBehavior_TriggerFunc (bool testConds, bool runAct
         lv_vitalityTotalLocal += UnitTypeGetProperty(UnitGetType(lv_groupIterLocal), c_unitPropVitality);
     }
     while ((UnitIsAlive(lp_rumble) == true) && (TimerGetRemaining(gv_thrasherSpawnTimers[lp_thasherGroup]) > 0.0)) {
-        if ((lp_thasherGroup != ge_VoidThrasherGroups_GroupA) && (libHots_gf_PingStoredForUnit(lp_rumble, 1) == c_invalidPingId) && (UnitGroupCount(gv_thrashersActive[(lp_thasherGroup - 1)], c_unitCountAlive) <= 0)) {
+        if ((lp_thasherGroup != ge_VoidThrasherGroups_GroupA) && (libARRA_gf_PingStoredForUnit(lp_rumble, 1) == c_invalidPingId) && (UnitGroupCount(gv_thrashersActive[(lp_thasherGroup - 1)], c_unitCountAlive) <= 0)) {
             gf_ShowNextThrashersEarly(lv_thrasherSpawnLocal, lp_rumble);
         }
 
@@ -650,7 +650,7 @@ bool auto_gf_VoidThrasherRumbleBehavior_TriggerFunc (bool testConds, bool runAct
         Wait(0.5, c_timeAI);
     }
     UnitKill(lp_rumble);
-    PingDestroy(libHots_gf_PingStoredForUnit(lp_rumble, 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(lp_rumble, 1));
     gf_GiantAttentionGrabbingPing(lv_thrasherSpawnLocal);
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, lv_thrasherSpawnLocal, StringExternal("Param/Value/CA2C4F0E"));
     TriggerExecute(gt_ThrasherSpawningQ, true, false);
@@ -707,7 +707,7 @@ bool auto_gf_ShowNextThrashersEarly_TriggerFunc (bool testConds, bool runActions
     // Implementation
     if ((libCOMI_gf_GameIsOver() == false)) {
         libCOMI_gf_CreateObjectivePingAC(libCOMI_gf_PingTypeFromObjectiveType(true), lp_pingLocation, StringExternal("Param/Value/84CBE4C5"));
-        libHots_gf_StorePingForUnit(lp_rumble, 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(lp_rumble, 1, PingLastCreated());
         PingSetUnit(PingLastCreated(), lp_rumble);
         PingSetVisible(PingLastCreated(), false);
         Wait(15.0, c_timeAI);
@@ -2307,7 +2307,7 @@ bool gt_DefeatHammersFortressDestroyed_Func (bool testConds, bool runActions) {
 
     TriggerEnable(TriggerGetCurrent(), false);
     libCOMI_gv_lastEventPoint = UnitGetPosition(UnitFromId(96));
-    PingDestroy(libHots_gf_PingStoredForUnit(UnitFromId(96), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(UnitFromId(96), 1));
     TriggerExecute(gt_ObjectiveKillVoidThrashersFailed, true, false);
     TriggerExecute(gt_ObjectiveHammersFortressMustSurviveFailed, true, false);
     auto7236788B_g = UnitGroup(gv_c_LinkedThrasherUnitType, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
@@ -3656,7 +3656,7 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
         libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
         Wait(7.0, c_timeReal);
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(348)), StringExternal("Param/Value/23563286"));
-        libHots_gf_StorePingForUnit(UnitFromId(348), 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(UnitFromId(348), 1, PingLastCreated());
         VisExploreArea(gv_pLAYER_01_USER, RegionFromId(1), true, false);
         VisExploreArea(gv_pLAYER_02_USER, RegionFromId(1), true, false);
         VisRevealArea(gv_pLAYER_01_USER, RegionCircle(UnitGetPosition(UnitFromId(348)), 1.0), 0.1, false);

@@ -1,0 +1,1035 @@
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   Scion Campaign Mission 1: The Awakening
+// 
+//==================================================================================================
+include "TriggerLibs/NativeLib"
+include "TriggerLibs/LibertyLib"
+include "ai472043F9"
+include "ai8F44173A"
+include "aiF9DEDB11"
+include "ai27ED6629"
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+void InitLibs () {
+    libNtve_InitLib();
+    libLbty_InitLib();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Variables
+//--------------------------------------------------------------------------------------------------
+trigger gt_SnowPart1;
+trigger gt_SnowPart2;
+trigger gt_SnowPart3;
+trigger gt_Help2;
+trigger gt_Stopattackwaves;
+trigger gt_MONEY;
+trigger gt_Start;
+trigger gt_Start2;
+trigger gt_Win;
+trigger gt_Upgrades;
+trigger gt_SkinforZerg;
+trigger gt_Lose;
+trigger gt_SupportAi;
+trigger gt_Bully;
+trigger gt_UEDAi;
+trigger gt_Ais2;
+trigger gt_FlashBang;
+trigger gt_FlashBang2;
+trigger gt_PoliticalAi;
+trigger gt_MollyTalking;
+trigger gt_MollyTalking2;
+trigger gt_MollyTalking3;
+trigger gt_MollyTalking4;
+trigger gt_MollyTalking5;
+trigger gt_MollyTalking6;
+trigger gt_EnemyTalking;
+trigger gt_Ais;
+trigger gt_MoneyforTerry;
+trigger gt_KillRocks;
+
+//--------------------------------------------------------------------------------------------------
+// Custom AI Functions
+//--------------------------------------------------------------------------------------------------
+string[17] cai_playerAI;
+
+//--------------------------------------------------------------------------------------------------
+void InitCustomAI () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        cai_playerAI[init_i] = null;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_start (string ai, int p) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    cai_playerAI[p] = ai;
+
+    if (cai_playerAI[p] == "ai472043F9") { ai472043F9_start(p); }
+    if (cai_playerAI[p] == "ai8F44173A") { ai8F44173A_start(p); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { aiF9DEDB11_start(p); }
+    if (cai_playerAI[p] == "ai27ED6629") { ai27ED6629_start(p); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_setDefGather (int p, point val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "ai472043F9") { ai472043F9_setDefGather(p, val); }
+    if (cai_playerAI[p] == "ai8F44173A") { ai8F44173A_setDefGather(p, val); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { aiF9DEDB11_setDefGather(p, val); }
+    if (cai_playerAI[p] == "ai27ED6629") { ai27ED6629_setDefGather(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+string cai_getCustomData (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "ai472043F9") { return ai472043F9_getCustomData(p); }
+    if (cai_playerAI[p] == "ai8F44173A") { return ai8F44173A_getCustomData(p); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { return aiF9DEDB11_getCustomData(p); }
+    if (cai_playerAI[p] == "ai27ED6629") { return ai27ED6629_getCustomData(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave cai_getLastWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "ai472043F9") { return ai472043F9_getLastWave(p); }
+    if (cai_playerAI[p] == "ai8F44173A") { return ai8F44173A_getLastWave(p); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { return aiF9DEDB11_getLastWave(p); }
+    if (cai_playerAI[p] == "ai27ED6629") { return ai27ED6629_getLastWave(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_run (int p, playergroup target) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "ai472043F9") { ai472043F9_waves_run(p, target); }
+    if (cai_playerAI[p] == "ai8F44173A") { ai8F44173A_waves_run(p, target); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { aiF9DEDB11_waves_run(p, target); }
+    if (cai_playerAI[p] == "ai27ED6629") { ai27ED6629_waves_run(p, target); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "ai472043F9") { ai472043F9_waves_enable(p, val); }
+    if (cai_playerAI[p] == "ai8F44173A") { ai8F44173A_waves_enable(p, val); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { aiF9DEDB11_waves_enable(p, val); }
+    if (cai_playerAI[p] == "ai27ED6629") { ai27ED6629_waves_enable(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_waves_stop (string ai) {
+    if (ai == "ai472043F9") { ai472043F9_waves_stop(); }
+    if (ai == "ai8F44173A") { ai8F44173A_waves_stop(); }
+    if (ai == "aiF9DEDB11") { aiF9DEDB11_waves_stop(); }
+    if (ai == "ai27ED6629") { ai27ED6629_waves_stop(); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_wave_run (int w, int p, playergroup target, bool wait) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "ai472043F9") { ai472043F9_wave_run(w, p, target, wait); }
+    if (cai_playerAI[p] == "ai8F44173A") { ai8F44173A_wave_run(w, p, target, wait); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { aiF9DEDB11_wave_run(w, p, target, wait); }
+    if (cai_playerAI[p] == "ai27ED6629") { ai27ED6629_wave_run(w, p, target, wait); }
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_wave_enable (int w, int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (cai_playerAI[p] == "ai472043F9") { ai472043F9_wave_enable(w, p, val); }
+    if (cai_playerAI[p] == "ai8F44173A") { ai8F44173A_wave_enable(w, p, val); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { aiF9DEDB11_wave_enable(w, p, val); }
+    if (cai_playerAI[p] == "ai27ED6629") { ai27ED6629_wave_enable(w, p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+bool cai_wave_isEnabled (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    if (cai_playerAI[p] == "ai472043F9") { return ai472043F9_wave_isEnabled(w, p); }
+    if (cai_playerAI[p] == "ai8F44173A") { return ai8F44173A_wave_isEnabled(w, p); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { return aiF9DEDB11_wave_isEnabled(w, p); }
+    if (cai_playerAI[p] == "ai27ED6629") { return ai27ED6629_wave_isEnabled(w, p); }
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+unitgroup cai_wave_createdUnits (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "ai472043F9") { return ai472043F9_wave_createdUnits(w, p); }
+    if (cai_playerAI[p] == "ai8F44173A") { return ai8F44173A_wave_createdUnits(w, p); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { return aiF9DEDB11_wave_createdUnits(w, p); }
+    if (cai_playerAI[p] == "ai27ED6629") { return ai27ED6629_wave_createdUnits(w, p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave cai_wave_createdWave (int w, int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    if (cai_playerAI[p] == "ai472043F9") { return ai472043F9_wave_createdWave(w, p); }
+    if (cai_playerAI[p] == "ai8F44173A") { return ai8F44173A_wave_createdWave(w, p); }
+    if (cai_playerAI[p] == "aiF9DEDB11") { return aiF9DEDB11_wave_createdWave(w, p); }
+    if (cai_playerAI[p] == "ai27ED6629") { return ai27ED6629_wave_createdWave(w, p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_startall () {
+    cai_start("ai8F44173A", 3);
+    cai_start("aiF9DEDB11", 4);
+    cai_start("ai27ED6629", 5);
+    AICampaignStart(2);
+}
+
+//--------------------------------------------------------------------------------------------------
+void cai_runall () {
+    playergroup target = PlayerGroupEmpty();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SnowPart1
+//--------------------------------------------------------------------------------------------------
+bool gt_SnowPart1_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitBehaviorAddPlayer(EventUnit(), "GlazeIce", UnitGetOwner(EventUnit()), 1);
+    Wait(5.0, c_timeGame);
+    TriggerEnable(gt_SnowPart2, true);
+    TriggerEnable(gt_SnowPart3, true);
+    TriggerEnable(TriggerGetCurrent(), false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SnowPart1_Init () {
+    gt_SnowPart1 = TriggerCreate("gt_SnowPart1_Func");
+    TriggerEnable(gt_SnowPart1, false);
+    TriggerAddEventUnitRegion(gt_SnowPart1, null, RegionPlayableMap(), true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SnowPart2
+//--------------------------------------------------------------------------------------------------
+bool gt_SnowPart2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitBehaviorAddPlayer(EventUnit(), "GlazeSnow", UnitGetOwner(EventUnit()), 1);
+    Wait(2.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SnowPart2_Init () {
+    gt_SnowPart2 = TriggerCreate("gt_SnowPart2_Func");
+    TriggerEnable(gt_SnowPart2, false);
+    TriggerAddEventUnitBecomesIdle(gt_SnowPart2, null, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SnowPart3
+//--------------------------------------------------------------------------------------------------
+bool gt_SnowPart3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitBehaviorAddPlayer(EventUnit(), "GlazeSnow", UnitGetOwner(EventUnit()), 1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SnowPart3_Init () {
+    gt_SnowPart3 = TriggerCreate("gt_SnowPart3_Func");
+    TriggerAddEventUnitRegion(gt_SnowPart3, null, RegionPlayableMap(), true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Help 2
+//--------------------------------------------------------------------------------------------------
+bool gt_Help2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/1560E99C"));
+    Wait(66.0, c_timeGame);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/D238FD44"));
+    Wait(66.0, c_timeGame);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/123076AB"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Help2_Init () {
+    gt_Help2 = TriggerCreate("gt_Help2_Func");
+    TriggerAddEventTimeElapsed(gt_Help2, 220.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Stop attack waves
+//--------------------------------------------------------------------------------------------------
+bool gt_Stopattackwaves_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    cai_waves_stop("ai27ED6629");
+    cai_waves_stop("ai472043F9");
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/D65C0D8B"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Stopattackwaves_Init () {
+    gt_Stopattackwaves = TriggerCreate("gt_Stopattackwaves_Func");
+    TriggerAddEventUnitDied(gt_Stopattackwaves, UnitRefFromUnit(UnitFromId(1435535317)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: MONEY
+//--------------------------------------------------------------------------------------------------
+bool gt_MONEY_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    PlayerModifyPropertyInt(5, c_playerPropMinerals, c_playerPropOperSetTo, 10000);
+    PlayerModifyPropertyInt(4, c_playerPropMinerals, c_playerPropOperSetTo, 10000);
+    PlayerModifyPropertyInt(3, c_playerPropMinerals, c_playerPropOperSetTo, 10000);
+    PlayerModifyPropertyInt(5, c_playerPropVespene, c_playerPropOperSetTo, 10000);
+    PlayerModifyPropertyInt(4, c_playerPropVespene, c_playerPropOperSetTo, 10000);
+    PlayerModifyPropertyInt(3, c_playerPropVespene, c_playerPropOperSetTo, 10000);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MONEY_Init () {
+    gt_MONEY = TriggerCreate("gt_MONEY_Func");
+    TriggerAddEventTimeElapsed(gt_MONEY, 5.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start
+//--------------------------------------------------------------------------------------------------
+bool gt_Start_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    MeleeInitResources();
+    MeleeInitUnits();
+    libNtve_gf_SetAlliance(3, 4, libNtve_ge_AllianceSetting_AllyWithSharedVision);
+    libNtve_gf_SetAlliance(3, 5, libNtve_ge_AllianceSetting_AllyWithSharedVision);
+    libNtve_gf_SetAlliance(4, 5, libNtve_ge_AllianceSetting_AllyWithSharedVision);
+    libNtve_gf_SetAlliance(1, 2, libNtve_ge_AllianceSetting_AllyWithSharedVision);
+    TechTreeUnitAllow(1, "AssemblyArray", false);
+    TechTreeUnitAllow(1, "OrdnanceCache", false);
+    TechTreeUnitAllow(1, "Tesla", false);
+    TechTreeUnitAllow(1, "Mole", false);
+    TechTreeUnitAllow(1, "Inciter", false);
+    TechTreeUpgradeAllow(1, "GenetronAircraftWeaponsLevel1", false);
+    TechTreeUpgradeAllow(1, "GenetronAircraftWeaponsLevel2", false);
+    TechTreeUpgradeAllow(1, "GenetronAircraftWeaponsLevel3", false);
+    TechTreeUnitAllow(1, "Olympus", false);
+    TechTreeRequirementsEnable(3, false);
+    TechTreeRequirementsEnable(4, false);
+    TechTreeRequirementsEnable(5, false);
+    TechTreeUpgradeAddLevel(3, "IcarusCatalyst", 1);
+    AITransportSetReturn(4, PlayerStartLocation(4));
+    TechTreeUpgradeAllow(1, "AAMDefenseTurret", false);
+    TechTreeUpgradeAllow(1, "ShapedHull", false);
+    TechTreeUpgradeAllow(1, "EnhancedTargeting", false);
+    TechTreeUpgradeAllow(1, "SubterraneanSensors", false);
+    libNtve_gf_CinematicMode(true, PlayerGroupAll(), c_transitionDurationDefault);
+    CameraApplyInfo(1, CameraInfoFromId(1174809369), 0.0, -1, 10.0, true);
+    libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1052602325), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/643521E9"), StringExternal("Param/Value/571D0A7B"), 4.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    Wait(8.0, c_timeGame);
+    CameraApplyInfo(1, CameraInfoFromId(634954795), 8.0, -1, 10.0, false);
+    libNtve_gf_CinematicMode(false, PlayerGroupAll(), c_transitionDurationDefault);
+    Wait(30.0, c_timeGame);
+    HelpPanelAddTip(PlayerGroupAll(), libNtve_gf_FormatTipTitle(StringExternal("Param/Value/3B1CF360"), libNtve_ge_TipType_NormalTip), StringExternal("Param/Value/CAD017D5"), StringExternal("Param/Value/5C1947C4"), "Assets\\Textures\\btn-icon-dominion.dds");
+    HelpPanelAddTip(PlayerGroupAll(), libNtve_gf_FormatTipTitle(StringExternal("Param/Value/C0D7300D"), libNtve_ge_TipType_NormalTip), StringExternal("Param/Value/20981695"), StringExternal("Param/Value/FE101EDE"), "Assets\\Textures\\btn-icon-dominion.dds");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Start_Init () {
+    gt_Start = TriggerCreate("gt_Start_Func");
+    TriggerAddEventMapInit(gt_Start);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Start 2
+//--------------------------------------------------------------------------------------------------
+bool gt_Start2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    VisRevealArea(1, RegionFromId(2), 10.0, false);
+    VisRevealArea(1, RegionFromId(3), 10.0, false);
+    VisRevealArea(1, RegionFromId(4), 10.0, false);
+    ObjectiveCreate(StringExternal("Param/Value/99C9623E"), StringToText(""), c_objectiveStateActive, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Start2_Init () {
+    gt_Start2 = TriggerCreate("gt_Start2_Func");
+    TriggerAddEventTimeElapsed(gt_Start2, 35.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Win
+//--------------------------------------------------------------------------------------------------
+bool gt_Win_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!(((UnitIsAlive(UnitFromId(1231097175)) == false) && (UnitIsAlive(UnitFromId(1435535317)) == false) && (UnitIsAlive(UnitFromId(1979925180)) == false) && (UnitIsAlive(UnitFromId(260772086)) == false) && (UnitIsAlive(UnitFromId(617976369)) == false)))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    ObjectiveSetState(ObjectiveLastCreated(), c_objectiveStateCompleted);
+    SoundPlayForPlayer(SoundLink("UI_ObjectiveComplete", 0), c_maxPlayers, PlayerGroupAll(), 500.0, 0.0);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1678241163), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Dialogue_Transmission10Seconds", -1), StringExternal("Param/Value/45F0D40D"), StringExternal("Param/Value/00CE19CF"), 4.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    MinimapPing(PlayerGroupAll(), PointFromId(909421846), 6.0, Color(100.00, 0.00, 0.00));
+    Wait(6.0, c_timeGame);
+    GameOver(1, c_gameOverVictory, true, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Win_Init () {
+    gt_Win = TriggerCreate("gt_Win_Func");
+    TriggerAddEventUnitDied(gt_Win, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Upgrades
+//--------------------------------------------------------------------------------------------------
+bool gt_Upgrades_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_SetUpgradeLevelForPlayer(1, "FirewallShield", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(1, "BlazeFirewallRevert", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(1, "RefittedNozzles", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(1, "CalibratedEngines", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(1, "SpitfireMadcapRounds", 1);
+    Wait(500.0, c_timeGame);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "AtmosphericOperationsLoadout", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "ExtendedMissilePayloads", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "SalvoFiringPattern", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "TandemReactiveArmor", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "DroneRepairModule", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "EnginSurchargeProtocols", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "FieldReloadingProtocols", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "CloakingDrone", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "ProjectedGravityShield", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "UEDVehicalsLevel1", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "UEDWeaponsLevel1", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "SpareRifleBatteries", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "OpticalFlare", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "UEDArmorLevel1", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "StrikeGrenade", 1);
+    libNtve_gf_SetUpgradeLevelForPlayer(3, "CommandoTraining", 1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Upgrades_Init () {
+    gt_Upgrades = TriggerCreate("gt_Upgrades_Func");
+    TriggerAddEventTimeElapsed(gt_Upgrades, 5.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Skin for Zerg
+//--------------------------------------------------------------------------------------------------
+bool gt_SkinforZerg_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "CarrierRemastered", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "CommandCenterRemastered", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "NexusRemastered", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "MarineRemastered", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "MarineRemastered", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "ZealotRemastered", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "HydraliskRemastered", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "HatcheryRemastered", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "UltraliskRemastered", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "UltraliskRemastered", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "MarauderDeluxe", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "GhostEidolon", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "SiegeTankMerc", true);
+    libNtve_gf_PlayerApplySkinReplacingExistingUnit(3, "BunkerCovertOps", true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SkinforZerg_Init () {
+    gt_SkinforZerg = TriggerCreate("gt_SkinforZerg_Func");
+    TriggerAddEventMapInit(gt_SkinforZerg);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Lose
+//--------------------------------------------------------------------------------------------------
+bool gt_Lose_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!(((UnitGetType(EventUnit()) == "MULE")))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", 0), c_maxPlayers, PlayerGroupAll(), 500.0, 0.0);
+    Wait(2.0, c_timeGame);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/95D09177"));
+    GameOver(1, c_gameOverDefeat, true, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Lose_Init () {
+    gt_Lose = TriggerCreate("gt_Lose_Func");
+    TriggerAddEventUnitDied(gt_Lose, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SupportAi
+//--------------------------------------------------------------------------------------------------
+bool gt_SupportAi_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    unitgroup auto82E33DEA_g;
+    int auto82E33DEA_u;
+    unit auto82E33DEA_var;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto82E33DEA_g = UnitGroup("SupportShuttle", 4, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1);
+    auto82E33DEA_u = UnitGroupCount(auto82E33DEA_g, c_unitCountAll);
+    for (;; auto82E33DEA_u -= 1) {
+        auto82E33DEA_var = UnitGroupUnitFromEnd(auto82E33DEA_g, auto82E33DEA_u);
+        if (auto82E33DEA_var == null) { break; }
+        UnitIssueOrder(auto82E33DEA_var, OrderTargetingPoint(AbilityCommand("PsionicSuppressionField", 0), RegionRandomPoint(RegionFromId(7))), c_orderQueueReplace);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_SupportAi_Init () {
+    gt_SupportAi = TriggerCreate("gt_SupportAi_Func");
+    TriggerAddEventTimePeriodic(gt_SupportAi, 500.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Bully
+//--------------------------------------------------------------------------------------------------
+bool gt_Bully_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    AIToggleBulliesInRegion(3, RegionFromId(1), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Bully_Init () {
+    gt_Bully = TriggerCreate("gt_Bully_Func");
+    TriggerAddEventMapInit(gt_Bully);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: UED Ai
+//--------------------------------------------------------------------------------------------------
+bool gt_UEDAi_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(17.0, c_timeGame);
+    cai_start("ai27ED6629", 5);
+    cai_waves_run(5, PlayerGroupSingle(1));
+    PlayerSetDifficulty(5, 2);
+    libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1052602325), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/D94C5DEE"), StringExternal("Param/Value/00C6AD87"), 4.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    MinimapPing(PlayerGroupAll(), PointFromId(1443582907), 6.0, Color(100.00, 0.00, 0.00));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_UEDAi_Init () {
+    gt_UEDAi = TriggerCreate("gt_UEDAi_Func");
+    TriggerAddEventUnitDied(gt_UEDAi, UnitRefFromUnit(UnitFromId(1859288144)));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Ai's 2
+//--------------------------------------------------------------------------------------------------
+bool gt_Ais2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    cai_start("aiF9DEDB11", 4);
+    cai_waves_run(4, PlayerGroupSingle(1));
+    PlayerSetDifficulty(4, 2);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Ais2_Init () {
+    gt_Ais2 = TriggerCreate("gt_Ais2_Func");
+    TriggerAddEventMapInit(gt_Ais2);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FlashBang
+//--------------------------------------------------------------------------------------------------
+bool gt_FlashBang_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "PoliticalAdvisor"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("BonesTossGrenade", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FlashBang_Init () {
+    gt_FlashBang = TriggerCreate("gt_FlashBang_Func");
+    TriggerAddEventUnitAttacked(gt_FlashBang, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: FlashBang 2
+//--------------------------------------------------------------------------------------------------
+bool gt_FlashBang2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "Garmr"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("BurrowChargeRevD2", 0), UnitGetPosition(EventUnitTarget())), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_FlashBang2_Init () {
+    gt_FlashBang2 = TriggerCreate("gt_FlashBang2_Func");
+    TriggerAddEventUnitAttacked(gt_FlashBang2, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Political Ai
+//--------------------------------------------------------------------------------------------------
+bool gt_PoliticalAi_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitGetType(EventUnit()) == "PoliticalAdvisor"))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(1.0, c_timeGame);
+    UnitIssueOrder(EventUnit(), Order(AbilityCommand("OnwardComrades", 0)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_PoliticalAi_Init () {
+    gt_PoliticalAi = TriggerCreate("gt_PoliticalAi_Func");
+    TriggerAddEventUnitAttacked(gt_PoliticalAi, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: MollyTalking
+//--------------------------------------------------------------------------------------------------
+bool gt_MollyTalking_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1052602325), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/89A638B9"), StringExternal("Param/Value/4AD2C7FC"), 4.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MollyTalking_Init () {
+    gt_MollyTalking = TriggerCreate("gt_MollyTalking_Func");
+    TriggerAddEventTimeElapsed(gt_MollyTalking, 34.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: MollyTalking 2
+//--------------------------------------------------------------------------------------------------
+bool gt_MollyTalking2_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1052602325), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/C9403B39"), StringExternal("Param/Value/6173876B"), 4.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    MinimapPing(PlayerGroupAll(), PointFromId(909421846), 6.0, Color(100.00, 0.00, 0.00));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MollyTalking2_Init () {
+    gt_MollyTalking2 = TriggerCreate("gt_MollyTalking2_Func");
+    TriggerAddEventTimeElapsed(gt_MollyTalking2, 42.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: MollyTalking 3
+//--------------------------------------------------------------------------------------------------
+bool gt_MollyTalking3_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1052602325), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/A740E755"), StringExternal("Param/Value/93A2EC24"), 4.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MollyTalking3_Init () {
+    gt_MollyTalking3 = TriggerCreate("gt_MollyTalking3_Func");
+    TriggerAddEventTimeElapsed(gt_MollyTalking3, 59.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: MollyTalking 4
+//--------------------------------------------------------------------------------------------------
+bool gt_MollyTalking4_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1052602325), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/EE3EAC38"), StringExternal("Param/Value/CC0C2925"), 4.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MollyTalking4_Init () {
+    gt_MollyTalking4 = TriggerCreate("gt_MollyTalking4_Func");
+    TriggerAddEventTimeElapsed(gt_MollyTalking4, 68.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: MollyTalking 5
+//--------------------------------------------------------------------------------------------------
+bool gt_MollyTalking5_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/9077F13E"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MollyTalking5_Init () {
+    gt_MollyTalking5 = TriggerCreate("gt_MollyTalking5_Func");
+    TriggerAddEventTimeElapsed(gt_MollyTalking5, 68.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: MollyTalking 6
+//--------------------------------------------------------------------------------------------------
+bool gt_MollyTalking6_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringExternal("Param/Value/6D54E805"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MollyTalking6_Init () {
+    gt_MollyTalking6 = TriggerCreate("gt_MollyTalking6_Func");
+    TriggerAddEventTimeElapsed(gt_MollyTalking6, 68.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Enemy Talking
+//--------------------------------------------------------------------------------------------------
+bool gt_EnemyTalking_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    SoundPlayForPlayer(SoundLink("StrikeTrooper_Attack", 3), c_maxPlayers, PlayerGroupAll(), 300.0, 0.0);
+    MinimapPingPossibleEnemyStartLocations(2.0, "BattlecruiserPortrait2", Color(100.00, 0.00, 0.00));
+    Wait(4.0, c_timeGame);
+    libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1052602325), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/0251F100"), StringExternal("Param/Value/82DD689E"), 4.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    Wait(4.0, c_timeGame);
+    MinimapPing(PlayerGroupAll(), PointFromId(373957696), 6.0, Color(100.00, 0.00, 0.00));
+    SoundPlayForPlayer(SoundLink("Event_Nova01_Facility_Alarm_TechFire", 0), c_maxPlayers, PlayerGroupAll(), 200.0, 0.0);
+    Wait(88.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1678241163), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/B336A7AA"), StringExternal("Param/Value/6BBE486B"), 6.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    Wait(9.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1656839440), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/CD1F4351"), StringExternal("Param/Value/5F235CC6"), 9.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    Wait(9.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1678241163), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/853A65B8"), StringExternal("Param/Value/3283704B"), 6.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    Wait(40.0, c_timeGame);
+    TransmissionSendForPlayerSelect(PlayerGroupAll(), TransmissionSourceFromUnit(UnitFromId(1052602325), true, false, "Talk"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), "", "Talk", SoundLink("Herc_Grapple_Land", -1), StringExternal("Param/Value/B56E0F3C"), StringExternal("Param/Value/4715AE6E"), 4.0, c_transmissionDurationAdd, false, c_maxPlayers, false);
+    Wait(9.0, c_timeGame);
+    HelpPanelAddTip(PlayerGroupAll(), libNtve_gf_FormatTipTitle(StringExternal("Param/Value/D6000626"), libNtve_ge_TipType_NormalTip), StringExternal("Param/Value/64AA4EA1"), StringExternal("Param/Value/ED817181"), "Assets\\Textures\\btn-icon-dominion.dds");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_EnemyTalking_Init () {
+    gt_EnemyTalking = TriggerCreate("gt_EnemyTalking_Func");
+    TriggerAddEventTimeElapsed(gt_EnemyTalking, 440.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Ai's
+//--------------------------------------------------------------------------------------------------
+bool gt_Ais_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    cai_start("ai8F44173A", 3);
+    cai_waves_run(3, PlayerGroupSingle(1));
+    cai_startall();
+    CampaignInitAI();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Ais_Init () {
+    gt_Ais = TriggerCreate("gt_Ais_Func");
+    TriggerAddEventMapInit(gt_Ais);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Moneyfor Terry
+//--------------------------------------------------------------------------------------------------
+bool gt_MoneyforTerry_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    PlayerScoreValueSetFromFixed(3, "MineralsCollected", 80000.0);
+    PlayerScoreValueSetFromFixed(3, "MineralsCurrent", 80000.0);
+    PlayerScoreValueSetFromFixed(3, "VespeneCollected", 80000.0);
+    PlayerScoreValueSetFromFixed(3, "VespeneCurrent", 80000.0);
+    PlayerScoreValueSetFromFixed(3, "FoodMade", 2000.0);
+    PlayerScoreValueSetFromFixed(3, "FoodMade", 2000.0);
+    PlayerModifyPropertyFixed(3, c_playerPropSuppliesLimit, c_playerPropOperSetTo, 1000.0);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MoneyforTerry_Init () {
+    gt_MoneyforTerry = TriggerCreate("gt_MoneyforTerry_Func");
+    TriggerAddEventTimeElapsed(gt_MoneyforTerry, 10.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Kill Rocks
+//--------------------------------------------------------------------------------------------------
+bool gt_KillRocks_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Conditions
+    if (testConds) {
+        if (!((UnitIsAlive(UnitFromId(1859288144)) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitKill(UnitFromId(1859288144));
+    UnitKill(UnitFromId(607302917));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_KillRocks_Init () {
+    gt_KillRocks = TriggerCreate("gt_KillRocks_Func");
+    TriggerAddEventTimeElapsed(gt_KillRocks, 2000.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Initialization
+//--------------------------------------------------------------------------------------------------
+void InitTriggers () {
+    gt_SnowPart1_Init();
+    gt_SnowPart2_Init();
+    gt_SnowPart3_Init();
+    gt_Help2_Init();
+    gt_Stopattackwaves_Init();
+    gt_MONEY_Init();
+    gt_Start_Init();
+    gt_Start2_Init();
+    gt_Win_Init();
+    gt_Upgrades_Init();
+    gt_SkinforZerg_Init();
+    gt_Lose_Init();
+    gt_SupportAi_Init();
+    gt_Bully_Init();
+    gt_UEDAi_Init();
+    gt_Ais2_Init();
+    gt_FlashBang_Init();
+    gt_FlashBang2_Init();
+    gt_PoliticalAi_Init();
+    gt_MollyTalking_Init();
+    gt_MollyTalking2_Init();
+    gt_MollyTalking3_Init();
+    gt_MollyTalking4_Init();
+    gt_MollyTalking5_Init();
+    gt_MollyTalking6_Init();
+    gt_EnemyTalking_Init();
+    gt_Ais_Init();
+    gt_MoneyforTerry_Init();
+    gt_KillRocks_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitLibs();
+    InitCustomAI();
+    InitTriggers();
+}

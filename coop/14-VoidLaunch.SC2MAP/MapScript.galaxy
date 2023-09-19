@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 include "LibARRA"
 include "ai3E812353"
@@ -17,7 +17,7 @@ include "aiBDA87FA6"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
     libARRA_InitLib();
 }
@@ -595,15 +595,15 @@ bool auto_gf_ShuttleCreateWave_TriggerFunc (bool testConds, bool runActions) {
         gf_ShuttleDiesMessage(UnitLastCreated(), lp_shuttleWave);
         libCOMI_gf_CreateAlertAtUnitCampaign("Trigger", StringExternal("Param/Value/7DB556F0"), null, UnitLastCreated());
         gf_ObjectiveMarker(UnitLastCreated());
-        libHots_gf_StorePointForUnit(UnitLastCreated(), (ge_ShuttlePoint_ShuttlePoint_SpawnPoint), lv_l_ShuttlePosition);
-        libHots_gf_StorePointForUnit(UnitLastCreated(), (ge_ShuttlePoint_ShuttlePoint_Destination), lv_l_EvacPoint);
+        libARRA_gf_StorePointForUnit(UnitLastCreated(), (ge_ShuttlePoint_ShuttlePoint_SpawnPoint), lv_l_ShuttlePosition);
+        libARRA_gf_StorePointForUnit(UnitLastCreated(), (ge_ShuttlePoint_ShuttlePoint_Destination), lv_l_EvacPoint);
         if ((lp_shuttleWaveBehavior == ge_ShuttleWaveBehavior_ShuttleBehavior_SplitToNewDestination)) {
-            libHots_gf_StorePointForUnit(UnitLastCreated(), (ge_ShuttlePoint_ShuttlePoint_SplitDestination), gv_shuttleEscapePoint[(ModI(lv_l_ShuttleIter, 3) + 1)]);
+            libARRA_gf_StorePointForUnit(UnitLastCreated(), (ge_ShuttlePoint_ShuttlePoint_SplitDestination), gv_shuttleEscapePoint[(ModI(lv_l_ShuttleIter, 3) + 1)]);
         }
         else {
-            libHots_gf_StorePointForUnit(UnitLastCreated(), (ge_ShuttlePoint_ShuttlePoint_SplitDestination), lv_l_EvacPoint);
+            libARRA_gf_StorePointForUnit(UnitLastCreated(), (ge_ShuttlePoint_ShuttlePoint_SplitDestination), lv_l_EvacPoint);
         }
-        libHots_gf_StorePointForUnit(UnitLastCreated(), (ge_ShuttlePoint_ShuttlePoint_SplitPoint), gf_GetShuttleSplitPoint(UnitLastCreated()));
+        libARRA_gf_StorePointForUnit(UnitLastCreated(), (ge_ShuttlePoint_ShuttlePoint_SplitPoint), gf_GetShuttleSplitPoint(UnitLastCreated()));
         Wait(3.0, c_timeAI);
         if ((lp_shuttleCount > 1) && (lv_l_ShuttleIter < lp_shuttleCount)) {
             lv_l_ShuttleSpawnMoveToOffsetAngle = AngleBetweenPoints(UnitGetPosition(gv_dockingBayUnits[lv_l_DockingBayIndex]), lv_l_EvacPoint);
@@ -982,7 +982,7 @@ bool auto_gf_CreateShuttlePathArrowPings_TriggerFunc (bool testConds, bool runAc
             autoF004CE9A_ae = ge_ExitLocation_RIGHT;
             lv_l_DestinationIter = ge_ExitLocation_LEFT;
             for ( ; ( (autoF004CE9A_ai >= 0 && lv_l_DestinationIter <= autoF004CE9A_ae) || (autoF004CE9A_ai < 0 && lv_l_DestinationIter >= autoF004CE9A_ae) ) ; lv_l_DestinationIter += autoF004CE9A_ai ) {
-                if ((libHots_gf_PointStoredForUnit(lv_l_ShuttleGroupIter, (ge_ShuttlePoint_ShuttlePoint_Destination)) == UnitGetPosition(gv_warpConduit[lv_l_DestinationIter]))) {
+                if ((libARRA_gf_PointStoredForUnit(lv_l_ShuttleGroupIter, (ge_ShuttlePoint_ShuttlePoint_Destination)) == UnitGetPosition(gv_warpConduit[lv_l_DestinationIter]))) {
                     UnitGroupAdd(lv_l_ShuttleGroups[lv_l_DestinationIter], lv_l_ShuttleGroupIter);
                 }
 
@@ -995,12 +995,12 @@ bool auto_gf_CreateShuttlePathArrowPings_TriggerFunc (bool testConds, bool runAc
                 continue;
             }
 
-            lv_l_distancebetweenlaunchandevac = DistanceBetweenPoints(UnitGroupCenterOfGroup(lv_l_ShuttleGroups[lv_l_DestinationIter]), libHots_gf_PointStoredForUnit(UnitGroupUnit(lv_l_ShuttleGroups[lv_l_DestinationIter], 1), (ge_ShuttlePoint_ShuttlePoint_Destination)));
+            lv_l_distancebetweenlaunchandevac = DistanceBetweenPoints(UnitGroupCenterOfGroup(lv_l_ShuttleGroups[lv_l_DestinationIter]), libARRA_gf_PointStoredForUnit(UnitGroupUnit(lv_l_ShuttleGroups[lv_l_DestinationIter], 1), (ge_ShuttlePoint_ShuttlePoint_Destination)));
             lv_l_distancechunks = FixedToInt((lv_l_distancebetweenlaunchandevac / lv_l_distbwpings));
             auto7E2FB141_ae = lv_l_distancechunks;
             lv_l_foreachint_i = 1;
             for ( ; ( (auto7E2FB141_ai >= 0 && lv_l_foreachint_i <= auto7E2FB141_ae) || (auto7E2FB141_ai < 0 && lv_l_foreachint_i >= auto7E2FB141_ae) ) ; lv_l_foreachint_i += auto7E2FB141_ai ) {
-                libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingArrow", libNtve_gf_PointOffsetTowardsPoint(UnitGroupCenterOfGroup(lv_l_ShuttleGroups[lv_l_DestinationIter]), (lv_l_distbwpings * IntToFixed(lv_l_foreachint_i)), libHots_gf_PointStoredForUnit(UnitGroupUnit(lv_l_ShuttleGroups[lv_l_DestinationIter], 1), (ge_ShuttlePoint_ShuttlePoint_Destination))), ColorWithAlpha(100.00, 0.00, 0.00, 24.71), lv_l_pinglifetime, AngleBetweenPoints(UnitGroupCenterOfGroup(lv_l_ShuttleGroups[lv_l_DestinationIter]), libHots_gf_PointStoredForUnit(UnitGroupUnit(lv_l_ShuttleGroups[lv_l_DestinationIter], 1), (ge_ShuttlePoint_ShuttlePoint_Destination))));
+                libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingArrow", libNtve_gf_PointOffsetTowardsPoint(UnitGroupCenterOfGroup(lv_l_ShuttleGroups[lv_l_DestinationIter]), (lv_l_distbwpings * IntToFixed(lv_l_foreachint_i)), libARRA_gf_PointStoredForUnit(UnitGroupUnit(lv_l_ShuttleGroups[lv_l_DestinationIter], 1), (ge_ShuttlePoint_ShuttlePoint_Destination))), ColorWithAlpha(100.00, 0.00, 0.00, 24.71), lv_l_pinglifetime, AngleBetweenPoints(UnitGroupCenterOfGroup(lv_l_ShuttleGroups[lv_l_DestinationIter]), libARRA_gf_PointStoredForUnit(UnitGroupUnit(lv_l_ShuttleGroups[lv_l_DestinationIter], 1), (ge_ShuttlePoint_ShuttlePoint_Destination))));
                 PingSetScale(PingLastCreated(), 0.5);
                 PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/CE4A6FC3"));
                 lv_l_pings[lv_l_foreachint_i] = PingLastCreated();
@@ -1154,7 +1154,7 @@ void gf_WarpConduitPingandAnimation (unit lp_warpConduit) {
     for (;; auto51FC5EF1_u -= 1) {
         lv_l_ShuttleIter = UnitGroupUnitFromEnd(auto51FC5EF1_g, auto51FC5EF1_u);
         if (lv_l_ShuttleIter == null) { break; }
-        if ((RegionContainsPoint(RegionCircle(UnitGetPosition(lp_warpConduit), 5.0), libHots_gf_PointStoredForUnit(lv_l_ShuttleIter, (ge_ShuttlePoint_ShuttlePoint_Destination))) == true)) {
+        if ((RegionContainsPoint(RegionCircle(UnitGetPosition(lp_warpConduit), 5.0), libARRA_gf_PointStoredForUnit(lv_l_ShuttleIter, (ge_ShuttlePoint_ShuttlePoint_Destination))) == true)) {
             lv_l_WarpConduitStateNew = ge_JumpGateState_Activate;
             break;
         }
@@ -1169,9 +1169,9 @@ void gf_WarpConduitPingandAnimation (unit lp_warpConduit) {
     if ((gv_warpConduitState[(lv_l_Conduit)] == ge_JumpGateState_Activate)) {
         gf_ActivateDeactivateWarpConduit(lp_warpConduit, ge_JumpGateState_Activate);
         libNtve_gf_SendActorMessageToUnit(lp_warpConduit, "SetMinimapVisibility");
-        if ((libHots_gf_PingStoredForUnit(lp_warpConduit, 1) == c_invalidPingId)) {
+        if ((libARRA_gf_PingStoredForUnit(lp_warpConduit, 1) == c_invalidPingId)) {
             gf_CreateObjectivePing(true, UnitGetPosition(lp_warpConduit), StringExternal("Param/Value/EBFA29B3"));
-            libHots_gf_StorePingForUnit(lp_warpConduit, 1, PingLastCreated());
+            libARRA_gf_StorePingForUnit(lp_warpConduit, 1, PingLastCreated());
             libCOMI_gf_CreateAlertAtUnitCampaign("Trigger", StringExternal("Param/Value/B22961F1"), null, lp_warpConduit);
             autoE9594758_g = libCOMI_gf_HumanPlayers();
             autoE9594758_var = -1;
@@ -1182,18 +1182,18 @@ void gf_WarpConduitPingandAnimation (unit lp_warpConduit) {
             }
         }
         else {
-            PingSetColor(libHots_gf_PingStoredForUnit(lp_warpConduit, 1), Color(0.00, 100.00, 0.00));
-            PingSetVisible(libHots_gf_PingStoredForUnit(lp_warpConduit, 1), true);
-            libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PingGetPosition(libHots_gf_PingStoredForUnit(lp_warpConduit, 1)), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 0.5, 270.0);
+            PingSetColor(libARRA_gf_PingStoredForUnit(lp_warpConduit, 1), Color(0.00, 100.00, 0.00));
+            PingSetVisible(libARRA_gf_PingStoredForUnit(lp_warpConduit, 1), true);
+            libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", PingGetPosition(libARRA_gf_PingStoredForUnit(lp_warpConduit, 1)), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 0.5, 270.0);
             PingSetScale(PingLastCreated(), 2.0);
         }
     }
     else {
         gf_ActivateDeactivateWarpConduit(lp_warpConduit, ge_JumpGateState_Deactivate);
         libNtve_gf_SendActorMessageToUnit(lp_warpConduit, "SetMinimapVisibility 1");
-        if ((libHots_gf_PingStoredForUnit(lp_warpConduit, 1) != c_invalidPingId)) {
-            PingSetVisible(libHots_gf_PingStoredForUnit(lp_warpConduit, 1), false);
-            PingSetColor(libHots_gf_PingStoredForUnit(lp_warpConduit, 1), Color(50.20, 50.20, 50.20));
+        if ((libARRA_gf_PingStoredForUnit(lp_warpConduit, 1) != c_invalidPingId)) {
+            PingSetVisible(libARRA_gf_PingStoredForUnit(lp_warpConduit, 1), false);
+            PingSetColor(libARRA_gf_PingStoredForUnit(lp_warpConduit, 1), Color(50.20, 50.20, 50.20));
         }
 
     }
@@ -1260,7 +1260,7 @@ void gf_BonusObjectiveLogic (point lp_destinationLocation) {
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(lv_l_EscortTarget), StringExternal("Param/Value/2B1758BF"));
     PingSetUnit(PingLastCreated(), lv_l_EscortTarget);
     lv_l_UnitPing = PingLastCreated();
-    libHots_gf_StorePingForUnit(lv_l_EscortTarget, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lv_l_EscortTarget, 1, PingLastCreated());
     PathCreateForUnit(PlayerGroupAll(), lv_l_EscortTarget);
     PathSetColor(PathLastCreated(), c_pathLocationAll, Color(100.00, 100.00, 0.00));
     UnitIssueOrder(lv_l_EscortTarget, Order(AbilityCommand("ResearchVesselLiftOff", 0)), c_orderQueueReplace);
@@ -1456,7 +1456,7 @@ bool auto_gf_ShuttleBehaviorStraightToDestination_TriggerFunc (bool testConds, b
     // Variable Initialization
 
     // Implementation
-    lv_destination = libHots_gf_PointStoredForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_Destination));
+    lv_destination = libARRA_gf_PointStoredForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_Destination));
     while ((UnitIsAlive(lp_unit) == true)) {
         UnitIssueOrder(lp_unit, OrderTargetingPoint(AbilityCommand("move", 0), lv_destination), c_orderQueueReplace);
         Wait(1.0, c_timeAI);
@@ -1491,10 +1491,10 @@ bool auto_gf_ShuttleAIThink2_TriggerFunc (bool testConds, bool runActions) {
     // Variable Initialization
 
     // Implementation
-    lv_spawn = libHots_gf_PointStoredForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_SpawnPoint));
-    lv_destination = libHots_gf_PointStoredForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_Destination));
-    lv_split = libHots_gf_PointStoredForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_SplitPoint));
-    lv_splitDestination = libHots_gf_PointStoredForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_SplitDestination));
+    lv_spawn = libARRA_gf_PointStoredForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_SpawnPoint));
+    lv_destination = libARRA_gf_PointStoredForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_Destination));
+    lv_split = libARRA_gf_PointStoredForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_SplitPoint));
+    lv_splitDestination = libARRA_gf_PointStoredForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_SplitDestination));
     while ((UnitIsAlive(lp_unit) == true)) {
         if ((lv_shuttleSplit == false)) {
             if ((DistanceBetweenPoints(UnitGetPosition(lp_unit), lv_spawn) < 30.0)) {
@@ -1507,7 +1507,7 @@ bool auto_gf_ShuttleAIThink2_TriggerFunc (bool testConds, bool runActions) {
                     libCOMI_gf_PingMinimapCampaign(PlayerGroupAll(), UnitGetPosition(lp_unit), 2.0, Color(100.00, 0.00, 0.00));
                 }
 
-                libHots_gf_StorePointForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_Destination), lv_splitDestination);
+                libARRA_gf_StorePointForUnit(lp_unit, (ge_ShuttlePoint_ShuttlePoint_Destination), lv_splitDestination);
             }
         }
         else {
@@ -1529,9 +1529,9 @@ point gf_GetShuttleSplitPoint (unit lp_shuttle) {
 
     // Implementation
     lv_distanceAlongPathWhereSplitOccurs = 0.66;
-    lv_distanceBetweenStartAndEnd = DistanceBetweenPoints(libHots_gf_PointStoredForUnit(lp_shuttle, (ge_ShuttlePoint_ShuttlePoint_SpawnPoint)), libHots_gf_PointStoredForUnit(lp_shuttle, (ge_ShuttlePoint_ShuttlePoint_SplitDestination)));
-    lv_angleBetweenEndAndStart = AngleBetweenPoints(libHots_gf_PointStoredForUnit(lp_shuttle, (ge_ShuttlePoint_ShuttlePoint_Destination)), libHots_gf_PointStoredForUnit(lp_shuttle, (ge_ShuttlePoint_ShuttlePoint_SpawnPoint)));
-    return PointWithOffsetPolar(libHots_gf_PointStoredForUnit(lp_shuttle, (ge_ShuttlePoint_ShuttlePoint_Destination)), (lv_distanceBetweenStartAndEnd * lv_distanceAlongPathWhereSplitOccurs), lv_angleBetweenEndAndStart);
+    lv_distanceBetweenStartAndEnd = DistanceBetweenPoints(libARRA_gf_PointStoredForUnit(lp_shuttle, (ge_ShuttlePoint_ShuttlePoint_SpawnPoint)), libARRA_gf_PointStoredForUnit(lp_shuttle, (ge_ShuttlePoint_ShuttlePoint_SplitDestination)));
+    lv_angleBetweenEndAndStart = AngleBetweenPoints(libARRA_gf_PointStoredForUnit(lp_shuttle, (ge_ShuttlePoint_ShuttlePoint_Destination)), libARRA_gf_PointStoredForUnit(lp_shuttle, (ge_ShuttlePoint_ShuttlePoint_SpawnPoint)));
+    return PointWithOffsetPolar(libARRA_gf_PointStoredForUnit(lp_shuttle, (ge_ShuttlePoint_ShuttlePoint_Destination)), (lv_distanceBetweenStartAndEnd * lv_distanceAlongPathWhereSplitOccurs), lv_angleBetweenEndAndStart);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -4518,7 +4518,7 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     Wait(7.0, c_timeAI);
     gf_ActivateDeactivateWarpConduit(UnitFromId(1042), ge_JumpGateState_Activate);
     gf_CreateObjectivePing(true, UnitGetPosition(UnitFromId(1042)), StringExternal("Param/Value/A43810E7"));
-    libHots_gf_StorePingForUnit(UnitFromId(1042), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1042), 1, PingLastCreated());
     libCOMI_gf_CreateAlertAtUnitCampaign("Trigger", StringExternal("Param/Value/56B18546"), null, UnitFromId(1042));
     auto8238D2E2_g = libCOMI_gf_HumanPlayers();
     auto8238D2E2_var = -1;

@@ -14,15 +14,14 @@
             //==================================================================================================
             include &quot;TriggerLibs/NativeLib&quot;
             include &quot;TriggerLibs/LibertyLib&quot;
-            include &quot;TriggerLibs/SwarmLib&quot;
+            include &quot;libARRA&quot;
             include &quot;LibCOMI&quot;
             //--------------------------------------------------------------------------------------------------
             // Library Initialization
             //--------------------------------------------------------------------------------------------------
             void InitLibs () {
                 libNtve_InitLib();
-                libLbty_InitLib();
-                libHots_InitLib();
+                libARRA_InitLib();
                 libCOMI_InitLib();
             }
             //--------------------------------------------------------------------------------------------------
@@ -529,7 +528,7 @@
                 UnitGroupLoopBegin(lp_attackWave);
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     if ((UnitGetType(UnitGroupLoopCurrent()) == gv_aIDropAttackTransportType)) {
-                        libLbty_gf_OrderTransporttoUnloadAllthenDespawn(UnitGroupLoopCurrent(), UnitGetPosition(UnitGroupLoopCurrent()), gv_aIAttackWavesRoutes[lp_route][1]);
+                        libARRA_gf_OrderTransporttoUnloadAllthenDespawn(UnitGroupLoopCurrent(), UnitGetPosition(UnitGroupLoopCurrent()), gv_aIAttackWavesRoutes[lp_route][1]);
                     }
                     AIRemoveUnitFromAnyWaves(UnitGroupLoopCurrent());
                     autoB7A14315_ae = PlayerGroupCount(lp_attackingPlayers);
@@ -834,7 +833,7 @@
                 UnitGroupLoopBegin(lp_attackWave);
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     if ((UnitGetType(UnitGroupLoopCurrent()) == gv_aIDropAttackTransportType)) {
-                        libLbty_gf_OrderTransporttoUnloadAllthenDespawn(UnitGroupLoopCurrent(), UnitGetPosition(UnitGroupLoopCurrent()), gv_aIAttackWavesRoutes[lp_route][1]);
+                        libARRA_gf_OrderTransporttoUnloadAllthenDespawn(UnitGroupLoopCurrent(), UnitGetPosition(UnitGroupLoopCurrent()), gv_aIAttackWavesRoutes[lp_route][1]);
                     }
                     AIRemoveUnitFromAnyWaves(UnitGroupLoopCurrent());
                     auto943F78F3_ae = PlayerGroupCount(lv_dropAttackPlayers);
@@ -1419,14 +1418,14 @@
                 UnitGroupLoopBegin(gv_roadGroupPlayers);
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     if (((UnitGetType(UnitGroupLoopCurrent()) == &quot;StalkerInstigatorNerazim&quot;) || (UnitGetType(UnitGroupLoopCurrent()) == &quot;CorsairNerazim&quot;))) {
-                        libHots_gf_StorePointForUnit(UnitGroupLoopCurrent(), 1, UnitGetPosition(UnitGroupLoopCurrent()));
+                        libARRA_gf_StorePointForUnit(UnitGroupLoopCurrent(), 1, UnitGetPosition(UnitGroupLoopCurrent()));
                     }
                 }
                 UnitGroupLoopEnd();
                 UnitGroupLoopBegin(gv_roadGroupEnemies);
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     if (((UnitGetType(UnitGroupLoopCurrent()) == &quot;StalkerInstigatorNerazim&quot;) || (UnitGetType(UnitGroupLoopCurrent()) == &quot;CorsairNerazim&quot;))) {
-                        libHots_gf_StorePointForUnit(UnitGroupLoopCurrent(), 1, UnitGetPosition(UnitGroupLoopCurrent()));
+                        libARRA_gf_StorePointForUnit(UnitGroupLoopCurrent(), 1, UnitGetPosition(UnitGroupLoopCurrent()));
                     }
                 }
                 UnitGroupLoopEnd();
@@ -1955,7 +1954,7 @@
                         PlayerGroupLoopEnd();
                     }
                     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), &quot;PingCircle&quot;, UnitGetPosition(lv_alysaar), ColorWithAlpha(50.20, 100.00, 0.00, 0.00), 0.0, 270.0);
-                    libHots_gf_StorePingForUnit(lv_alysaar, 1, PingLastCreated());
+                    libARRA_gf_StorePingForUnit(lv_alysaar, 1, PingLastCreated());
                     PingSetUnit(PingLastCreated(), lv_alysaar);
                     PingSetScale(PingLastCreated(), 0.3);
                     PingSetTooltip(PingLastCreated(), StringExternal(&quot;Param/Value/7731339B&quot;));
@@ -2098,7 +2097,7 @@
                     ActorSend(ActorFromDoodad(DoodadFromId(767032123)), ((&quot;SetZ &quot; + FixedToString(lv_loop, c_fixedPrecisionAny))));
                     Wait(0.0, c_timeGame);
                 }
-                PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+                PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
                 while (!((libNtve_gf_UnitInRegion(EventUnit(), RegionCircle(PointFromId(2071334657), 1.0)) == true))) {
                     Wait(0.5, c_timeGame);
                 }
@@ -2456,7 +2455,7 @@
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
                     if ((!((EventUnit() == UnitGroupLoopCurrent())))) {
                         libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), &quot;PingCircle&quot;, UnitGetPosition(UnitGroupLoopCurrent()), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0, 270.0);
-                        libHots_gf_StorePingForUnit(UnitGroupLoopCurrent(), 1, PingLastCreated());
+                        libARRA_gf_StorePingForUnit(UnitGroupLoopCurrent(), 1, PingLastCreated());
                         PingSetUnit(PingLastCreated(), UnitGroupLoopCurrent());
                         PingSetScale(PingLastCreated(), 0.3);
                     }
@@ -2464,8 +2463,8 @@
                 UnitGroupLoopEnd();
                 UnitBehaviorRemove(UnitFromId(1359970396), &quot;StoneCenturionStatue&quot;, 1);
                 UnitIssueOrder(UnitFromId(1359970396), OrderTargetingPoint(AbilityCommand(&quot;move&quot;, 0), PointFromId(875311682)), c_orderQueueReplace);
-                PingSetModel(libHots_gf_PingStoredForUnit(UnitFromId(1359970396), 1), &quot;PingBoss&quot;);
-                PingSetColor(libHots_gf_PingStoredForUnit(UnitFromId(1359970396), 1), Color(100.00, 0.00, 0.00));
+                PingSetModel(libARRA_gf_PingStoredForUnit(UnitFromId(1359970396), 1), &quot;PingBoss&quot;);
+                PingSetColor(libARRA_gf_PingStoredForUnit(UnitFromId(1359970396), 1), Color(100.00, 0.00, 0.00));
                 auto954A656E_at = 0;
                 while (!((libNtve_gf_UnitInRegion(UnitFromId(1359970396), RegionCircle(PointFromId(875311682), 1.0)) == true)) &amp;&amp; auto954A656E_at &lt;= 6.0) {
                     Wait(1.0, c_timeGame);
@@ -2558,7 +2557,7 @@
                 if (!runActions) {
                     return true;
                 }
-                PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+                PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -4445,13 +4444,13 @@
                 }
                 lv_l_MissileUnit = EventUnit();
                 libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), &quot;KaiserWormScourgeMissile&quot;, UnitGetPosition(lv_l_MissileUnit), ColorWithAlpha(100.00, 100.00, 100.00, 0.00), 0.0, UnitGetFacing(lv_l_MissileUnit));
-                libHots_gf_StorePingForUnit(lv_l_MissileUnit, 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(lv_l_MissileUnit, 1, PingLastCreated());
                 PingSetUnit(PingLastCreated(), lv_l_MissileUnit);
                 PingSetScale(PingLastCreated(), 0.075);
                 while (!((UnitIsAlive(EventUnit()) == false))) {
                     Wait(0.0625, c_timeGame);
                 }
-                PingDestroy(libHots_gf_PingStoredForUnit(lv_l_MissileUnit, 1));
+                PingDestroy(libARRA_gf_PingStoredForUnit(lv_l_MissileUnit, 1));
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -4646,7 +4645,7 @@
                     if (!(((UnitGetType(EventUnit()) == &quot;StalkerInstigatorNerazim&quot;) || (UnitGetType(EventUnit()) == &quot;CorsairNerazim&quot;)))) {
                         return false;
                     }
-                    if (!((libNtve_gf_UnitInRegion(EventUnit(), RegionCircle(libHots_gf_PointStoredForUnit(EventUnit(), 5), 1.0)) == false))) {
+                    if (!((libNtve_gf_UnitInRegion(EventUnit(), RegionCircle(libARRA_gf_PointStoredForUnit(EventUnit(), 5), 1.0)) == false))) {
                         return false;
                     }
                 }
@@ -4655,8 +4654,8 @@
                     return true;
                 }
                 Wait(5.0, c_timeGame);
-                if ((UnitIsAlive(EventUnit()) == true) &amp;&amp; (UnitOrderCount(EventUnit()) == 0) &amp;&amp; (libNtve_gf_UnitInRegion(EventUnit(), RegionCircle(libHots_gf_PointStoredForUnit(EventUnit(), 1), 5.0)) == false)) {
-                    libNtve_gf_AICast(EventUnit(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), libHots_gf_PointStoredForUnit(EventUnit(), 1)));
+                if ((UnitIsAlive(EventUnit()) == true) &amp;&amp; (UnitOrderCount(EventUnit()) == 0) &amp;&amp; (libNtve_gf_UnitInRegion(EventUnit(), RegionCircle(libARRA_gf_PointStoredForUnit(EventUnit(), 1), 5.0)) == false)) {
+                    libNtve_gf_AICast(EventUnit(), OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), libARRA_gf_PointStoredForUnit(EventUnit(), 1)));
                 }
                 return true;
             }

@@ -13,7 +13,7 @@
             // 
             //==================================================================================================
             include &quot;TriggerLibs/NativeLib&quot;
-            include &quot;TriggerLibs/SwarmLib&quot;
+            include &quot;libARRA&quot;
             include &quot;LibCOMI&quot;
             
             //--------------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@
             //--------------------------------------------------------------------------------------------------
             void InitLibs () {
                 libNtve_InitLib();
-                libHots_InitLib();
+                libARRA_InitLib();
                 libCOMI_InitLib();
             }
             
@@ -1100,7 +1100,7 @@
                 libCOMI_gf_CreatePingCoop(PlayerGroupAll(), &quot;PingBoss&quot;, UnitGetPosition(gv_brutalisk), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
                 PingSetTooltip(PingLastCreated(), StringExternal(&quot;Param/Value/A0DA713A&quot;));
                 PingSetUnit(PingLastCreated(), gv_brutalisk);
-                libHots_gf_StorePingForUnit(gv_brutalisk, 0, PingLastCreated());
+                libARRA_gf_StorePingForUnit(gv_brutalisk, 0, PingLastCreated());
             }
             
             void gf_CreateLeviathan () {
@@ -1910,8 +1910,8 @@
                     return true;
                 }
             
-                PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 0));
-                PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+                PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 0));
+                PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
                 return true;
             }
             
@@ -1930,8 +1930,8 @@
                     return true;
                 }
             
-                PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 0));
-                PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+                PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 0));
+                PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
                 return true;
             }
             
@@ -1951,8 +1951,8 @@
                     return true;
                 }
             
-                PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 0));
-                PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+                PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 0));
+                PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
                 return true;
             }
             
@@ -1987,7 +1987,7 @@
                     gf_BrainstormSplitTransmission(gv_naktulSuperior, SoundLink(&quot;NaktulIntro1K&quot;, -1), SoundLink(&quot;NaktulIntro1&quot;, -1));
                     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
                     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(1436250425)), StringExternal(&quot;Param/Value/A74F0723&quot;));
-                    libHots_gf_StorePingForUnit(UnitFromId(1436250425), 1, PingLastCreated());
+                    libARRA_gf_StorePingForUnit(UnitFromId(1436250425), 1, PingLastCreated());
                     Wait(2.0, c_timeGame);
                     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
                     gf_BrainstormSplitTransmission(gv_naktulSuperior, SoundLink(&quot;NaktulIntro2K&quot;, -1), SoundLink(&quot;NaktulIntro2&quot;, -1));
@@ -2000,7 +2000,7 @@
                     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
                     TriggerExecute(gt_ObjectiveDestroyTheOvermindCreate, true, true);
                     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(1436250425)), StringExternal(&quot;Param/Value/723C08A7&quot;));
-                    libHots_gf_StorePingForUnit(UnitFromId(1436250425), 1, PingLastCreated());
+                    libARRA_gf_StorePingForUnit(UnitFromId(1436250425), 1, PingLastCreated());
                     Wait(2.0, c_timeGame);
                     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
                     gf_BrainstormTransmission(SoundLink(&quot;NaktulIntro2&quot;, -1));
@@ -2046,9 +2046,9 @@
                 TriggerQueueEnter();
                 TriggerExecute(gt_BonusObjectiveKillTheCerebratesCreate, true, false);
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitFromId(606816855)), StringExternal(&quot;Param/Value/B59DEECE&quot;));
-                libHots_gf_StorePingForUnit(UnitFromId(606816855), 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(UnitFromId(606816855), 1, PingLastCreated());
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitFromId(1026764097)), StringExternal(&quot;Param/Value/DEBB7564&quot;));
-                libHots_gf_StorePingForUnit(UnitFromId(1026764097), 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(UnitFromId(1026764097), 1, PingLastCreated());
                 SoundPlayForPlayer(SoundLink(&quot;UI_ObjectiveBonusDiscovered&quot;, -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
                 Wait(3.0, c_timeGame);
                 libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -2574,7 +2574,7 @@
                     libCOMI_gf_CreatePingCoop(PlayerGroupAll(), &quot;PingBoss&quot;, UnitGetPosition(gv_leviathan), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
                     PingSetTooltip(PingLastCreated(), StringExternal(&quot;Param/Value/3B322E89&quot;));
                     PingSetUnit(PingLastCreated(), gv_leviathan);
-                    libHots_gf_StorePingForUnit(gv_leviathan, 0, PingLastCreated());
+                    libARRA_gf_StorePingForUnit(gv_leviathan, 0, PingLastCreated());
                 }
             
                 return true;

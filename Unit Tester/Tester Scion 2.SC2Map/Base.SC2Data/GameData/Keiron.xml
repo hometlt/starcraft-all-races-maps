@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+
+    <CUnit id="Myriad">
+    </CUnit>
+    <CAbilArmMagazine id="ElytraHangar"/>
+
+
+    <CUnit id="Pariah">
+    </CUnit>
+    <CAbilEffectTarget id="Projection">
+        <Flags index="AutoCast" value="1"/><Flags index="AutoCastOn" value="1"/>
+        <AutoCastFilters value="Ground,Visible;Player,Ally,Neutral,User1,Missile,Dead,Hidden,Benign"/>
+        <AutoCastValidatorArray value="ProjectionAutocast"/>
+        <Effect index="0" value="ProjectionSetCast"/>
+        <AutoCastRange value="8"/>
+    </CAbilEffectTarget>
+    <CValidatorCombine id="ProjectionAutocast">
+        <Type value="And"/>
+        <CombineArray value="ProjectionDisable"/>
+        <CombineArray value="TargetUnitDistanceGE3"/>
+    </CValidatorCombine>
+    <CValidatorLocationEnumArea id="PariahProjectionManualHostileSearch" parent="HostileSearch">
+        <ResultFailed value="CantFindEnoughTargets,Error/RequiresNearbyEnemies"/>
+        <AreaArray Radius="20"/>
+        <SearchFilters value="Visible;Player,Ally,Neutral,Worker,Missile,Stasis,Dead,Hidden,Invulnerable,Benign"/>
+    </CValidatorLocationEnumArea>
+    <CEffectSet id="ProjectionSetCast">
+        <ValidatorArray value="NotUnitSpawnerCaster"/>
+        <ValidatorArray value="PariahProjectionManualHostileSearch"/>
+        <EffectArray value="BlinkScanBonus"/>
+        <EffectArray value="SpeedLimitDelaySetStart"/>
+        <EffectArray value="ProjectionCP"/>
+    </CEffectSet>
+
+    <CUnit id="Pulsar">
+        <BehaviorArray Link="PulsarDamageResponse"/>
+        <CardLayouts index="0">
+            <LayoutButtons index="8" Type="Passive" Behavior="PulsarDamageResponse"/>
+        </CardLayouts>
+    </CUnit>
+    <CBehaviorBuff id="PulsarDamageResponse">
+        <InfoFlags index="Hidden" value="1"/>
+        <EditorCategories value="Race:Protoss,AbilityorEffectType:Units"/>
+        <DisableValidatorArray value="NotGravitonBeamd"/>
+        <DamageResponse Chance="1" Handled="PulsarDampener">
+            <Cost>
+                <Cooldown TimeUse="14"/>
+            </Cost>
+        </DamageResponse>
+        <Cost>
+            <Cooldown TimeUse="14"/>
+        </Cost>
+    </CBehaviorBuff>
+    <CEffectApplyBehavior id="PulsarDampener">
+        <WhichUnit Value="Source"/>
+    </CEffectApplyBehavior>
+    <CAbilEffectInstant id="PulsarDampener">
+        <AutoCastValidatorArray index="0" value="PulsarDampenerAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectInstant>
+    <CValidatorCombine id="PulsarDampenerAutocast">
+        <Type value="And"/>
+        <CombineArray value="HasTakenDamageBehaviorCheck"/>
+    </CValidatorCombine>
+
+    <CAbilEffectInstant id="Beholder">
+        <AutoCastValidatorArray value="BeholderAutocast"/>
+        <AutoCastRange value="12"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectInstant>
+    <CValidatorCombine id="BeholderAutocast">
+        <Type value="And"/>
+        <CombineArray value="BeholderDisable"/>
+        <CombineArray value="UndetectedEnemyCloakedUnitsNearby"/>
+    </CValidatorCombine>
+
+    <CAbilEffectTarget id="CruxLightningBolt">
+        <AutoCastValidatorArray value="CruxLightningBoltAutocast"/>
+        <AutoCastRange value="8"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectTarget>
+    <CValidatorCombine id="CruxLightningBoltAutocast">
+        <Type value="And"/>
+        <CombineArray value="CruxLightningBoltDisable"/>
+        <CombineArray value="CruxLightningBoltAutocastShieldsOrHealth"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="CruxLightningBoltAutocastShieldsOrHealth">
+        <Type value="Or"/>
+        <CombineArray value="TargetHasCurrentHealthGT60"/>
+        <CombineArray value="TargetHasCurrentShieldsGT60"/>
+    </CValidatorCombine>
+
+    <CAbilEffectTarget id="CruxConvergence">
+        <AutoCastValidatorArray value="CruxConvergenceAutocast"/>
+        <AutoCastRange value="12"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectTarget>
+    <CValidatorCombine id="CruxConvergenceAutocast">
+        <Type value="And"/>
+        <CombineArray value="CruxConvergenceDisable"/>
+        <CombineArray value="CruxConvergenceAutocastHostileSearch"/>
+    </CValidatorCombine>
+    <CValidatorLocationEnumArea id="CruxConvergenceAutocastHostileSearch" parent="HostileSearch">
+        <WhichLocation Value="TargetPoint"/>
+        <AreaArray Radius="1.5"/>
+        <Compare value="GE"/>
+        <Count value="5"/>
+        <SearchFilters value="-;Player,Ally,Neutral,Structure,Missile,Stasis,Dead,Hidden,Invulnerable,Benign"/>
+    </CValidatorLocationEnumArea>
+
+    <CAbilEffectInstant id="UmbraShieldCompulsion">
+        <AutoCastRange value="12"/>
+        <AutoCastValidatorArray value="UmbraShieldCompulsionAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectInstant>
+    <CValidatorCombine id="UmbraShieldCompulsionAutocast">
+        <Type value="And"/>
+        <CombineArray value="UmbraShieldCompulsionDisable"/>
+        <CombineArray value="TacticalUmbraCloakThreatSearch"/>
+        <CombineArray value="TacticalCloakNotDetected"/>
+    </CValidatorCombine>
+    <CValidatorLocationEnumArea id="TacticalUmbraCloakThreatSearch" parent="TacticalCloakThreatSearch" unitLink="Umbra"/>
+    <CValidatorUnitCompareAttackPriority id="UnitThreatensUmbra" parent="UnitThreatens" unitLink="Umbra"/>
+
+    <CAbilEffectTarget id="WardRestitution">
+        <AutoCastRange value="8"/>
+        <AutoCastValidatorArray value="WardRestitutionAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <AutoCastAcquireLevel value="Defensive"/>
+        <AutoCastFilters value="Visible;Neutral,Enemy"/>
+    </CAbilEffectTarget>
+    <CValidatorCombine id="WardRestitutionAutocast">
+        <Type value="And"/>
+        <CombineArray value="NotWarpingIn"/>
+        <CombineArray value="WardRestitutionDisable"/>
+        <CombineArray value="TargetHasMaxShieldsGTE60"/>
+        <CombineArray value="TargetShieldsLT0"/>
+    </CValidatorCombine>
+    <CValidatorUnitCompareVital id="ShieldsDamaged">
+        <WhichUnit Value="Target"/>
+        <Compare value="LE"/>
+        <Value value="0.75"/>
+        <Type value="Fraction"/>
+        <Vital value="Shields"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorLocationEnumArea id="WardRestitutionGroupAutocastSearch" parent="HostileSearch">
+        <WhichLocation Value="TargetUnit"/>
+        <AreaArray Radius="1.5" Validator="ShieldsDamaged"/>
+        <Compare value="GE"/>
+        <Count value="4"/>
+        <SearchFilters value="Player,Ally;Enemy,Neutral,Structure,Missile,Stasis,Dead,Hidden,Invulnerable,Benign"/>
+    </CValidatorLocationEnumArea>
+
+    <CAbilEffectTarget id="WardShellDome">
+        <AutoCastRange value="12"/>
+        <AutoCastAcquireLevel value="Defensive"/>
+        <AutoCastFilters value="Visible;Neutral,Enemy"/>
+        <AutoCastValidatorArray value="WardShellDomeAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectTarget>
+    <CValidatorCombine id="WardShellDomeAutocast">
+        <Type value="And"/>
+        <CombineArray value="WardShellDomeDisable"/>
+        <CombineArray value="WardShellDomeAutocastHostileSearch"/>
+    </CValidatorCombine>
+    <CValidatorLocationEnumArea id="WardShellDomeAutocastHostileSearch" parent="HostileSearch">
+        <WhichLocation Value="TargetPoint"/>
+        <AreaArray Radius="2" Validator="WardShellDomeUnitValidator"/>
+        <Count value="3"/>
+        <SearchFilters value="Ground;Neutral,Enemy,Structure,Missile,Stasis,Dead,Hidden,Invulnerable,Benign"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorCombine id="WardShellDomeUnitValidator">
+        <Type value="Or"/>
+        <CombineArray value="TargetIsFiringWeapon"/>
+        <CombineArray value="HasTakenDamageBehaviorCheck"/>
+    </CValidatorCombine>
+    <CAbilEffectInstant id="WardShellDomeCancel">
+        <AutoCastRange value="1"/>
+        <AutoCastAcquireLevel value="Defensive"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <AutoCastValidatorArray value="WardShellDomeCancelAutocast"/>
+    </CAbilEffectInstant>
+    <CValidatorCombine id="WardShellDomeCancelAutocast">
+        <Type value="Or"/>
+        <CombineArray value="NoEnemiesNearby12"/>
+        <CombineArray value="NoAlliesNearby7"/>
+    </CValidatorCombine>
+    <CUnit id="EchoDM">
+        <AbilArray index="2" Link="ReverbRB"/>
+        <AbilArray index="3" Link="EchoFighterMode"/>
+        <AbilArray index="4" removed="1"/>
+    </CUnit>
+
+    <CAbilEffectInstant id="SonicImage">
+        <AutoCastRange value="12"/>
+        <AutoCastAcquireLevel value="Defensive"/>
+        <AutoCastValidatorArray value="SonicImageAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectInstant>
+    <CValidatorCombine id="SonicImageAutocast">
+        <Type value="And"/>
+        <CombineArray value="SonicImageDisable"/>
+        <CombineArray value="EnemiesWithin14"/>
+        <CombineArray value="TacticalSonicImageThreatSearch"/>
+        <CombineArray value="CasterShieldsGE1"/>
+    </CValidatorCombine>
+    <CValidatorLocationEnumArea id="TacticalSonicImageThreatSearch" parent="TacticalCloakThreatSearch" unitLink="Echo"/>
+    <CValidatorUnitCompareAttackPriority id="UnitThreatensEcho" parent="UnitThreatens" unitLink="Echo"/>
+
+    <CAbilEffectInstant id="ReverbRB">
+        <AutoCastRange value="12"/>
+        <AutoCastAcquireLevel value="Defensive"/>
+        <AutoCastValidatorArray value="ReverbRBAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectInstant>
+    <CValidatorCombine id="ReverbRBAutocast">
+        <Type value="And"/>
+        <CombineArray value="ReverbRBDisable"/>
+        <CombineArray value="CasterShieldsLT1"/>
+    </CValidatorCombine>
+
+
+
+
+    <CAbilMorph id="EchoDiscordMode">
+        <AutoCastAcquireLevel value="Defensive"/>
+        <AutoCastRange value="1"/>
+        <AutoCastCountMin value="1"/>
+        <AutoCastValidatorArray value="EchoDiscordModeAutocast"/>
+        <ValidatorArray value="NotUnitSpawnerCaster"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <Flags index="IgnoreFood" value="1"/>
+    </CAbilMorph>
+    <CValidatorCombine id="EchoDiscordModeAutocast">
+        <ResultFailed value="Error,Error/NoNearbyEnemies"/>
+        <Type value="And"/>
+        <CombineArray value="EchoDiscordModeDisable"/>
+        <CombineArray value="NoAirHostilesNearby12"/>
+        <CombineArray value="GroundHostilesNearby7"/>
+    </CValidatorCombine>
+
+
+    <CAbilMorph id="EchoFighterMode">
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <Flags index="IgnoreFood" value="1"/>
+        <Flags index="IgnoreUnitCost" value="1"/>
+        <Flags index="WaitUntilStopped" value="0"/>
+        <AutoCastAcquireLevel value="Defensive"/>
+        <AutoCastRange value="1"/>
+        <AutoCastCountMin value="1"/>
+        <ValidatorArray value="NotUnitSpawnerCaster"/>
+        <AutoCastValidatorArray value="EchoFighterModeAutocast"/>
+    </CAbilMorph>
+    <CValidatorCombine id="EchoFighterModeAutocast">
+        <Type value="Or"/>
+<!--        <CombineArray value="AirHostilesNearby12"/>-->
+        <CombineArray value="NoGroundHostilesNearby7"/>
+    </CValidatorCombine>
+
+
+
+
+    <CAbilEffectTarget id="Emanator">
+        <AutoCastRange value="10"/>
+        <AutoCastAcquireLevel value="Defensive"/>
+        <AutoCastValidatorArray value="EmanatorAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectTarget>
+    <CValidatorCombine id="EmanatorAutocast">
+        <Type value="And"/>
+        <CombineArray value="EmanatorDisable"/>
+        <CombineArray value="UndetectedEnemyCloakedUnits"/>
+    </CValidatorCombine>
+
+
+    <CAbilEffectInstant id="HarbingerJudgementModeStart">
+        <AutoCastRange value="1"/>
+        <AutoCastValidatorArray value="HarbingerJudgementModeStartAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectInstant>
+    <CValidatorCombine id="HarbingerJudgementModeStartAutocast">
+        <Type value="And"/>
+        <CombineArray value="HarbingerJudgementModeStartDisable"/>
+        <CombineArray value="MultipleAirHostilesNearby12"/>
+    </CValidatorCombine>
+
+    <CAbilEffectInstant id="HarbingerExitJudgementMode">
+        <AutoCastRange value="1"/>
+        <AutoCastValidatorArray value="HarbingerExitJudgementModeAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectInstant>
+    <CValidatorCombine id="HarbingerExitJudgementModeAutocast">
+        <Type value="And"/>
+        <CombineArray value="HarbingerExitJudgementModeDisable"/>
+        <CombineArray value="NoMultipleAirHostilesNearby15"/>
+    </CValidatorCombine>
+
+    <CUnit id="Gyre">
+        <WeaponArray Link="GyreDummyWeapon"/>
+        <EnergyStart value="100"/>
+    </CUnit>
+    <CWeaponLegacy id="GyreDummyWeapon">
+        <Options index="Hidden" value="1"/>
+        <Options index="LinkedCooldown" value="0"/>
+        <Options index="RequireEnabledAttackAbil" value="0"/>
+        <Icon value="Assets\Textures\btn-command-attack.dds"/>
+        <TargetFilters value="Ground;User1,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <MinScanRange value="11"/>
+        <Range value="1"/>
+        <Arc value="360"/>
+        <Period value="120"/>
+        <DamagePoint value="0"/>
+        <Backswing value="0"/>
+        <Effect value="DummyWeapon"/>
+    </CWeaponLegacy>
+
+
+
+    <CAbilEffectInstant id="GyreAnnex">
+        <AutoCastRange value="2"/>
+        <AutoCastValidatorArray value="GyreAnnexAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <Cost index="0">
+            <Cooldown TimeUse="5.6"/>
+        </Cost>
+    </CAbilEffectInstant>
+    <CValidatorUnitCompareVital id="GyreAnnexMinEnergy">
+        <ResultFailed value="Error,Error/PulsarRequiresMoreEnergy"/>
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="50"/>
+        <Vital value="Energy"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorCombine id="GyreAnnexAutocast">
+        <Type value="And"/>
+        <CombineArray value="GyreAnnexDisable"/>
+        <CombineArray value="GyreAnnexAutocastHostileSearch"/>
+    </CValidatorCombine>
+    <CValidatorLocationEnumArea id="GyreAnnexAutocastHostileSearch" parent="HostileSearch">
+        <WhichLocation Value="TargetPoint"/>
+        <AreaArray Radius="1.5"/>
+        <Count value="4"/>
+        <SearchFilters value="Ground,Visible;Player,Ally,Neutral,Structure,Missile,Stasis,Dead,Hidden,Invulnerable,Benign"/>
+    </CValidatorLocationEnumArea>
+
+
+    <CAbilEffectTarget id="GyreShackle">
+        <AutoCastValidatorArray value="GyreShackleAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+        <AutoCastFilters value="Air,Visible;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Hallucination,Invulnerable,Benign"/>
+        <AutoCastRange value="10"/>
+    </CAbilEffectTarget>
+    <CValidatorCombine id="GyreShackleAutocast">
+        <Type value="And"/>
+        <CombineArray value="GyreShackleDisable"/>
+        <CombineArray value="NoAllyParadoxShackleWeaponWithin7"/>
+        <CombineArray value="GyreShackleAutocastHostileSearch"/>
+    </CValidatorCombine>
+    <CValidatorLocationEnumArea id="GyreShackleAutocastHostileSearch" parent="HostileSearch">
+        <WhichLocation Value="TargetPoint"/>
+        <AreaArray Radius="1.5" Validator="HasNoGyreShackled"/>
+        <Count value="4"/>
+        <SearchFilters value="Air,Visible;Player,Ally,Neutral,Structure,Missile,Stasis,Dead,Hidden,Invulnerable,Benign"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorUnitCompareBehaviorCount id="HasNoGyreShackled">
+        <Behavior value="GyreShackled"/>
+    </CValidatorUnitCompareBehaviorCount>
+    <CValidatorLocationEnumArea id="NoAllyParadoxShackleWeaponWithin7">
+        <AreaArray Count="0" Radius="7" Validator="IsParadoxShackleWeapon"/>
+        <Compare value="Eq"/>
+        <SearchFilters value="Self,Player,Ally;Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <WhichLocation Value="CasterUnit"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorUnitType id="IsParadoxShackleWeapon">
+        <Value value="ParadoxShackleWeapon"/>
+    </CValidatorUnitType>
+
+
+
+
+
+    <CAbilEffectTarget id="EmissaryOrb">
+        <AutoCastRange value="12"/>
+        <AutoCastValidatorArray value="EmissaryOrbAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectTarget>
+
+    <CValidatorCombine id="EmissaryOrbAutocast">
+        <Type value="And"/>
+        <CombineArray value="EmissaryOrbDisable"/>
+        <CombineArray value="EmissaryOrbAutocastSet"/>
+        <CombineArray value="noMarkers"/>
+        <CombineArray value="NotHallucinationOrNotDetected"/>
+        <CombineArray value="NoTargetedbyDeadlyAbility"/>
+    </CValidatorCombine>
+    <CValidatorCombine id="EmissaryOrbAutocastSet">
+        <CombineArray value="TargetVitalityGE150"/>
+        <CombineArray value="GenericTargetedAoETargetSearch"/>
+    </CValidatorCombine>
+
+
+
+    <CWeaponLegacy id="FuseDummyWeapon">
+        <EditorCategories value="Race:Terran"/>
+        <Options index="Hidden" value="1"/>
+        <Options index="LinkedCooldown" value="0"/>
+        <Options index="RequireEnabledAttackAbil" value="0"/>
+        <Icon value="Assets\Textures\btn-command-attack.dds"/>
+        <TargetFilters value="Visible;User1,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <MinScanRange value="11"/>
+        <Range value="7"/>
+        <Arc value="360"/>
+        <Period value="120"/>
+        <DamagePoint value="0"/>
+        <Backswing value="0"/>
+        <Effect value="DummyWeapon"/>
+    </CWeaponLegacy>
+    <CUnit id="Fuse"     >
+        <WeaponArray Link="FuseDummyWeapon"/>
+    </CUnit>
+
+    <CAbilEffectTarget id="FuseFusion">
+        <AutoCastRange value="12"/>
+        <AutoCastFilters value="Visible;Neutral,Enemy"/>
+        <AutoCastValidatorArray value="FuseFusionAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectTarget>
+    <CValidatorCombine id="FuseFusionAutocast">
+        <Type value="And"/>
+        <CombineArray value="FuseFusionDisable"/>
+        <CombineArray value="TargetShieldsLT0"/>
+    </CValidatorCombine>
+
+    <CAbilEffectTarget id="ApertureKeyhole">
+        <AutoCastRange value="30"/>
+        <AutoCastFilters value="Visible;Neutral,Enemy,Ally"/>
+        <AutoCastValidatorArray value="ApertureKeyholeAutocast"/>
+        <Flags index="AutoCast" value="1"/>
+        <Flags index="AutoCastOn" value="1"/>
+    </CAbilEffectTarget>
+    <CValidatorCombine id="ApertureKeyholeAutocast">
+        <Type value="And"/>
+        <CombineArray value="ApertureKeyholeDisable"/>
+        <CombineArray value="TargetLifeLTE30"/>
+        <CombineArray value="TargetShieldsLT0"/>
+    </CValidatorCombine>
+
+
+</Catalog>

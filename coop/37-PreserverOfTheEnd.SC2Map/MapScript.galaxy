@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -480,7 +480,7 @@ bool auto_gf_ELEMENTALSpawn_TriggerFunc (bool testConds, bool runActions) {
     libNtve_gf_CreateUnitsWithDefaultFacing(1, "VoidElemental", c_unitCreateIgnorePlacement, 5, PointFromId(1229051675));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitLastCreated()), StringExternal("Param/Value/BE3A6DEB"));
     PingSetUnit(PingLastCreated(), UnitLastCreated());
-    libHots_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
     lv_ping = PingLastCreated();
     gv_sD.lv_eLEMENTALUnit = UnitLastCreated();
     libCOMI_gf_CreateRevealerCoop(1, RegionCircle(PointFromId(1229051675), 8.0));
@@ -751,7 +751,7 @@ bool auto_gf_PHASEEVENTXENOSSPAWN_TriggerFunc (bool testConds, bool runActions) 
     UnitSetPropertyFixed(lv_xenos, c_unitPropShieldsPercent, 100.0);
     libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingBoss", UnitGetPosition(lv_xenos), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
     PingSetUnit(PingLastCreated(), lv_xenos);
-    libHots_gf_StorePingForUnit(lv_xenos, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lv_xenos, 1, PingLastCreated());
     UnitGroupAdd(gv_sD.lv_xENOSUnitGroup, lv_xenos);
     if ((gv_sD.lv_objectivePhase == 4)) {
         gf_XenosAIPhase4();
@@ -1586,7 +1586,7 @@ bool auto_gf_ObjectivePHASEGAMELOOPRefreshControlTimers_TriggerFunc (bool testCo
             libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingObjective", UnitGetPosition(lv_pingTargetUnit), ColorWithAlpha(0.00, 100.00, 100.00, 0.00), 0.0);
             PingSetScale(PingLastCreated(), 0.6);
             PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/C9D68A34"));
-            libHots_gf_StorePingForUnit(lv_pingTargetUnit, 1, PingLastCreated());
+            libARRA_gf_StorePingForUnit(lv_pingTargetUnit, 1, PingLastCreated());
             gv_sD.lv_spareSmallPingAmount -= 1;
         }
         if ((UnitGroupCount(lv_group[0], c_unitCountAlive) == 0) && (UnitGroupCount(lv_group[1], c_unitCountAlive) == 0) && (lv_allPhaseAreasMinedOut == false)) {
@@ -2735,8 +2735,8 @@ bool gt_VoidMineralFieldHint_Func (bool testConds, bool runActions) {
         if (auto3BD45D95_var == null) { break; }
         libCOMI_gf_CreateReticleEffectAndTextTagAtPoint(libCOMI_ge_CampaginReticleType_ProtossBonusObjective, libCOMI_ge_CampaginReticleSize_Small, StringExternal("Param/Value/C0DF6FF7"), UnitGetPosition(auto3BD45D95_var));
         TextTagSetPosition(TextTagLastCreated(), UnitGetPosition(auto3BD45D95_var), 0.0);
-        libHots_gf_StoreActorForUnit(auto3BD45D95_var, 1, libNtve_gf_ActorLastCreated());
-        libHots_gf_StoreTextTagForUnit(auto3BD45D95_var, 1, TextTagLastCreated());
+        libARRA_gf_StoreActorForUnit(auto3BD45D95_var, 1, libNtve_gf_ActorLastCreated());
+        libARRA_gf_StoreTextTagForUnit(auto3BD45D95_var, 1, TextTagLastCreated());
         UnitBehaviorAdd(auto3BD45D95_var, "VoidMineralFieldHintDuration", auto3BD45D95_var, 1);
         UnitGroupAdd(gv_sD.lv_voidMineralFieldHintActiveGroup, auto3BD45D95_var);
     }
@@ -2759,8 +2759,8 @@ bool gt_VoidMineralFieldHintExpired_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TextTagDestroy(libHots_gf_TextTagForUnit(EventUnit(), 1));
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(EventUnit(), 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(EventUnit(), 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(EventUnit(), 1));
     UnitGroupRemove(gv_sD.lv_voidMineralFieldHintActiveGroup, EventUnit());
     return true;
 }
@@ -2822,8 +2822,8 @@ bool gt_VoidMineralFieldMinedOut_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    if ((libHots_gf_PingStoredForUnit(EventUnit(), 1) != c_invalidPingId)) {
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    if ((libARRA_gf_PingStoredForUnit(EventUnit(), 1) != c_invalidPingId)) {
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
         gv_sD.lv_spareSmallPingAmount += 1;
     }
 
@@ -3134,7 +3134,7 @@ bool gt_XenosDeathPingRemove_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     gv_sD.lv_xenoReviveTimer = 0;
     auto3112C2ED_val = gv_sD.lv_pRESETGAMEDIFFICULTY;
     if (auto3112C2ED_val == 4) {

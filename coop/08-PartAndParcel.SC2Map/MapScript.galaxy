@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -666,8 +666,8 @@ void gf_ShowHidePartsRegionPings (bool lp_showHide) {
     for (;; autoBEA844F8_u -= 1) {
         lv_pingedUnitIter = UnitGroupUnitFromEnd(autoBEA844F8_g, autoBEA844F8_u);
         if (lv_pingedUnitIter == null) { break; }
-        if ((libHots_gf_PingStoredForUnit(lv_pingedUnitIter, 1) != c_invalidPingId)) {
-            libCOMI_gf_ShowHidePingCoop(libHots_gf_PingStoredForUnit(lv_pingedUnitIter, 1), lp_showHide);
+        if ((libARRA_gf_PingStoredForUnit(lv_pingedUnitIter, 1) != c_invalidPingId)) {
+            libCOMI_gf_ShowHidePingCoop(libARRA_gf_PingStoredForUnit(lv_pingedUnitIter, 1), lp_showHide);
         }
 
     }
@@ -677,7 +677,7 @@ void gf_ShowHidePartsRegionPings (bool lp_showHide) {
         lv_pingedUnitIter = UnitGroupUnitFromEnd(auto5FB195AC_g, auto5FB195AC_u);
         if (lv_pingedUnitIter == null) { break; }
         if ((UnitIsValid(lv_pingedUnitIter) == true)) {
-            libCOMI_gf_ShowHidePingCoop(libHots_gf_PingStoredForUnit(lv_pingedUnitIter, 1), lp_showHide);
+            libCOMI_gf_ShowHidePingCoop(libARRA_gf_PingStoredForUnit(lv_pingedUnitIter, 1), lp_showHide);
         }
 
     }
@@ -701,14 +701,14 @@ bool auto_gf_PartsSmallPing_TriggerFunc (bool testConds, bool runActions) {
 
     // Automatic Variable Declarations
     // Implementation
-    if (((UnitIsAlive(lp_unitToPing) == false) || (libHots_gf_PingStoredForUnit(lp_unitToPing, 1) != c_invalidPingId))) {
+    if (((UnitIsAlive(lp_unitToPing) == false) || (libARRA_gf_PingStoredForUnit(lp_unitToPing, 1) != c_invalidPingId))) {
         return true;
     }
     else {
         UnitGroupAdd(gv_smallPingUnits, lp_unitToPing);
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(lp_unitToPing), StringExternal("Param/Value/9A729A8E"));
         PingSetUnit(PingLastCreated(), lp_unitToPing);
-        libHots_gf_StorePingForUnit(lp_unitToPing, 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(lp_unitToPing, 1, PingLastCreated());
         PingSetScale(PingLastCreated(), 0.6);
         while (!((UnitIsValid(lp_unitToPing) == false))) {
             Wait(0.25, c_timeGame);
@@ -724,7 +724,7 @@ void gf_CreateBossPing (int lp_bossIndex) {
     libCOMI_gf_CreatePingFacingAngleCoop(libCOMI_gf_HumanPlayers(), UnitGetPosition(gv_bossCages[lp_bossIndex]), 270.0, "PingBoss", ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
     PingSetScale(PingLastCreated(), 0.75);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/5371D926"));
-    libHots_gf_StorePingForUnit(gv_bossCages[lp_bossIndex], 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(gv_bossCages[lp_bossIndex], 1, PingLastCreated());
 }
 
 trigger auto_gf_HybridAbilitySingleTargetAddTarget_Trigger = null;
@@ -1161,7 +1161,7 @@ bool auto_gf_BossLogic_TriggerFunc (bool testConds, bool runActions) {
 
         Wait(0.25, c_timeGame);
     }
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_bossUnit, 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_bossUnit, 1));
     autoDEA78185_ae = (ge_BossStyles_Illusionist);
     lv_styleIter = (ge_BossStyles__None);
     for ( ; ( (autoDEA78185_ai >= 0 && lv_styleIter <= autoDEA78185_ae) || (autoDEA78185_ai < 0 && lv_styleIter >= autoDEA78185_ae) ) ; lv_styleIter += autoDEA78185_ai ) {
@@ -3812,7 +3812,7 @@ bool gt_ReleaseBossHybrid_Func (bool testConds, bool runActions) {
 
     TriggerEnable(TriggerGetCurrent(), false);
     lv_currentBoss = gv_bossesSlain;
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_bossCages[lv_currentBoss], 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gv_bossCages[lv_currentBoss], 1));
     UnitSetState(gv_bossCages[lv_currentBoss], c_unitStateSelectable, false);
     UnitSetState(gv_bossCages[lv_currentBoss], c_unitStateTargetable, false);
     gv_hybridChamberOpen[lv_currentBoss] = true;
@@ -3873,7 +3873,7 @@ bool gt_BossHybridCreated_Func (bool testConds, bool runActions) {
     libNtve_gf_MakeUnitInvulnerable(gv_boss[lv_hybridCellIndex], false);
     lv_hybridBoss = gv_boss[lv_hybridCellIndex];
     libCOMI_gf_CreatePingFacingAngleCoop(libCOMI_gf_HumanPlayers(), UnitGetPosition(lv_hybridBoss), 270.0, "PingBoss", ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
-    libHots_gf_StorePingForUnit(lv_hybridBoss, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lv_hybridBoss, 1, PingLastCreated());
     PingSetTooltip(PingLastCreated(), UnitTypeGetName(UnitGetType(lv_hybridBoss)));
     PingSetUnit(PingLastCreated(), lv_hybridBoss);
     gf_BossLogic(lv_hybridCellIndex, lv_hybridBoss);
@@ -3898,14 +3898,14 @@ bool gt_BossDeath1_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     gv_hidePingsBool = false;
     gv_bossesSlain = (gv_bossesSlain + 1);
     TriggerExecute(gt_ObjectiveDestroyBossesUpdate, true, false);
     libCOMI_gf_SetMissionEffort(40.0);
     if (((gv_archangelState_Current == ge_ArchangelStates_RetreatingToRepair) || (gv_archangelState_Current == ge_ArchangelStates_Repairing) || (gv_archangelState_Current == ge_ArchangelStates_LandingToRepair))) {
         TriggerExecute(gt_TransmissionBossDefeatedArchangelDefeatedQ, true, false);
-        libHots_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
+        libARRA_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
         gv_attackWaveDirection = ge_AttackWaveDirection_Random;
         while (!((gv_archangelState_Current == ge_ArchangelStates_Repairing))) {
             Wait(0.1, c_timeGame);
@@ -3921,7 +3921,7 @@ bool gt_BossDeath1_Func (bool testConds, bool runActions) {
 
     if ((gv_archangelState_Current == ge_ArchangelStates_EngagingBoss)) {
         TriggerExecute(gt_TransmissionBossDefeatedReturnHomeQ, true, false);
-        libHots_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
+        libARRA_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
         gf_ArchangelState(ge_ArchangelStates_RetreatingToRepair);
         gv_attackWaveDirection = ge_AttackWaveDirection_Random;
         gv_partsUpdateVOBool = true;
@@ -3955,14 +3955,14 @@ bool gt_BossDeath2_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     gv_hidePingsBool = false;
     gv_bossesSlain = (gv_bossesSlain + 1);
     TriggerExecute(gt_ObjectiveDestroyBossesUpdate, true, false);
     libCOMI_gf_SetMissionEffort(80.0);
     if (((gv_archangelState_Current == ge_ArchangelStates_RetreatingToRepair) || (gv_archangelState_Current == ge_ArchangelStates_Repairing) || (gv_archangelState_Current == ge_ArchangelStates_LandingToRepair))) {
         TriggerExecute(gt_TransmissionBossDefeatedArchangelDefeatedQ, true, false);
-        libHots_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
+        libARRA_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
         gv_attackWaveDirection = ge_AttackWaveDirection_Random;
         while (!((gv_archangelState_Current == ge_ArchangelStates_Repairing))) {
             Wait(0.1, c_timeGame);
@@ -3978,7 +3978,7 @@ bool gt_BossDeath2_Func (bool testConds, bool runActions) {
 
     if ((gv_archangelState_Current == ge_ArchangelStates_EngagingBoss)) {
         TriggerExecute(gt_TransmissionBossDefeatedReturnHomeQ, true, false);
-        libHots_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
+        libARRA_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
         gf_ArchangelState(ge_ArchangelStates_RetreatingToRepair);
         gv_attackWaveDirection = ge_AttackWaveDirection_Random;
         gv_partsUpdateVOBool = true;
@@ -4012,7 +4012,7 @@ bool gt_BossDeath3_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     gv_bossesSlain = (gv_bossesSlain + 1);
     TriggerExecute(gt_VictoryPrimaryObjectiveComplete, true, true);
     return true;
@@ -5764,7 +5764,7 @@ bool gt_TransmissionArchangelMovingOutafterrepairQ_Func (bool testConds, bool ru
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     gf_CreateSpeechBubble(gv_archangel);
     libCOMI_gf_SendMissionTransmission("AngelMovePnP", true, -1);
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_Balius_MovingOut", -1), false, false);
+    libARRA_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_Balius_MovingOut", -1), false, false);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
     TriggerQueueExit();
     return true;
@@ -5820,7 +5820,7 @@ bool gt_TransmissionBossEngagedQ_Func (bool testConds, bool runActions) {
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     gf_CreateSpeechBubble(gv_archangel);
     libCOMI_gf_SendMissionTransmission("AngelFightStartPnP", true, -1);
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_HybridBossFight", -1), true, false);
+    libARRA_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_HybridBossFight", -1), true, false);
     TriggerQueueExit();
     return true;
 }
@@ -6728,7 +6728,7 @@ bool gt_VictoryPrimaryObjectiveComplete_Func (bool testConds, bool runActions) {
 
     TriggerEnable(TriggerGetCurrent(), false);
     TriggerExecute(gt_ObjectiveDestroyBossesComplete, true, true);
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
+    libARRA_gf_PlaySoundLinkasMusic(SoundLink("AC_Music_PartParcel_BossFight_Win", -1), false, true);
     TriggerExecute(gt_ObjectivePreventBossAwakenComplete, true, true);
     libCOMI_gf_BeforeFanfare(c_gameOverVictory);
     libCOMI_gf_SendVictoryTransmission("VictoryPnP");

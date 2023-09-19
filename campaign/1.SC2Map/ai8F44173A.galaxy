@@ -1,0 +1,1379 @@
+//==================================================================================================
+// 
+// Generated AI Script
+// 
+// AI Name: Terry Ai
+// 
+//==================================================================================================
+include "TriggerLibs/natives"
+include "TriggerLibs/AI"
+include "TriggerLibs/Computer"
+
+//--------------------------------------------------------------------------------------------------
+// Globals
+//--------------------------------------------------------------------------------------------------
+point[17] ai8F44173A_defGather;
+string[17] ai8F44173A_customData;
+wave[17] ai8F44173A_lastWave;
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai8F44173A_wave1_enabled;
+wave[17] ai8F44173A_wave1_lastWave;
+trigger ai8F44173A_wave1_trigger = null;
+int ai8F44173A_wave1_runPlayer;
+playergroup ai8F44173A_wave1_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave1_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai8F44173A_wave1_enabled[init_i] = true;
+        ai8F44173A_wave1_lastWave[init_i] = null;
+    }
+
+    ai8F44173A_wave1_trigger = TriggerCreate("ai8F44173A_wave1_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave1_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai8F44173A_wave1_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave1_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai8F44173A_wave1_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai8F44173A_wave1_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai8F44173A_wave1_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave1_runFunc (bool c, bool a) {
+    int p = ai8F44173A_wave1_runPlayer;
+    playergroup target = ai8F44173A_wave1_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai8F44173A_wave1_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai8F44173A_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 460; }
+    if (d == 2) { ta = 460; }
+    if (d == 3) { ta = 460; }
+    if (d == 4) { ta = 460; }
+    if (d == 5) { ta = 460; }
+    if (d == 6) { ta = 460; }
+    if (d == 7) { ta = 460; }
+    if (d == 8) { ta = 460; }
+    if (d == 9) { ta = 460; }
+    if (d == 10) { ta = 460; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(380595161));
+
+    gatherPoint = ai8F44173A_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(3, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(4, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(5, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(6, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(7, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(8, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(9, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(10, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(11, 10, "StrikeTrooper");
+
+    AIAttackWaveAddUnits(2, 1, "Garmr");
+    AIAttackWaveAddUnits(3, 1, "Garmr");
+    AIAttackWaveAddUnits(4, 1, "Garmr");
+    AIAttackWaveAddUnits(5, 1, "Garmr");
+    AIAttackWaveAddUnits(6, 1, "Garmr");
+    AIAttackWaveAddUnits(7, 1, "Garmr");
+    AIAttackWaveAddUnits(8, 1, "Garmr");
+    AIAttackWaveAddUnits(9, 1, "Garmr");
+    AIAttackWaveAddUnits(10, 1, "Garmr");
+    AIAttackWaveAddUnits(11, 1, "Garmr");
+
+    AIAttackWaveSend(p, ts, false);
+    ai8F44173A_wave1_lastWave[p] = WaveLastCreated();
+    ai8F44173A_lastWave[p] = ai8F44173A_wave1_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave1_run (int p, playergroup target, bool wait) {
+    ai8F44173A_wave1_runPlayer = p;
+    ai8F44173A_wave1_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai8F44173A_wave1_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai8F44173A_wave2_enabled;
+wave[17] ai8F44173A_wave2_lastWave;
+trigger ai8F44173A_wave2_trigger = null;
+int ai8F44173A_wave2_runPlayer;
+playergroup ai8F44173A_wave2_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave2_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai8F44173A_wave2_enabled[init_i] = true;
+        ai8F44173A_wave2_lastWave[init_i] = null;
+    }
+
+    ai8F44173A_wave2_trigger = TriggerCreate("ai8F44173A_wave2_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave2_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai8F44173A_wave2_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave2_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai8F44173A_wave2_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai8F44173A_wave2_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai8F44173A_wave2_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave2_runFunc (bool c, bool a) {
+    int p = ai8F44173A_wave2_runPlayer;
+    playergroup target = ai8F44173A_wave2_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai8F44173A_wave2_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai8F44173A_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 520; }
+    if (d == 2) { ta = 520; }
+    if (d == 3) { ta = 520; }
+    if (d == 4) { ta = 520; }
+    if (d == 5) { ta = 520; }
+    if (d == 6) { ta = 520; }
+    if (d == 7) { ta = 520; }
+    if (d == 8) { ta = 520; }
+    if (d == 9) { ta = 520; }
+    if (d == 10) { ta = 520; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(380595161));
+
+    gatherPoint = ai8F44173A_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 9, "StrikeTrooper");
+    AIAttackWaveAddUnits(3, 9, "StrikeTrooper");
+    AIAttackWaveAddUnits(4, 9, "StrikeTrooper");
+    AIAttackWaveAddUnits(5, 9, "StrikeTrooper");
+    AIAttackWaveAddUnits(6, 9, "StrikeTrooper");
+    AIAttackWaveAddUnits(7, 9, "StrikeTrooper");
+    AIAttackWaveAddUnits(8, 9, "StrikeTrooper");
+    AIAttackWaveAddUnits(9, 9, "StrikeTrooper");
+    AIAttackWaveAddUnits(10, 9, "StrikeTrooper");
+    AIAttackWaveAddUnits(11, 9, "StrikeTrooper");
+
+    AIAttackWaveAddUnits(2, 3, "Garmr");
+    AIAttackWaveAddUnits(3, 3, "Garmr");
+    AIAttackWaveAddUnits(4, 3, "Garmr");
+    AIAttackWaveAddUnits(5, 3, "Garmr");
+    AIAttackWaveAddUnits(6, 3, "Garmr");
+    AIAttackWaveAddUnits(7, 3, "Garmr");
+    AIAttackWaveAddUnits(8, 3, "Garmr");
+    AIAttackWaveAddUnits(9, 3, "Garmr");
+    AIAttackWaveAddUnits(10, 3, "Garmr");
+    AIAttackWaveAddUnits(11, 3, "Garmr");
+
+    AIAttackWaveAddUnits(2, 1, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(3, 1, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(4, 1, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(5, 1, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(6, 1, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(7, 1, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(8, 1, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(9, 1, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(10, 1, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(11, 1, "PoliticalAdvisor");
+
+    AIAttackWaveSend(p, ts, false);
+    ai8F44173A_wave2_lastWave[p] = WaveLastCreated();
+    ai8F44173A_lastWave[p] = ai8F44173A_wave2_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave2_run (int p, playergroup target, bool wait) {
+    ai8F44173A_wave2_runPlayer = p;
+    ai8F44173A_wave2_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai8F44173A_wave2_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai8F44173A_wave3_enabled;
+wave[17] ai8F44173A_wave3_lastWave;
+trigger ai8F44173A_wave3_trigger = null;
+int ai8F44173A_wave3_runPlayer;
+playergroup ai8F44173A_wave3_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave3_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai8F44173A_wave3_enabled[init_i] = true;
+        ai8F44173A_wave3_lastWave[init_i] = null;
+    }
+
+    ai8F44173A_wave3_trigger = TriggerCreate("ai8F44173A_wave3_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave3_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai8F44173A_wave3_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave3_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai8F44173A_wave3_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai8F44173A_wave3_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai8F44173A_wave3_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave3_runFunc (bool c, bool a) {
+    int p = ai8F44173A_wave3_runPlayer;
+    playergroup target = ai8F44173A_wave3_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai8F44173A_wave3_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai8F44173A_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 400; }
+    if (d == 2) { ta = 400; }
+    if (d == 3) { ta = 400; }
+    if (d == 4) { ta = 400; }
+    if (d == 5) { ta = 400; }
+    if (d == 6) { ta = 400; }
+    if (d == 7) { ta = 400; }
+    if (d == 8) { ta = 400; }
+    if (d == 9) { ta = 400; }
+    if (d == 10) { ta = 400; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(380595161));
+
+    gatherPoint = ai8F44173A_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 12, "StrikeTrooper");
+    AIAttackWaveAddUnits(3, 12, "StrikeTrooper");
+    AIAttackWaveAddUnits(4, 12, "StrikeTrooper");
+    AIAttackWaveAddUnits(5, 12, "StrikeTrooper");
+    AIAttackWaveAddUnits(6, 12, "StrikeTrooper");
+    AIAttackWaveAddUnits(7, 12, "StrikeTrooper");
+    AIAttackWaveAddUnits(8, 12, "StrikeTrooper");
+    AIAttackWaveAddUnits(9, 12, "StrikeTrooper");
+    AIAttackWaveAddUnits(10, 12, "StrikeTrooper");
+    AIAttackWaveAddUnits(11, 12, "StrikeTrooper");
+
+    AIAttackWaveAddUnits(2, 5, "Lazarus");
+    AIAttackWaveAddUnits(3, 5, "Lazarus");
+    AIAttackWaveAddUnits(4, 5, "Lazarus");
+    AIAttackWaveAddUnits(5, 5, "Lazarus");
+    AIAttackWaveAddUnits(6, 5, "Lazarus");
+    AIAttackWaveAddUnits(7, 5, "Lazarus");
+    AIAttackWaveAddUnits(8, 5, "Lazarus");
+    AIAttackWaveAddUnits(9, 5, "Lazarus");
+    AIAttackWaveAddUnits(10, 5, "Lazarus");
+    AIAttackWaveAddUnits(11, 5, "Lazarus");
+
+    AIAttackWaveSend(p, ts, false);
+    ai8F44173A_wave3_lastWave[p] = WaveLastCreated();
+    ai8F44173A_lastWave[p] = ai8F44173A_wave3_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave3_run (int p, playergroup target, bool wait) {
+    ai8F44173A_wave3_runPlayer = p;
+    ai8F44173A_wave3_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai8F44173A_wave3_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai8F44173A_wave4_enabled;
+wave[17] ai8F44173A_wave4_lastWave;
+trigger ai8F44173A_wave4_trigger = null;
+int ai8F44173A_wave4_runPlayer;
+playergroup ai8F44173A_wave4_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave4_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai8F44173A_wave4_enabled[init_i] = true;
+        ai8F44173A_wave4_lastWave[init_i] = null;
+    }
+
+    ai8F44173A_wave4_trigger = TriggerCreate("ai8F44173A_wave4_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave4_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai8F44173A_wave4_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave4_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai8F44173A_wave4_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai8F44173A_wave4_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai8F44173A_wave4_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave4_runFunc (bool c, bool a) {
+    int p = ai8F44173A_wave4_runPlayer;
+    playergroup target = ai8F44173A_wave4_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai8F44173A_wave4_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai8F44173A_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 300; }
+    if (d == 2) { ta = 300; }
+    if (d == 3) { ta = 300; }
+    if (d == 4) { ta = 300; }
+    if (d == 5) { ta = 300; }
+    if (d == 6) { ta = 300; }
+    if (d == 7) { ta = 300; }
+    if (d == 8) { ta = 300; }
+    if (d == 9) { ta = 300; }
+    if (d == 10) { ta = 300; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(380595161));
+
+    gatherPoint = ai8F44173A_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 16, "StrikeTrooper");
+    AIAttackWaveAddUnits(3, 16, "StrikeTrooper");
+    AIAttackWaveAddUnits(4, 16, "StrikeTrooper");
+    AIAttackWaveAddUnits(5, 16, "StrikeTrooper");
+    AIAttackWaveAddUnits(6, 16, "StrikeTrooper");
+    AIAttackWaveAddUnits(7, 16, "StrikeTrooper");
+    AIAttackWaveAddUnits(8, 16, "StrikeTrooper");
+    AIAttackWaveAddUnits(9, 16, "StrikeTrooper");
+    AIAttackWaveAddUnits(10, 16, "StrikeTrooper");
+    AIAttackWaveAddUnits(11, 16, "StrikeTrooper");
+
+    AIAttackWaveAddUnits(2, 1, "Napoleon");
+    AIAttackWaveAddUnits(3, 1, "Napoleon");
+    AIAttackWaveAddUnits(4, 1, "Napoleon");
+    AIAttackWaveAddUnits(5, 1, "Napoleon");
+    AIAttackWaveAddUnits(6, 1, "Napoleon");
+    AIAttackWaveAddUnits(7, 1, "Napoleon");
+    AIAttackWaveAddUnits(8, 1, "Napoleon");
+    AIAttackWaveAddUnits(9, 1, "Napoleon");
+    AIAttackWaveAddUnits(10, 1, "Napoleon");
+    AIAttackWaveAddUnits(11, 1, "Napoleon");
+
+    AIAttackWaveSend(p, ts, false);
+    ai8F44173A_wave4_lastWave[p] = WaveLastCreated();
+    ai8F44173A_lastWave[p] = ai8F44173A_wave4_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave4_run (int p, playergroup target, bool wait) {
+    ai8F44173A_wave4_runPlayer = p;
+    ai8F44173A_wave4_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai8F44173A_wave4_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai8F44173A_wave7_enabled;
+wave[17] ai8F44173A_wave7_lastWave;
+trigger ai8F44173A_wave7_trigger = null;
+int ai8F44173A_wave7_runPlayer;
+playergroup ai8F44173A_wave7_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave7_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai8F44173A_wave7_enabled[init_i] = true;
+        ai8F44173A_wave7_lastWave[init_i] = null;
+    }
+
+    ai8F44173A_wave7_trigger = TriggerCreate("ai8F44173A_wave7_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave7_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai8F44173A_wave7_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave7_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai8F44173A_wave7_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai8F44173A_wave7_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai8F44173A_wave7_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave7_runFunc (bool c, bool a) {
+    int p = ai8F44173A_wave7_runPlayer;
+    playergroup target = ai8F44173A_wave7_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai8F44173A_wave7_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai8F44173A_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 380; }
+    if (d == 2) { ta = 380; }
+    if (d == 3) { ta = 380; }
+    if (d == 4) { ta = 380; }
+    if (d == 5) { ta = 380; }
+    if (d == 6) { ta = 380; }
+    if (d == 7) { ta = 380; }
+    if (d == 8) { ta = 380; }
+    if (d == 9) { ta = 380; }
+    if (d == 10) { ta = 380; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(380595161));
+
+    gatherPoint = ai8F44173A_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 20, "StrikeTrooper");
+    AIAttackWaveAddUnits(3, 20, "StrikeTrooper");
+    AIAttackWaveAddUnits(4, 20, "StrikeTrooper");
+    AIAttackWaveAddUnits(5, 20, "StrikeTrooper");
+    AIAttackWaveAddUnits(6, 20, "StrikeTrooper");
+    AIAttackWaveAddUnits(7, 20, "StrikeTrooper");
+    AIAttackWaveAddUnits(8, 20, "StrikeTrooper");
+    AIAttackWaveAddUnits(9, 20, "StrikeTrooper");
+    AIAttackWaveAddUnits(10, 20, "StrikeTrooper");
+    AIAttackWaveAddUnits(11, 20, "StrikeTrooper");
+
+    AIAttackWaveAddUnits(2, 4, "Lazarus");
+    AIAttackWaveAddUnits(3, 4, "Lazarus");
+    AIAttackWaveAddUnits(4, 4, "Lazarus");
+    AIAttackWaveAddUnits(5, 4, "Lazarus");
+    AIAttackWaveAddUnits(6, 4, "Lazarus");
+    AIAttackWaveAddUnits(7, 4, "Lazarus");
+    AIAttackWaveAddUnits(8, 4, "Lazarus");
+    AIAttackWaveAddUnits(9, 4, "Lazarus");
+    AIAttackWaveAddUnits(10, 4, "Lazarus");
+    AIAttackWaveAddUnits(11, 4, "Lazarus");
+
+    AIAttackWaveAddUnits(2, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(3, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(4, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(5, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(6, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(7, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(8, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(9, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(10, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(11, 4, "PoliticalAdvisor");
+
+    AIAttackWaveSend(p, ts, false);
+    ai8F44173A_wave7_lastWave[p] = WaveLastCreated();
+    ai8F44173A_lastWave[p] = ai8F44173A_wave7_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave7_run (int p, playergroup target, bool wait) {
+    ai8F44173A_wave7_runPlayer = p;
+    ai8F44173A_wave7_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai8F44173A_wave7_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai8F44173A_wave5_enabled;
+wave[17] ai8F44173A_wave5_lastWave;
+trigger ai8F44173A_wave5_trigger = null;
+int ai8F44173A_wave5_runPlayer;
+playergroup ai8F44173A_wave5_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave5_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai8F44173A_wave5_enabled[init_i] = true;
+        ai8F44173A_wave5_lastWave[init_i] = null;
+    }
+
+    ai8F44173A_wave5_trigger = TriggerCreate("ai8F44173A_wave5_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave5_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai8F44173A_wave5_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave5_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai8F44173A_wave5_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai8F44173A_wave5_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai8F44173A_wave5_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave5_runFunc (bool c, bool a) {
+    int p = ai8F44173A_wave5_runPlayer;
+    playergroup target = ai8F44173A_wave5_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai8F44173A_wave5_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai8F44173A_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 480; }
+    if (d == 2) { ta = 480; }
+    if (d == 3) { ta = 480; }
+    if (d == 4) { ta = 480; }
+    if (d == 5) { ta = 480; }
+    if (d == 6) { ta = 480; }
+    if (d == 7) { ta = 480; }
+    if (d == 8) { ta = 480; }
+    if (d == 9) { ta = 480; }
+    if (d == 10) { ta = 480; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(380595161));
+
+    gatherPoint = ai8F44173A_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 7, "Huracan");
+    AIAttackWaveAddUnits(3, 7, "Huracan");
+    AIAttackWaveAddUnits(4, 7, "Huracan");
+    AIAttackWaveAddUnits(5, 7, "Huracan");
+    AIAttackWaveAddUnits(6, 7, "Huracan");
+    AIAttackWaveAddUnits(7, 7, "Huracan");
+    AIAttackWaveAddUnits(8, 7, "Huracan");
+    AIAttackWaveAddUnits(9, 7, "Huracan");
+    AIAttackWaveAddUnits(10, 7, "Huracan");
+    AIAttackWaveAddUnits(11, 7, "Huracan");
+
+    AIAttackWaveAddUnits(2, 4, "Napoleon");
+    AIAttackWaveAddUnits(3, 4, "Napoleon");
+    AIAttackWaveAddUnits(4, 4, "Napoleon");
+    AIAttackWaveAddUnits(5, 4, "Napoleon");
+    AIAttackWaveAddUnits(6, 4, "Napoleon");
+    AIAttackWaveAddUnits(7, 4, "Napoleon");
+    AIAttackWaveAddUnits(8, 4, "Napoleon");
+    AIAttackWaveAddUnits(9, 4, "Napoleon");
+    AIAttackWaveAddUnits(10, 4, "Napoleon");
+    AIAttackWaveAddUnits(11, 4, "Napoleon");
+
+    AIAttackWaveSend(p, ts, false);
+    ai8F44173A_wave5_lastWave[p] = WaveLastCreated();
+    ai8F44173A_lastWave[p] = ai8F44173A_wave5_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave5_run (int p, playergroup target, bool wait) {
+    ai8F44173A_wave5_runPlayer = p;
+    ai8F44173A_wave5_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai8F44173A_wave5_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai8F44173A_wave8_enabled;
+wave[17] ai8F44173A_wave8_lastWave;
+trigger ai8F44173A_wave8_trigger = null;
+int ai8F44173A_wave8_runPlayer;
+playergroup ai8F44173A_wave8_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave8_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai8F44173A_wave8_enabled[init_i] = true;
+        ai8F44173A_wave8_lastWave[init_i] = null;
+    }
+
+    ai8F44173A_wave8_trigger = TriggerCreate("ai8F44173A_wave8_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave8_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai8F44173A_wave8_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave8_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai8F44173A_wave8_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai8F44173A_wave8_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai8F44173A_wave8_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave8_runFunc (bool c, bool a) {
+    int p = ai8F44173A_wave8_runPlayer;
+    playergroup target = ai8F44173A_wave8_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai8F44173A_wave8_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai8F44173A_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 400; }
+    if (d == 2) { ta = 400; }
+    if (d == 3) { ta = 400; }
+    if (d == 4) { ta = 400; }
+    if (d == 5) { ta = 400; }
+    if (d == 6) { ta = 400; }
+    if (d == 7) { ta = 400; }
+    if (d == 8) { ta = 400; }
+    if (d == 9) { ta = 400; }
+    if (d == 10) { ta = 400; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(380595161));
+
+    gatherPoint = ai8F44173A_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(3, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(4, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(5, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(6, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(7, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(8, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(9, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(10, 10, "StrikeTrooper");
+    AIAttackWaveAddUnits(11, 10, "StrikeTrooper");
+
+    AIAttackWaveAddUnits(2, 4, "Lazarus");
+    AIAttackWaveAddUnits(3, 4, "Lazarus");
+    AIAttackWaveAddUnits(4, 4, "Lazarus");
+    AIAttackWaveAddUnits(5, 4, "Lazarus");
+    AIAttackWaveAddUnits(6, 4, "Lazarus");
+    AIAttackWaveAddUnits(7, 4, "Lazarus");
+    AIAttackWaveAddUnits(8, 4, "Lazarus");
+    AIAttackWaveAddUnits(9, 4, "Lazarus");
+    AIAttackWaveAddUnits(10, 4, "Lazarus");
+    AIAttackWaveAddUnits(11, 4, "Lazarus");
+
+    AIAttackWaveAddUnits(2, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(3, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(4, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(5, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(6, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(7, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(8, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(9, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(10, 4, "PoliticalAdvisor");
+    AIAttackWaveAddUnits(11, 4, "PoliticalAdvisor");
+
+    AIAttackWaveAddUnits(2, 6, "Garmr");
+    AIAttackWaveAddUnits(3, 6, "Garmr");
+    AIAttackWaveAddUnits(4, 6, "Garmr");
+    AIAttackWaveAddUnits(5, 6, "Garmr");
+    AIAttackWaveAddUnits(6, 6, "Garmr");
+    AIAttackWaveAddUnits(7, 6, "Garmr");
+    AIAttackWaveAddUnits(8, 6, "Garmr");
+    AIAttackWaveAddUnits(9, 6, "Garmr");
+    AIAttackWaveAddUnits(10, 6, "Garmr");
+    AIAttackWaveAddUnits(11, 6, "Garmr");
+
+    AIAttackWaveAddUnits(2, 4, "Taranis");
+    AIAttackWaveAddUnits(3, 4, "Taranis");
+    AIAttackWaveAddUnits(4, 4, "Taranis");
+    AIAttackWaveAddUnits(5, 4, "Taranis");
+    AIAttackWaveAddUnits(6, 4, "Taranis");
+    AIAttackWaveAddUnits(7, 4, "Taranis");
+    AIAttackWaveAddUnits(8, 4, "Taranis");
+    AIAttackWaveAddUnits(9, 4, "Taranis");
+    AIAttackWaveAddUnits(10, 4, "Taranis");
+    AIAttackWaveAddUnits(11, 4, "Taranis");
+
+    AIAttackWaveSend(p, ts, false);
+    ai8F44173A_wave8_lastWave[p] = WaveLastCreated();
+    ai8F44173A_lastWave[p] = ai8F44173A_wave8_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave8_run (int p, playergroup target, bool wait) {
+    ai8F44173A_wave8_runPlayer = p;
+    ai8F44173A_wave8_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai8F44173A_wave8_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai8F44173A_wave6_enabled;
+wave[17] ai8F44173A_wave6_lastWave;
+trigger ai8F44173A_wave6_trigger = null;
+int ai8F44173A_wave6_runPlayer;
+playergroup ai8F44173A_wave6_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave6_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai8F44173A_wave6_enabled[init_i] = true;
+        ai8F44173A_wave6_lastWave[init_i] = null;
+    }
+
+    ai8F44173A_wave6_trigger = TriggerCreate("ai8F44173A_wave6_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave6_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai8F44173A_wave6_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave6_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai8F44173A_wave6_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai8F44173A_wave6_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai8F44173A_wave6_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave6_runFunc (bool c, bool a) {
+    int p = ai8F44173A_wave6_runPlayer;
+    playergroup target = ai8F44173A_wave6_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai8F44173A_wave6_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai8F44173A_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 600; }
+    if (d == 2) { ta = 600; }
+    if (d == 3) { ta = 600; }
+    if (d == 4) { ta = 600; }
+    if (d == 5) { ta = 600; }
+    if (d == 6) { ta = 600; }
+    if (d == 7) { ta = 600; }
+    if (d == 8) { ta = 600; }
+    if (d == 9) { ta = 600; }
+    if (d == 10) { ta = 600; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(380595161));
+
+    gatherPoint = ai8F44173A_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 8, "Huracan");
+    AIAttackWaveAddUnits(3, 8, "Huracan");
+    AIAttackWaveAddUnits(4, 8, "Huracan");
+    AIAttackWaveAddUnits(5, 8, "Huracan");
+    AIAttackWaveAddUnits(6, 8, "Huracan");
+    AIAttackWaveAddUnits(7, 8, "Huracan");
+    AIAttackWaveAddUnits(8, 8, "Huracan");
+    AIAttackWaveAddUnits(9, 8, "Huracan");
+    AIAttackWaveAddUnits(10, 8, "Huracan");
+    AIAttackWaveAddUnits(11, 8, "Huracan");
+
+    AIAttackWaveAddUnits(2, 4, "Napoleon");
+    AIAttackWaveAddUnits(3, 4, "Napoleon");
+    AIAttackWaveAddUnits(4, 4, "Napoleon");
+    AIAttackWaveAddUnits(5, 4, "Napoleon");
+    AIAttackWaveAddUnits(6, 4, "Napoleon");
+    AIAttackWaveAddUnits(7, 4, "Napoleon");
+    AIAttackWaveAddUnits(8, 4, "Napoleon");
+    AIAttackWaveAddUnits(9, 4, "Napoleon");
+    AIAttackWaveAddUnits(10, 4, "Napoleon");
+    AIAttackWaveAddUnits(11, 4, "Napoleon");
+
+    AIAttackWaveAddUnits(2, 2, "Typhoon");
+    AIAttackWaveAddUnits(3, 2, "Typhoon");
+    AIAttackWaveAddUnits(4, 2, "Typhoon");
+    AIAttackWaveAddUnits(5, 2, "Typhoon");
+    AIAttackWaveAddUnits(6, 2, "Typhoon");
+    AIAttackWaveAddUnits(7, 2, "Typhoon");
+    AIAttackWaveAddUnits(8, 2, "Typhoon");
+    AIAttackWaveAddUnits(9, 2, "Typhoon");
+    AIAttackWaveAddUnits(10, 2, "Typhoon");
+    AIAttackWaveAddUnits(11, 2, "Typhoon");
+
+    AIAttackWaveSend(p, ts, false);
+    ai8F44173A_wave6_lastWave[p] = WaveLastCreated();
+    ai8F44173A_lastWave[p] = ai8F44173A_wave6_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave6_run (int p, playergroup target, bool wait) {
+    ai8F44173A_wave6_runPlayer = p;
+    ai8F44173A_wave6_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai8F44173A_wave6_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave Wrappers
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave_enable (int w, int p, bool val) {
+    if (w == 1) { ai8F44173A_wave1_enable(p, val); }
+    if (w == 2) { ai8F44173A_wave2_enable(p, val); }
+    if (w == 3) { ai8F44173A_wave3_enable(p, val); }
+    if (w == 4) { ai8F44173A_wave4_enable(p, val); }
+    if (w == 7) { ai8F44173A_wave7_enable(p, val); }
+    if (w == 5) { ai8F44173A_wave5_enable(p, val); }
+    if (w == 8) { ai8F44173A_wave8_enable(p, val); }
+    if (w == 6) { ai8F44173A_wave6_enable(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_wave_isEnabled (int w, int p) {
+    if (w == 1) { return ai8F44173A_wave1_isEnabled(p); }
+    if (w == 2) { return ai8F44173A_wave2_isEnabled(p); }
+    if (w == 3) { return ai8F44173A_wave3_isEnabled(p); }
+    if (w == 4) { return ai8F44173A_wave4_isEnabled(p); }
+    if (w == 7) { return ai8F44173A_wave7_isEnabled(p); }
+    if (w == 5) { return ai8F44173A_wave5_isEnabled(p); }
+    if (w == 8) { return ai8F44173A_wave8_isEnabled(p); }
+    if (w == 6) { return ai8F44173A_wave6_isEnabled(p); }
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+unitgroup ai8F44173A_wave_createdUnits (int w, int p) {
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai8F44173A_wave_createdWave (int w, int p) {
+    if (w == 1) { return ai8F44173A_wave1_createdWave(p); }
+    if (w == 2) { return ai8F44173A_wave2_createdWave(p); }
+    if (w == 3) { return ai8F44173A_wave3_createdWave(p); }
+    if (w == 4) { return ai8F44173A_wave4_createdWave(p); }
+    if (w == 7) { return ai8F44173A_wave7_createdWave(p); }
+    if (w == 5) { return ai8F44173A_wave5_createdWave(p); }
+    if (w == 8) { return ai8F44173A_wave8_createdWave(p); }
+    if (w == 6) { return ai8F44173A_wave6_createdWave(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_wave_run (int w, int p, playergroup target, bool wait) {
+    if (w == 1) { ai8F44173A_wave1_run(p, target, wait); }
+    if (w == 2) { ai8F44173A_wave2_run(p, target, wait); }
+    if (w == 3) { ai8F44173A_wave3_run(p, target, wait); }
+    if (w == 4) { ai8F44173A_wave4_run(p, target, wait); }
+    if (w == 7) { ai8F44173A_wave7_run(p, target, wait); }
+    if (w == 5) { ai8F44173A_wave5_run(p, target, wait); }
+    if (w == 8) { ai8F44173A_wave8_run(p, target, wait); }
+    if (w == 6) { ai8F44173A_wave6_run(p, target, wait); }
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave Sequence
+//--------------------------------------------------------------------------------------------------
+trigger ai8F44173A_waves_trigger = null;
+int ai8F44173A_waves_runPlayer;
+playergroup ai8F44173A_waves_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_waves_init () {
+    ai8F44173A_waves_trigger = TriggerCreate("ai8F44173A_waves_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_waves_runFunc (bool c, bool a) {
+    int p = ai8F44173A_waves_runPlayer;
+    playergroup target = ai8F44173A_waves_runTarget;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+
+    ai8F44173A_wave1_run(p, target, true);
+    ai8F44173A_wave2_run(p, target, true);
+    ai8F44173A_wave3_run(p, target, true);
+    ai8F44173A_wave4_run(p, target, true);
+    ai8F44173A_wave7_run(p, target, true);
+    ai8F44173A_wave5_run(p, target, true);
+    ai8F44173A_wave8_run(p, target, true);
+    ai8F44173A_wave6_run(p, target, true);
+
+    while (true) {
+        ai8F44173A_wave8_run(p, target, true);
+        ai8F44173A_wave6_run(p, target, true);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_waves_run (int p, playergroup target) {
+    ai8F44173A_waves_runPlayer = p;
+    ai8F44173A_waves_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai8F44173A_waves_trigger, false, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_waves_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+
+    ai8F44173A_wave1_enable(p, val);
+    ai8F44173A_wave2_enable(p, val);
+    ai8F44173A_wave3_enable(p, val);
+    ai8F44173A_wave4_enable(p, val);
+    ai8F44173A_wave7_enable(p, val);
+    ai8F44173A_wave5_enable(p, val);
+    ai8F44173A_wave8_enable(p, val);
+    ai8F44173A_wave6_enable(p, val);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_waves_stop () {
+    TriggerStop(ai8F44173A_waves_trigger);
+
+    TriggerStop(ai8F44173A_wave1_trigger);
+    TriggerStop(ai8F44173A_wave2_trigger);
+    TriggerStop(ai8F44173A_wave3_trigger);
+    TriggerStop(ai8F44173A_wave4_trigger);
+    TriggerStop(ai8F44173A_wave7_trigger);
+    TriggerStop(ai8F44173A_wave5_trigger);
+    TriggerStop(ai8F44173A_wave8_trigger);
+    TriggerStop(ai8F44173A_wave6_trigger);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Configuration
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_setDefGather (int p, point val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai8F44173A_defGather[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+string ai8F44173A_getCustomData (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai8F44173A_customData[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai8F44173A_getLastWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai8F44173A_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+// Start
+//--------------------------------------------------------------------------------------------------
+bool ai8F44173A_initialized = false;
+
+//--------------------------------------------------------------------------------------------------
+void ai8F44173A_start (int p) {
+    int init_i;
+
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (!ai8F44173A_initialized) {
+        ai8F44173A_wave1_init();
+        ai8F44173A_wave2_init();
+        ai8F44173A_wave3_init();
+        ai8F44173A_wave4_init();
+        ai8F44173A_wave7_init();
+        ai8F44173A_wave5_init();
+        ai8F44173A_wave8_init();
+        ai8F44173A_wave6_init();
+        ai8F44173A_waves_init();
+
+        for (init_i = 0; init_i <= 16; init_i += 1) {
+            ai8F44173A_defGather[init_i] = PointFromId(909421846);
+        }
+
+        ai8F44173A_initialized = true;
+    }
+
+    AICampaignStart(p);
+}

@@ -19,15 +19,14 @@ include "TriggerLibs/natives"
 //===========de=======================================================================================
 include "TriggerLibs/NativeLib"
 include "TriggerLibs/LibertyLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 // Library Initialization
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libLbty_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 //--------------------------------------------------------------------------------------------------
@@ -877,7 +876,7 @@ void gf_ZS_SendTransmissionCampaignInternal (bool lp_isPlaceHolder, unit lp_unit
         lv_portrait = c_invalidPortraitId;
     }
     if (((lp_cueSoundOption == ge_CampaignTransmissionCueSoundOptions_PlayCueSound) || ((lp_cueSoundOption == ge_CampaignTransmissionCueSoundOptions_DefaultCueSoundBehavior) && (libCOMI_gf_PlayerInCinematicModeCampaign() == false) && (lv_portrait != c_invalidPortraitId) && ((PortraitVisible(gv_zS_SendTransmissionCampaignPortrait, gv_pLAYER_01_USER) == false) || (PortraitVisible(gv_zS_SendTransmissionCampaignPortrait, gv_pLAYER_02_USER) == false))))) {
-        libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+        libARRA_gf_PlayTransmissionCueSound(PlayerGroupAll());
     }
     gv_zS_SendTransmissionCampaignPortrait = lv_portrait;
     if ((gv_zS_SendTransmissionCampaignPortrait != c_invalidPortraitId)) {
@@ -1037,7 +1036,7 @@ void gf_CM_SendTransmissionCampaignInternal (bool lp_isPlaceHolder, unit lp_unit
         lv_portrait = c_invalidPortraitId;
     }
     if (((lp_cueSoundOption == ge_ExTransmissionCueSoundOptions_PlayCueSound) || ((lv_portrait != c_invalidPortraitId) && (libCOMI_gf_PlayerInCinematicModeCampaign() == false) && (lp_cueSoundOption == ge_ExTransmissionCueSoundOptions_DefaultCueSoundBehavior) && (PortraitVisible(gv_cM_SendTransmissionCampaignPortrait, gv_pLAYER_01_USER) == false) && (PortraitVisible(gv_cM_SendTransmissionCampaignPortrait, gv_pLAYER_02_USER) == false)))) {
-        libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+        libARRA_gf_PlayTransmissionCueSound(PlayerGroupAll());
     }
     gv_cM_SendTransmissionCampaignPortrait = lv_portrait;
     if ((gv_cM_SendTransmissionCampaignPortrait != c_invalidPortraitId)) {
@@ -1609,7 +1608,7 @@ bool auto_gf_ExOmoshMoveToPoint_TriggerFunc (bool testConds, bool runActions) {
     point lv_launchPoint;
     int lv_wayIndex;
     // Variable Initialization
-    lv_launchPoint = libHots_gf_PointStoredForUnit(gv_oMOSH_UNIT, 1);
+    lv_launchPoint = libARRA_gf_PointStoredForUnit(gv_oMOSH_UNIT, 1);
     lv_wayIndex = RandomInt(0, 4);
     // Implementation
     UnitBehaviorAdd(gv_oMOSH_UNIT, "ExOmoshMove", gv_oMOSH_UNIT, 1);
@@ -1620,7 +1619,7 @@ bool auto_gf_ExOmoshMoveToPoint_TriggerFunc (bool testConds, bool runActions) {
             lv_wayIndex += 1;
         }
     }
-    libHots_gf_StorePointForUnit(gv_oMOSH_UNIT, 1, gv_dR_pPA[lv_wayIndex]);
+    libARRA_gf_StorePointForUnit(gv_oMOSH_UNIT, 1, gv_dR_pPA[lv_wayIndex]);
     gf_ExSetDrainRitualIDForUnit(gv_oMOSH_UNIT, lv_wayIndex);
     if ((lp_firstAppearance == false)) {
         PingDestroy(gv_g_OmoshPing);
@@ -2575,7 +2574,7 @@ bool gt_Init06MusicSound_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    libHots_gf_StopSoundLinkCurrentlyPlayingasMusic();
+    libARRA_gf_StopSoundLinkCurrentlyPlayingasMusic();
     SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, "ZZerus01MusicMain", c_soundtrackCueAny, c_soundtrackIndexAny, true);
     return true;
 }

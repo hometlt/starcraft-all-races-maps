@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 include "aiF917F4D7"
 
@@ -15,7 +15,7 @@ include "aiF917F4D7"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -457,7 +457,7 @@ bool auto_gf_CreateandStoreObjectivePingforRiftQ_TriggerFunc (bool testConds, bo
     // Implementation
     gf_GiantAttentionGrabbingPing(UnitGetPosition(lp_rift));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(lp_rift), StringExternal("Param/Value/15F3EFC2"));
-    libHots_gf_StorePingForUnit(lp_rift, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lp_rift, 1, PingLastCreated());
     return true;
 }
 
@@ -702,12 +702,12 @@ bool auto_gf_VoidShardBehavior_TriggerFunc (bool testConds, bool runActions) {
 
     // Implementation
     lv_l_VoidRiftLocation = UnitGetPosition(lp_voidRift);
-    if ((libHots_gf_PingStoredForUnit(lp_voidRift, 1) == c_invalidPingId)) {
+    if ((libARRA_gf_PingStoredForUnit(lp_voidRift, 1) == c_invalidPingId)) {
         gf_CreateandStoreObjectivePingforRiftQ(lp_voidRift);
         lv_l_VoidRiftPing = PingLastCreated();
     }
     else {
-        lv_l_VoidRiftPing = libHots_gf_PingStoredForUnit(lp_voidRift, 1);
+        lv_l_VoidRiftPing = libARRA_gf_PingStoredForUnit(lp_voidRift, 1);
         libCOMI_gf_PingMinimapCampaign(PlayerGroupAll(), UnitGetPosition(lp_voidRift), 2.0, Color(100.00, 0.00, 0.00));
     }
     VisRevealArea(gv_pLAYER_01_USER, RegionCircle(lv_l_VoidRiftLocation, 1.0), 0.1, false);
@@ -732,7 +732,7 @@ bool auto_gf_VoidShardBehavior_TriggerFunc (bool testConds, bool runActions) {
     }
 
     libCOMI_gf_DestroyPingCoop(lv_l_VoidRiftPing);
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_voidRift, 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_voidRift, 1));
     gv_summonedVoidShardsDestroyed += 1;
     gv_shardNumber -= 1;
     gv_spawnedVoidShardsActive -= 1;

@@ -1171,7 +1171,7 @@ void aiDA87AEBD_start (int p) {
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "TriggerLibs/VoidLib"
 include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
@@ -1179,8 +1179,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs2 () {
     libNtve_InitLib();
-    libHots_InitLib();
-    libLotv_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 //--------------------------------------------------------------------------------------------------
@@ -2597,8 +2596,8 @@ bool gt_EventBoss1_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), false);
     gv_pRUsed = true;
     SoundPlayForPlayer(SoundLink("Kor1_StabilizerSecuredStinger", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_eventBoss1Beacon, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_eventBoss1Beacon, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_eventBoss1Beacon, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_eventBoss1Beacon, 1));
     UnitKill(gv_eventBoss1Beacon);
     UnitCreate(1, "AgentPR", 0, 7, PointFromId(583451386), 45.0);
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1865462713)), c_orderQueueReplace);
@@ -2607,7 +2606,7 @@ bool gt_EventBoss1_Func (bool testConds, bool runActions) {
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("GhostAlternatePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("Ac_Dilemma_Event1", -1), 0.0, c_transmissionDurationAdd, true);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_Event", -1), true, false);
+    libARRA_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_Event", -1), true, false);
     Wait(3.0, c_timeGame);
     UnitSetState(UnitLastCreated(), c_unitStateMoveSuppressed, false);
     UnitSetState(UnitLastCreated(), c_unitStateStunned, true);
@@ -2652,7 +2651,7 @@ bool gt_EventBoss1AgentPRVanish_Func (bool testConds, bool runActions) {
         return true;
     }
     UnitSetState(gv_eventBoss1Agent, c_unitStateInvulnerable, true);
-    libHots_gf_StopSoundLinkCurrentlyPlayingasMusic();
+    libARRA_gf_StopSoundLinkCurrentlyPlayingasMusic();
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     SoundtrackPause(PlayerGroupAll(), c_soundtrackCategoryMusic, false, true);
     SoundPlayOnUnitForPlayer(SoundLink("Ghost_CloakOn", -1), c_maxPlayers, PlayerGroupAll(), EventUnit(), 0.0, 400.0, 0.0);
@@ -2666,8 +2665,8 @@ bool gt_EventBoss1AgentPRVanish_Func (bool testConds, bool runActions) {
     libNtve_gf_CreateUnitsWithDefaultFacing(1, "Beacon_Nova", 0, 0, PointFromId(1865462713));
     gv_eventBoss1Beacon = UnitLastCreated();
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_TerranMainObjective, libCOMI_ge_CampaginReticleSize_Large, StringExternal("Param/Value/226488EC"), gv_eventBoss1Beacon, "Ref_Center");
-    libHots_gf_StoreActorForUnit(gv_eventBoss1Beacon, 1, libNtve_gf_ActorLastCreated());
-    libHots_gf_StoreTextTagForUnit(gv_eventBoss1Beacon, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(gv_eventBoss1Beacon, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(gv_eventBoss1Beacon, 1, TextTagLastCreated());
     gv_pRUsed = false;
     TriggerEnable(gt_EventBoss1, true);
     return true;
@@ -2818,8 +2817,8 @@ bool gt_EnteringBoss1room_Func (bool testConds, bool runActions) {
         return true;
     }
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_TerranMainObjective, libCOMI_ge_CampaginReticleSize_Large, StringExternal("Param/Value/0BA78A59"), gv_eventBoss1Beacon, "Ref_Center");
-    libHots_gf_StoreActorForUnit(gv_eventBoss1Beacon, 1, libNtve_gf_ActorLastCreated());
-    libHots_gf_StoreTextTagForUnit(gv_eventBoss1Beacon, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(gv_eventBoss1Beacon, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(gv_eventBoss1Beacon, 1, TextTagLastCreated());
     libCOMI_gf_PingMinimapCampaign(PlayerGroupAll(), UnitGetPosition(UnitFromId(919745099)), 2.0, Color(100.00, 0.00, 0.00));
     TriggerExecute(gt_EnteringBossRoomTransmission, true, false);
     return true;
@@ -2851,7 +2850,7 @@ bool gt_Boss1Pop_Func (bool testConds, bool runActions) {
     UnitKill(UnitFromId(919745099));
     UnitKill(UnitFromId(1336667759));
     UnitKill(UnitFromId(896524512));
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_BossBattle", -1), true, false);
+    libARRA_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_BossBattle", -1), true, false);
     libNtve_gf_UnitCreateFacingPoint(1, gv_bossType1, 0, gv_superHybrids, RegionGetCenter(RegionFromId(10)), RegionGetCenter(RegionFromId(1)));
     gv_boss1 = UnitLastCreated();
     libNtve_gf_MakeUnitInvulnerable(UnitLastCreated(), true);
@@ -2981,8 +2980,8 @@ bool gt_EventBoss2_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), false);
     gv_pRUsed = true;
     SoundPlayForPlayer(SoundLink("Kor1_StabilizerSecuredStinger", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_eventBoss2Beacon, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_eventBoss2Beacon, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_eventBoss2Beacon, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_eventBoss2Beacon, 1));
     UnitKill(gv_eventBoss2Beacon);
     UnitCreate(1, "AgentPR", 0, 7, PointFromId(1840147274), 45.0);
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1803366101)), c_orderQueueReplace);
@@ -2991,7 +2990,7 @@ bool gt_EventBoss2_Func (bool testConds, bool runActions) {
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("GhostAlternatePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("Ac_Dilemma_Event1", -1), 0.0, c_transmissionDurationAdd, true);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_Event", -1), true, false);
+    libARRA_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_Event", -1), true, false);
     Wait(3.0, c_timeGame);
     UnitSetState(UnitLastCreated(), c_unitStateMoveSuppressed, false);
     UnitSetState(UnitLastCreated(), c_unitStateStunned, true);
@@ -3037,7 +3036,7 @@ bool gt_EventBoss2AgentPRVanish_Func (bool testConds, bool runActions) {
     }
     UnitSetState(gv_eventBoss2Agent, c_unitStateInvulnerable, true);
     Wait(1.0, c_timeGame);
-    libHots_gf_StopSoundLinkCurrentlyPlayingasMusic();
+    libARRA_gf_StopSoundLinkCurrentlyPlayingasMusic();
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     SoundtrackPause(PlayerGroupAll(), c_soundtrackCategoryMusic, false, true);
     SoundPlayOnUnitForPlayer(SoundLink("Ghost_CloakOn", -1), c_maxPlayers, PlayerGroupAll(), EventUnit(), 0.0, 400.0, 0.0);
@@ -3051,8 +3050,8 @@ bool gt_EventBoss2AgentPRVanish_Func (bool testConds, bool runActions) {
     libNtve_gf_CreateUnitsWithDefaultFacing(1, "Beacon_Nova", c_unitCreateIgnorePlacement, 0, PointFromId(1803366101));
     gv_eventBoss2Beacon = UnitLastCreated();
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_TerranMainObjective, libCOMI_ge_CampaginReticleSize_Large, StringExternal("Param/Value/2AAB2076"), gv_eventBoss2Beacon, "Ref_Center");
-    libHots_gf_StoreActorForUnit(gv_eventBoss2Beacon, 1, libNtve_gf_ActorLastCreated());
-    libHots_gf_StoreTextTagForUnit(gv_eventBoss2Beacon, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(gv_eventBoss2Beacon, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(gv_eventBoss2Beacon, 1, TextTagLastCreated());
     gv_pRUsed = false;
     TriggerEnable(gt_EventBoss2, true);
     return true;
@@ -3203,8 +3202,8 @@ bool gt_EnteringBoss2room_Func (bool testConds, bool runActions) {
         return true;
     }
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_TerranMainObjective, libCOMI_ge_CampaginReticleSize_Large, StringExternal("Param/Value/D239F827"), gv_eventBoss2Beacon, "Ref_Center");
-    libHots_gf_StoreActorForUnit(gv_eventBoss2Beacon, 1, libNtve_gf_ActorLastCreated());
-    libHots_gf_StoreTextTagForUnit(gv_eventBoss2Beacon, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(gv_eventBoss2Beacon, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(gv_eventBoss2Beacon, 1, TextTagLastCreated());
     libCOMI_gf_PingMinimapCampaign(PlayerGroupAll(), UnitGetPosition(UnitFromId(111658737)), 2.0, Color(100.00, 0.00, 0.00));
     TriggerExecute(gt_EnteringBossRoomTransmission, true, false);
     return true;
@@ -3235,9 +3234,9 @@ bool gt_Boss2Pop_Func (bool testConds, bool runActions) {
     UnitKill(UnitFromId(1325991034));
     UnitKill(UnitFromId(1681449191));
     libCOMI_gf_DestroyPingCoop(gv_pingCell2);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(UnitFromId(111658737), 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(UnitFromId(111658737), 1));
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_BossBattle", -1), true, false);
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(UnitFromId(111658737), 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(UnitFromId(111658737), 1));
+    libARRA_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_BossBattle", -1), true, false);
     libNtve_gf_UnitCreateFacingPoint(1, gv_bossType2, 0, gv_superHybrids, RegionGetCenter(RegionFromId(11)), RegionGetCenter(RegionFromId(2)));
     gv_boss2 = UnitLastCreated();
     libNtve_gf_MakeUnitInvulnerable(UnitLastCreated(), true);
@@ -3372,8 +3371,8 @@ bool gt_EventBoss3_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), false);
     gv_pRUsed = true;
     SoundPlayForPlayer(SoundLink("Kor1_StabilizerSecuredStinger", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_eventBoss3Beacon, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_eventBoss3Beacon, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_eventBoss3Beacon, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_eventBoss3Beacon, 1));
     UnitKill(gv_eventBoss3Beacon);
     UnitCreate(1, "AgentPR", 0, 7, PointFromId(1729007713), 45.0);
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(271955616)), c_orderQueueReplace);
@@ -3382,7 +3381,7 @@ bool gt_EventBoss3_Func (bool testConds, bool runActions) {
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libNtve_gf_SendTransmissionSimple(TransmissionSourceFromModel("GhostAlternatePortrait"), libNtve_gf_CinematicPortrait(libNtve_ge_CinematicPortraitPosition_CenterLeft), SoundLink("Ac_Dilemma_Event1", -1), 0.0, c_transmissionDurationAdd, true);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_Event", -1), true, false);
+    libARRA_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_Event", -1), true, false);
     Wait(3.0, c_timeGame);
     UnitSetState(UnitLastCreated(), c_unitStateMoveSuppressed, false);
     UnitSetState(UnitLastCreated(), c_unitStateStunned, true);
@@ -3428,7 +3427,7 @@ bool gt_EventBoss3AgentPRVanish_Func (bool testConds, bool runActions) {
     }
     UnitSetState(gv_eventBoss3Agent, c_unitStateInvulnerable, true);
     Wait(1.0, c_timeGame);
-    libHots_gf_StopSoundLinkCurrentlyPlayingasMusic();
+    libARRA_gf_StopSoundLinkCurrentlyPlayingasMusic();
     SoundPlayForPlayer(SoundLink("UI_ObjectiveFailed", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     SoundtrackPause(PlayerGroupAll(), c_soundtrackCategoryMusic, false, true);
     SoundPlayOnUnitForPlayer(SoundLink("Ghost_CloakOn", -1), c_maxPlayers, PlayerGroupAll(), EventUnit(), 0.0, 400.0, 0.0);
@@ -3442,8 +3441,8 @@ bool gt_EventBoss3AgentPRVanish_Func (bool testConds, bool runActions) {
     libNtve_gf_CreateUnitsWithDefaultFacing(1, "Beacon_Nova", c_unitCreateIgnorePlacement, 0, PointFromId(271955616));
     gv_eventBoss3Beacon = UnitLastCreated();
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_TerranMainObjective, libCOMI_ge_CampaginReticleSize_Large, StringExternal("Param/Value/A3710C93"), gv_eventBoss3Beacon, "Ref_Center");
-    libHots_gf_StoreActorForUnit(gv_eventBoss3Beacon, 1, libNtve_gf_ActorLastCreated());
-    libHots_gf_StoreTextTagForUnit(gv_eventBoss3Beacon, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(gv_eventBoss3Beacon, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(gv_eventBoss3Beacon, 1, TextTagLastCreated());
     gv_pRUsed = false;
     TriggerEnable(gt_EventBoss3, true);
     return true;
@@ -3594,8 +3593,8 @@ bool gt_EnteringBoss3room_Func (bool testConds, bool runActions) {
         return true;
     }
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_TerranMainObjective, libCOMI_ge_CampaginReticleSize_Large, StringExternal("Param/Value/3147E2D8"), gv_eventBoss3Beacon, "Ref_Center");
-    libHots_gf_StoreActorForUnit(gv_eventBoss3Beacon, 1, libNtve_gf_ActorLastCreated());
-    libHots_gf_StoreTextTagForUnit(gv_eventBoss3Beacon, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(gv_eventBoss3Beacon, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(gv_eventBoss3Beacon, 1, TextTagLastCreated());
     libCOMI_gf_PingMinimapCampaign(PlayerGroupAll(), UnitGetPosition(UnitFromId(1608419654)), 2.0, Color(100.00, 0.00, 0.00));
     TriggerExecute(gt_EnteringBossRoomTransmission, true, false);
     return true;
@@ -3624,11 +3623,11 @@ bool gt_Boss3Pop_Func (bool testConds, bool runActions) {
     CameraShakeStart(1, c_cameraPositionTarget, c_cameraDirectionZ, 1.0, 2.0, 100.0, 2.5);
     UnitKill(UnitFromId(1608419654));
     libCOMI_gf_DestroyPingCoop(gv_pingCell3);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(UnitFromId(1608419654), 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(UnitFromId(1608419654), 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(UnitFromId(1608419654), 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(UnitFromId(1608419654), 1));
     libNtve_gf_UnitCreateFacingPoint(1, gv_bossType3, 0, gv_superHybrids, RegionGetCenter(RegionFromId(12)), RegionGetCenter(RegionFromId(7)));
     gv_boss3 = UnitLastCreated();
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_BossBattle", -1), true, false);
+    libARRA_gf_PlaySoundLinkasMusic(SoundLink("ACDilemma_Music_BossBattle", -1), true, false);
     libNtve_gf_MakeUnitInvulnerable(UnitLastCreated(), true);
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(1246415280)), c_orderQueueReplace);
     libNtve_gf_PauseUnit(UnitLastCreated(), true);
@@ -3750,12 +3749,12 @@ bool gt_FinalBossPop_Func (bool testConds, bool runActions) {
     TriggerEnable(gt_EventBoss1, false);
     TriggerEnable(gt_EventBoss2, false);
     TriggerEnable(gt_EventBoss3, false);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_eventBoss1Beacon, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_eventBoss1Beacon, 1));
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_eventBoss2Beacon, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_eventBoss2Beacon, 1));
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_eventBoss3Beacon, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_eventBoss3Beacon, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_eventBoss1Beacon, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_eventBoss1Beacon, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_eventBoss2Beacon, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_eventBoss2Beacon, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_eventBoss3Beacon, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_eventBoss3Beacon, 1));
     UnitRemove(gv_eventBoss1Beacon);
     UnitRemove(gv_eventBoss2Beacon);
     UnitRemove(gv_eventBoss3Beacon);
@@ -3773,7 +3772,7 @@ bool gt_FinalBossPop_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_FinalBossPop_Init () {
     gt_FinalBossPop = TriggerCreate("gt_FinalBossPop_Func");
-    TriggerAddEventTimeElapsed(gt_FinalBossPop, libLotv_gf_DifficultyValueInt2(1800, 1800, 1800, 1500), c_timeGame);
+    TriggerAddEventTimeElapsed(gt_FinalBossPop, libARRA_gf_DifficultyValueInt2(1800, 1800, 1800, 1500), c_timeGame);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Final Boss Wave
@@ -3800,7 +3799,7 @@ bool gt_FinalBossWave_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_FinalBossWave_Init () {
     gt_FinalBossWave = TriggerCreate("gt_FinalBossWave_Func");
-    TriggerAddEventTimeElapsed(gt_FinalBossWave, libLotv_gf_DifficultyValueInt2(1880, 1880, 1880, 1580), c_timeGame);
+    TriggerAddEventTimeElapsed(gt_FinalBossWave, libARRA_gf_DifficultyValueInt2(1880, 1880, 1880, 1580), c_timeGame);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Final BC
@@ -3926,7 +3925,7 @@ bool gt_MagRespawn_Func (bool testConds, bool runActions) {
 //--------------------------------------------------------------------------------------------------
 void gt_MagRespawn_Init () {
     gt_MagRespawn = TriggerCreate("gt_MagRespawn_Func");
-    TriggerAddEventTimePeriodic(gt_MagRespawn, libLotv_gf_DifficultyValueFixed2(20.0, 16.0, 12.0, 10.0), c_timeGame);
+    TriggerAddEventTimePeriodic(gt_MagRespawn, libARRA_gf_DifficultyValueFixed2(20.0, 16.0, 12.0, 10.0), c_timeGame);
 }
 //--------------------------------------------------------------------------------------------------
 // Trigger: Entering Boss Room Transmission
@@ -4019,7 +4018,7 @@ bool gt_UpgradeAI_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    Wait(libLotv_gf_DifficultyValueInt2(600, 600, 600, 480), c_timeGame);
+    Wait(libARRA_gf_DifficultyValueInt2(600, 600, 600, 480), c_timeGame);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranInfantryArmorsLevel1", 1);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranVehicleAndShipArmorsLevel1", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements1, "TerranInfantryArmorsLevel1", 1);
@@ -4036,7 +4035,7 @@ bool gt_UpgradeAI_Func (bool testConds, bool runActions) {
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossGroundArmorsLevel1", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossAirArmorsLevel1", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossShieldsLevel1", 1);
-    Wait(libLotv_gf_DifficultyValueInt2(300, 300, 300, 240), c_timeGame);
+    Wait(libARRA_gf_DifficultyValueInt2(300, 300, 300, 240), c_timeGame);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranInfantryWeaponsLevel1", 1);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranVehicleAndShipWeaponsLevel1", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements1, "TerranInfantryWeaponsLevel1", 1);
@@ -4053,7 +4052,7 @@ bool gt_UpgradeAI_Func (bool testConds, bool runActions) {
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ZergFlyerWeaponsLevel1", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossGroundWeaponsLevel1", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "HiddenProtossAirWeaponsLevel1", 1);
-    Wait(libLotv_gf_DifficultyValueInt2(300, 300, 300, 240), c_timeGame);
+    Wait(libARRA_gf_DifficultyValueInt2(300, 300, 300, 240), c_timeGame);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranInfantryArmorsLevel2", 1);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranVehicleAndShipArmorsLevel2", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements1, "TerranInfantryArmorsLevel2", 1);
@@ -4070,7 +4069,7 @@ bool gt_UpgradeAI_Func (bool testConds, bool runActions) {
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossGroundArmorsLevel2", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossAirArmorsLevel2", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossShieldsLevel2", 1);
-    Wait(libLotv_gf_DifficultyValueInt2(300, 300, 300, 240), c_timeGame);
+    Wait(libARRA_gf_DifficultyValueInt2(300, 300, 300, 240), c_timeGame);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranInfantryWeaponsLevel2", 1);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranVehicleAndShipWeaponsLevel2", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements1, "TerranInfantryWeaponsLevel2", 1);
@@ -4087,7 +4086,7 @@ bool gt_UpgradeAI_Func (bool testConds, bool runActions) {
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ZergFlyerWeaponsLevel2", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossGroundWeaponsLevel2", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossAirWeaponsLevel2", 1);
-    Wait(libLotv_gf_DifficultyValueInt2(300, 300, 300, 240), c_timeGame);
+    Wait(libARRA_gf_DifficultyValueInt2(300, 300, 300, 240), c_timeGame);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranInfantryArmorsLevel3", 1);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranVehicleAndShipArmorsLevel3", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements1, "TerranInfantryArmorsLevel3", 1);
@@ -4104,7 +4103,7 @@ bool gt_UpgradeAI_Func (bool testConds, bool runActions) {
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossGroundArmorsLevel3", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "HiddenProtossAirArmorsLevel3", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements2, "ProtossShieldsLevel3", 1);
-    Wait(libLotv_gf_DifficultyValueInt2(300, 300, 300, 240), c_timeGame);
+    Wait(libARRA_gf_DifficultyValueInt2(300, 300, 300, 240), c_timeGame);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranInfantryWeaponsLevel3", 1);
     TechTreeUpgradeAddLevel(gv_moebiusForces, "TerranVehicleAndShipWeaponsLevel3", 1);
     TechTreeUpgradeAddLevel(gv_amonReinforcements1, "TerranInfantryWeaponsLevel3", 1);
@@ -4373,7 +4372,7 @@ bool gt_Checkvictory_Func (bool testConds, bool runActions) {
         TriggerExecute(gt_ObjectiveKillTheBoss03Complete, true, false);
     }
     else {
-        libHots_gf_StopSoundLinkCurrentlyPlayingasMusic();
+        libARRA_gf_StopSoundLinkCurrentlyPlayingasMusic();
         SoundPlayForPlayer(SoundLink("PShakuras02_ObjectiveStinger", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
         SoundtrackPause(PlayerGroupAll(), c_soundtrackCategoryMusic, false, true);
         TriggerExecute(gt_ObjectiveKillTheBoss02Complete, true, false);

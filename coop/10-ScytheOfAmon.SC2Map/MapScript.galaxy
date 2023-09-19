@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -545,7 +545,7 @@ void gf_InitiateBonusObjectiveEscort (point lp_escortSpawnLocation, point lp_des
             UnitIssueOrder(gv_currentEscortShip, Order(AbilityCommand("TransportMode", 0)), c_orderQueueReplace);
             Wait(2.0, c_timeGame);
         }
-        libCOMI_gf_ShowHidePingCoop(libHots_gf_PingStoredForUnit(gv_currentEscortShip, 1), true);
+        libCOMI_gf_ShowHidePingCoop(libARRA_gf_PingStoredForUnit(gv_currentEscortShip, 1), true);
     }
     if ((lp_objectiveIndex == 1)) {
         TriggerExecute(gt_BonusEscortIntroQ, true, false);
@@ -590,7 +590,7 @@ void gf_CreateEscortUnit (point lp_spawnPoint) {
     UnitSetScale(lv_createdShuttleUnit, 200.0, 200.0, 200.0);
     libCOMI_gf_SetUnitInfoTextCampaign(UnitLastCreated(), StringExternal("Param/Value/5F18514D"), StringExternal("Param/Value/710AFB1E"), null);
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(lv_createdShuttleUnit), UnitTypeGetName(UnitGetType(lv_createdShuttleUnit)));
-    libHots_gf_StorePingForUnit(lv_createdShuttleUnit, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lv_createdShuttleUnit, 1, PingLastCreated());
     PingSetUnit(PingLastCreated(), lv_createdShuttleUnit);
     UnitIssueOrder(lv_createdShuttleUnit, Order(AbilityCommand("move", 2)), c_orderQueueAddToEnd);
     ActorSend(libNtve_gf_MainActorofUnit(lv_createdShuttleUnit), libNtve_gf_SetOpacity(0.0, 0));
@@ -638,7 +638,7 @@ void gf_SendEscortUnit (unit lp_escortUnit, point lp_evacPoint, int lp_bonusObje
 
     // Implementation
     if ((UnitIsAlive(lp_escortUnit) == false)) {
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_escortUnit, 1));
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_escortUnit, 1));
         gf_ObjectiveEscortEvacShipsFailed(lp_bonusObjectiveIndex);
         TriggerExecute(gt_BonusEscortFailedQ, true, false);
         return ;
@@ -713,7 +713,7 @@ void gf_SendEscortUnit (unit lp_escortUnit, point lp_evacPoint, int lp_bonusObje
         Wait(0.5, c_timeGame);
     }
     if ((UnitIsAlive(lp_escortUnit) == false)) {
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_escortUnit, 1));
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_escortUnit, 1));
         PathDestroy(lv_escortUnitPath);
         gf_ObjectiveEscortEvacShipsFailed(lp_bonusObjectiveIndex);
         TriggerExecute(gt_BonusEscortFailedQ, true, false);
@@ -726,7 +726,7 @@ void gf_SendEscortUnit (unit lp_escortUnit, point lp_evacPoint, int lp_bonusObje
         Wait(1.0, c_timeGame);
     }
     if ((UnitIsAlive(lp_escortUnit) == false)) {
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_escortUnit, 1));
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_escortUnit, 1));
         PathDestroy(lv_escortUnitPath);
         gf_ObjectiveEscortEvacShipsFailed(lp_bonusObjectiveIndex);
         TriggerExecute(gt_BonusEscortFailedQ, true, false);
@@ -734,7 +734,7 @@ void gf_SendEscortUnit (unit lp_escortUnit, point lp_evacPoint, int lp_bonusObje
     }
 
     libNtve_gf_MakeUnitInvulnerable(gv_currentEscortShip, true);
-    libCOMI_gf_ShowHidePingCoop(libHots_gf_PingStoredForUnit(lp_escortUnit, 1), false);
+    libCOMI_gf_ShowHidePingCoop(libARRA_gf_PingStoredForUnit(lp_escortUnit, 1), false);
     gf_ObjectiveEscortEvacShipsComplete(lp_bonusObjectiveIndex);
     if ((libCOMI_gf_MissionObjectiveStateCheck(gv_bonusObjectives[1], libCOMI_ge_MissionObjectiveState_Completed) == true) && (libCOMI_gf_MissionObjectiveStateCheck(gv_bonusObjectives[2], libCOMI_ge_MissionObjectiveState_Completed) == true) && (libCOMI_gf_MissionObjectiveStateCheck(gv_bonusObjectives[3], libCOMI_ge_MissionObjectiveState_Completed) == true)) {
         TriggerExecute(gt_BonusEscortCompleteQ, true, false);
@@ -763,12 +763,12 @@ bool auto_gf_MarkEscortUnitBlocker_TriggerFunc (bool testConds, bool runActions)
 
     // Automatic Variable Declarations
     // Implementation
-    if ((libHots_gf_ActorForUnit(lp_escortUnitObstacle, 42) != null)) {
+    if ((libARRA_gf_ActorForUnit(lp_escortUnitObstacle, 42) != null)) {
         return true;
     }
 
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_ProtossBonusObjective, libCOMI_ge_CampaginReticleSize_Small, StringExternal("Param/Value/3A0324F7"), lp_escortUnitObstacle, "Ref_Center");
-    libHots_gf_StoreActorForUnit(lp_escortUnitObstacle, 42, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreActorForUnit(lp_escortUnitObstacle, 42, libNtve_gf_ActorLastCreated());
     UnitBehaviorAddPlayer(lp_escortUnitObstacle, "SuppressCloak", gv_pLAYER_11_BONUSESCORT, 1);
     libCOMI_gf_ShareVisionofUnitWithHumansCoop(lp_escortUnitObstacle, true);
     while (!(((UnitIsValid(lp_escortUnitObstacle) == false) || (UnitIsValid(gv_currentEscortShip) == false) || (libNtve_gf_UnitIsInvulnerable(gv_currentEscortShip) == true)))) {
@@ -1571,7 +1571,7 @@ bool gt_VoidSliverDies_Func (bool testConds, bool runActions) {
         TimerPause(gv_missionFailTimer, true);
         TimerWindowShow(gv_missionFailTimerWindow, PlayerGroupAll(), false);
     }
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     libNtve_gf_SendActorMessageToUnit(gv_amonUnit, "AnimPlay SpellA Spell,A");
     TriggerExecute(gt_FailXP, true, false);
     auto0DA8A3EE_val = gf_NumberofDestroyedVoidSlivers();
@@ -4218,7 +4218,7 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
             VisRevealArea(lv_playerIter, RegionCircle(UnitGetPosition(gv_voidSlivers[lv_sliverIter]), 5.0), 2.0, false);
         }
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(gv_voidSlivers[lv_sliverIter]), UnitTypeGetName(UnitGetType(gv_voidSlivers[lv_sliverIter])));
-        libHots_gf_StorePingForUnit(gv_voidSlivers[lv_sliverIter], 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(gv_voidSlivers[lv_sliverIter], 1, PingLastCreated());
         Wait(0.125, c_timeGame);
     }
     TriggerExecute(gt_ObjectiveFailTimerCreate, true, false);

@@ -237,14 +237,14 @@
             // 
             //==================================================================================================
             include &quot;TriggerLibs/NativeLib&quot;
-            include &quot;TriggerLibs/SwarmLib&quot;
+            include &quot;libARRA&quot;
             include &quot;LibCOMI&quot;
             //--------------------------------------------------------------------------------------------------
             // Library Initialization
             //--------------------------------------------------------------------------------------------------
             void InitLibs () {
                 libNtve_InitLib();
-                libHots_InitLib();
+                libARRA_InitLib();
                 libCOMI_InitLib();
             }
             //--------------------------------------------------------------------------------------------------
@@ -784,20 +784,20 @@
                 // Implementation
                 if (((gv_dockingBays[lv_bayArrayNumber].lv_workerCount &gt;= gv_dockingBaysWorkersMax) || (PlayerGroupHasPlayer(gv_enemyGroup, gv_dockingBays[lv_bayArrayNumber].lv_owner) == true))) {
                     //TriggerDebugOutput(1, (StringExternal(&quot;Param/Value/1F9A9485&quot;) + IntToText(lp_bayNumber) + StringExternal(&quot;Param/Value/01D8E2C9&quot;)), true);
-                    TextTagShow(libHots_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1), PlayerGroupAll(), false);
+                    TextTagShow(libARRA_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1), PlayerGroupAll(), false);
                     libNtve_gf_ShowHideUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), false);
                 }
                 else {
                     //TriggerDebugOutput(1, (StringExternal(&quot;Param/Value/4C73ABEE&quot;) + IntToText(lp_bayNumber) + StringExternal(&quot;Param/Value/45D3A594&quot;)), true);
                     libNtve_gf_ShowHideUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), true);
-                    if ((libHots_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1) == c_textTagNone)) {
+                    if ((libARRA_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1) == c_textTagNone)) {
                         TextTagCreate(StringExternal(&quot;Param/Value/F522B69F&quot;), 18, UnitGetPosition(gf_FindDockingBayWorkerBeacon(lp_bayNumber)), 1.0, true, true, PlayerGroupSingle(gv_dockingBays[lv_bayArrayNumber].lv_owner));
-                        libHots_gf_StoreTextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1, TextTagLastCreated());
+                        libARRA_gf_StoreTextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1, TextTagLastCreated());
                         //TriggerDebugOutput(1, (StringExternal(&quot;Param/Value/66479D13&quot;) + IntToText(lp_bayNumber) + StringExternal(&quot;Param/Value/FBCE8D13&quot;)), true);
                     }
                     else {
-                        TextTagShow(libHots_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1), PlayerGroupAll(), false);
-                        TextTagShow(libHots_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1), PlayerGroupSingle(gv_dockingBays[lv_bayArrayNumber].lv_owner), true);
+                        TextTagShow(libARRA_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1), PlayerGroupAll(), false);
+                        TextTagShow(libARRA_gf_TextTagForUnit(gf_FindDockingBayWorkerBeacon(lp_bayNumber), 1), PlayerGroupSingle(gv_dockingBays[lv_bayArrayNumber].lv_owner), true);
                         //TriggerDebugOutput(1, (StringExternal(&quot;Param/Value/4F892F72&quot;) + IntToText(lp_bayNumber) + StringExternal(&quot;Param/Value/3305CF08&quot;)), true);
                     }
                 }
@@ -815,10 +815,10 @@
                 auto1476DBA7_ai = 1;
                 lv_i = 1;
                 for ( ; ( (auto1476DBA7_ai &gt;= 0 &amp;&amp; lv_i &lt;= auto1476DBA7_ae) || (auto1476DBA7_ai &lt;= 0 &amp;&amp; lv_i &gt;= auto1476DBA7_ae) ) ; lv_i += auto1476DBA7_ai ) {
-                    if ((libHots_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)) == c_invalidPingId)) {
+                    if ((libARRA_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)) == c_invalidPingId)) {
                         continue;
                     }
-                    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)));
+                    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)));
                     libCOMI_gf_CreatePingFacingAngleCoop(PlayerGroupEmpty(), UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 270.0, &quot;PingCircle&quot;, ColorWithAlpha(0.00, 0.00, 0.00, 0.00), 65535.0);
                     PingSetTooltip(PingLastCreated(), (StringExternal(&quot;Param/Value/4B91611D&quot;) + IntToText(lp_bayNumber)));
                     if ((PlayerGroupHasPlayer(gv_enemyGroup, gv_dockingBays[(lp_bayNumber - 1)].lv_owner) == true)) {
@@ -836,8 +836,8 @@
                     PingSetPlayerGroup(PingLastCreated(), PlayerGroupSingle(PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)));
                     PingSetScale(PingLastCreated(), 0.33);
                     PingSetUnit(PingLastCreated(), gf_FindDockingBayControlTower(lp_bayNumber));
-                    libHots_gf_StorePingForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i), PingLastCreated());
-                    libCOMI_gf_CreatePingFacingAngleCoop(PlayerGroupSingle(PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)), UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 270.0, &quot;PingWarning&quot;, PingGetColor(libHots_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i))), 4.0);
+                    libARRA_gf_StorePingForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i), PingLastCreated());
+                    libCOMI_gf_CreatePingFacingAngleCoop(PlayerGroupSingle(PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)), UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 270.0, &quot;PingWarning&quot;, PingGetColor(libARRA_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i))), 4.0);
                 }
             }
             void gf_SetDockingBayPing (int lp_bayNumber) {
@@ -852,7 +852,7 @@
                     auto158C52AE_ai = 1;
                     lv_i = 1;
                     for ( ; ( (auto158C52AE_ai &gt;= 0 &amp;&amp; lv_i &lt;= auto158C52AE_ae) || (auto158C52AE_ai &lt;= 0 &amp;&amp; lv_i &gt;= auto158C52AE_ae) ) ; lv_i += auto158C52AE_ai ) {
-                        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)));
+                        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)));
                         libCOMI_gf_CreatePingFacingAngleCoop(PlayerGroupEmpty(), UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 270.0, &quot;PingCircle&quot;, ColorWithAlpha(0.00, 0.00, 0.00, 0.00), 65535.0);
                         PingSetTooltip(PingLastCreated(), (StringExternal(&quot;Param/Value/AEC7EA5E&quot;) + IntToText(lp_bayNumber)));
                         if ((PlayerGroupHasPlayer(gv_enemyGroup, gv_dockingBays[(lp_bayNumber - 1)].lv_owner) == true)) {
@@ -870,8 +870,8 @@
                         PingSetPlayerGroup(PingLastCreated(), PlayerGroupSingle(PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)));
                         PingSetScale(PingLastCreated(), 0.33);
                         PingSetUnit(PingLastCreated(), gf_FindDockingBayControlTower(lp_bayNumber));
-                        libHots_gf_StorePingForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i), PingLastCreated());
-                        libCOMI_gf_CreatePingFacingAngleCoop(PlayerGroupSingle(PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)), UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 270.0, &quot;PingWarning&quot;, PingGetColor(libHots_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i))), 4.0);
+                        libARRA_gf_StorePingForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i), PingLastCreated());
+                        libCOMI_gf_CreatePingFacingAngleCoop(PlayerGroupSingle(PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i)), UnitGetPosition(gf_FindDockingBayControlTower(lp_bayNumber)), 270.0, &quot;PingWarning&quot;, PingGetColor(libARRA_gf_PingStoredForUnit(gf_FindDockingBayControlTower(lp_bayNumber), PlayerGroupPlayer(libCOMI_gf_HumanPlayers(), lv_i))), 4.0);
                     }
                 }
             }
@@ -1218,7 +1218,7 @@
                     libCOMI_gf_CreatePingFacingAngleCoop(libCOMI_gf_HumanPlayers(), UnitGetPosition(UnitLastCreated()), 270.0, &quot;PingDiamond&quot;, ColorWithAlpha(100.00, 10.98, 12.94, 0.00), 65535.0);
                     PingSetScale(PingLastCreated(), 0.5);
                     PingSetUnit(PingLastCreated(), UnitLastCreated());
-                    libHots_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
+                    libARRA_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
                 }
                 else {
                     if ((gv_amonBases[lp_baseIndexSource].lv_type == gv_aMON_BASE_DOCKING_BAY)) {
@@ -2114,8 +2114,8 @@
                         UnitGroupRemove(lv_amonForces, lv_u);
                     }
                     else {
-                        libHots_gf_StorePointForUnit(lv_u, 1, UnitGetPosition(lv_u));
-                        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lv_u, 1));
+                        libARRA_gf_StorePointForUnit(lv_u, 1, UnitGetPosition(lv_u));
+                        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lv_u, 1));
                     }
                 }
                 if ((EventUnitDamageSourceUnit() != null)) {
@@ -2129,7 +2129,7 @@
                 autoCE7BEE82_u = 1;
                 for ( ; autoCE7BEE82_u &lt;= UnitGroupCount(autoCE7BEE82_g, c_unitCountAll) ; autoCE7BEE82_u += BoolToInt(lv_u == UnitGroupUnit(autoCE7BEE82_g, autoCE7BEE82_u)) ) {
                     lv_u = UnitGroupUnit(autoCE7BEE82_g, autoCE7BEE82_u);
-                    UnitIssueOrder(lv_u, OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), libHots_gf_PointStoredForUnit(lv_u, 1)), c_orderQueueReplace);
+                    UnitIssueOrder(lv_u, OrderTargetingPoint(AbilityCommand(&quot;attack&quot;, 0), libARRA_gf_PointStoredForUnit(lv_u, 1)), c_orderQueueReplace);
                 }
                 Wait(60.0, c_timeAI);
                 TriggerEnable(TriggerGetCurrent(), true);
@@ -2174,7 +2174,7 @@
                 libCOMI_gf_CreatePingFacingAngleCoop(libCOMI_gf_HumanPlayers(), UnitGetPosition(gv_aeries), 270.0, &quot;PingBoss&quot;, ColorWithAlpha(95.69, 0.00, 0.00, 0.00), 65535.0);
                 PingSetTooltip(PingLastCreated(), StringExternal(&quot;Param/Value/64FCA45C&quot;));
                 PingSetUnit(PingLastCreated(), gv_aeries);
-                libHots_gf_StorePingForUnit(gv_aeries, 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(gv_aeries, 1, PingLastCreated());
                 libCOMI_gf_CreateRevealerCoop(gv_pLAYER_01_USER, RegionCircle(libNtve_gf_PointOffsetTowardsPoint(UnitGetPosition(gv_aeries), 1.5, PointFromId(519800915)), 15.0));
                 gv_aeriesRevealer1 = VisRevealerLastCreated();
                 libCOMI_gf_CreateRevealerCoop(gv_pLAYER_02_USER, RegionCircle(libNtve_gf_PointOffsetTowardsPoint(UnitGetPosition(gv_aeries), (10.0 * UnitGetPropertyFixed(gv_aeries, c_unitPropMovementSpeedCurrent, c_unitPropCurrent)), PointFromId(519800915)), 15.0));
@@ -2396,7 +2396,7 @@
                 libNtve_gf_CreateUnitsWithDefaultFacing(1, &quot;DevastatorBattlesuit&quot;, c_unitCreateIgnorePlacement, PlayerGroupPlayer(gv_enemyGroup, RandomInt(1, 2)), PointFromId(804273588));
                 gv_bonusADevastatorBattlesuit = UnitLastCreated();
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(gv_bonusADevastatorBattlesuit), StringExternal(&quot;Param/Value/2502A0C8&quot;));
-                libHots_gf_StorePingForUnit(gv_bonusADevastatorBattlesuit, 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(gv_bonusADevastatorBattlesuit, 1, PingLastCreated());
                 TriggerExecute(gt_ObjectiveDestroyDevastatorBattlesuitE28094Create, true, false);
                 gv_timer_A = TimerCreate();
                 TimerStart(gv_timer_A, gv_bONUS_OBJECTIVE_LIFE, false, c_timeGame);
@@ -2460,7 +2460,7 @@
                 }
                 //TriggerDebugOutput(1, StringExternal(&quot;Param/Value/570935FB&quot;), true);
                 TriggerExecute(gt_ObjectiveDestroyDevastatorBattlesuitE28094Failed, true, false);
-                libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_bonusADevastatorBattlesuit, 1));
+                libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gv_bonusADevastatorBattlesuit, 1));
                 libNtve_gf_ShowHideUnit(gv_bonusADevastatorBattlesuit, false);
                 if ((UnitIsAlive(UnitFromId(574703814)) == true)) {
                     TriggerExecute(gt_BonusAE28094ExpiredTransmission, true, false);
@@ -2533,12 +2533,12 @@
                 libNtve_gf_CreateUnitsWithDefaultFacing(1, &quot;PrometheusBattlecruiser&quot;, c_unitCreateIgnorePlacement, PlayerGroupPlayer(gv_enemyGroup, RandomInt(1, 2)), PointFromId(511808657));
                 gv_bonusBPrometheus = UnitLastCreated();
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(gv_bonusBPrometheus), StringExternal(&quot;Param/Value/AB732B40&quot;));
-                libHots_gf_StorePingForUnit(gv_bonusBPrometheus, 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(gv_bonusBPrometheus, 1, PingLastCreated());
                 TriggerExecute(gt_ObjectiveDestroyPrometheusE28094Create, true, false);
                 libNtve_gf_CreateUnitsWithDefaultFacing(1, &quot;FirebirdBattlecruiser&quot;, c_unitCreateIgnorePlacement, PlayerGroupPlayer(gv_enemyGroup, RandomInt(1, 2)), PointFromId(597925282));
                 gv_bonusBFirebird = UnitLastCreated();
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(gv_bonusBFirebird), StringExternal(&quot;Param/Value/D73FD4ED&quot;));
-                libHots_gf_StorePingForUnit(gv_bonusBFirebird, 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(gv_bonusBFirebird, 1, PingLastCreated());
                 TriggerExecute(gt_ObjectiveDestroyFirebirdE28094Create, true, false);
                 gv_timer_B = TimerCreate();
                 TimerStart(gv_timer_B, gv_bONUS_OBJECTIVE_LIFE, false, c_timeGame);
@@ -2660,8 +2660,8 @@
                 //TriggerDebugOutput(1, StringExternal(&quot;Param/Value/2AB29ECB&quot;), true);
                 TriggerExecute(gt_ObjectiveDestroyPrometheusE28094Failed, true, false);
                 TriggerExecute(gt_ObjectiveDestroyFirebirdE28094Failed, true, false);
-                libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_bonusBPrometheus, 1));
-                libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_bonusBFirebird, 1));
+                libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gv_bonusBPrometheus, 1));
+                libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gv_bonusBFirebird, 1));
                 libNtve_gf_ShowHideUnit(gv_bonusBPrometheus, false);
                 libNtve_gf_ShowHideUnit(gv_bonusBFirebird, false);
                 if ((UnitIsAlive(UnitFromId(574703814)) == true)) {
@@ -2846,7 +2846,7 @@
                 if (!runActions) {
                     return true;
                 }
-                libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+                libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -3057,7 +3057,7 @@
                 gv_objectiveE28094DestroytheIonCannon = ObjectiveLastCreated();
                 ObjectiveSetPriority(ObjectiveLastCreated(), 10);
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(574703814)), StringExternal(&quot;Param/Value/D23100AC&quot;));
-                libHots_gf_StorePingForUnit(UnitFromId(574703814), 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(UnitFromId(574703814), 1, PingLastCreated());
                 TriggerExecute(gt_ObjectiveDestroytheIonCannonE28094Update, true, false);
                 return true;
             }
@@ -3147,7 +3147,7 @@
                 libCOMI_gf_SetProgressBarLabel(StringExternal(&quot;Param/Value/9069251F&quot;));
                 libCOMI_gf_SetProgressBarColor(Color(42.75, 68.24, 16.86));
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(451941872)), StringExternal(&quot;Param/Value/A7C55F60&quot;));
-                libHots_gf_StorePingForUnit(UnitFromId(574703814), 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(UnitFromId(574703814), 1, PingLastCreated());
                 TriggerExecute(gt_ObjectiveGalateaMustSurviveE28094Update, true, false);
                 return true;
             }

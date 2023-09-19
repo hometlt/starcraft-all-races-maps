@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "Lib46A145AD"
 include "LibCOMI"
 include "aiE7FD60B5"
@@ -16,7 +16,7 @@ include "aiE7FD60B5"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     lib46A145AD_InitLib();
     libCOMI_InitLib();
 }
@@ -915,10 +915,10 @@ bool gt_ShowandUpdateObjectiveMarkers_Func (bool testConds, bool runActions) {
                 for (;; auto7B85A426_u -= 1) {
                     auto7B85A426_var = UnitGroupUnitFromEnd(auto7B85A426_g, auto7B85A426_u);
                     if (auto7B85A426_var == null) { break; }
-                    if ((libHots_gf_PingStoredForUnit(auto7B85A426_var, 1) == c_invalidPingId)) {
+                    if ((libARRA_gf_PingStoredForUnit(auto7B85A426_var, 1) == c_invalidPingId)) {
                         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(auto7B85A426_var), StringExternal("Param/Value/70B49722"));
                         PingSetUnit(PingLastCreated(), auto7B85A426_var);
-                        libHots_gf_StorePingForUnit(auto7B85A426_var, 1, PingLastCreated());
+                        libARRA_gf_StorePingForUnit(auto7B85A426_var, 1, PingLastCreated());
                         PingSetScale(PingLastCreated(), 0.6);
                     }
 
@@ -953,7 +953,7 @@ bool gt_DestroySmallBuildingObjectiveMarkers_Func (bool testConds, bool runActio
         return true;
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     gv_victoryCompletePan = UnitGetPosition(EventUnit());
     return true;
 }

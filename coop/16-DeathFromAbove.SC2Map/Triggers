@@ -14,15 +14,14 @@
             //==================================================================================================
             include &quot;TriggerLibs/NativeLib&quot;
             include &quot;TriggerLibs/LibertyLib&quot;
-            include &quot;TriggerLibs/SwarmLib&quot;
+            include &quot;libARRA&quot;
             include &quot;LibCOMI&quot;
             //--------------------------------------------------------------------------------------------------
             // Library Initialization
             //--------------------------------------------------------------------------------------------------
             void InitLibs () {
                 libNtve_InitLib();
-                libLbty_InitLib();
-                libHots_InitLib();
+                libARRA_InitLib();
                 libCOMI_InitLib();
             }
             //--------------------------------------------------------------------------------------------------
@@ -654,13 +653,13 @@
                 }
                 lv_missileUnit = EventUnit();
                 libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), &quot;KaiserWormScourgeMissile&quot;, UnitGetPosition(lv_missileUnit), ColorWithAlpha(100.00, 100.00, 100.00, 0.00), 0.0, UnitGetFacing(lv_missileUnit));
-                libHots_gf_StorePingForUnit(lv_missileUnit, 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(lv_missileUnit, 1, PingLastCreated());
                 PingSetUnit(PingLastCreated(), lv_missileUnit);
                 PingSetScale(PingLastCreated(), 0.075);
                 while (!((UnitIsAlive(EventUnit()) == false))) {
                     Wait(0.0625, c_timeGame);
                 }
-                PingDestroy(libHots_gf_PingStoredForUnit(lv_missileUnit, 1));
+                PingDestroy(libARRA_gf_PingStoredForUnit(lv_missileUnit, 1));
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -696,14 +695,14 @@
                 }
                 lv_gasUnit = EventUnit();
                 libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), &quot;NaturalGas50&quot;, UnitGetPosition(lv_gasUnit), ColorWithAlpha(100.00, 100.00, 100.00, 0.00), 0.0, UnitGetFacing(lv_gasUnit));
-                libHots_gf_StorePingForUnit(lv_gasUnit, 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(lv_gasUnit, 1, PingLastCreated());
                 PingSetUnit(PingLastCreated(), lv_gasUnit);
                 PingSetScale(PingLastCreated(), 0.06);
                 PingSetTooltip(PingLastCreated(), StringExternal(&quot;Param/Value/2B0DB3B5&quot;));
                 while (!((UnitIsAlive(EventUnit()) == false))) {
                     Wait(0.0625, c_timeGame);
                 }
-                PingDestroy(libHots_gf_PingStoredForUnit(lv_gasUnit, 1));
+                PingDestroy(libARRA_gf_PingStoredForUnit(lv_gasUnit, 1));
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -1141,7 +1140,7 @@
                 if (!runActions) {
                     return true;
                 }
-                libHots_gf_PlaySoundLinkasMusic(SoundLink(&quot;LOTV_Music_P09Full&quot;, -1), false, false);
+                libARRA_gf_PlaySoundLinkasMusic(SoundLink(&quot;LOTV_Music_P09Full&quot;, -1), false, false);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -1157,7 +1156,7 @@
                 if (!runActions) {
                     return true;
                 }
-                libHots_gf_PlaySoundLinkasMusic(SoundLink(&quot;LOTV_Music_P09Full&quot;, -1), false, false);
+                libARRA_gf_PlaySoundLinkasMusic(SoundLink(&quot;LOTV_Music_P09Full&quot;, -1), false, false);
                 TriggerEnable(gt_MothershipCharge, false);
                 TriggerEnable(gt_Fissure_Event, false);
                 TriggerEnable(gt_DestroyAttackWavePing, false);

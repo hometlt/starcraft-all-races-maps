@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibARRA"
 include "LibCOMI"
 
@@ -15,7 +15,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libARRA_InitLib();
     libCOMI_InitLib();
 }
@@ -333,8 +333,8 @@ bool auto_gf_AttachReticleEffectAndTextTagonUnitCoop_TriggerFunc (bool testConds
     }
 
     TextTagSetFontSize(TextTagLastCreated(), 32);
-    libHots_gf_StoreActorForUnit(lp_target, 1, libNtve_gf_ActorLastCreated());
-    libHots_gf_StoreTextTagForUnit(lp_target, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(lp_target, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(lp_target, 1, TextTagLastCreated());
     while (!((UnitIsAlive(lp_target) == false))) {
         Wait(0.25, c_timeGame);
     }
@@ -441,7 +441,7 @@ bool auto_gf_CreateFuelCellMarkers_TriggerFunc (bool testConds, bool runActions)
     libCOMI_gf_CreatePingFacingAngleCoop(libCOMI_gf_HumanPlayers(), UnitGetPosition(lp_fuelCell), 270.0, "PingXenonCrystalIcon", ColorWithAlpha(0.00, 0.00, 0.00, 0.00), 0.0);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/358A46FE"));
     PingSetScale(PingLastCreated(), 0.2);
-    libHots_gf_StorePingForUnit(lp_fuelCell, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lp_fuelCell, 1, PingLastCreated());
     gf_AttachReticleEffectAndTextTagonUnitCoop(UnitGetOwner(lp_fuelCell), libCOMI_ge_CampaginReticleSize_Medium, StringExternal("Param/Value/37F46ABC"), lp_fuelCell, "Ref_Center", PingLastCreated());
     libCOMI_gf_ShareVisionofUnitWithHumansCoop(lp_fuelCell, true);
     lv_onHighGround = gf_LocationisSafefromLava(UnitGetPosition(lp_fuelCell), ge_LavaHeightType_AbsoluteHeight);
@@ -561,30 +561,30 @@ bool auto_gf_ShowHideCrystalCollectUI_TriggerFunc (bool testConds, bool runActio
     lv_dataTableNameStorage = gf_CrystalUI_Worker_GetTableName(lp_crystal);
     lv_workersOrderedIndex = DataTableGetInt(true, lv_dataTableNameStorage);
     lv_fuelCell = lp_crystal;
-    libCOMI_gf_ShowHidePingCoop(libHots_gf_PingStoredForUnit(lv_fuelCell, 1), false);
-    if ((libHots_gf_PingStoredForUnit(lp_crystal, 2) == c_invalidPingId)) {
+    libCOMI_gf_ShowHidePingCoop(libARRA_gf_PingStoredForUnit(lv_fuelCell, 1), false);
+    if ((libARRA_gf_PingStoredForUnit(lp_crystal, 2) == c_invalidPingId)) {
         libCOMI_gf_CreatePingFacingAngleCoop(libCOMI_gf_HumanPlayers(), UnitGetPosition(lv_fuelCell), 270.0, "PingPanelPingOnMyWay", libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(lv_owningPlayer, false)), 0.0);
         PingSetScale(PingLastCreated(), 0.5);
         TextExpressionSetToken("Param/Expression/58803ECE", "PlayerName", PlayerName(lv_owningPlayer));
         TextExpressionSetToken("Param/Expression/58803ECE", "FuelCell", UnitTypeGetName(UnitGetType(lp_crystal)));
         PingSetTooltip(PingLastCreated(), TextExpressionAssemble("Param/Expression/58803ECE"));
-        libHots_gf_StorePingForUnit(lp_crystal, 2, PingLastCreated());
+        libARRA_gf_StorePingForUnit(lp_crystal, 2, PingLastCreated());
         lv_onMyWayPing = PingLastCreated();
     }
     else {
-        lv_onMyWayPing = libHots_gf_PingStoredForUnit(lp_crystal, 2);
+        lv_onMyWayPing = libARRA_gf_PingStoredForUnit(lp_crystal, 2);
     }
-    if ((libHots_gf_ActorForUnit(lp_crystal, 2) == null)) {
+    if ((libARRA_gf_ActorForUnit(lp_crystal, 2) == null)) {
         libNtve_gf_CreateModelAtPoint("PingPanelBeaconOnMyWay", UnitGetPosition(lv_fuelCell));
-        libHots_gf_StoreActorForUnit(lp_crystal, 2, libNtve_gf_ActorLastCreated());
+        libARRA_gf_StoreActorForUnit(lp_crystal, 2, libNtve_gf_ActorLastCreated());
         lv_onMyWayMarker = libNtve_gf_ActorLastCreated();
     }
     else {
-        lv_onMyWayMarker = libHots_gf_ActorForUnit(lp_crystal, 2);
+        lv_onMyWayMarker = libARRA_gf_ActorForUnit(lp_crystal, 2);
     }
     ActorSend(lv_onMyWayMarker, "TakeSnapshot");
-    TextTagShow(libHots_gf_TextTagForUnit(lv_fuelCell, 1), PlayerGroupAll(), false);
-    ActorSend(libHots_gf_ActorForUnit(lv_fuelCell, 1), libNtve_gf_SetVisibility(false));
+    TextTagShow(libARRA_gf_TextTagForUnit(lv_fuelCell, 1), PlayerGroupAll(), false);
+    ActorSend(libARRA_gf_ActorForUnit(lv_fuelCell, 1), libNtve_gf_SetVisibility(false));
     while ((DataTableGetBool(true, ("WorkerChasingCrystal_" + IntToString(UnitGetTag(lp_worker)) + "_" + IntToString(UnitGetTag(lp_crystal)))) == true)) {
         ActorSend(lv_onMyWayMarker, libNtve_gf_SetTintColor(libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(lv_owningPlayer, false)), 3.0, 0.2));
         Wait(0.15, c_timeGame);
@@ -593,12 +593,12 @@ bool auto_gf_ShowHideCrystalCollectUI_TriggerFunc (bool testConds, bool runActio
     if ((lv_workersOrderedIndex == 0)) {
         libNtve_gf_KillModel(lv_onMyWayMarker);
         libCOMI_gf_DestroyPingCoop(lv_onMyWayPing);
-        libHots_gf_StorePingForUnit(lp_crystal, 2, c_invalidPingId);
-        libHots_gf_StoreActorForUnit(lp_crystal, 2, null);
+        libARRA_gf_StorePingForUnit(lp_crystal, 2, c_invalidPingId);
+        libARRA_gf_StoreActorForUnit(lp_crystal, 2, null);
         if ((UnitIsAlive(lv_fuelCell) == true)) {
-            ActorSend(libHots_gf_ActorForUnit(lv_fuelCell, 1), libNtve_gf_SetVisibility(true));
-            TextTagShow(libHots_gf_TextTagForUnit(lv_fuelCell, 1), PlayerGroupAll(), true);
-            libCOMI_gf_ShowHidePingCoop(libHots_gf_PingStoredForUnit(lv_fuelCell, 1), true);
+            ActorSend(libARRA_gf_ActorForUnit(lv_fuelCell, 1), libNtve_gf_SetVisibility(true));
+            TextTagShow(libARRA_gf_TextTagForUnit(lv_fuelCell, 1), PlayerGroupAll(), true);
+            libCOMI_gf_ShowHidePingCoop(libARRA_gf_PingStoredForUnit(lv_fuelCell, 1), true);
         }
 
     }
@@ -686,7 +686,7 @@ void gf_BonusObjectiveAI (unit lp_bObjUnit) {
 
             libNtve_gf_ShowHideUnit(lp_bObjUnit, false);
             libNtve_gf_PauseUnit(lp_bObjUnit, true);
-            libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_bObjUnit, 1));
+            libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_bObjUnit, 1));
             while (!((gv_bonusObjectiveActive == true))) {
                 Wait(1.0, c_timeAI);
             }
@@ -698,7 +698,7 @@ void gf_BonusObjectiveAI (unit lp_bObjUnit) {
             TimerStart(lv_abilCD_SpitFire, gv_abilCD_Min_SpitFire, false, c_timeAI);
             TimerStart(lv_abilCD_FireLine, gv_abilCD_Min_FireLine, false, c_timeAI);
             libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(lp_bObjUnit), StringExternal("Param/Value/51944F38"));
-            libHots_gf_StorePingForUnit(lp_bObjUnit, 1, PingLastCreated());
+            libARRA_gf_StorePingForUnit(lp_bObjUnit, 1, PingLastCreated());
             UnitSetState(lp_bObjUnit, c_unitStateTargetable, true);
             libNtve_gf_ShowHideUnit(lp_bObjUnit, true);
             libNtve_gf_PauseUnit(lp_bObjUnit, false);
@@ -708,7 +708,7 @@ void gf_BonusObjectiveAI (unit lp_bObjUnit) {
         }
         Wait(0.5, c_timeAI);
     }
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_bObjUnit, 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_bObjUnit, 1));
     VisRevealerDestroy(VisRevealerLastCreated());
     TriggerExecute(gt_ObjectiveKillSalamanderComplete, true, false);
     TriggerExecute(gt_BonusObjectiveCompleteTransmissionQ, true, false);
@@ -820,13 +820,13 @@ unitgroup gf_CrittersInRegion (region lp_area) {
 bool gf_PointStoredForUnit (unit lp_unit, int lp_index) {
     // Automatic Variable Declarations
     // Implementation
-    return DataTableGetBool(true, libHots_gf__UnitDataName(5, lp_unit, lp_index));
+    return DataTableGetBool(true, libARRA_gf__UnitDataName(5, lp_unit, lp_index));
 }
 
 void gf_StorePointForUnit (unit lp_unit, int lp_index, bool lp_burrowed) {
     // Automatic Variable Declarations
     // Implementation
-    DataTableSetBool(true, libHots_gf__UnitDataName(5, lp_unit, lp_index), lp_burrowed);
+    DataTableSetBool(true, libARRA_gf__UnitDataName(5, lp_unit, lp_index), lp_burrowed);
 }
 
 trigger auto_gf_CivilianGatherSupplies_Trigger = null;
@@ -2675,7 +2675,7 @@ bool gt_StartBonusObjective_Func (bool testConds, bool runActions) {
     UnitCreate(1, "RedstoneSalamanderBurrowed", 0, gv_pLAYER_09_BonusObjective, gv_bonusObjectiveLocations[1], 270.0);
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitLastCreated()), StringExternal("Param/Value/6067163A"));
     PingSetUnit(PingLastCreated(), UnitLastCreated());
-    libHots_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
     UnitSetPropertyFixed(UnitLastCreated(), c_unitPropLifeMax, gv_bonusObjectiveLife);
     UnitSetPropertyFixed(UnitLastCreated(), c_unitPropLifePercent, 100.0);
     UnitBehaviorAdd(UnitLastCreated(), "LavaDamageCoopImmune", UnitLastCreated(), 1);
@@ -3613,7 +3613,7 @@ bool gt_MakeCrittersFlee_Func (bool testConds, bool runActions) {
         for (;; auto785F692B_u -= 1) {
             lv_u = UnitGroupUnitFromEnd(auto785F692B_g, auto785F692B_u);
             if (lv_u == null) { break; }
-            libHots_gf_StorePointForUnit(lv_u, 1, UnitGetPosition(lv_u));
+            libARRA_gf_StorePointForUnit(lv_u, 1, UnitGetPosition(lv_u));
             UnitIssueOrder(lv_u, OrderTargetingPoint(AbilityCommand("move", 0), RegionRandomPoint(gv_critterHavens[lv_index])), c_orderQueueReplace);
             if ((RandomInt(0, 3) != 0)) {
                 UnitIssueOrder(lv_u, Order(AbilityCommand("RedstoneLavaCritterBurrow", 0)), c_orderQueueAddToEnd);
@@ -3674,7 +3674,7 @@ bool gt_MakeCrittersReturn_Func (bool testConds, bool runActions) {
         for (;; auto0AC63A4D_u -= 1) {
             lv_u = UnitGroupUnitFromEnd(auto0AC63A4D_g, auto0AC63A4D_u);
             if (lv_u == null) { break; }
-            UnitIssueOrder(lv_u, OrderTargetingPoint(AbilityCommand("move", 0), libHots_gf_PointStoredForUnit(lv_u, 1)), c_orderQueueReplace);
+            UnitIssueOrder(lv_u, OrderTargetingPoint(AbilityCommand("move", 0), libARRA_gf_PointStoredForUnit(lv_u, 1)), c_orderQueueReplace);
             if ((gf_PointStoredForUnit(lv_u, 1) == true)) {
                 UnitIssueOrder(lv_u, Order(AbilityCommand("RedstoneLavaCritterBurrow", 0)), c_orderQueueAddToEnd);
             }
@@ -3734,10 +3734,10 @@ bool gt_CiviliansFlee_Func (bool testConds, bool runActions) {
             UnitBehaviorAddPlayer(auto860F75F6_var, "Scared", gv_pLAYER_10_Civilians, 1);
         }
         if ((UnitGroupHasUnit(UnitGroupFromId(2), auto860F75F6_var) == true)) {
-            libHots_gf_StorePointForUnit(auto860F75F6_var, 1, PointFromId(1162));
+            libARRA_gf_StorePointForUnit(auto860F75F6_var, 1, PointFromId(1162));
         }
         else {
-            libHots_gf_StorePointForUnit(auto860F75F6_var, 1, PointFromId(1163));
+            libARRA_gf_StorePointForUnit(auto860F75F6_var, 1, PointFromId(1163));
         }
     }
     while ((UnitGroupCount(lv_fleeingCivilians, c_unitCountAlive) > 0)) {
@@ -3749,10 +3749,10 @@ bool gt_CiviliansFlee_Func (bool testConds, bool runActions) {
             if ((UnitGroupHasUnit(UnitGroupFromId(2), autoDE8FA5E1_var) == true)) {
                 if ((libNtve_gf_RandomPercent() <= 5.0)) {
                     if ((libNtve_gf_RandomPercent() <= 50.0)) {
-                        libHots_gf_StorePointForUnit(autoDE8FA5E1_var, 1, PointFromId(1162));
+                        libARRA_gf_StorePointForUnit(autoDE8FA5E1_var, 1, PointFromId(1162));
                     }
                     else {
-                        libHots_gf_StorePointForUnit(autoDE8FA5E1_var, 1, PointFromId(1577));
+                        libARRA_gf_StorePointForUnit(autoDE8FA5E1_var, 1, PointFromId(1577));
                     }
                 }
 
@@ -3760,16 +3760,16 @@ bool gt_CiviliansFlee_Func (bool testConds, bool runActions) {
             else {
                 if ((libNtve_gf_RandomPercent() <= 5.0)) {
                     if ((libNtve_gf_RandomPercent() <= 50.0)) {
-                        libHots_gf_StorePointForUnit(autoDE8FA5E1_var, 1, PointFromId(1163));
+                        libARRA_gf_StorePointForUnit(autoDE8FA5E1_var, 1, PointFromId(1163));
                     }
                     else {
-                        libHots_gf_StorePointForUnit(autoDE8FA5E1_var, 1, PointFromId(1604));
+                        libARRA_gf_StorePointForUnit(autoDE8FA5E1_var, 1, PointFromId(1604));
                     }
                 }
 
             }
-            if ((libNtve_gf_UnitInRegion(autoDE8FA5E1_var, RegionCircle(libHots_gf_PointStoredForUnit(autoDE8FA5E1_var, 1), 0.33)) == false)) {
-                UnitIssueOrder(autoDE8FA5E1_var, OrderTargetingPoint(AbilityCommand("move", 0), libHots_gf_PointStoredForUnit(autoDE8FA5E1_var, 1)), c_orderQueueReplace);
+            if ((libNtve_gf_UnitInRegion(autoDE8FA5E1_var, RegionCircle(libARRA_gf_PointStoredForUnit(autoDE8FA5E1_var, 1), 0.33)) == false)) {
+                UnitIssueOrder(autoDE8FA5E1_var, OrderTargetingPoint(AbilityCommand("move", 0), libARRA_gf_PointStoredForUnit(autoDE8FA5E1_var, 1)), c_orderQueueReplace);
             }
             else {
                 UnitRemove(autoDE8FA5E1_var);

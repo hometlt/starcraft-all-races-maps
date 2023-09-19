@@ -14,7 +14,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libLotv_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -766,14 +766,14 @@ bool auto_gf_ActivateXelNagaConstructAI_TriggerFunc (bool testConds, bool runAct
             lv_splashTargets = UnitGroupAlliance(gv_pLAYER_03_Player01Enemy, c_unitAllianceEnemy, RegionCircle(UnitGetPosition(lp_construct), 4.0), UnitFilter(0, 0, (1 << c_targetFilterAir) | (1 << c_targetFilterStructure) | (1 << c_targetFilterMissile) | (1 << c_targetFilterBuried), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
             if ((UnitGroupCount(lv_splashTargets, c_unitCountAlive) >= 1)) {
                 libNtve_gf_AICast(lp_construct, OrderTargetingUnit(AbilityCommand("XelNagaConstructSmash", 0), UnitGroupClosestToPoint(lv_splashTargets, UnitGetPosition(lp_construct))));
-                TimerStart(lv_splashCooldown, libLotv_gf_DifficultyValueFixed2(20.0, 15.0, 12.0, 9.0), false, c_timeAI);
+                TimerStart(lv_splashCooldown, libARRA_gf_DifficultyValueFixed2(20.0, 15.0, 12.0, 9.0), false, c_timeAI);
                 Wait(3.0, c_timeAI);
             }
             else {
                 lv_splashTargets = UnitGroupAlliance(gv_pLAYER_03_Player01Enemy, c_unitAllianceEnemy, RegionCircle(UnitGetPosition(lp_construct), 10.0), UnitFilter(0, 0, (1 << c_targetFilterAir) | (1 << c_targetFilterStructure) | (1 << c_targetFilterMissile) | (1 << c_targetFilterBuried), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
                 if ((UnitGroupCount(lv_splashTargets, c_unitCountAlive) >= 1)) {
                     libNtve_gf_AICast(lp_construct, OrderTargetingPoint(AbilityCommand("EntropicBlast", 0), UnitGetPosition(UnitGroupClosestToPoint(lv_splashTargets, UnitGetPosition(lp_construct)))));
-                    TimerStart(lv_splashCooldown, libLotv_gf_DifficultyValueFixed2(20.0, 15.0, 12.0, 9.0), false, c_timeAI);
+                    TimerStart(lv_splashCooldown, libARRA_gf_DifficultyValueFixed2(20.0, 15.0, 12.0, 9.0), false, c_timeAI);
                     Wait(4.5, c_timeAI);
                 }
 

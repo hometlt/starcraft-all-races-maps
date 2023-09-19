@@ -18,7 +18,7 @@ include "TriggerLibs/natives"
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -1105,7 +1105,7 @@ void gf_CreateBrutalisk () {
     libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingBoss", UnitGetPosition(gv_brutalisk), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/A0DA713A"));
     PingSetUnit(PingLastCreated(), gv_brutalisk);
-    libHots_gf_StorePingForUnit(gv_brutalisk, 0, PingLastCreated());
+    libARRA_gf_StorePingForUnit(gv_brutalisk, 0, PingLastCreated());
 }
 
 void gf_CreateLeviathan () {
@@ -1915,8 +1915,8 @@ bool gt_BrutaliskDies_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 0));
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 0));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     return true;
 }
 
@@ -1935,8 +1935,8 @@ bool gt_CerebrateDies_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 0));
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 0));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     return true;
 }
 
@@ -1956,8 +1956,8 @@ bool gt_OvermindDies_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 0));
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 0));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     return true;
 }
 
@@ -1992,7 +1992,7 @@ bool gt_StartGame_Func (bool testConds, bool runActions) {
         gf_BrainstormSplitTransmission(gv_naktulSuperior, SoundLink("NaktulIntro1K", -1), SoundLink("NaktulIntro1", -1));
         libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(1436250425)), StringExternal("Param/Value/A74F0723"));
-        libHots_gf_StorePingForUnit(UnitFromId(1436250425), 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(UnitFromId(1436250425), 1, PingLastCreated());
         Wait(2.0, c_timeGame);
         libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
         gf_BrainstormSplitTransmission(gv_naktulSuperior, SoundLink("NaktulIntro2K", -1), SoundLink("NaktulIntro2", -1));
@@ -2005,7 +2005,7 @@ bool gt_StartGame_Func (bool testConds, bool runActions) {
         libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Game);
         TriggerExecute(gt_ObjectiveDestroyTheOvermindCreate, true, true);
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(1436250425)), StringExternal("Param/Value/723C08A7"));
-        libHots_gf_StorePingForUnit(UnitFromId(1436250425), 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(UnitFromId(1436250425), 1, PingLastCreated());
         Wait(2.0, c_timeGame);
         libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
         gf_BrainstormTransmission(SoundLink("NaktulIntro2", -1));
@@ -2051,9 +2051,9 @@ bool gt_SetupCerebrateObjective_Func (bool testConds, bool runActions) {
     TriggerQueueEnter();
     TriggerExecute(gt_BonusObjectiveKillTheCerebratesCreate, true, false);
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitFromId(606816855)), StringExternal("Param/Value/B59DEECE"));
-    libHots_gf_StorePingForUnit(UnitFromId(606816855), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(606816855), 1, PingLastCreated());
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitFromId(1026764097)), StringExternal("Param/Value/DEBB7564"));
-    libHots_gf_StorePingForUnit(UnitFromId(1026764097), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1026764097), 1, PingLastCreated());
     SoundPlayForPlayer(SoundLink("UI_ObjectiveBonusDiscovered", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     Wait(3.0, c_timeGame);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -2579,7 +2579,7 @@ bool gt_OvermindUnderAttack_Func (bool testConds, bool runActions) {
         libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingBoss", UnitGetPosition(gv_leviathan), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0);
         PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/3B322E89"));
         PingSetUnit(PingLastCreated(), gv_leviathan);
-        libHots_gf_StorePingForUnit(gv_leviathan, 0, PingLastCreated());
+        libARRA_gf_StorePingForUnit(gv_leviathan, 0, PingLastCreated());
     }
 
     return true;

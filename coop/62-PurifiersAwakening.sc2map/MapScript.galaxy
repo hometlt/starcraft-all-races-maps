@@ -1394,9 +1394,7 @@ void ai0108C8E1_start (int p) {
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libLbty_InitLib();
-    libHots_InitLib();
-    libLotv_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 //--------------------------------------------------------------------------------------------------
@@ -1898,7 +1896,7 @@ void gf_ActivateStasisChamber (int lp_containmentTowerIndex) {
     int lv_chosenZergBaseTarget;
     // Variable Initialization
     // Implementation
-    if ((libLotv_gf_DifficultyValueInt2(0, 1, 1, 1) == 1) && (TimerGetRemaining(gv_purifierComboTimer) > 0.0)) {
+    if ((libARRA_gf_DifficultyValueInt2(0, 1, 1, 1) == 1) && (TimerGetRemaining(gv_purifierComboTimer) > 0.0)) {
         TriggerExecute(gt_AchievementPurifierActivationCombo, true, false);
     }
     else {
@@ -2170,8 +2168,8 @@ bool auto_gf_TrackNullCircuitReticleAndTextTag_TriggerFunc (bool testConds, bool
     while (!((UnitGetType(lp_inhibitorUnit) == "NullCircuitActivated"))) {
         Wait(1.0, c_timeGame);
     }
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(lp_inhibitorUnit, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(lp_inhibitorUnit, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(lp_inhibitorUnit, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(lp_inhibitorUnit, 1));
     return true;
 }
 string gf_GetCybrosLightConfiguration () {
@@ -2634,7 +2632,7 @@ bool gt_Init07Environment_Func (bool testConds, bool runActions) {
     }
     GameTimeOfDaySet("08:00:00");
     GameSetLighting("Cybros00_nesw", 0.0);
-    libLbty_gf_AutoRevealRegion(RegionFromId(107), RegionFromId(107), gv_pLAYER_01_USER);
+    libARRA_gf_AutoRevealRegion(RegionFromId(107), RegionFromId(107), gv_pLAYER_01_USER);
     libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(117), "Purifier_StasisPods_Chamber");
     libNtve_gf_ShowHideDoodadsInRegion(false, RegionFromId(117), "Purifier_StasisPods");
     return true;
@@ -2651,21 +2649,21 @@ bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    UnitSetPropertyFixed(gv_purifierCoreMatrix, c_unitPropLifeMax, libLotv_gf_DifficultyValueInt2(6000, 6000, 4000, 2000));
+    UnitSetPropertyFixed(gv_purifierCoreMatrix, c_unitPropLifeMax, libARRA_gf_DifficultyValueInt2(6000, 6000, 4000, 2000));
     UnitSetPropertyFixed(gv_purifierCoreMatrix, c_unitPropLifePercent, 100.0);
-    UnitSetPropertyFixed(gv_purifierCoreMatrix, c_unitPropShieldsMax, libLotv_gf_DifficultyValueInt2(2000, 2000, 2000, 2000));
+    UnitSetPropertyFixed(gv_purifierCoreMatrix, c_unitPropShieldsMax, libARRA_gf_DifficultyValueInt2(2000, 2000, 2000, 2000));
     UnitSetPropertyFixed(gv_purifierCoreMatrix, c_unitPropShieldsPercent, 100.0);
     gv_coreMatrixLowestShields = UnitGetPropertyFixed(gv_purifierCoreMatrix, c_unitPropShields, c_unitPropCurrent);
     IntLoopBegin(1, 12);
     for ( ; !IntLoopDone() ; IntLoopStep() ) {
-        UnitSetPropertyFixed(gv_nullCircuits[IntLoopCurrent()], c_unitPropLifeMax, libLotv_gf_DifficultyValueInt2(500, 500, 750, 1000));
+        UnitSetPropertyFixed(gv_nullCircuits[IntLoopCurrent()], c_unitPropLifeMax, libARRA_gf_DifficultyValueInt2(500, 500, 750, 1000));
         UnitSetPropertyFixed(gv_nullCircuits[IntLoopCurrent()], c_unitPropLifePercent, 100.0);
     }
     IntLoopEnd();
-    if ((libLotv_gf_DifficultyValueInt2(0, 0, 1, 1) == 1)) {
+    if ((libARRA_gf_DifficultyValueInt2(0, 0, 1, 1) == 1)) {
         TechTreeUpgradeAddLevel(gv_pLAYER_02_DOMINION8, "RoguePurifierBotCountUpgrade", 1);
     }
-    if ((libLotv_gf_DifficultyValueInt2(0, 0, 1, 1) == 1)) {
+    if ((libARRA_gf_DifficultyValueInt2(0, 0, 1, 1) == 1)) {
         PlayerGroupLoopBegin(gv_enemyPlayers);
         for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
             libNtve_gf_SetUpgradeLevelForPlayer(PlayerGroupLoopCurrent(), "zerglingmovementspeed", 1);
@@ -2685,7 +2683,7 @@ bool gt_Init08Difficulties_Func (bool testConds, bool runActions) {
         }
         PlayerGroupLoopEnd();
     }
-    if ((libLotv_gf_DifficultyValueInt2(0, 0, 0, 1) == 1)) {
+    if ((libARRA_gf_DifficultyValueInt2(0, 0, 0, 1) == 1)) {
         PlayerGroupLoopBegin(gv_enemyPlayers);
         for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
             libNtve_gf_SetUpgradeLevelForPlayer(PlayerGroupLoopCurrent(), "zerglingattackspeed", 1);
@@ -2761,7 +2759,7 @@ bool gt_RemovePings_Func (bool testConds, bool runActions) {
     if (!runActions) {
         return true;
     }
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -3272,13 +3270,13 @@ bool gt_Harass_Func (bool testConds, bool runActions) {
     PingSetScale(PingLastCreated(), 0.65);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/859A2BFF"));
     PingSetUnit(PingLastCreated(), UnitLastCreated());
-    libHots_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
     libNtve_gf_UnitCreateFacingPoint(1, "HybridNemesis", 0, 4, RegionGetCenter(RegionFromId(96)), PointFromId(458));
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingBoss", UnitGroupCenterOfGroup(UnitLastCreatedGroup()), ColorWithAlpha(100.00, 0.00, 0.00, 0.00), 0.0, 270.0);
     PingSetScale(PingLastCreated(), 0.65);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/6FDB68BB"));
     PingSetUnit(PingLastCreated(), UnitLastCreated());
-    libHots_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
     Wait(5.0, c_timeGame);
     UnitGroupIssueOrder(UnitGroup("HybridNemesis", 4, RegionFromId(27), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(2045557023)), c_orderQueueReplace);
     UnitGroupIssueOrder(UnitGroup("HybridNemesis", 4, RegionFromId(96), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0), OrderTargetingPoint(AbilityCommand("attack", 0), PointFromId(458)), c_orderQueueReplace);
@@ -3314,7 +3312,7 @@ bool gt_Torrasque_Func (bool testConds, bool runActions) {
     PingSetScale(PingLastCreated(), 0.65);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/B6B50374"));
     PingSetUnit(PingLastCreated(), gv_hybrid01);
-    libHots_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("HybridDetected", true, RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER));
@@ -3328,7 +3326,7 @@ bool gt_Torrasque_Func (bool testConds, bool runActions) {
     PingSetScale(PingLastCreated(), 0.65);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/712FAE8F"));
     PingSetUnit(PingLastCreated(), gv_hybrid01);
-    libHots_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
     libCOMI_gf_SendMissionTransmission("HybridDetected", true, RandomInt(gv_pLAYER_01_USER, gv_pLAYER_02_USER));
@@ -3412,15 +3410,15 @@ bool gt_TransmissionPurifierNullCircuitsQ_Func (bool testConds, bool runActions)
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingTriangle", UnitGetPosition(gv_purifierEnergizer), ColorWithAlpha(100.00, 50.20, 0.00, 0.00), 0.0, 270.0);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/78F48F7B"));
     PingSetScale(PingLastCreated(), 0.2);
-    libHots_gf_StorePingForUnit(gv_purifierEnergizer, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(gv_purifierEnergizer, 1, PingLastCreated());
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingTriangle", UnitGetPosition(UnitFromId(1201159282)), ColorWithAlpha(100.00, 50.20, 0.00, 0.00), 0.0, 270.0);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/05733E50"));
     PingSetScale(PingLastCreated(), 0.2);
-    libHots_gf_StorePingForUnit(UnitFromId(1201159282), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1201159282), 1, PingLastCreated());
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingTriangle", UnitGetPosition(UnitFromId(1721959331)), ColorWithAlpha(100.00, 50.20, 0.00, 0.00), 0.0, 270.0);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/72D10C73"));
     PingSetScale(PingLastCreated(), 0.2);
-    libHots_gf_StorePingForUnit(UnitFromId(1721959331), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1721959331), 1, PingLastCreated());
     TriggerEnable(gt_Teleport1, true);
     Wait(1.75, c_timeGame);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -4007,7 +4005,7 @@ bool gt_NullCircuitDestroyed_Func (bool testConds, bool runActions) {
     gv_objectiveNullCircuitsCount += 1;
     TriggerExecute(gt_ObjectiveNullCircuitsUpdate, true, false);
     if ((gv_objectiveNullCircuitsCount == gv_objectiveNullCircuitsMax)) {
-        PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+        PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
         TriggerExecute(gt_VictoryStasisChambersCompleted, true, false);
     }
     UnitSetOwner(EventUnit(), 0, true);
@@ -4221,8 +4219,8 @@ bool gt_TransmissionPlayerSeesFirstNullCircuitRevealQ_Func (bool testConds, bool
     VisRevealArea(gv_pLAYER_01_USER, EventUnitRegion(), 8.0, false);
     VisRevealArea(gv_pLAYER_02_USER, EventUnitRegion(), 8.0, false);
     libCOMI_gf_CreateReticleEffectAndTextTagAtPoint(libCOMI_ge_CampaginReticleType_ProtossEnemy, libCOMI_ge_CampaginReticleSize_Large, StringExternal("Param/Value/1653F5A8"), libNtve_gf_PointFromXYZ(PointGetX(UnitGetPosition(lv_cHOSEN_UNIT)), PointGetY(UnitGetPosition(lv_cHOSEN_UNIT)), 0.5));
-    libHots_gf_StoreActorForUnit(lv_cHOSEN_UNIT, 1, libNtve_gf_ActorLastCreated());
-    libHots_gf_StoreTextTagForUnit(lv_cHOSEN_UNIT, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(lv_cHOSEN_UNIT, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(lv_cHOSEN_UNIT, 1, TextTagLastCreated());
     gf_TrackNullCircuitReticleAndTextTag(lv_cHOSEN_UNIT);
     Wait(2.0, c_timeGame);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -4312,14 +4310,14 @@ bool gt_TrackNullCircuitPings_Func (bool testConds, bool runActions) {
             for ( ; ( (auto85A62C08_ai >= 0 && lv_i <= auto85A62C08_ae) || (auto85A62C08_ai <= 0 && lv_i >= auto85A62C08_ae) ) ; lv_i += auto85A62C08_ai ) {
                 lv_nullCircuit = gv_nullCircuits[lv_i];
                 if ((UnitGetType(lv_nullCircuit) == "NullCircuit")) {
-                    if ((libNtve_gf_UnitIsVisibleToPlayer(lv_nullCircuit, gv_pLAYER_01_USER) == true) && (libNtve_gf_UnitIsVisibleToPlayer(lv_nullCircuit, gv_pLAYER_02_USER) == true) && (libHots_gf_PingStoredForUnit(lv_nullCircuit, 1) == c_invalidPingId)) {
+                    if ((libNtve_gf_UnitIsVisibleToPlayer(lv_nullCircuit, gv_pLAYER_01_USER) == true) && (libNtve_gf_UnitIsVisibleToPlayer(lv_nullCircuit, gv_pLAYER_02_USER) == true) && (libARRA_gf_PingStoredForUnit(lv_nullCircuit, 1) == c_invalidPingId)) {
                         libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "PingObjective", UnitGetPosition(lv_nullCircuit), ColorWithAlpha(0.00, 100.00, 0.00, 0.00), 0.0, 270.0);
                         PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/10DFB082"));
-                        libHots_gf_StorePingForUnit(lv_nullCircuit, 1, PingLastCreated());
+                        libARRA_gf_StorePingForUnit(lv_nullCircuit, 1, PingLastCreated());
                     }
                 }
                 else {
-                    PingDestroy(libHots_gf_PingStoredForUnit(lv_nullCircuit, 1));
+                    PingDestroy(libARRA_gf_PingStoredForUnit(lv_nullCircuit, 1));
                 }
             }
         }
@@ -4613,7 +4611,7 @@ bool gt_TransmissionPurifierWardenRevealQ_Func (bool testConds, bool runActions)
     lv_points[12] = PointFromId(2078585592);
     lv_points[13] = PointFromId(740011808);
     libCOMI_gf_CreateObjectivePing(false, UnitGetPosition(UnitFromId(636256265)), StringExternal("Param/Value/1DF8E26D"));
-    libHots_gf_StorePingForUnit(UnitFromId(636256265), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(636256265), 1, PingLastCreated());
     PingSetUnit(PingLastCreated(), UnitFromId(636256265));
     VisRevealerCreate(gv_pLAYER_01_USER, RegionFromId(119));
     VisRevealerCreate(gv_pLAYER_02_USER, RegionFromId(119));
@@ -4713,7 +4711,7 @@ bool gt_TransmissionPurifierMegalithReachesEnd_Func (bool testConds, bool runAct
     }
     Wait(2.0, c_timeAI);
     TriggerQueueEnter();
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/78CDA6B3"), null, lv_unitPoint);
     UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/C1911946"), null, lv_unitPoint);
     libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingAlert", lv_unitPoint, Color(0.00, 100.00, 0.00), 0.0);
@@ -4759,7 +4757,7 @@ bool gt_TransmissionPurifierMegalithDies_Func (bool testConds, bool runActions) 
     TriggerExecute(gt_ObjectiveDestroyPurifierWardenFailed, true, false);
     Wait(2.0, c_timeAI);
     TriggerQueueEnter();
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     UIAlertPoint("Trigger", gv_pLAYER_01_USER, StringExternal("Param/Value/E7095796"), null, lv_unitPoint);
     UIAlertPoint("Trigger", gv_pLAYER_02_USER, StringExternal("Param/Value/0BD49981"), null, lv_unitPoint);
     libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingAlert", lv_unitPoint, Color(0.00, 100.00, 0.00), 0.0);
@@ -4922,7 +4920,7 @@ bool gt_StartAI_Func (bool testConds, bool runActions) {
    // libCOMI_gf_EnableVoidCampaignAIBehaviorForAllPlayers();
     cai_runall();
     TriggerExecute(gt_AIAttackWaves, true, false);
-    if ((libLotv_gf_DifficultyValueInt2(0, 0, 1, 1) == 1)) {
+    if ((libARRA_gf_DifficultyValueInt2(0, 0, 1, 1) == 1)) {
         TriggerExecute(gt_AIUpgradesHard, true, false);
     }
     else {
@@ -5428,11 +5426,11 @@ bool gt_ZergReinforcementsController_Func (bool testConds, bool runActions) {
     TriggerEnable(TriggerGetCurrent(), false);
     Wait(360.0, c_timeAI);
     TriggerExecute(gt_ZergReinforcements01Q, true, false);
-    Wait(libLotv_gf_DifficultyValueFixed2(360.0, 360.0, 240.0, 240.0), c_timeAI);
+    Wait(libARRA_gf_DifficultyValueFixed2(360.0, 360.0, 240.0, 240.0), c_timeAI);
     TriggerExecute(gt_ZergReinforcements02, true, false);
-    Wait(libLotv_gf_DifficultyValueFixed2(360.0, 360.0, 240.0, 240.0), c_timeAI);
+    Wait(libARRA_gf_DifficultyValueFixed2(360.0, 360.0, 240.0, 240.0), c_timeAI);
     TriggerExecute(gt_ZergReinforcements03, true, false);
-    if ((libLotv_gf_DifficultyValueInt2(0, 0, 1, 1) == 1)) {
+    if ((libARRA_gf_DifficultyValueInt2(0, 0, 1, 1) == 1)) {
         Wait(240.0, c_timeAI);
         TriggerExecute(gt_ZergReinforcements04Hard, true, false);
     }
@@ -5674,7 +5672,7 @@ bool gt_StatHybridSlain_Func (bool testConds, bool runActions) {
         return true;
     }
     gv_hybridKilledCount += 1;
-    if ((libLotv_gf_DifficultyValueInt2(0, 0, 1, 1) == 1) && (UnitGetType(EventUnit()) == "HybridBehemoth")) {
+    if ((libARRA_gf_DifficultyValueInt2(0, 0, 1, 1) == 1) && (UnitGetType(EventUnit()) == "HybridBehemoth")) {
         gv_masteryBehemothKilledCount += 1;
         if ((gv_masteryBehemothKilledCount >= 5) && (TimerGetRemaining(gv_masteryBehemothKillTimer) > 0.0)) {
             TriggerExecute(gt_AchievementHybridBehemothsKilledMastery, true, false);
@@ -6295,13 +6293,13 @@ bool gt_IntroCinematic_Func (bool testConds, bool runActions) {
     libCOMI_gf_PlaySoundCinematic(SoundLink("Event_Purifier03_StartCine_DNullCircuitDrone", -1), PlayerGroupAll(), 100.0, 0.0);
     Wait(3.0, c_timeGame);
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_ProtossMainObjective, libCOMI_ge_CampaginReticleSize_Medium, null, UnitFromId(209), "Ref_Overhead");
-    libHots_gf_StoreActorForUnit(UnitFromId(209), 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreActorForUnit(UnitFromId(209), 1, libNtve_gf_ActorLastCreated());
     Wait(1.0, c_timeGame);
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_ProtossMainObjective, libCOMI_ge_CampaginReticleSize_Medium, null, UnitFromId(210), "Ref_Overhead");
-    libHots_gf_StoreActorForUnit(UnitFromId(210), 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreActorForUnit(UnitFromId(210), 1, libNtve_gf_ActorLastCreated());
     Wait(2.5, c_timeGame);
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_ProtossMainObjective, libCOMI_ge_CampaginReticleSize_Medium, null, UnitFromId(211), "Ref_Overhead");
-    libHots_gf_StoreActorForUnit(UnitFromId(211), 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreActorForUnit(UnitFromId(211), 1, libNtve_gf_ActorLastCreated());
     TransmissionWait(TransmissionLastSent(), 0.0);
     Wait(1.0, c_timeGame);
     CinematicFade(false, 1.0, c_fadeStyleNormal, ColorWithAlpha(0.00, 0.00, 0.00, 0.00), 0.0, true);

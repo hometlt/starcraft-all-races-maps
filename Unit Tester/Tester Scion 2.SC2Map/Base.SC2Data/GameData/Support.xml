@@ -1,0 +1,262 @@
+<Catalog>
+
+    <CValidatorLocationEnumArea id="GenericTargetedAoETargetSearch">
+        <AreaArray Radius="3"/>
+        <Compare value="GE"/>
+        <Count value="5"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+        <SearchFilters value="Visible;Player,Ally,Neutral,Missile,Item,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+
+    <CValidatorUnitCompareVital id="TargetHasMaxShieldsGTE60">
+        <Compare value="GE"/>
+        <Type value="Maximum"/>
+        <Value value="60"/>
+        <Vital value="Shields"/>
+    </CValidatorUnitCompareVital>
+
+
+    <CValidatorUnitCompareVitality id="TargetVitalityGE150">
+        <Compare value="GT"/>
+        <Value value="150"/>
+    </CValidatorUnitCompareVitality>
+
+    <CValidatorUnitCompareVital id="TargetShieldsLT0">
+        <Vital value="Shields"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetHasCurrentHealthGT60">
+        <Compare value="GT"/>
+        <Value value="60"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetHasCurrentShieldsGT60">
+        <Compare value="GT"/>
+        <Value value="60"/>
+        <Vital value="Shields"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetHasCurrentHealthGTE125">
+        <Compare value="GE"/>
+        <Value value="125"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetHasCurrentHealthGTE100">
+        <Compare value="GE"/>
+        <Value value="100"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="TargetLifeLTE30">
+        <Compare value="LE"/>
+        <Value value="30"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorLocationCompareRange id="TargetUnitDistanceGE3">
+        <ResultFailed value="TargetIsOutOfRange"/>
+        <WhichLocation Value="TargetUnit"/>
+        <Compare value="GE"/>
+        <Range value="3"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorLocationCompareRange id="TargetUnitDistanceGE5">
+        <ResultFailed value="TargetIsOutOfRange"/>
+        <WhichLocation Value="TargetUnit"/>
+        <Compare value="GE"/>
+        <Range value="5"/>
+    </CValidatorLocationCompareRange>
+<!--    <CValidatorUnitWeaponFiring id="CasterIsFiringWeapon">-->
+<!--        <Weapon value=""/>-->
+<!--    </CValidatorUnitWeaponFiring>-->
+    <CValidatorLocationEnumArea id="EnemiesWithin14">
+        <AreaArray>
+            <Compare value="GE"/>
+            <Count value="1"/>
+            <Radius value="14"/>
+            <Validator value="EnemyTarget"/>
+        </AreaArray>
+        <SearchFilters value="Visible;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <WhichLocation Value="CasterUnit"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="MultipleAirHostilesNearby12">
+        <AreaArray Compare="GE" Count="5" Radius="12"/>
+        <SearchFilters value="Air;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="NoMultipleAirHostilesNearby15">
+        <AreaArray Compare="LT" Count="3" Radius="12"/>
+        <SearchFilters value="Air;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="AirHostilesNearby12">
+        <AreaArray Compare="GE" Count="1" Radius="12"/>
+        <SearchFilters value="Air;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="NoAirHostilesNearby12">
+        <AreaArray Count="0"  Radius="12"/>
+        <Compare value="Eq"/>
+        <SearchFilters value="Air;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="NoGroundHostilesNearby7">
+        <AreaArray Count="0" Radius="7"/>
+        <Compare value="Eq"/>
+        <SearchFilters value="Ground;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="GroundHostilesNearby7">
+        <AreaArray Compare="GE" Count="1" Radius="7"/>
+        <SearchFilters value="Ground;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="UndetectedEnemyCloakedUnits">
+        <WhichLocation Value="TargetPoint"/>
+        <AreaArray Compare="GT" Count="0" Radius="12" Validator="IsNotDetected"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <SearchFilters value="Cloaked;Player,Ally,Neutral"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="UndetectedEnemyCloakedUnitsNearbyRadius6">
+        <WhichLocation Value="CasterUnit"/>
+        <AreaArray Compare="GT" Count="0" Radius="6" Validator="IsNotDetected"/>
+        <LaunchLocation Value="CasterUnit"/>
+        <SearchFilters value="Cloaked;Player,Ally,Neutral"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="NoUndetectedEnemyCloakedUnitsNearbyRadius6">
+        <WhichLocation Value="CasterUnit"/>
+        <AreaArray Radius="6" Validator="IsNotDetected"/>
+        <Compare value="Eq"/>
+        <SearchFlags index="ExtendByUnitRadius" value="1"/>
+        <SearchFilters value="Cloaked;Player,Ally,Neutral"/>
+    </CValidatorLocationEnumArea>
+    <CEffectSet id="DummyWeapon">
+    </CEffectSet>
+    <CValidatorLocationEnumArea id="NoAlliesNearby7">
+        <AreaArray Count="0" Radius="7"/>
+        <Compare value="Eq"/>
+        <SearchFilters value="-;Neutral,Enemy,Structure,Missile,Stasis,Dead,Hidden,Invulnerable,Benign"/>
+    </CValidatorLocationEnumArea>
+    <CValidatorLocationEnumArea id="NoEnemiesNearby12">
+        <AreaArray Count="0" Radius="12"/>
+        <Compare value="Eq"/>
+        <SearchFilters value="Visible;Self,Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CValidatorLocationEnumArea>
+
+
+
+
+
+
+    <CValidatorUnitCompareVital id="CasterLifeGE20">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="20"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterLifeLT20">
+        <WhichUnit Value="Caster"/>
+        <Compare value="LT"/>
+        <Value value="20"/>
+    </CValidatorUnitCompareVital>
+    <CValidatorUnitCompareVital id="CasterShieldsGE20">
+        <WhichUnit Value="Caster"/>
+        <Compare value="GE"/>
+        <Value value="1"/>
+        <Vital value="Shields"/>
+    </CValidatorUnitCompareVital>
+
+
+    <!--Add Disable AAbilities Research-->
+    <!--    <CAbilSpecialize id="KeironAbilities" parent="CustomAbilities" Upgrade10="Emanator" Upgrade11="HarbingerJudgementModeStart" Upgrade12="HarbingerExitJudgementMode" Upgrade13="GyreAnnex" Upgrade14="GyreShackle" Upgrade15="EmissaryOrb" Upgrade16="FuseFusion" Upgrade17="ApertureKeyhole" Upgrade18="WardRestitution" Upgrade19="WardShellDome" Upgrade20="EchoFighterMode" Upgrade1="ReverbRB" Upgrade2="Projection" Upgrade3="PulsarDampener" Upgrade4="Beholder" Upgrade5="CruxLightningBolt" Upgrade6="CruxConvergence" Upgrade7="UmbraShieldCompulsion" Upgrade8="SonicImage" Upgrade9="EchoDiscordMode">-->
+    <!--        <InfoArray index="Specialize1">-->
+    <!--            <Button DefaultButtonFace="Reverb"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Specialize9">-->
+    <!--            <Button DefaultButtonFace="DiscordMode"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Specialize10">-->
+    <!--            <Button DefaultButtonFace="PlaceEmanator"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Specialize11">-->
+    <!--            <Button DefaultButtonFace="HarbingerJudgementMode"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Specialize16">-->
+    <!--            <Button DefaultButtonFace="Fusion"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Specialize17">-->
+    <!--            <Button DefaultButtonFace="ApertureTeleport"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Specialize18">-->
+    <!--            <Button DefaultButtonFace="Restitution"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Specialize19">-->
+    <!--            <Button DefaultButtonFace="ShellDome"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Specialize20">-->
+    <!--            <Button DefaultButtonFace="FighterModeEcho"/>-->
+    <!--        </InfoArray>-->
+    <!--    </CAbilSpecialize>-->
+    <!--    <CAbilResearch id="KeironAbilityDisable" parent="CustomDisableResearch" Upgrade10="Emanator" Upgrade11="HarbingerJudgementModeStart" Upgrade12="HarbingerExitJudgementMode" Upgrade13="GyreAnnex" Upgrade14="GyreShackle" Upgrade15="EmissaryOrb" Upgrade16="FuseFusion" Upgrade17="ApertureKeyhole" Upgrade18="WardRestitution" Upgrade19="WardShellDome" Upgrade20="EchoFighterMode" Upgrade1="ReverbRB" Upgrade2="Projection" Upgrade3="PulsarDampener" Upgrade4="Beholder" Upgrade5="CruxLightningBolt" Upgrade6="CruxConvergence" Upgrade7="UmbraShieldCompulsion" Upgrade8="SonicImage" Upgrade9="EchoDiscordMode">-->
+    <!--        <InfoArray index="Research1">-->
+    <!--            <Button DefaultButtonFace="Reverb"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Research9">-->
+    <!--            <Button DefaultButtonFace="DiscordMode"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Research10">-->
+    <!--            <Button DefaultButtonFace="PlaceEmanator"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Research11">-->
+    <!--            <Button DefaultButtonFace="HarbingerJudgementMode"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Research16">-->
+    <!--            <Button DefaultButtonFace="Fusion"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Research17">-->
+    <!--            <Button DefaultButtonFace="ApertureTeleport"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Research18">-->
+    <!--            <Button DefaultButtonFace="Restitution"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Research19">-->
+    <!--            <Button DefaultButtonFace="ShellDome"/>-->
+    <!--        </InfoArray>-->
+    <!--        <InfoArray index="Research20">-->
+    <!--            <Button DefaultButtonFace="FighterModeEcho"/>-->
+    <!--        </InfoArray>-->
+    <!--    </CAbilResearch>-->
+    <!--    <CUnit id="Converter">-->
+    <!--        <AbilArray Link="KeironAbilities"/>-->
+    <!--        <AbilArray Link="KeironAbilityDisable"/>-->
+    <!--        <CardLayouts CardId="Abil">-->
+    <!--            <LayoutButtons Face="Reverb" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize1" Row="2" Column="4"/>-->
+    <!--            <LayoutButtons Face="SonicImage" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize8" Row="2" Column="4"/>-->
+    <!--            <LayoutButtons Face="Projection" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize2" Row="0" Column="0"/>-->
+    <!--            <LayoutButtons Face="PulsarDampener" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize3" Row="0" Column="1"/>-->
+    <!--            <LayoutButtons Face="Beholder" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize4" Row="0" Column="2"/>-->
+    <!--            <LayoutButtons Face="CruxLightningBolt" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize5" Row="0" Column="3"/>-->
+    <!--            <LayoutButtons Face="CruxConvergence" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize6" Row="0" Column="4"/>-->
+    <!--            <LayoutButtons Face="UmbraShieldCompulsion" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize7" Row="2" Column="3"/>-->
+    <!--            <LayoutButtons Face="DiscordMode" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize9" Row="1" Column="4"/>-->
+    <!--            <LayoutButtons Face="FighterModeEcho" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize20" Row="1" Column="4"/>-->
+    <!--            <LayoutButtons Face="PlaceEmanator" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize10" Row="1" Column="0"/>-->
+    <!--            <LayoutButtons Face="HarbingerJudgementMode" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize11" Row="1" Column="1"/>-->
+    <!--            <LayoutButtons Face="HarbingerExitJudgementMode" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize12" Row="1" Column="1"/>-->
+    <!--            <LayoutButtons Face="GyreAnnex" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize13" Row="1" Column="2"/>-->
+    <!--            <LayoutButtons Face="GyreShackle" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize14" Row="1" Column="3"/>-->
+    <!--            <LayoutButtons Face="EmissaryOrb" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize15" Row="2" Column="0"/>-->
+    <!--            <LayoutButtons Face="Fusion" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize16" Row="2" Column="2"/>-->
+    <!--            <LayoutButtons Face="ApertureTeleport" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize17" Row="2" Column="2"/>-->
+    <!--            <LayoutButtons Face="ShellDome" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize19" Row="2" Column="2"/>-->
+    <!--            <LayoutButtons Face="Restitution" Type="AbilCmd" AbilCmd="KeironAbilities,Specialize18" Row="2" Column="1"/>-->
+    <!--        </CardLayouts>-->
+    <!--        <CardLayouts CardId="AbDs">-->
+    <!--            <LayoutButtons Face="Reverb" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research1" Row="2" Column="4"/>-->
+    <!--            <LayoutButtons Face="SonicImage" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research8" Row="2" Column="4"/>-->
+    <!--            <LayoutButtons Face="Projection" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research2" Row="0" Column="0"/>-->
+    <!--            <LayoutButtons Face="PulsarDampener" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research3" Row="0" Column="1"/>-->
+    <!--            <LayoutButtons Face="Beholder" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research4" Row="0" Column="2"/>-->
+    <!--            <LayoutButtons Face="CruxLightningBolt" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research5" Row="0" Column="3"/>-->
+    <!--            <LayoutButtons Face="CruxConvergence" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research6" Row="0" Column="4"/>-->
+    <!--            <LayoutButtons Face="UmbraShieldCompulsion" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research7" Row="2" Column="3"/>-->
+    <!--            <LayoutButtons Face="DiscordMode" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research9" Row="1" Column="4"/>-->
+    <!--            <LayoutButtons Face="FighterModeEcho" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research20" Row="1" Column="4"/>-->
+    <!--            <LayoutButtons Face="PlaceEmanator" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research10" Row="1" Column="0"/>-->
+    <!--            <LayoutButtons Face="HarbingerJudgementMode" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research11" Row="1" Column="1"/>-->
+    <!--            <LayoutButtons Face="HarbingerExitJudgementMode" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research12" Row="1" Column="1"/>-->
+    <!--            <LayoutButtons Face="GyreAnnex" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research13" Row="1" Column="2"/>-->
+    <!--            <LayoutButtons Face="GyreShackle" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research14" Row="1" Column="3"/>-->
+    <!--            <LayoutButtons Face="EmissaryOrb" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research15" Row="2" Column="0"/>-->
+    <!--            <LayoutButtons Face="ShellDome" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research19" Row="2" Column="2"/>-->
+    <!--            <LayoutButtons Face="Fusion" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research16" Row="2" Column="2"/>-->
+    <!--            <LayoutButtons Face="ApertureTeleport" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research17" Row="2" Column="2"/>-->
+    <!--            <LayoutButtons Face="Restitution" Type="AbilCmd" AbilCmd="KeironAbilityDisable,Research18" Row="2" Column="1"/>-->
+    <!--        </CardLayouts>-->
+    <!--    </CUnit>-->
+</Catalog>

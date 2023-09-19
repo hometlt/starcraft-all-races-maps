@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -2255,13 +2255,13 @@ bool gt_VoidThrasherMissiles_Func (bool testConds, bool runActions) {
 
     lv_missileUnit = EventUnit();
     libNtve_gf_CreatePingFacingAngle(PlayerGroupAll(), "KaiserWormScourgeMissile", UnitGetPosition(lv_missileUnit), ColorWithAlpha(100.00, 100.00, 100.00, 0.00), 0.0, UnitGetFacing(lv_missileUnit));
-    libHots_gf_StorePingForUnit(lv_missileUnit, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lv_missileUnit, 1, PingLastCreated());
     PingSetUnit(PingLastCreated(), lv_missileUnit);
     PingSetScale(PingLastCreated(), 0.075);
     while (!((UnitIsAlive(EventUnit()) == false))) {
         Wait(0.0625, c_timeGame);
     }
-    PingDestroy(libHots_gf_PingStoredForUnit(lv_missileUnit, 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(lv_missileUnit, 1));
     return true;
 }
 

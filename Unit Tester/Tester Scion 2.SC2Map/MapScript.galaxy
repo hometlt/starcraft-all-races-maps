@@ -1,0 +1,91 @@
+//==================================================================================================
+// 
+// Generated Map Script
+// 
+// Name:   Unit Tester - All Races Coop
+// 
+//==================================================================================================
+include "TriggerLibs/NativeLib"
+include "LibUTES"
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+void InitLibs () {
+    libNtve_InitLib();
+    libUTES_InitLib();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Variables
+//--------------------------------------------------------------------------------------------------
+trigger gt_MapInitialization;
+trigger gt_Addunits;
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Map Initialization
+//--------------------------------------------------------------------------------------------------
+bool gt_MapInitialization_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerSendEvent("UNIT TESTER ENVIRONMENT PREPARED");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_MapInitialization_Init () {
+    gt_MapInitialization = TriggerCreate("gt_MapInitialization_Func");
+    TriggerAddEventMapInit(gt_MapInitialization);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Add units
+//--------------------------------------------------------------------------------------------------
+bool gt_Addunits_Func (bool testConds, bool runActions) {
+    // Automatic Variable Declarations
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libUTES_gf_CreatorAddUnits(1, 0, "Ward");
+    libUTES_gf_CreatorAddUnits(1, 0, "Subjecter");
+    libUTES_gf_CreatorAddUnits(1, 0, "Subjecter");
+    libUTES_gf_CreatorAddUnits(1, 0, "Subjecter");
+    libUTES_gf_CreatorAddUnits(1, 0, "Subjecter");
+    libUTES_gf_CreatorAddUnits(1, 0, "Gyre");
+    libUTES_gf_CreatorAddUnits(2, 1, "Marauder");
+    libUTES_gf_CreatorAddUnits(2, 1, "Marauder");
+    libUTES_gf_CreatorAddUnits(2, 1, "Marauder");
+    libUTES_gf_CreatorAddUnits(2, 1, "Marauder");
+    libUTES_gf_CreatorAddUnits(2, 1, "Marauder");
+    libUTES_gf_CreatorAddUnits(2, 1, "Marauder");
+    libUTES_gf_AllresearchesONOFF(true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void gt_Addunits_Init () {
+    gt_Addunits = TriggerCreate("gt_Addunits_Func");
+    TriggerAddEventGeneric(gt_Addunits, libUTES_gv_uNITTESTERINITIALIZED);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger Initialization
+//--------------------------------------------------------------------------------------------------
+void InitTriggers () {
+    gt_MapInitialization_Init();
+    gt_Addunits_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Map Initialization
+//--------------------------------------------------------------------------------------------------
+void InitMap () {
+    InitLibs();
+    InitTriggers();
+}

@@ -851,14 +851,14 @@
             // 
             //==================================================================================================
             include &quot;TriggerLibs/NativeLib&quot;
-            include &quot;TriggerLibs/SwarmLib&quot;
+            include &quot;libARRA&quot;
             include &quot;LibCOMI&quot;
             //--------------------------------------------------------------------------------------------------
             // Library Initialization
             //--------------------------------------------------------------------------------------------------
             void InitLibs () {
                 libNtve_InitLib();
-                libHots_InitLib();
+                libARRA_InitLib();
                 libCOMI_InitLib();
             }
             //--------------------------------------------------------------------------------------------------
@@ -1619,27 +1619,27 @@
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(1759889906)), StringExternal(&quot;Param/Value/D20D3AE5&quot;));
                 gv_outerCorePings[0] = PingLastCreated();
                 PingSetUnit(PingLastCreated(), UnitFromId(1759889906));
-                libHots_gf_StorePingForUnit(UnitFromId(1759889906), 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(UnitFromId(1759889906), 1, PingLastCreated());
                 PingSetScale(PingLastCreated(), 1.0);
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(119381035)), StringExternal(&quot;Param/Value/977C045C&quot;));
                 gv_outerCorePings[1] = PingLastCreated();
                 PingSetUnit(PingLastCreated(), UnitFromId(119381035));
-                libHots_gf_StorePingForUnit(UnitFromId(119381035), 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(UnitFromId(119381035), 1, PingLastCreated());
                 PingSetScale(PingLastCreated(), 1.0);
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(1503412912)), StringExternal(&quot;Param/Value/4CEA32AC&quot;));
                 gv_outerCorePings[2] = PingLastCreated();
                 PingSetUnit(PingLastCreated(), UnitFromId(1503412912));
-                libHots_gf_StorePingForUnit(UnitFromId(1503412912), 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(UnitFromId(1503412912), 1, PingLastCreated());
                 PingSetScale(PingLastCreated(), 1.0);
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(2025447594)), StringExternal(&quot;Param/Value/FC0B37CB&quot;));
                 gv_outerCorePings[3] = PingLastCreated();
                 PingSetUnit(PingLastCreated(), UnitFromId(2025447594));
-                libHots_gf_StorePingForUnit(UnitFromId(2025447594), 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(UnitFromId(2025447594), 1, PingLastCreated());
                 PingSetScale(PingLastCreated(), 1.0);
                 libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(UnitFromId(379177728)), StringExternal(&quot;Param/Value/0CB883B6&quot;));
                 gv_outerCorePings[4] = PingLastCreated();
                 PingSetUnit(PingLastCreated(), UnitFromId(379177728));
-                libHots_gf_StorePingForUnit(UnitFromId(379177728), 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(UnitFromId(379177728), 1, PingLastCreated());
                 PingSetScale(PingLastCreated(), 1.0);
                 UnitGroupLoopBegin(UnitGroup(&quot;PurifierCore&quot;, gv_pLAYER_03_ENEMY, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
                 for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
@@ -1701,8 +1701,8 @@
                     TriggerEnable(TriggerGetCurrent(), false);
                     UnitGroupLoopBegin(UnitGroup(&quot;PurifierCore&quot;, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 &lt;&lt; c_targetFilterMissile), (1 &lt;&lt; (c_targetFilterDead - 32)) | (1 &lt;&lt; (c_targetFilterHidden - 32))), 0));
                     for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
-                        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(UnitGroupLoopCurrent(), 1));
-                        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(UnitGroupLoopCurrent(), 2));
+                        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(UnitGroupLoopCurrent(), 1));
+                        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(UnitGroupLoopCurrent(), 2));
                     }
                     UnitGroupLoopEnd();
                     TransmissionClearAll();
@@ -1714,7 +1714,7 @@
                     PingSetColor(PingLastCreated(), Color(95.29, 53.33, 15.29));
                     gv_centralCorePing = PingLastCreated();
                     PingSetUnit(PingLastCreated(), UnitFromId(1554286808));
-                    libHots_gf_StorePingForUnit(UnitFromId(1554286808), 1, PingLastCreated());
+                    libARRA_gf_StorePingForUnit(UnitFromId(1554286808), 1, PingLastCreated());
                     PingSetScale(PingLastCreated(), 1.25);
                     Wait(3.0, c_timeGame);
                     UnitBehaviorAddPlayer(UnitFromId(1554286808), &quot;RevealVisionObjectiveUnit&quot;, gv_pLAYER_01_USER, 1);
@@ -1748,7 +1748,7 @@
                     TriggerEnable(gt_AIOuterCoreRepeatWaves, true);
                     TriggerExecute(gt_AIOuterCoreRepeatWaves, true, false);
                 }
-                libCOMI_gf_ShowHidePingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1), false);
+                libCOMI_gf_ShowHidePingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1), false);
                 PlayerGroupLoopBegin(PlayerGroupSingle(gv_pLAYER_00_NEUTRAL));
                 for ( ; !PlayerGroupLoopDone() ; PlayerGroupLoopStep() ) {
                     lv_coresCapturedTotal += UnitGroupCount(UnitGroup(&quot;PurifierCore&quot;, PlayerGroupLoopCurrent(), null, gv_vICTORY_REQUIREMENT, 0), c_unitCountAll);
@@ -1781,8 +1781,8 @@
                 UnitSetOwner(EventUnit(), gv_pLAYER_03_ENEMY, false);
                 UnitBehaviorRemovePlayer(EventUnit(), &quot;RevealVisionObjectiveUnit&quot;, gv_pLAYER_01_USER, 1);
                 UnitBehaviorRemovePlayer(EventUnit(), &quot;RevealVisionObjectiveUnit&quot;, gv_pLAYER_02_USER, 1);
-                libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 2));
-                libCOMI_gf_ShowHidePingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1), true);
+                libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 2));
+                libCOMI_gf_ShowHidePingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1), true);
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -1816,7 +1816,7 @@
                 PingSetColor(PingLastCreated(), Color(83.53, 41.57, 4.31));
                 PingSetUnit(PingLastCreated(), EventUnit());
                 PingSetScale(PingLastCreated(), 0.75);
-                libHots_gf_StorePingForUnit(EventUnit(), 2, PingLastCreated());
+                libARRA_gf_StorePingForUnit(EventUnit(), 2, PingLastCreated());
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -1841,7 +1841,7 @@
                 if (!runActions) {
                     return true;
                 }
-                PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 2));
+                PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 2));
                 return true;
             }
             //--------------------------------------------------------------------------------------------------
@@ -1979,7 +1979,7 @@
                 gv_bonusObjectivePing = PingLastCreated();
                 PingSetUnit(PingLastCreated(), UnitFromId(1655051572));
                 UnitBehaviorAdd(UnitFromId(1655051572), &quot;AmonsCorruption&quot;, UnitFromId(1655051572), 1);
-                libHots_gf_StorePingForUnit(UnitFromId(1655051572), 1, PingLastCreated());
+                libARRA_gf_StorePingForUnit(UnitFromId(1655051572), 1, PingLastCreated());
                 libNtve_gf_MakeUnitInvulnerable(UnitFromId(1655051572), false);
                 PingSetScale(PingLastCreated(), 0.65);
                 Wait(2.0, c_timeGame);

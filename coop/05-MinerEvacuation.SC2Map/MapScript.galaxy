@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibARRA"
 include "LibCOMI"
 
@@ -15,7 +15,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libARRA_InitLib();
     libCOMI_InitLib();
 }
@@ -574,10 +574,10 @@ void gf_SetupColonyShipasObjective (int lp_tankIndex) {
     libNtve_gf_ShowHideUnit(gv_colonyShipLocations[lp_tankIndex].lv_beaconUnit, true);
     libCOMI_gf_SetUnitInfoTextCampaign(gv_colonyShipLocations[lp_tankIndex].lv_beaconUnit, null, StringExternal("Param/Value/B8CD2B19"), StringExternal("Param/Value/05391F34"));
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_TerranMainObjective, libCOMI_ge_CampaginReticleSize_Medium, StringExternal("Param/Value/CB135A05"), gv_colonyShipLocations[lp_tankIndex].lv_beaconUnit, "Ref_Center");
-    libHots_gf_StoreTextTagForUnit(gv_colonyShipLocations[lp_tankIndex].lv_beaconUnit, 1, TextTagLastCreated());
-    libHots_gf_StoreActorForUnit(gv_colonyShipLocations[lp_tankIndex].lv_beaconUnit, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(gv_colonyShipLocations[lp_tankIndex].lv_beaconUnit, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(gv_colonyShipLocations[lp_tankIndex].lv_beaconUnit, 1, libNtve_gf_ActorLastCreated());
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit), StringExternal("Param/Value/A6297CCB"));
-    libHots_gf_StorePingForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1, PingLastCreated());
     libCOMI_gf_ShowHidePingCoop(PingLastCreated(), false);
     gf_UpdateColonyShipUI(lp_tankIndex);
 }
@@ -975,7 +975,7 @@ bool auto_gf_UpdateColonyShipUI_TriggerFunc (bool testConds, bool runActions) {
         }
 
         if (((gv_colonyShipLocations[lp_tankIndex].lv_tankUIState[(ge_ColonyShipUIState_UnderAttack)] == true) || (gv_colonyShipLocations[lp_tankIndex].lv_tankUIState[(ge_ColonyShipUIState_Panic)] == true) || (gv_colonyShipLocations[lp_tankIndex].lv_tankUIState[(ge_ColonyShipUIState_TargetOfInfestedHoldout)] == true) || (gv_colonyShipLocations[lp_tankIndex].lv_tankUIState[(ge_ColonyShipUIState_TargetedByClaimers)] == true))) {
-            libCOMI_gf_ShowHidePingCoop(libHots_gf_PingStoredForUnit(lv_tank, 1), true);
+            libCOMI_gf_ShowHidePingCoop(libARRA_gf_PingStoredForUnit(lv_tank, 1), true);
         }
 
         if ((gv_colonyShipLocations[lp_tankIndex].lv_tankUIState[(ge_ColonyShipUIState_UnderAttack)] == true)) {
@@ -984,7 +984,7 @@ bool auto_gf_UpdateColonyShipUI_TriggerFunc (bool testConds, bool runActions) {
                 PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/95D392A9"));
                 lv_eventCurrent = (ge_ColonyShipUIState_UnderAttack);
                 lv_eventPing[(ge_ColonyShipUIState_UnderAttack)] = PingLastCreated();
-                PingSetScale(libHots_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1), 0.75);
+                PingSetScale(libARRA_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1), 0.75);
             }
 
         }
@@ -994,7 +994,7 @@ bool auto_gf_UpdateColonyShipUI_TriggerFunc (bool testConds, bool runActions) {
                 PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/FC736644"));
                 lv_eventCurrent = (ge_ColonyShipUIState_TargetedByClaimers);
                 lv_eventPing[(ge_ColonyShipUIState_TargetedByClaimers)] = PingLastCreated();
-                PingSetScale(libHots_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1), 0.75);
+                PingSetScale(libARRA_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1), 0.75);
             }
 
         }
@@ -1004,7 +1004,7 @@ bool auto_gf_UpdateColonyShipUI_TriggerFunc (bool testConds, bool runActions) {
                 PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/96C21974"));
                 lv_eventCurrent = (ge_ColonyShipUIState_Panic);
                 lv_eventPing[(ge_ColonyShipUIState_Panic)] = PingLastCreated();
-                PingSetScale(libHots_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1), 0.75);
+                PingSetScale(libARRA_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1), 0.75);
             }
 
         }
@@ -1014,12 +1014,12 @@ bool auto_gf_UpdateColonyShipUI_TriggerFunc (bool testConds, bool runActions) {
                 PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/1671D608"));
                 lv_eventCurrent = (ge_ColonyShipUIState_TargetOfInfestedHoldout);
                 lv_eventPing[(ge_ColonyShipUIState_TargetOfInfestedHoldout)] = PingLastCreated();
-                PingSetScale(libHots_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1), 0.75);
+                PingSetScale(libARRA_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1), 0.75);
             }
 
         }
         else if (true) {
-            PingSetScale(libHots_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1), 1.0);
+            PingSetScale(libARRA_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1), 1.0);
         }
         lv_eventIter = 1;
         for ( ; ( (auto4F914350_ai >= 0 && lv_eventIter <= auto4F914350_ae) || (auto4F914350_ai < 0 && lv_eventIter >= auto4F914350_ae) ) ; lv_eventIter += auto4F914350_ai ) {
@@ -1031,7 +1031,7 @@ bool auto_gf_UpdateColonyShipUI_TriggerFunc (bool testConds, bool runActions) {
         }
         Wait(0.5, c_timeGame);
     }
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gv_colonyShipLocations[lp_tankIndex].lv_colonyShipUnit, 1));
     lv_eventIter = 1;
     for ( ; ( (autoD128A6C1_ai >= 0 && lv_eventIter <= autoD128A6C1_ae) || (autoD128A6C1_ai < 0 && lv_eventIter >= autoD128A6C1_ae) ) ; lv_eventIter += autoD128A6C1_ai ) {
         libCOMI_gf_DestroyPingCoop(lv_eventPing[lv_eventIter]);
@@ -1051,8 +1051,8 @@ void gf_RemoveActivationBeacon (unit lp_beacon) {
 
     // Implementation
     UnitKill(lp_beacon);
-    TextTagDestroy(libHots_gf_TextTagForUnit(lp_beacon, 1));
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(lp_beacon, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(lp_beacon, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(lp_beacon, 1));
     lv_beaconIter = 1;
     for ( ; ( (autoB254154E_ai >= 0 && lv_beaconIter <= autoB254154E_ae) || (autoB254154E_ai < 0 && lv_beaconIter >= autoB254154E_ae) ) ; lv_beaconIter += autoB254154E_ai ) {
         if ((gv_colonyShipLocations[lv_beaconIter].lv_beaconUnit == lp_beacon)) {
@@ -2223,7 +2223,7 @@ void gf_SendHybridinRageWave (int lp_colonyShipIndex, int lp_hybridUnitType, int
         UnitGroupAdd(lv_spawnedHybrid, UnitLastCreated());
         UnitSetCustomValue(UnitLastCreated(), 0, lp_colonyShipIndex);
         libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", lv_hybridSpawnLocation);
-        libHots_gf_StoreActorForUnit(UnitLastCreated(), 1, libNtve_gf_ActorLastCreated());
+        libARRA_gf_StoreActorForUnit(UnitLastCreated(), 1, libNtve_gf_ActorLastCreated());
         Wait(0.0625, c_timeGame);
         AISetUnitScriptControlled(UnitLastCreated(), false);
         AIAttackWaveUseUnit(gv_pLAYER_05_INFESTED_BulliesHoldoutNeutralToss, UnitLastCreated());
@@ -2235,7 +2235,7 @@ void gf_SendHybridinRageWave (int lp_colonyShipIndex, int lp_hybridUnitType, int
     for (;; auto134E4D0F_u -= 1) {
         auto134E4D0F_var = UnitGroupUnitFromEnd(auto134E4D0F_g, auto134E4D0F_u);
         if (auto134E4D0F_var == null) { break; }
-        libNtve_gf_KillModel(libHots_gf_ActorForUnit(auto134E4D0F_var, 1));
+        libNtve_gf_KillModel(libARRA_gf_ActorForUnit(auto134E4D0F_var, 1));
     }
 }
 
@@ -3560,7 +3560,7 @@ bool auto_gf_DeployWarpPrismAndWarpInBaseAttacks_TriggerFunc (bool testConds, bo
     PingSetScale(PingLastCreated(), 0.6);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/FF7333B5"));
     PingSetUnit(PingLastCreated(), lv_warpPrismUnit);
-    libHots_gf_StorePingForUnit(lv_warpPrismUnit, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lv_warpPrismUnit, 1, PingLastCreated());
     Wait(2.0, c_timeAI);
     while ((libCOMI_gf_GameIsOver() == false) && (UnitIsAlive(lv_warpPrismUnit) == true) && (UnitGetType(lv_warpPrismUnit) == "WarpPrism")) {
         UnitIssueOrder(lv_warpPrismUnit, OrderTargetingPoint(AbilityCommand("move", 0), lp_targetPoint), c_orderQueueReplace);
@@ -3573,7 +3573,7 @@ bool auto_gf_DeployWarpPrismAndWarpInBaseAttacks_TriggerFunc (bool testConds, bo
     while (!(((libCOMI_gf_GameIsOver() == true) || (UnitIsAlive(lv_warpPrismUnit) == false)))) {
         Wait(1.0, c_timeAI);
     }
-    PingDestroy(libHots_gf_PingStoredForUnit(lv_warpPrismUnit, 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(lv_warpPrismUnit, 1));
     AIRemoveGroupFromAnyWavesAndSetHome(lv_escortGroup, PointFromId(666));
     return true;
 }
@@ -4330,7 +4330,7 @@ bool gt_CreateColonyShipPings_Func (bool testConds, bool runActions) {
             break;
         }
 
-        libCOMI_gf_ShowHidePingCoop(libHots_gf_PingStoredForUnit(gv_colonyShipLocations[lv_transportOfInterest].lv_colonyShipUnit, 1), true);
+        libCOMI_gf_ShowHidePingCoop(libARRA_gf_PingStoredForUnit(gv_colonyShipLocations[lv_transportOfInterest].lv_colonyShipUnit, 1), true);
         autoDFDE1A07_g = libCOMI_gf_HumanPlayers();
         lv_humanIter = -1;
         while (true) {
@@ -5721,7 +5721,7 @@ bool gt_BonusObjectiveRevealMinesQ_Func (bool testConds, bool runActions) {
         VisRevealArea(auto5ECF158C_var, RegionFromId(90), 12.0, false);
     }
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, PointFromId(1152563932), StringExternal("Param/Value/11B1338E"));
-    libHots_gf_StorePingForUnit(gv_c_BonusObjective_Blightbringer, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(gv_c_BonusObjective_Blightbringer, 1, PingLastCreated());
     PingSetUnit(PingLastCreated(), gv_c_BonusObjective_Blightbringer);
     Wait(2.0, c_timeGame);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -5828,10 +5828,10 @@ bool gt_BonusObjectiveRevealScienceFacilityQ_Func (bool testConds, bool runActio
         VisRevealArea(auto7811E6AA_var, RegionFromId(92), 2.0, false);
     }
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitFromId(1340)), StringExternal("Param/Value/E30664D3"));
-    libHots_gf_StorePingForUnit(UnitFromId(1340), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(1340), 1, PingLastCreated());
     PingSetUnit(PingLastCreated(), UnitFromId(1340));
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(UnitFromId(895)), StringExternal("Param/Value/90E500F4"));
-    libHots_gf_StorePingForUnit(UnitFromId(895), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitFromId(895), 1, PingLastCreated());
     PingSetUnit(PingLastCreated(), UnitFromId(895));
     Wait(2.0, c_timeGame);
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -6290,7 +6290,7 @@ bool gt_BonusObjectiveBlightbringerDies_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_ObjectiveExploreUmojanMineKillBlightbringerComplete, true, false);
     gv_bonusObjective_BlightbringerActive = false;
     TimerPause(gv_bonusObjective_BlightbringerExpire, true);
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     TriggerExecute(gt_BonusObjectiveCollectedMinesQ, true, false);
     return true;
 }
@@ -6326,7 +6326,7 @@ bool gt_BonusObjectiveBlightbringerTimerExpiresQ_Func (bool testConds, bool runA
     TriggerEnable(gt_BonusObjectiveBlightbringerDies, false);
     TriggerExecute(gt_ObjectiveExploreUmojanMineFailed, true, false);
     gf_BonusObjectiveBurrowAndRemoveInfestedWaveUnit(gv_c_BonusObjective_Blightbringer);
-    PingDestroy(libHots_gf_PingStoredForUnit(gv_c_BonusObjective_Blightbringer, 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(gv_c_BonusObjective_Blightbringer, 1));
     PingDestroy(gv_bonusObjective_BlightbringerExplorePing);
     gv_bonusObjective_FailedMines = true;
     TriggerQueueEnter();
@@ -6490,8 +6490,8 @@ bool gt_BonusObjectiveEradicatorTimerExpires_Func (bool testConds, bool runActio
     TriggerStop(gt_BonusObjectiveEradicatorTypeMissileEnrage);
     gv_bonusObjective_EventFinished = true;
     TriggerExecute(gt_BonusObjectiveEradicatorExpiresQ, true, false);
-    PingDestroy(libHots_gf_PingStoredForUnit(gv_eradicatorTypeCannon, 1));
-    PingDestroy(libHots_gf_PingStoredForUnit(gv_eradicatorTypeMissile, 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(gv_eradicatorTypeCannon, 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(gv_eradicatorTypeMissile, 1));
     UnitAbilityEnable(gv_eradicatorTypeMissile, "move", true);
     while ((UnitGroupCount(UnitGroup(null, gv_pLAYER_09_ERADICATOR, RegionFromId(78), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1), c_unitCountAlive) > 0)) {
         autoE452570B_g = UnitGroup(null, gv_pLAYER_09_ERADICATOR, RegionFromId(78), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
@@ -7163,7 +7163,7 @@ bool gt_BonusObjectiveEradicatorDies_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    PingDestroy(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    PingDestroy(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     gv_objectiveExploreScienceFacility_EradicatorsDestroyed += 1;
     if ((UnitIsAlive(gv_eradicatorTypeCannon) == false) && (UnitIsAlive(gv_eradicatorTypeMissile) == false)) {
         TriggerEnable(gt_BonusObjectiveEradicatorTimerExpires, false);

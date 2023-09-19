@@ -822,7 +822,7 @@ void aiF917F4D7_start (int p) {
 //==================================================================================================
 include "TriggerLibs/NativeLib"
 include "TriggerLibs/LibertyLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 // Library: Great Train Robbery Library
@@ -833,7 +833,7 @@ include "LibCOMI"
 // External Library Initialization
 void lib1_InitLibraries () {
     libNtve_InitVariables();
-    libLbty_InitVariables();
+    libARRA_InitVariables();
 }
 //--------------------------------------------------------------------------------------------------
 // Library Initialization
@@ -1073,7 +1073,7 @@ void lib2_InitVariables ();
 // External Library Initialization
 void lib2_InitLibraries () {
     libNtve_InitVariables();
-    libHots_InitVariables();
+    libARRA_InitVariables();
     libCOMI_InitVariables();
     libCOMI_InitVariables();
     libCOMI_InitVariables();
@@ -1784,10 +1784,10 @@ bool lib2_gt_ShowandUpdatePartRegionMarkers_Func (bool testConds, bool runAction
                 for (;; auto764A5318_u -= 1) {
                     auto764A5318_var = UnitGroupUnitFromEnd(auto764A5318_g, auto764A5318_u);
                     if (auto764A5318_var == null) { break; }
-                    if ((libHots_gf_PingStoredForUnit(auto764A5318_var, 1) == c_invalidPingId)) {
+                    if ((libARRA_gf_PingStoredForUnit(auto764A5318_var, 1) == c_invalidPingId)) {
                         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(auto764A5318_var), StringExternal("Param/Value/lib_2_40941B35"));
                         PingSetUnit(PingLastCreated(), auto764A5318_var);
-                        libHots_gf_StorePingForUnit(auto764A5318_var, 1, PingLastCreated());
+                        libARRA_gf_StorePingForUnit(auto764A5318_var, 1, PingLastCreated());
                         PingSetScale(PingLastCreated(), 0.6);
                     }
                 }
@@ -1864,7 +1864,7 @@ bool lib2_gt_DestroySmallBuildingObjectiveMarkers_Func (bool testConds, bool run
     if (!runActions) {
         return true;
     }
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     return true;
 }
 //--------------------------------------------------------------------------------------------------
@@ -4764,8 +4764,7 @@ void lib2_InitLib () {
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libLbty_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
     lib1_InitLib();
     lib2_InitLib();

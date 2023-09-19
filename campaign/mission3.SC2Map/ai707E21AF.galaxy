@@ -1,0 +1,558 @@
+//==================================================================================================
+// 
+// Generated AI Script
+// 
+// AI Name: TerranMax
+// 
+//==================================================================================================
+include "TriggerLibs/natives"
+include "TriggerLibs/AI"
+include "TriggerLibs/Computer"
+
+//--------------------------------------------------------------------------------------------------
+// Globals
+//--------------------------------------------------------------------------------------------------
+point[17] ai707E21AF_defGather;
+string[17] ai707E21AF_customData;
+wave[17] ai707E21AF_lastWave;
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai707E21AF_wave1_enabled;
+wave[17] ai707E21AF_wave1_lastWave;
+trigger ai707E21AF_wave1_trigger = null;
+int ai707E21AF_wave1_runPlayer;
+playergroup ai707E21AF_wave1_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave1_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai707E21AF_wave1_enabled[init_i] = true;
+        ai707E21AF_wave1_lastWave[init_i] = null;
+    }
+
+    ai707E21AF_wave1_trigger = TriggerCreate("ai707E21AF_wave1_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave1_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai707E21AF_wave1_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai707E21AF_wave1_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai707E21AF_wave1_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai707E21AF_wave1_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai707E21AF_wave1_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai707E21AF_wave1_runFunc (bool c, bool a) {
+    int p = ai707E21AF_wave1_runPlayer;
+    playergroup target = ai707E21AF_wave1_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai707E21AF_wave1_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai707E21AF_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 125; }
+    if (d == 2) { ta = 125; }
+    if (d == 3) { ta = 125; }
+    if (d == 4) { ta = 125; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(1069647582));
+
+    gatherPoint = ai707E21AF_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 26, "Separatist");
+    AIAttackWaveAddUnits(3, 26, "Separatist");
+    AIAttackWaveAddUnits(4, 26, "Separatist");
+    AIAttackWaveAddUnits(5, 26, "Separatist");
+
+    AIAttackWaveAddUnits(2, 5, "Medic");
+    AIAttackWaveAddUnits(3, 5, "Medic");
+    AIAttackWaveAddUnits(4, 5, "Medic");
+    AIAttackWaveAddUnits(5, 5, "Medic");
+
+    AIAttackWaveSend(p, ts, false);
+    ai707E21AF_wave1_lastWave[p] = WaveLastCreated();
+    ai707E21AF_lastWave[p] = ai707E21AF_wave1_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave1_run (int p, playergroup target, bool wait) {
+    ai707E21AF_wave1_runPlayer = p;
+    ai707E21AF_wave1_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai707E21AF_wave1_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai707E21AF_wave14_enabled;
+wave[17] ai707E21AF_wave14_lastWave;
+trigger ai707E21AF_wave14_trigger = null;
+int ai707E21AF_wave14_runPlayer;
+playergroup ai707E21AF_wave14_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave14_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai707E21AF_wave14_enabled[init_i] = true;
+        ai707E21AF_wave14_lastWave[init_i] = null;
+    }
+
+    ai707E21AF_wave14_trigger = TriggerCreate("ai707E21AF_wave14_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave14_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai707E21AF_wave14_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai707E21AF_wave14_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai707E21AF_wave14_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai707E21AF_wave14_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai707E21AF_wave14_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai707E21AF_wave14_runFunc (bool c, bool a) {
+    int p = ai707E21AF_wave14_runPlayer;
+    playergroup target = ai707E21AF_wave14_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai707E21AF_wave14_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai707E21AF_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 500; }
+    if (d == 2) { ta = 500; }
+    if (d == 3) { ta = 500; }
+    if (d == 4) { ta = 500; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(1069647582));
+
+    gatherPoint = ai707E21AF_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 42, "Separatist");
+    AIAttackWaveAddUnits(3, 42, "Separatist");
+    AIAttackWaveAddUnits(4, 42, "Separatist");
+    AIAttackWaveAddUnits(5, 42, "Separatist");
+
+    AIAttackWaveAddUnits(2, 9, "Medic");
+    AIAttackWaveAddUnits(3, 9, "Medic");
+    AIAttackWaveAddUnits(4, 9, "Medic");
+    AIAttackWaveAddUnits(5, 9, "Medic");
+
+    AIAttackWaveAddUnits(2, 9, "SiegeTank");
+    AIAttackWaveAddUnits(3, 9, "SiegeTank");
+    AIAttackWaveAddUnits(4, 9, "SiegeTank");
+    AIAttackWaveAddUnits(5, 9, "SiegeTank");
+
+    AIAttackWaveAddUnits(2, 4, "Goliath");
+    AIAttackWaveAddUnits(3, 4, "Goliath");
+    AIAttackWaveAddUnits(4, 4, "Goliath");
+    AIAttackWaveAddUnits(5, 4, "Goliath");
+
+    AIAttackWaveAddUnits(2, 17, "HERC");
+    AIAttackWaveAddUnits(3, 17, "HERC");
+    AIAttackWaveAddUnits(4, 17, "HERC");
+    AIAttackWaveAddUnits(5, 17, "HERC");
+
+    AIAttackWaveSend(p, ts, false);
+    ai707E21AF_wave14_lastWave[p] = WaveLastCreated();
+    ai707E21AF_lastWave[p] = ai707E21AF_wave14_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave14_run (int p, playergroup target, bool wait) {
+    ai707E21AF_wave14_runPlayer = p;
+    ai707E21AF_wave14_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai707E21AF_wave14_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave: 
+//--------------------------------------------------------------------------------------------------
+bool[17] ai707E21AF_wave2_enabled;
+wave[17] ai707E21AF_wave2_lastWave;
+trigger ai707E21AF_wave2_trigger = null;
+int ai707E21AF_wave2_runPlayer;
+playergroup ai707E21AF_wave2_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave2_init () {
+    int init_i;
+
+    for (init_i = 0; init_i <= 16; init_i += 1) {
+        ai707E21AF_wave2_enabled[init_i] = true;
+        ai707E21AF_wave2_lastWave[init_i] = null;
+    }
+
+    ai707E21AF_wave2_trigger = TriggerCreate("ai707E21AF_wave2_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave2_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai707E21AF_wave2_enabled[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai707E21AF_wave2_isEnabled (int p) {
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    return ai707E21AF_wave2_enabled[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai707E21AF_wave2_createdWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai707E21AF_wave2_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai707E21AF_wave2_runFunc (bool c, bool a) {
+    int p = ai707E21AF_wave2_runPlayer;
+    playergroup target = ai707E21AF_wave2_runTarget;
+    int d;
+    point gatherPoint = null;
+    int ta = 0;
+    int tg = 0;
+    int ts = 0;
+    int tf = 0;
+    int td = 0;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+    d = PlayerDifficulty(p);
+    if (!ai707E21AF_wave2_enabled[p]) {
+        td = 0;
+        if (td > 0) {
+            Wait(td, c_timeAI);
+        }
+        return true;
+    }
+
+    ai707E21AF_customData[p] = "";
+
+    ta = 0;
+    if (d == 1) { ta = 300; }
+    if (d == 2) { ta = 300; }
+    if (d == 3) { ta = 300; }
+    if (d == 4) { ta = 300; }
+    tg = 0;
+    ts = ta;
+    if (tg > 0 && tg < ta) {
+        Wait(ta - tg, c_timeAI);
+        ts = tg;
+    }
+    AIAttackWaveSetTargetPlayer(p, target);
+    AIAttackWaveSetTargetPoint(p, PointFromId(1069647582));
+
+    gatherPoint = ai707E21AF_defGather[p];
+    AIAttackWaveSetGatherPoint(p, gatherPoint);
+
+    AIAttackWaveClearWaypoints(p);
+
+    AIAttackWaveAddUnits(2, 60, "Separatist");
+    AIAttackWaveAddUnits(3, 60, "Separatist");
+    AIAttackWaveAddUnits(4, 60, "Separatist");
+    AIAttackWaveAddUnits(5, 60, "Separatist");
+
+    AIAttackWaveAddUnits(2, 10, "Medic");
+    AIAttackWaveAddUnits(3, 10, "Medic");
+    AIAttackWaveAddUnits(4, 10, "Medic");
+    AIAttackWaveAddUnits(5, 10, "Medic");
+
+    AIAttackWaveAddUnits(2, 9, "SiegeTank");
+    AIAttackWaveAddUnits(3, 9, "SiegeTank");
+    AIAttackWaveAddUnits(4, 9, "SiegeTank");
+    AIAttackWaveAddUnits(5, 9, "SiegeTank");
+
+    AIAttackWaveAddUnits(2, 4, "Goliath");
+    AIAttackWaveAddUnits(3, 4, "Goliath");
+    AIAttackWaveAddUnits(4, 4, "Goliath");
+    AIAttackWaveAddUnits(5, 4, "Goliath");
+
+    AIAttackWaveAddUnits(2, 17, "HERC");
+    AIAttackWaveAddUnits(3, 17, "HERC");
+    AIAttackWaveAddUnits(4, 17, "HERC");
+    AIAttackWaveAddUnits(5, 17, "HERC");
+
+    AIAttackWaveSend(p, ts, false);
+    ai707E21AF_wave2_lastWave[p] = WaveLastCreated();
+    ai707E21AF_lastWave[p] = ai707E21AF_wave2_lastWave[p];
+    Wait(ts, c_timeAI);
+    tf = 0;
+    if (tf > 0) {
+        Wait(tf, c_timeAI);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave2_run (int p, playergroup target, bool wait) {
+    ai707E21AF_wave2_runPlayer = p;
+    ai707E21AF_wave2_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai707E21AF_wave2_trigger, false, wait);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave Wrappers
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave_enable (int w, int p, bool val) {
+    if (w == 1) { ai707E21AF_wave1_enable(p, val); }
+    if (w == 14) { ai707E21AF_wave14_enable(p, val); }
+    if (w == 2) { ai707E21AF_wave2_enable(p, val); }
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai707E21AF_wave_isEnabled (int w, int p) {
+    if (w == 1) { return ai707E21AF_wave1_isEnabled(p); }
+    if (w == 14) { return ai707E21AF_wave14_isEnabled(p); }
+    if (w == 2) { return ai707E21AF_wave2_isEnabled(p); }
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+unitgroup ai707E21AF_wave_createdUnits (int w, int p) {
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai707E21AF_wave_createdWave (int w, int p) {
+    if (w == 1) { return ai707E21AF_wave1_createdWave(p); }
+    if (w == 14) { return ai707E21AF_wave14_createdWave(p); }
+    if (w == 2) { return ai707E21AF_wave2_createdWave(p); }
+    return null;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_wave_run (int w, int p, playergroup target, bool wait) {
+    if (w == 1) { ai707E21AF_wave1_run(p, target, wait); }
+    if (w == 14) { ai707E21AF_wave14_run(p, target, wait); }
+    if (w == 2) { ai707E21AF_wave2_run(p, target, wait); }
+}
+
+//--------------------------------------------------------------------------------------------------
+// Attack Wave Sequence
+//--------------------------------------------------------------------------------------------------
+trigger ai707E21AF_waves_trigger = null;
+int ai707E21AF_waves_runPlayer;
+playergroup ai707E21AF_waves_runTarget;
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_waves_init () {
+    ai707E21AF_waves_trigger = TriggerCreate("ai707E21AF_waves_runFunc");
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ai707E21AF_waves_runFunc (bool c, bool a) {
+    int p = ai707E21AF_waves_runPlayer;
+    playergroup target = ai707E21AF_waves_runTarget;
+
+    if (p < 0 || p >= 16) {
+        return false;
+    }
+
+    ai707E21AF_wave1_run(p, target, true);
+    ai707E21AF_wave14_run(p, target, true);
+    ai707E21AF_wave2_run(p, target, true);
+
+    while (true) {
+        ai707E21AF_wave2_run(p, target, true);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_waves_run (int p, playergroup target) {
+    ai707E21AF_waves_runPlayer = p;
+    ai707E21AF_waves_runTarget = PlayerGroupCopy(target);
+
+    TriggerExecute(ai707E21AF_waves_trigger, false, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_waves_enable (int p, bool val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+
+    ai707E21AF_wave1_enable(p, val);
+    ai707E21AF_wave14_enable(p, val);
+    ai707E21AF_wave2_enable(p, val);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_waves_stop () {
+    TriggerStop(ai707E21AF_waves_trigger);
+
+    TriggerStop(ai707E21AF_wave1_trigger);
+    TriggerStop(ai707E21AF_wave14_trigger);
+    TriggerStop(ai707E21AF_wave2_trigger);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Configuration
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_setDefGather (int p, point val) {
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    ai707E21AF_defGather[p] = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+string ai707E21AF_getCustomData (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai707E21AF_customData[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+wave ai707E21AF_getLastWave (int p) {
+    if (p < 0 || p >= 16) {
+        return null;
+    }
+    return ai707E21AF_lastWave[p];
+}
+
+//--------------------------------------------------------------------------------------------------
+// Start
+//--------------------------------------------------------------------------------------------------
+bool ai707E21AF_initialized = false;
+
+//--------------------------------------------------------------------------------------------------
+void ai707E21AF_start (int p) {
+    int init_i;
+
+    if (p < 0 || p >= 16) {
+        return;
+    }
+    if (!ai707E21AF_initialized) {
+        ai707E21AF_wave1_init();
+        ai707E21AF_wave14_init();
+        ai707E21AF_wave2_init();
+        ai707E21AF_waves_init();
+
+        for (init_i = 0; init_i <= 16; init_i += 1) {
+            ai707E21AF_defGather[init_i] = PointFromId(1330430108);
+        }
+
+        ai707E21AF_initialized = true;
+    }
+
+    AICampaignStart(p);
+}

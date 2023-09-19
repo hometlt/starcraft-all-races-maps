@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 
 //--------------------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -594,7 +594,7 @@ bool auto_gf_SpawnSuppressionTower_TriggerFunc (bool testConds, bool runActions)
     UnitSetPropertyFixed(lv_defenseTower, c_unitPropShieldsMax, gv_towerShields);
     UnitSetPropertyFixed(lv_defenseTower, c_unitPropShieldsPercent, 100.0);
     libCOMI_gf_CreatePingFacingAngleCoop(libCOMI_gf_HumanPlayers(), UnitGetPosition(lv_defenseTower), 270.0, "PingBoss", Color(100.00, 0.00, 0.00), 0.0);
-    libHots_gf_StorePingForUnit(lv_defenseTower, 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(lv_defenseTower, 1, PingLastCreated());
     PingSetTooltip(PingLastCreated(), UnitTypeGetName(UnitGetType(lv_defenseTower)));
     PingSetScale(PingLastCreated(), 0.8);
     UnitGroupAdd(gv_suppressionTowerUnits[gv_purifierLockIndex], lv_defenseTower);
@@ -640,7 +640,7 @@ bool auto_gf_SendPurifierGuardian_TriggerFunc (bool testConds, bool runActions) 
     // Implementation
     lv_escortunitPosition = UnitGetPosition(lp_escortUnit);
     if ((UnitIsAlive(lp_escortUnit) == false)) {
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_escortUnit, 1));
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_escortUnit, 1));
         return true;
     }
 
@@ -672,7 +672,7 @@ bool auto_gf_SendPurifierGuardian_TriggerFunc (bool testConds, bool runActions) 
         Wait(0.1, c_timeGame);
     }
     if ((UnitIsAlive(lp_escortUnit) == false)) {
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_escortUnit, 1));
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_escortUnit, 1));
         return true;
     }
 
@@ -687,7 +687,7 @@ bool auto_gf_SendPurifierGuardian_TriggerFunc (bool testConds, bool runActions) 
         auto791FC5D1_at = auto791FC5D1_at + 1.0;
     }
     if ((UnitIsAlive(lp_escortUnit) == false)) {
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(lp_escortUnit, 1));
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(lp_escortUnit, 1));
         return true;
     }
     else {
@@ -1808,8 +1808,8 @@ bool gt_ObjectiveDownloadBackups1Initialization_Func (bool testConds, bool runAc
     UnitSetState(gv_downloadCenter1, c_unitStateInvulnerable, false);
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_ProtossBonusObjective, libCOMI_ge_CampaginReticleSize_Large, StringExternal("Param/Value/3C927BBA"), gv_downloadCenter1, "Ref_Center");
     TextTagSetAlignment(TextTagLastCreated(), c_alignCenter, c_alignBottom);
-    libHots_gf_StoreActorForUnit(gv_downloadCenter1, 1, libNtve_gf_ActorLastCreated());
-    libHots_gf_StoreTextTagForUnit(gv_downloadCenter1, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(gv_downloadCenter1, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(gv_downloadCenter1, 1, TextTagLastCreated());
     UISetButtonFaceHighlighted(PlayerGroupAll(), "DownloadBackupPart1", true);
     TriggerExecute(gt_ObjectiveDownloadBackups1Create, true, false);
     Wait(2.0, c_timeReal);
@@ -1879,8 +1879,8 @@ bool gt_DownloadBackups1ListenStartDownload_Func (bool testConds, bool runAction
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_downloadCenter1, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_downloadCenter1, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_downloadCenter1, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_downloadCenter1, 1));
     UISetButtonFaceHighlighted(PlayerGroupAll(), "DownloadBackupPart1", false);
     TimerPause(gv_bonus1Timer, true);
     auto3B1ACF21_g = libCOMI_gf_GetEnemyPlayers();
@@ -2042,8 +2042,8 @@ bool gt_DownloadCenter1DiesFail_Func (bool testConds, bool runActions) {
     }
 
     TimerPause(gv_bonus1Timer, true);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_downloadCenter1, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_downloadCenter1, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_downloadCenter1, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_downloadCenter1, 1));
     TriggerEnable(gt_DownloadBackups1ListenStartDownload, false);
     TriggerEnable(gt_DownloadBackups1ListenCompleteDownload, false);
     TriggerExecute(gt_ObjectiveDownloadBackups1Failed, true, false);
@@ -2092,8 +2092,8 @@ bool gt_DownloadBackups1TimerExpireFail_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_downloadCenter1, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_downloadCenter1, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_downloadCenter1, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_downloadCenter1, 1));
     TriggerEnable(gt_DownloadBackups1ListenStartDownload, false);
     TriggerEnable(gt_DownloadBackups1ListenCompleteDownload, false);
     TriggerExecute(gt_ObjectiveDownloadBackups1Failed, true, false);
@@ -2189,8 +2189,8 @@ bool gt_ObjectiveDownloadBackups2Initialization_Func (bool testConds, bool runAc
     UnitSetState(gv_downloadCenter2, c_unitStateInvulnerable, false);
     libCOMI_gf_AttachReticleEffectAndTextTagOnUnit(libCOMI_ge_CampaginReticleType_ProtossBonusObjective, libCOMI_ge_CampaginReticleSize_Large, StringExternal("Param/Value/189509D8"), gv_downloadCenter2, "Ref_Center");
     TextTagSetAlignment(TextTagLastCreated(), c_alignCenter, c_alignBottom);
-    libHots_gf_StoreActorForUnit(gv_downloadCenter2, 1, libNtve_gf_ActorLastCreated());
-    libHots_gf_StoreTextTagForUnit(gv_downloadCenter2, 1, TextTagLastCreated());
+    libARRA_gf_StoreActorForUnit(gv_downloadCenter2, 1, libNtve_gf_ActorLastCreated());
+    libARRA_gf_StoreTextTagForUnit(gv_downloadCenter2, 1, TextTagLastCreated());
     UISetButtonFaceHighlighted(PlayerGroupAll(), "DownloadBackupPart1", true);
     TriggerExecute(gt_ObjectiveDownloadBackups2Create, true, false);
     Wait(2.0, c_timeReal);
@@ -2260,8 +2260,8 @@ bool gt_DownloadBackups2ListenStartDownload_Func (bool testConds, bool runAction
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_downloadCenter2, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_downloadCenter2, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_downloadCenter2, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_downloadCenter2, 1));
     UISetButtonFaceHighlighted(PlayerGroupAll(), "DownloadBackupPart1", false);
     TimerPause(gv_bonus2Timer, true);
     auto304CAD35_g = libCOMI_gf_GetEnemyPlayers();
@@ -2423,8 +2423,8 @@ bool gt_DownloadCenter2DiesFail_Func (bool testConds, bool runActions) {
     }
 
     TimerPause(gv_bonus2Timer, true);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_downloadCenter2, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_downloadCenter2, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_downloadCenter2, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_downloadCenter2, 1));
     TriggerEnable(gt_DownloadBackups2ListenStartDownload, false);
     TriggerEnable(gt_DownloadBackups2ListenCompleteDownload, false);
     TriggerExecute(gt_ObjectiveDownloadBackups2Failed, true, false);
@@ -2473,8 +2473,8 @@ bool gt_DownloadBackups2TimerExpireFail_Func (bool testConds, bool runActions) {
     }
 
     TriggerEnable(TriggerGetCurrent(), false);
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_downloadCenter2, 1));
-    TextTagDestroy(libHots_gf_TextTagForUnit(gv_downloadCenter2, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_downloadCenter2, 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(gv_downloadCenter2, 1));
     TriggerEnable(gt_DownloadBackups2ListenStartDownload, false);
     TriggerEnable(gt_DownloadBackups2ListenCompleteDownload, false);
     TriggerExecute(gt_ObjectiveDownloadBackups2Failed, true, false);
@@ -3079,7 +3079,7 @@ bool gt_SuppressionTowerDeathActions_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     SoundPlayForPlayer(SoundLink("CybrosEscort_TowerDestroyed_EventTrig", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -3967,7 +3967,7 @@ bool gt_HoldoutDefenseTowerDestroyedQ_Func (bool testConds, bool runActions) {
             return false;
         }
 
-        if (!((libHots_gf_PingStoredForUnit(EventUnit(), 1) != c_invalidPingId))) {
+        if (!((libARRA_gf_PingStoredForUnit(EventUnit(), 1) != c_invalidPingId))) {
             return false;
         }
     }
@@ -3977,7 +3977,7 @@ bool gt_HoldoutDefenseTowerDestroyedQ_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     SoundPlayForPlayer(SoundLink("CybrosEscort_TowerDestroyed_EventTrig", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
     TriggerQueueEnter();
     libCOMI_gf_SetAllSoundChannelVolumesCampaign(libCOMI_ge_VolumeChannelModeCampaign_Speech);
@@ -5172,7 +5172,7 @@ bool gt_StartGameQ_Func (bool testConds, bool runActions) {
     TriggerExecute(gt_ObjectiveActivatePurifierLocksCreate, true, true);
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(gv_purifierGuardian), StringExternal("Param/Value/74E15581"));
     gv_purifierGuardianPing = PingLastCreated();
-    libHots_gf_StorePingForUnit(gv_purifierGuardian, 1, gv_purifierGuardianPing);
+    libARRA_gf_StorePingForUnit(gv_purifierGuardian, 1, gv_purifierGuardianPing);
     PingSetUnit(gv_purifierGuardianPing, gv_purifierGuardian);
     Wait(3.0, c_timeReal);
     TriggerQueueEnter();

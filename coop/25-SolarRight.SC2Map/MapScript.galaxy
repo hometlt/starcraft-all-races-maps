@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 include "ai7C27ED3A"
 include "ai0FD46E6F"
@@ -18,7 +18,7 @@ include "ai88E6405F"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 
@@ -1075,7 +1075,7 @@ void gf_EscortSendTruck (int lp_pathIndex) {
     }
     if ((UnitIsAlive(gv_escortTruck) == false)) {
         gv_truckDeathPoint = lv_truckPosition;
-        libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(gv_escortTruck, 1));
+        libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(gv_escortTruck, 1));
         return ;
     }
 
@@ -1096,7 +1096,7 @@ void gf_EscortStartconvoycountdown (int lp_delay, text lp_text) {
     UnitBehaviorAdd(gv_escortTruck, "ProgressBar", gv_escortTruck, 1);
     UnitBehaviorSetDuration(gv_escortTruck, "ProgressBar", TimerGetRemaining(lv_timer));
     TextTagAttachToUnit(TextTagLastCreated(), gv_escortTruck, 3.0);
-    libHots_gf_StoreTextTagForUnit(gv_escortTruck, 1, TextTagLastCreated());
+    libARRA_gf_StoreTextTagForUnit(gv_escortTruck, 1, TextTagLastCreated());
     while ((UnitIsAlive(gv_escortTruck) == true) && (TimerGetRemaining(lv_timer) > 0.0)) {
         TextTagSetText(TextTagLastCreated(), (lp_text + IntToText(FixedToInt(TimerGetRemaining(lv_timer))) + StringExternal("Param/Value/F1505317")));
         Wait(0.5, c_timeGame);
@@ -3061,17 +3061,17 @@ bool gt_GatherSolariteTextTags_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TextTagDestroy(libHots_gf_TextTagForUnit(EventUnit(), 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(EventUnit(), 1));
     if ((UnitBehaviorCount(EventUnit(), "CarrySolarite") == gv_maxSolarite)) {
         TextTagCreate((StringExternal("Param/Value/6569CDE7") + IntToText(UnitBehaviorCount(EventUnit(), "CarrySolarite")) + StringExternal("Param/Value/8CA822A4") + IntToText(gv_maxSolarite) + StringExternal("Param/Value/9CAA0249")), 12, UnitGetPosition(EventUnit()), 1.0, true, false, PlayerGroupAll());
         TextTagAttachToUnit(TextTagLastCreated(), EventUnit(), 1.0);
-        libHots_gf_StoreTextTagForUnit(EventUnit(), 1, TextTagLastCreated());
+        libARRA_gf_StoreTextTagForUnit(EventUnit(), 1, TextTagLastCreated());
     }
     else {
         if ((UnitBehaviorCount(EventUnit(), "CarrySolarite") > 0)) {
             TextTagCreate((IntToText(UnitBehaviorCount(EventUnit(), "CarrySolarite")) + StringExternal("Param/Value/B782FB25") + IntToText(gv_maxSolarite) + StringExternal("Param/Value/06FF8EA3")), 12, UnitGetPosition(EventUnit()), 1.0, true, false, PlayerGroupAll());
             TextTagAttachToUnit(TextTagLastCreated(), EventUnit(), 1.0);
-            libHots_gf_StoreTextTagForUnit(EventUnit(), 1, TextTagLastCreated());
+            libARRA_gf_StoreTextTagForUnit(EventUnit(), 1, TextTagLastCreated());
         }
 
     }
@@ -3638,11 +3638,11 @@ bool gt_SolariteTextTag_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    TextTagDestroy(libHots_gf_TextTagForUnit(EventUnit(), 1));
+    TextTagDestroy(libARRA_gf_TextTagForUnit(EventUnit(), 1));
     if ((UnitBehaviorCount(EventUnit(), "Solarite") > 0)) {
         TextTagCreate(IntToText(UnitBehaviorCount(EventUnit(), "Solarite")), 12, UnitGetPosition(EventUnit()), 1.0, true, false, PlayerGroupAll());
         TextTagSetFadedTransparency(TextTagLastCreated(), c_textTagFadeAll, 80.0);
-        libHots_gf_StoreTextTagForUnit(EventUnit(), 1, TextTagLastCreated());
+        libARRA_gf_StoreTextTagForUnit(EventUnit(), 1, TextTagLastCreated());
     }
 
     return true;
@@ -4487,7 +4487,7 @@ bool gt_EscortCreating_Func (bool testConds, bool runActions) {
     libCOMI_gf_SetUnitInfoTextCampaign(UnitLastCreated(), null, StringExternal("Param/Value/7C3B82CC"), null);
     libCOMI_gf_CreatePingCoop(PlayerGroupAll(), "PingDiamond", UnitGetPosition(UnitLastCreated()), ColorWithAlpha(100.00, 49.80, 0.00, 0.00), 0.0);
     PingSetScale(PingLastCreated(), 0.3);
-    libHots_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
+    libARRA_gf_StorePingForUnit(UnitLastCreated(), 1, PingLastCreated());
     PingSetUnit(PingLastCreated(), gv_escortTruck);
     PingSetTooltip(PingLastCreated(), StringExternal("Param/Value/6C503027"));
     UnitIssueOrder(UnitLastCreated(), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(126273172)), c_orderQueueReplace);

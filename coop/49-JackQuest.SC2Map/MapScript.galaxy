@@ -6,7 +6,7 @@
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOOC"
 include "LibCOMI"
 include "aiF917F4D7"
@@ -16,7 +16,7 @@ include "aiF917F4D7"
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOOC_InitLib();
     libCOMI_InitLib();
 }
@@ -1437,7 +1437,7 @@ bool gt_MapInitialization_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    libHots_gf_PlaySoundLinkasMusic(SoundLink("Jukebox_Music10", -1), true, true);
+    libARRA_gf_PlaySoundLinkasMusic(SoundLink("Jukebox_Music10", -1), true, true);
     libNtve_gf_MakeUnitInvulnerable(gv_transport, true);
     VisExploreArea(gv_pLAYER_01_USER, RegionFromId(15), true, false);
     VisExploreArea(gv_pLAYER_02_USER, RegionFromId(15), true, false);
@@ -2177,7 +2177,7 @@ bool gt_TransmissionEscortEnd_Func (bool testConds, bool runActions) {
     if ((TransmissionPlayerHasActiveTransmission(1) == false) && (TransmissionPlayerHasActiveTransmission(2) == false)) {
         gf_Transmissions(StringExternal("Param/Value/09CEBF8B"), 16, false, SoundLink("GunDefenseStart", -1));
         Wait(5.0, c_timeGame);
-        libHots_gf_PlaySoundLinkasMusic(SoundLink("Lab03_alarm", -1), true, true);
+        libARRA_gf_PlaySoundLinkasMusic(SoundLink("Lab03_alarm", -1), true, true);
     }
     else {
         lv_inQueue = true;
@@ -2188,7 +2188,7 @@ bool gt_TransmissionEscortEnd_Func (bool testConds, bool runActions) {
         }
         gf_Transmissions(StringExternal("Param/Value/5F92882A"), 16, false, SoundLink("GunDefenseStart", -1));
         Wait(5.0, c_timeGame);
-        libHots_gf_PlaySoundLinkasMusic(SoundLink("Lab03_alarm", -1), true, true);
+        libARRA_gf_PlaySoundLinkasMusic(SoundLink("Lab03_alarm", -1), true, true);
         gv_pos += 1;
     }
     return true;
@@ -2253,7 +2253,7 @@ bool gt_TransmissionGunDefenseComplete_Func (bool testConds, bool runActions) {
     }
 
     if ((TransmissionPlayerHasActiveTransmission(1) == false) && (TransmissionPlayerHasActiveTransmission(2) == false)) {
-        libHots_gf_PlaySoundLinkasMusic(SoundLink("Jukebox_Music11", -1), true, true);
+        libARRA_gf_PlaySoundLinkasMusic(SoundLink("Jukebox_Music11", -1), true, true);
         gf_Transmissions(StringExternal("Param/Value/BFF21A78"), 17, true, SoundLink("GunDefenseEnd", -1));
     }
     else {
@@ -2263,7 +2263,7 @@ bool gt_TransmissionGunDefenseComplete_Func (bool testConds, bool runActions) {
         while (!((lv_position == gv_pos) && (TransmissionPlayerHasActiveTransmission(1) == false) && (TransmissionPlayerHasActiveTransmission(2) == false))) {
             Wait(1.0, c_timeGame);
         }
-        libHots_gf_PlaySoundLinkasMusic(SoundLink("Jukebox_Music11", -1), true, true);
+        libARRA_gf_PlaySoundLinkasMusic(SoundLink("Jukebox_Music11", -1), true, true);
         gf_Transmissions(StringExternal("Param/Value/803B502B"), 17, true, SoundLink("GunDefenseEnd", -1));
         gv_pos += 1;
     }
@@ -3692,7 +3692,7 @@ bool gt_Phase4DestroyStarports_Func (bool testConds, bool runActions) {
         autoC5283DD9_var = UnitGroupUnitFromEnd(autoC5283DD9_g, autoC5283DD9_u);
         if (autoC5283DD9_var == null) { break; }
         libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Primary, UnitGetPosition(autoC5283DD9_var), StringExternal("Param/Value/BF03AD98"));
-        libHots_gf_StorePingForUnit(autoC5283DD9_var, 1, PingLastCreated());
+        libARRA_gf_StorePingForUnit(autoC5283DD9_var, 1, PingLastCreated());
     }
     libCOMI_gf_CreateObjectivePingAC(libCOMI_ge_ObjectivePingType_Secondary, UnitGetPosition(gv_dragon), StringExternal("Param/Value/F86586BE"));
     gv_bonusObjectivePing = PingLastCreated();
@@ -3740,7 +3740,7 @@ bool gt_StaportDestroyed_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    libCOMI_gf_DestroyPingCoop(libHots_gf_PingStoredForUnit(EventUnit(), 1));
+    libCOMI_gf_DestroyPingCoop(libARRA_gf_PingStoredForUnit(EventUnit(), 1));
     return true;
 }
 

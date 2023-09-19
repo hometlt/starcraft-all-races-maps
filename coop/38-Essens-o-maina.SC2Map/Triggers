@@ -14,15 +14,14 @@
             //===========de=======================================================================================
             include &quot;TriggerLibs/NativeLib&quot;
             include &quot;TriggerLibs/LibertyLib&quot;
-            include &quot;TriggerLibs/SwarmLib&quot;
+            include &quot;libARRA&quot;
             include &quot;LibCOMI&quot;
             //--------------------------------------------------------------------------------------------------
             // Library Initialization
             //--------------------------------------------------------------------------------------------------
             void InitLibs () {
                 libNtve_InitLib();
-                libLbty_InitLib();
-                libHots_InitLib();
+                libARRA_InitLib();
                 libCOMI_InitLib();
             }
             //--------------------------------------------------------------------------------------------------
@@ -872,7 +871,7 @@
                     lv_portrait = c_invalidPortraitId;
                 }
                 if (((lp_cueSoundOption == ge_CampaignTransmissionCueSoundOptions_PlayCueSound) || ((lp_cueSoundOption == ge_CampaignTransmissionCueSoundOptions_DefaultCueSoundBehavior) &amp;&amp; (libCOMI_gf_PlayerInCinematicModeCampaign() == false) &amp;&amp; (lv_portrait != c_invalidPortraitId) &amp;&amp; ((PortraitVisible(gv_zS_SendTransmissionCampaignPortrait, gv_pLAYER_01_USER) == false) || (PortraitVisible(gv_zS_SendTransmissionCampaignPortrait, gv_pLAYER_02_USER) == false))))) {
-                    libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+                    libARRA_gf_PlayTransmissionCueSound(PlayerGroupAll());
                 }
                 gv_zS_SendTransmissionCampaignPortrait = lv_portrait;
                 if ((gv_zS_SendTransmissionCampaignPortrait != c_invalidPortraitId)) {
@@ -1032,7 +1031,7 @@
                     lv_portrait = c_invalidPortraitId;
                 }
                 if (((lp_cueSoundOption == ge_ExTransmissionCueSoundOptions_PlayCueSound) || ((lv_portrait != c_invalidPortraitId) &amp;&amp; (libCOMI_gf_PlayerInCinematicModeCampaign() == false) &amp;&amp; (lp_cueSoundOption == ge_ExTransmissionCueSoundOptions_DefaultCueSoundBehavior) &amp;&amp; (PortraitVisible(gv_cM_SendTransmissionCampaignPortrait, gv_pLAYER_01_USER) == false) &amp;&amp; (PortraitVisible(gv_cM_SendTransmissionCampaignPortrait, gv_pLAYER_02_USER) == false)))) {
-                    libLbty_gf_PlayTransmissionCueSound(PlayerGroupAll());
+                    libARRA_gf_PlayTransmissionCueSound(PlayerGroupAll());
                 }
                 gv_cM_SendTransmissionCampaignPortrait = lv_portrait;
                 if ((gv_cM_SendTransmissionCampaignPortrait != c_invalidPortraitId)) {
@@ -1604,7 +1603,7 @@
                 point lv_launchPoint;
                 int lv_wayIndex;
                 // Variable Initialization
-                lv_launchPoint = libHots_gf_PointStoredForUnit(gv_oMOSH_UNIT, 1);
+                lv_launchPoint = libARRA_gf_PointStoredForUnit(gv_oMOSH_UNIT, 1);
                 lv_wayIndex = RandomInt(0, 4);
                 // Implementation
                 UnitBehaviorAdd(gv_oMOSH_UNIT, &quot;ExOmoshMove&quot;, gv_oMOSH_UNIT, 1);
@@ -1615,7 +1614,7 @@
                         lv_wayIndex += 1;
                     }
                 }
-                libHots_gf_StorePointForUnit(gv_oMOSH_UNIT, 1, gv_dR_pPA[lv_wayIndex]);
+                libARRA_gf_StorePointForUnit(gv_oMOSH_UNIT, 1, gv_dR_pPA[lv_wayIndex]);
                 gf_ExSetDrainRitualIDForUnit(gv_oMOSH_UNIT, lv_wayIndex);
                 if ((lp_firstAppearance == false)) {
                     PingDestroy(gv_g_OmoshPing);
@@ -2570,7 +2569,7 @@
                 if (!runActions) {
                     return true;
                 }
-                libHots_gf_StopSoundLinkCurrentlyPlayingasMusic();
+                libARRA_gf_StopSoundLinkCurrentlyPlayingasMusic();
                 SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, &quot;ZZerus01MusicMain&quot;, c_soundtrackCueAny, c_soundtrackIndexAny, true);
                 return true;
             }

@@ -821,14 +821,14 @@ void aiF917F4D7_start (int p) {
 // 
 //==================================================================================================
 include "TriggerLibs/NativeLib"
-include "TriggerLibs/SwarmLib"
+include "libARRA"
 include "LibCOMI"
 //--------------------------------------------------------------------------------------------------
 // Library Initialization
 //--------------------------------------------------------------------------------------------------
 void InitLibs () {
     libNtve_InitLib();
-    libHots_InitLib();
+    libARRA_InitLib();
     libCOMI_InitLib();
 }
 //--------------------------------------------------------------------------------------------------
@@ -7710,7 +7710,7 @@ bool gt_KronosSummoningPreparingMotionCreate_Func (bool testConds, bool runActio
         libNtve_gf_CreateActorAtPoint("HybridWarpInEffect", PointFromId(959960150));
         gv_kronosNisemonoWarpActor = libNtve_gf_ActorLastCreated();
         ActorSend(gv_kronosNisemonoWarpActor, "SetScale 2.000000");
-        libHots_gf_StoreActorForUnit(gv_kronosNisemono, 1, gv_kronosNisemonoWarpActor);
+        libARRA_gf_StoreActorForUnit(gv_kronosNisemono, 1, gv_kronosNisemonoWarpActor);
         Wait(5.0, c_timeGame);
     }
     return true;
@@ -7727,7 +7727,7 @@ bool gt_KronosSummoningPreparingMotionRemove_Func (bool testConds, bool runActio
     if (!runActions) {
         return true;
     }
-    libNtve_gf_KillModel(libHots_gf_ActorForUnit(gv_kronosNisemono, 1));
+    libNtve_gf_KillModel(libARRA_gf_ActorForUnit(gv_kronosNisemono, 1));
     UnitRemove(gv_kronosNisemono);
     return true;
 }
